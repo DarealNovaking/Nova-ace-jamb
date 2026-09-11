@@ -1,125 +1,138 @@
 # ÑØVÃ ACE JAMB — MASTER HANDOFF
 
-> **Purpose:** Canonical project-context handoff for continuing ÑØVÃ ACE JAMB in another ChatGPT account or development environment.
+> **Canonical single-file project context.** This document contains the complete retained ACE JAMB product direction, architecture decisions, requirements, unresolved decisions, assets, QA rules, and implementation sequence for continuing the project in another ChatGPT account or development environment.
 >
 > **Critical separation rule:** ACE JAMB is a separate product from **Ñøvã CBT MAX** and **DROP**. Do not merge their roadmaps, databases, pricing, branding, or architecture.
 
 ---
 
-## 1. Project identity
+## 1. PROJECT IDENTITY
 
 - **Product:** ÑØVÃ ACE JAMB
 - **Parent brand:** ÑØVÃ Academic Resource Series
 - **Founder styling:** Ñøvã Kïñg
 - **Tagline:** Students Resources Made Easy
 - **Audience:** JAMB candidates broadly; not FUTA-only
-- **Brand feel:** premium, futuristic, youthful, Nigerian-student-focused, practical
+- **Brand feel:** premium, futuristic, youthful, Nigerian-student-focused, practical, polished
 - **Visual direction:** progressive 3D/futuristic UI where useful; 3D must never be required for core functionality or performance
-- **Primary palette:** Royal Purple / Metallic Gold / White / Black
+- **Primary palette:** Royal Purple + Metallic Gold + White + Black
 - **Primary constraint:** mobile-first, low-bandwidth, low-end-Android friendly
+- **Product principle:** it should feel like a serious education platform, not a generic question-bank website or an AI wrapper.
 
 ---
 
-## 2. Product vision
+## 2. PRODUCT VISION
 
-ACE JAMB is intended to be a serious JAMB preparation platform combining:
+ACE JAMB is intended to be a complete JAMB preparation platform combining:
 
-1. JAMB syllabus structure
-2. Structured past questions
-3. Learning Mode
-4. Practice Mode
-5. CBT simulation
-6. Quick Revision
-7. Flashcards
-8. Audio learning
-9. Performance/mastery analytics
-10. Grounded AI tutoring
-11. Textbook/reference knowledge
-12. Internet-source retrieval
-13. Seasonal paid access
-14. Qualified referrals
-15. WhatsApp/community integration
-16. Notifications/admin operations
-17. Security, anti-abuse, observability and graceful degradation
+1. JAMB season structure
+2. JAMB syllabus structure
+3. Personalized student onboarding/profile
+4. Structured and quality-controlled past questions
+5. Learning Mode
+6. Practice Mode
+7. Weakness/Speed/Mistake practice
+8. CBT simulation and realistic full mocks
+9. Quick Revision
+10. Flashcards
+11. Audio learning
+12. Performance and mastery analytics
+13. Mistake bank
+14. Readiness estimation
+15. Adaptive recommendations
+16. Personalized study/revision plans
+17. Grounded AI tutoring and generation
+18. Textbook/reference knowledge
+19. Carefully sourced Internet retrieval
+20. Seasonal paid access
+21. Qualified referrals
+22. Ñøvã community/channel connection
+23. Notifications and admin announcements
+24. Admin command center
+25. Security, anti-abuse, observability and graceful degradation
+26. PWA/mobile-first delivery
 
-The product should feel like a polished education platform rather than a generic AI wrapper.
-
----
-
-## 3. Access and monetization
-
-### ACE Pass
-
-- Target price: **₦899**
-- Model: one-time seasonal access for the active JAMB season
-- The pass should expire after the relevant season while the user's account/history can remain
-- Payment entitlement must be verified server-side
-- Payment provider is **not finally locked** in this handoff
-
-### Referral access
-
-- Alternative access route: **5 qualified referrals**
-- A referral should count only when the referred student completes the defined qualification event(s), such as registration plus meaningful website usage
-- A share/click alone must not count
-- Prevent self-referral, duplicate-account farming and obvious abuse
-- Qualification rules should be configurable rather than permanently hard-coded
-
-### Free tier
-
-The free tier should remain genuinely useful and should naturally encourage upgrading. Advanced personalization, deeper analytics and/or some AI/revision capabilities may be restricted to paid access after final product decisions.
+The product must remain usable, fast and useful even when heavy visual effects, AI, media or other non-core services are unavailable.
 
 ---
 
-## 4. Core learning experiences
+## 3. PERSONALIZED STUDENT SYSTEM
 
-### Learning Mode
+ACE JAMB must not behave like a generic question bank. The retained onboarding/profile direction includes, where useful and with minimal friction:
 
-- Teach syllabus-aligned concepts
-- Break explanations into useful steps
-- Link learning content to relevant past questions
-- Support formulas, diagrams, tables and rich media
-- Use grounded AI assistance where appropriate
+- Target JAMB score
+- Intended institution
+- Intended course
+- Selected JAMB subjects
+- Relevant learning preferences/progress
+- Available preparation time where useful
+- Exam season/deadline context
 
-### Practice Mode
+These values must drive the student's preparation experience rather than exist as decorative profile fields.
 
-- Subject/topic-based practice
-- Question and option order randomized on every new attempt/session
-- Explanations after answers or according to the chosen mode
-- Progress and mastery tracking
+They should feed:
 
-### CBT Mode
-
-- JAMB-like timed experience
-- Reliable start/submit flow
-- Review/navigation controls
-- Randomized question and option order
-- Persistent attempt state
-- Resume support where appropriate
-- Correct scoring even after presentation randomization
-
-### Past Questions
-
-Past questions are a core workload, not an optional add-on. They should integrate into Learning, Practice and CBT.
-
-### Quick Revision
-
-Fast topic-focused revision using concise content, question cards and/or flashcards.
-
-### Flashcards
-
-Flashcards are a mandatory roadmap feature. They should support syllabus/topic mapping and progress tracking.
-
-### Audio learning
-
-Audio learning is a mandatory roadmap feature. Playback must be bandwidth-conscious and fail gracefully when media cannot load.
+- Practice selection
+- Learning recommendations
+- Study/revision plans
+- Weakness analysis
+- Readiness tracking
+- Final-stretch preparation
+- Adaptive recommendations
 
 ---
 
-## 5. Question-system requirements — NON-NEGOTIABLE
+## 4. JAMB SEASON + SYLLABUS ENGINE
 
-The content model must support rich questions from Day 1 rather than retrofitting media later.
+The platform should be season-aware and syllabus-aware.
 
-Questions/options/explanations/learning content may contain:
+The content hierarchy is:
+
+**Subject → Topic → Subtopic → Question**
+
+This hierarchy must support:
+
+- Learning recommendations
+- Practice selection
+- Weakness detection
+- Revision
+- CBT composition
+- Analytics
+- AI retrieval
+- Readiness calculations
+- Study plans
+
+Current official JAMB composition/rules must be verified before launch. Exam configuration should be data/configuration-driven rather than permanently hard-coded.
+
+---
+
+## 5. PAST-QUESTION CONTENT SYSTEM
+
+Past questions are a core product workload, not an optional add-on. They should integrate into Learning, Practice and CBT.
+
+The platform must use a verified/quality-controlled content pipeline. Imported raw questions are **not automatically trustworthy**.
+
+Quality/provenance metadata should cover, as applicable:
+
+- Source/provenance
+- Year/exam metadata
+- Subject/topic/subtopic mapping
+- Correct answer verification
+- Explanation quality
+- Duplicate detection
+- Formatting/media validation
+- Rights/licensing status
+- Publication/review status
+
+The system should support versioning and stable question identity.
+
+---
+
+## 6. QUESTION MODEL — NON-NEGOTIABLE FROM DAY 1
+
+The canonical question model must support rich educational content from the beginning rather than retrofitting media later.
+
+Questions, options, explanations and learning content may contain:
 
 - Text
 - Formulas
@@ -133,17 +146,25 @@ Questions/options/explanations/learning content may contain:
 
 Supported image formats should include PNG, JPEG, WebP and SVG where safe.
 
-### Canonical-data rule
+The model should support:
 
-The stored canonical question and answer mapping must never be mutated merely because the UI randomizes presentation.
+- Stable question identity
+- Canonical answer mapping
+- Subject/topic/subtopic mapping
+- Difficulty
+- Syllabus mapping
+- Content versioning
+- Media metadata
+- Source/provenance
+- Rights/licensing state
 
-Every question needs a stable identity. Presentation order is separate from canonical content.
+The canonical stored question and answer mapping must never be mutated merely because the UI randomizes presentation.
 
 ---
 
-## 6. Randomization rules
+## 7. RANDOMIZATION — NON-NEGOTIABLE
 
-Every new attempt/session must be capable of randomizing:
+Every new attempt/session should be able to randomize:
 
 - Question order
 - Option order
@@ -153,38 +174,224 @@ This applies across:
 - Practice
 - CBT
 - Past Questions
-- Learning/Answer modes where multiple questions are presented
+- Learning/Answer modes with multiple questions
 - Quick Revision question cards
 - AI-generated practice
 
-When a session must be resumed, preserve enough state/seed/mapping information to reproduce the same presentation safely without corrupting the canonical answer key.
+When a session is resumable, preserve enough seed/mapping/state to reproduce the presentation safely.
+
+Randomization must never corrupt the canonical answer key.
 
 ---
 
-## 7. AI Tutor / knowledge architecture
+## 8. LEARNING MODE
 
-ACE's AI must be **grounded/RAG-based**, not an unrestricted chatbot.
+Learning Mode should:
+
+- Teach syllabus-aligned concepts
+- Explain concepts clearly and progressively
+- Connect learning to relevant past questions
+- Support formulas, diagrams, tables and rich media
+- Use grounded AI assistance where appropriate
+- Track learning progress
+- Feed mastery/recommendation systems
+
+---
+
+## 9. PRACTICE SYSTEM
+
+### Standard Practice
+
+Support subject/topic/subtopic practice with:
+
+- Randomized question order
+- Randomized option order
+- Explanations according to the selected mode
+- Progress tracking
+- Mastery tracking
+
+### Advanced practice modes
+
+Retained specialized modes include:
+
+- **Weakness Mode** — targets weak topics/subtopics
+- **Speed Mode** — targets response speed without sacrificing correctness
+- **Mistake Mode** — targets previously incorrect questions/content
+- **Repeated-Mistake Mode** — prioritizes recurring errors
+- **Target/Readiness Mode** — practice selected to improve preparation readiness
+- **Final-Stretch Mode** — increasingly focused preparation as the exam approaches
+- **Adaptive Practice** — dynamically selects useful questions from actual performance
+
+These modes should be driven by real student performance, not arbitrary random selection.
+
+---
+
+## 10. MISTAKE BANK
+
+ACE should build a personal mistake/review bank.
+
+Useful classifications include:
+
+- Incorrect answer
+- Repeated incorrect answer
+- Slow answer
+- Weak topic/subtopic
+- Recently improved
+- Needs revision
+
+Thresholds and scoring rules should remain configurable rather than prematurely hard-coded.
+
+---
+
+## 11. CBT + REALISTIC FULL MOCKS
+
+CBT is a core product experience.
+
+Requirements:
+
+- Timed exams
+- JAMB-like exam experience
+- Exam navigation
+- Review controls
+- Question/option randomization
+- Reliable answer persistence
+- Resume/recovery where appropriate
+- Accurate scoring
+- Correct subject/question composition according to the configured exam
+- Post-exam analysis
+- Historical comparison against the student's own performance
+
+The system must handle timer edge cases, reloads and interrupted sessions safely.
+
+Current official JAMB composition/rules must be verified before launch and configured from authoritative/current information rather than permanently hard-coded.
+
+---
+
+## 12. QUICK REVISION + FLASHCARDS
+
+### Quick Revision
+
+Fast topic-focused revision using concise content, question cards and/or flashcards.
+
+Question cards should still obey the randomization rules where multiple questions are presented.
+
+### Flashcards
+
+Flashcards are a mandatory roadmap feature and should support:
+
+- Syllabus/topic mapping
+- Progress tracking
+- Review history
+- Personalized revision
+- Randomized presentation where appropriate
+
+---
+
+## 13. AUDIO LEARNING
+
+Audio learning is a retained roadmap feature.
+
+It must be:
+
+- Bandwidth-conscious
+- Mobile-friendly
+- Lazy-loaded where possible
+- Resilient to media failure
+- Capable of graceful fallback when audio cannot load
+
+---
+
+## 14. PERFORMANCE, MASTERY + READINESS ENGINE
+
+Performance must cover more than a simple percentage score.
+
+Retained metrics/directions include:
+
+- Overall performance
+- Subject performance
+- Topic/subtopic weakness
+- Accuracy
+- Speed
+- Repeated mistakes
+- Progress over time
+- Practice history
+- CBT/mock performance
+- Mastery tracking
+- Readiness estimation
+- Adaptive recommendations
+- Final-stretch preparation
+
+The system should answer questions such as:
+
+- What should this student study next?
+- What are their weakest areas?
+- What mistakes keep repeating?
+- Are they improving?
+- Are they ready for the exam?
+- What should they revise before JAMB?
+
+**Important:** readiness is an internal preparation metric, not a scientifically precise or guaranteed JAMB score prediction.
+
+---
+
+## 15. PERSONALIZED STUDY / REVISION PLANS
+
+The platform should eventually use:
+
+- Target score
+- Available preparation time
+- Exam season/deadline
+- Subject performance
+- Weak topics
+- Mistake history
+- Practice history
+- CBT history
+
+to recommend what the student should study or practise next.
+
+Final-stretch preparation should become more focused as the exam approaches while continuing to respect actual weak areas.
+
+---
+
+## 16. AI TUTOR + GROUNDED KNOWLEDGE ARCHITECTURE
+
+ACE's AI is **not just a chatbot** and must not be an unrestricted generator.
+
+### Retained AI capabilities
+
+- AI tutor
+- Concept diagnosis
+- Explanation of difficult questions
+- Weakness diagnosis
+- Personalized revision guidance
+- Study/revision plans
+- Question generation
+- AI-generated practice
+- Adaptive recommendations
+- Grounded retrieval from approved knowledge
 
 ### Intended knowledge sources
 
 1. JAMB syllabus
-2. Approved/authorized textbook and reference material
+2. Approved/authorized textbook/reference material
 3. Platform-authored educational content
 4. Structured past-question knowledge
 5. Carefully sourced Internet content
 
-### Requirements
+### Grounding requirements
 
 - Retrieve relevant evidence before answering where appropriate
 - Preserve source/provenance metadata
 - Prefer grounded answers over unsupported generation
-- Clearly acknowledge uncertainty when evidence is insufficient
+- Acknowledge uncertainty when evidence is insufficient
 - Internet sources should retain source URL and relevant retrieval metadata
-- AI provider/model should sit behind an adapter so it can be replaced later
+- AI provider/model must sit behind an adapter so it can be replaced later
+- AI-generated questions/content require validation
+- AI-generated content must not automatically be treated as authoritative JAMB material
 
 ---
 
-## 8. Textbooks and copyright
+## 17. TEXTBOOKS + COPYRIGHT / RIGHTS-AWARE KNOWLEDGE PIPELINE
 
 Do **not** build ACE as a wholesale mirror of copyrighted textbooks.
 
@@ -193,184 +400,193 @@ The knowledge system must be rights-aware:
 - Use material the project has permission/right to use
 - Use legally permissible excerpts or derived knowledge where appropriate
 - Store provenance and rights/licensing metadata
-- Index knowledge for retrieval instead of exposing entire copyrighted books as a free mirror
+- Index knowledge for retrieval rather than exposing entire copyrighted books as a free mirror
 - Provide admin review/takedown controls
 - Distinguish platform-authored explanations from source-derived content
 
----
-
-## 9. Intended architecture
-
-### Current intended production direction
-
-- **GitHub:** source of truth and version control
-- **Cloudflare Pages:** frontend hosting/CDN
-- **Supabase:** core backend/data platform
-  - PostgreSQL
-  - Authentication
-  - Storage
-  - Row Level Security
-  - Edge Functions
-  - Realtime where justified
-
-### Architecture rule
-
-UI code must not be tightly coupled to a single infrastructure provider. Database, authentication, storage, payments, AI and notifications should sit behind service boundaries/adapters where practical.
-
-This makes it possible to replace providers later without rebuilding ACE.
-
-### Important correction
-
-Do not automatically use Cloudflare D1/Workers as ACE JAMB's primary database. Earlier Cloudflare backend discussion belonged to another context. The current ACE JAMB backend direction is **Supabase**.
+Rights must be audited before content ingestion.
 
 ---
 
-## 10. Dedicated Supabase environment
+## 18. GAMIFICATION
 
-- **Organization:** The ace team
-- **Plan:** Free
-- **Planned project:** NOVA ACE JAMB
-- **Planned region:** eu-west-1
-- **Creation cost previously checked:** $0/month
+Gamification remains part of the retained roadmap.
 
-The project must remain separate from unrelated Supabase projects such as DROP, nova-anonymous-session and Ñøvã pre CBT.
+It should encourage useful study behavior rather than become decoration.
 
-### Status at handoff
+Potential mechanisms include:
 
-Project creation was **not safely confirmed** at the point this handoff was prepared. Do not claim the project exists until the Supabase dashboard/API confirms it.
+- Progress feedback
+- Streak-style motivation
+- Achievement-style feedback
 
-### Next Supabase action
+Exact mechanics are not yet locked and should be finalized during UX design.
 
-1. Confirm the organization is **The ace team**
-2. Create **NOVA ACE JAMB** in **eu-west-1**
-3. Verify that the project becomes healthy/ready
-4. Only then proceed with the pre-build requirements audit and schema work
-5. Do not blindly create the entire production schema before requirements are locked
+Gamification must not interfere with:
 
----
-
-## 11. Database principles
-
-- PostgreSQL as the core relational database
-- Use migrations/version control for schema changes
-- RLS for protected user-facing data
-- Never expose service-role secrets to the browser
-- Use environment variables/secrets management
-- Separate canonical content from presentation/session state
-- Separate user progress from public content
-- Add indexes based on actual query patterns
-- Keep provenance/audit metadata for editable content
-- Review security/performance advisories after major schema changes
-
-### Likely data domains
-
-These are planning domains, **not yet a final schema**:
-
-- Users/profiles
-- JAMB seasons
-- Subjects
-- Syllabus topics/subtopics
-- Questions
-- Options
-- Question media
-- Question sources/provenance/rights
-- Explanations
-- Past-question metadata
-- Learning content
-- Flashcards
-- Audio resources
-- Practice sets
-- CBT exams/attempts
-- Attempt answers/review state
-- Mastery/performance records
-- AI knowledge sources/documents/chunks
-- AI retrieval metadata
-- ACE Pass entitlements
-- Payment transactions/events
-- Referral codes/referrals/qualification events
-- WhatsApp/community gate state
-- Notifications
-- Admin announcements
-- Reports/moderation/takedown records
-- Audit/security events
-
-Do not create all of these blindly. Finalize the schema after the requirements/asset audit.
+- CBT accuracy
+- Accessibility
+- Performance
+- Student focus
 
 ---
 
-## 12. Authentication
+## 19. PWA + MOBILE-FIRST DELIVERY
 
-Supabase Auth is the current preferred foundation unless a later requirement justifies another provider.
+ACE JAMB is intended to be a **PWA/mobile-first web product**.
 
-Requirements:
+The experience should support installation and app-like usage without making native app-store distribution a Day-1 dependency.
 
-- Minimize onboarding data
-- Do not collect unnecessary sensitive information
-- Separate authentication/security data from public profile data
-- Persistent sessions appropriate for a PWA
-- Account recovery
-- Abuse controls
-- Proper authorization/RLS
+A future Play Store/native-wrapper path may be considered after the web/PWA product is stable.
 
 ---
 
-## 13. Admin / content operations
+## 20. ACCESS + MONETIZATION
 
-ACE needs an admin/content-management layer capable of:
+### ACE Pass
 
-- Subjects
-- Syllabus topics
-- Question banks
-- Question creation/editing/review/publish/unpublish
-- Multimedia
-- Source/provenance/rights metadata
-- Explanations
-- Flashcards
-- Audio resources
-- Announcements
-- Notifications
-- Reports
-- Copyright/takedown requests
-- Payment/referral monitoring
-- User/account moderation
-- Audit trail
+- **Current price direction: ₦899**
+- One-time seasonal access for the active JAMB season
+- Expires after the relevant season while the account/history can remain
+- Payment entitlement must be verified server-side
+- Payment provider is **not finally locked**
 
-Use least-privilege admin roles where practical. Content editors should not automatically need full system-admin privileges.
+The earlier exploratory **₦800** price is superseded and must not be revived unless explicitly changed by the project owner.
+
+### Free tier
+
+The free tier should remain genuinely useful and naturally encourage upgrading.
+
+Advanced personalization, deeper analytics and/or some AI/revision capabilities may be restricted to paid access after final product decisions.
+
+### Referral access
+
+Alternative access route: **5 qualified real-user referrals**.
+
+A referral should count only after the referred student completes the defined qualification event(s), such as registration plus meaningful website usage.
+
+A share/click alone must not count.
+
+Prevent:
+
+- Self-referral
+- Duplicate-account farming
+- Device/account farming
+- Bots/fake accounts
+- Obvious abuse
+
+Referral qualification rules must be configurable.
 
 ---
 
-## 14. WhatsApp/community integration
+## 21. PAYMENT + ENTITLEMENT ARCHITECTURE
 
-Community/channel integration is part of the roadmap.
+The payment flow must support:
 
-However, do not assume that a client-side button saying "I joined" is secure verification.
-
-The exact verification mechanism remains **UNDECIDED** and must be designed against the actual capabilities of the chosen WhatsApp integration. If true membership verification is not technically available, use an honest alternative rather than fake verification.
-
----
-
-## 15. Payments
-
-The payment flow must handle:
-
-- Server-side verification
+- Transaction verification
 - Provider reference storage
-- Duplicate callbacks
+- Entitlement activation
+- Entitlement expiry
+- Payment history
+- Failed payment handling
+- Duplicate transaction handling
 - Webhook replay/idempotency
-- Failed payments
-- Successful payment without client confirmation
-- Refund handling
-- Entitlement activation/expiry
+- Refund/reversal handling
+- Admin visibility
+- Server-side verification
 
 Never trust a browser-only success state as proof of payment.
 
+Earlier planning discussed **Paystack** and **Flutterwave**. No final provider has been locked. Do not silently choose one until the provider is selected.
+
 ---
 
-## 16. Security / anti-abuse
+## 22. ACCOUNT + CLOUD PROGRESS CONTINUITY
+
+Student progress should persist across sessions/devices where the account is used.
+
+This includes, where applicable:
+
+- Profile
+- Learning progress
+- Practice history
+- Mistake bank
+- Flashcard progress
+- CBT attempts
+- Performance analytics
+- Entitlements
+- Referral progress
+- Study recommendations
+
+The implementation direction is Supabase. Earlier Firebase planning is superseded and must not be revived merely because the original roadmap mentioned it.
+
+---
+
+## 23. NOTIFICATIONS + COMMUNITY
+
+### Notifications
+
+Retained notification capabilities include:
+
+- In-app notifications
+- Admin announcements
+- Targeted notifications
+- Scheduled notifications
+- User notification preferences
+- Important system/product notifications
+- Push-capable notifications
+
+Earlier planning included **FCM** as the push-notification direction. Exact implementation remains part of the integration audit.
+
+### Ñøvã community/channel
+
+A Ñøvã community/channel CTA/connection point remains part of the roadmap.
+
+This does **not** mean ACE should automatically post to WhatsApp.
+
+Do not assume automatic WhatsApp posting.
+
+The actual WhatsApp membership-verification mechanism is **UNDECIDED** and must be based on real integration capabilities. Never use a client-side "I joined" button as fake verification.
+
+---
+
+## 24. ADMIN COMMAND CENTER
+
+The admin side should become a command center rather than a simple question uploader.
+
+It should eventually provide visibility/control over:
+
+- Students/accounts
+- Subjects/syllabus/topics
+- Question banks
+- Question creation/editing/review/publish/unpublish
+- Question quality
+- Multimedia
+- Provenance/rights
+- Explanations
+- Flashcards
+- Audio
+- Payments/entitlements
+- Referral activity
+- Notifications/announcements
+- AI knowledge sources
+- Reports/moderation
+- Copyright/takedown workflow
+- Product/usage analytics
+- Security/abuse events
+- Audit trail
+
+Use least-privilege roles. Content editors should not automatically have full system-admin privileges.
+
+Admin actions should be permissioned and auditable.
+
+---
+
+## 25. SECURITY + ANTI-ABUSE
 
 Required principles:
 
-- RLS on protected data
+- Row Level Security on protected data
 - Least-privilege admin access
 - Server-side payment verification
 - Rate limiting where appropriate
@@ -378,14 +594,34 @@ Required principles:
 - Upload validation
 - Media size/type limits
 - Protection of privileged AI/admin endpoints
-- Do not trust client-submitted scores or entitlement state
-- Avoid unnecessary sensitive-data collection
-- Log important security/business events without excessive personal data
+- Never trust client-submitted scores or entitlement state
+- Minimize sensitive data collection
+- Log important security/business events without excessive PII
 - Graceful degradation when external services fail
 
 ---
 
-## 17. Performance and browser-aware design
+## 26. OBSERVABILITY
+
+Monitor important operational flows such as:
+
+- Authentication
+- Question loading
+- CBT start
+- CBT submit
+- Scoring
+- Payment verification
+- Referral qualification
+- AI requests
+- Critical errors
+
+Keep operational telemetry separate from student-facing analytics.
+
+Avoid unnecessary sensitive data.
+
+---
+
+## 27. PERFORMANCE + BROWSER-AWARE DESIGN
 
 The platform must work on low-end Android devices and poor/expensive networks.
 
@@ -403,34 +639,162 @@ Rules:
 - 3D effects must never block core functionality
 - Test on a real low-end Android phone
 
+### Progressive 3D principle
+
+The product should use depth, motion, layered surfaces and 3D elements where they strengthen identity, but core navigation, learning, CBT and accessibility must remain functional when heavy effects are disabled or unavailable.
+
 ---
 
-## 18. Observability
+## 28. INTENDED PRODUCTION ARCHITECTURE
 
-Monitor important flows such as:
+### Source control
 
+- **GitHub** = source of truth/version control
+
+### Frontend
+
+- **Cloudflare Pages** = intended frontend hosting/CDN
+
+### Backend
+
+- **Supabase** = core backend/data platform:
+  - PostgreSQL
+  - Authentication
+  - Storage
+  - Row Level Security
+  - Edge Functions
+  - Realtime where justified
+
+### Provider-adapter rule
+
+Infrastructure-specific services should sit behind clean service boundaries/adapters where practical, especially:
+
+- Database/data access
 - Authentication
-- Question loading
-- CBT start
-- CBT submit
-- Scoring
-- Payment verification
-- Referral qualification
-- AI requests
-- Critical errors
+- Storage
+- Payments
+- AI
+- Search/retrieval
+- Notifications/push
+- Analytics/observability
 
-Keep operational telemetry separate from student-facing analytics. Avoid unnecessary sensitive data.
+The objective is to start cheaply while retaining a migration path as ACE grows.
+
+### Explicit architecture corrections
+
+Do **not** automatically use:
+
+- Firebase as ACE's backend
+- Netlify as the intended production frontend
+- Cloudflare D1 as ACE's primary database
+- AppDeploy as ACE's production foundation
+
+Those earlier choices are superseded or historical.
 
 ---
 
-## 19. QA / hardening requirements
+## 29. DEDICATED SUPABASE ENVIRONMENT
+
+- **Organization:** The ace team
+- **Plan:** Free
+- **Planned project:** NOVA ACE JAMB
+- **Planned region:** eu-west-1
+- **Previously checked creation cost:** $0/month
+
+The project must remain separate from unrelated Supabase projects such as DROP, `nova-anonymous-session`, and Ñøvã pre CBT.
+
+### Status at handoff
+
+Supabase project creation was **not safely confirmed** when this handoff was prepared.
+
+Do not claim the project exists until the Supabase dashboard/API confirms it.
+
+### Next Supabase action
+
+1. Confirm organization **The ace team**
+2. Create **NOVA ACE JAMB** in **eu-west-1**
+3. Verify the project is healthy/ready
+4. Complete the pre-build requirements/asset/rights audit
+5. Only then lock schema/migrations
+
+Do not blindly create the full production schema before requirements are locked.
+
+---
+
+## 30. DATABASE PRINCIPLES
+
+- PostgreSQL
+- Migrations/version control
+- RLS
+- Never expose service-role secrets in the browser
+- Environment variables/secrets management
+- Separate canonical content from presentation/session state
+- Separate user progress from public content
+- Index based on actual query patterns
+- Provenance/audit metadata for editable content
+- Security/performance advisory checks after major changes
+
+### Likely data domains — PLANNING ONLY
+
+These are not yet the final schema:
+
+- Users/profiles
+- JAMB seasons
+- Subjects
+- Syllabus topics/subtopics
+- Questions
+- Options
+- Question media
+- Question sources/provenance/rights
+- Explanations
+- Past-question metadata
+- Learning content
+- Flashcards
+- Audio resources
+- Practice sets
+- CBT exams
+- CBT attempts
+- Attempt answers/review state
+- Mastery/performance records
+- AI knowledge sources/documents/chunks
+- AI retrieval metadata
+- ACE Pass entitlements
+- Payment transactions/events
+- Referral codes/referrals/qualification events
+- WhatsApp/community gate state
+- Notifications
+- Admin announcements
+- Reports/moderation/takedown records
+- Audit/security events
+
+Do not create all of these blindly. Finalize the schema after the requirements/asset/rights audit.
+
+---
+
+## 31. AUTHENTICATION
+
+Supabase Auth is the current preferred foundation unless a later requirement explicitly justifies another provider.
+
+Requirements:
+
+- Minimal onboarding data
+- No unnecessary sensitive information
+- Separate authentication/security data from public profile data
+- Persistent sessions appropriate for a PWA
+- Account recovery
+- Abuse controls
+- Proper authorization/RLS
+
+---
+
+## 32. QA + HARDENING
 
 Every major feature must be tested beyond a single successful desktop run.
 
 Test:
 
 - Real Android devices
-- Slow networks
+- Slow/poor networks
 - Interrupted sessions
 - Reloads
 - CBT timer edge cases
@@ -441,50 +805,84 @@ Test:
 - Media failures/fallbacks
 - AI with missing or contradictory evidence
 - Accessibility basics
-- Performance under low-end conditions
+- Low-end performance
 
 Run security/performance checks after significant database changes.
 
+### Required development philosophy
+
+Build sequentially:
+
+1. Build a coherent feature group.
+2. Test it.
+3. Test it on a real phone.
+4. Test edge cases.
+5. Harden it.
+6. Only then move to the next dependent phase.
+
+Do not attempt to build all 50+ planned capabilities at once.
+
+The system should remain usable throughout development.
+
 ---
 
-## 20. Existing GitHub baseline
+## 33. EXISTING GITHUB REPOSITORY / BASELINE
 
-The repository is:
+Repository:
 
 **`DarealNovaking/Nova-ace-jamb`**
 
-The repository's existing README describes an earlier prototype baseline including an AppDeploy prototype, authentication/profile foundation, subjects/topics/questions CMS, and a next phase around persistent CBT attempts, answers, scores and progress.
+The existing repository contains an earlier prototype baseline including AppDeploy-related work, authentication/profile foundation, subjects/topics/questions CMS, and a planned next phase around persistent CBT attempts, answers, scores and progress.
 
-For the new production direction, the architecture decisions in this handoff take precedence where they explicitly supersede prototype infrastructure assumptions. The prototype should be treated as existing work/context, not as permission to discard useful work unnecessarily.
+That prototype is historical/useful work and should not be discarded unnecessarily.
+
+However, the current production architecture in this document takes precedence where it explicitly supersedes prototype infrastructure assumptions.
 
 ---
 
-## 21. Current project status
+## 34. CURRENT PROJECT STATUS
 
 | Area | Status |
 |---|---|
 | Product concept | Strongly defined |
-| ACE vs CBT MAX separation | Confirmed |
+| ACE vs Ñøvã CBT MAX separation | Confirmed |
 | ACE vs DROP separation | Confirmed |
 | Brand direction | Defined |
+| PWA/mobile-first direction | Confirmed |
+| Progressive 3D direction | Confirmed |
+| Personalization direction | Confirmed |
+| Past-question quality pipeline | Confirmed |
+| Rich multimedia question model | Confirmed |
+| Advanced practice modes | Confirmed |
+| Mistake bank | Confirmed |
+| Readiness engine | Confirmed |
+| AI/RAG direction | Confirmed |
+| Textbook/rights-aware pipeline | Confirmed |
+| Gamification | Retained; exact mechanics open |
 | ₦899 seasonal ACE Pass | Direction confirmed |
 | 5-qualified-referral route | Direction confirmed |
 | Supabase organization | The ace team |
-| Supabase project | Planned; creation not yet safely confirmed |
+| Supabase project | Planned; creation not safely confirmed |
 | Supabase region | eu-west-1 planned |
 | GitHub repo | Exists: `DarealNovaking/Nova-ace-jamb` |
 | Cloudflare Pages | Intended frontend hosting/CDN |
 | Database schema | Not final; audit first |
-| Payment provider | UNDECIDED |
-| WhatsApp verification mechanism | UNDECIDED |
-| Exact AI provider/model | UNDECIDED |
-| Final content/licensing inventory | UNDECIDED |
+| Payment provider | **UNDECIDED** |
+| WhatsApp verification mechanism | **UNDECIDED** |
+| Exact AI provider/model | **UNDECIDED** |
+| Retrieval/search provider | **UNDECIDED** |
+| Embedding strategy | **UNDECIDED** |
+| Final content/licensing inventory | **UNDECIDED** |
+| Exact free-tier limits | **UNDECIDED** |
+| Exact paid-tier limits | **UNDECIDED** |
+| Exact ACE Pass expiry implementation | **UNDECIDED** |
+| Exact referral qualification event | **UNDECIDED** |
 
 ---
 
-## 22. Pre-build gap audit — MUST happen before schema implementation
+## 35. PRE-BUILD GAP AUDIT — MUST HAPPEN BEFORE SCHEMA IMPLEMENTATION
 
-The new ChatGPT/developer should ask for everything genuinely missing before implementation.
+Before writing production code or creating the final database schema, identify every genuinely missing decision, asset, content source, integration choice, rights issue and requirement.
 
 ### Product decisions
 
@@ -496,6 +894,7 @@ The new ChatGPT/developer should ask for everything genuinely missing before imp
 - Exact referral qualification event
 - Student-facing analytics
 - Admin-facing analytics
+- Exact gamification mechanics if needed for launch
 
 ### Content
 
@@ -506,6 +905,7 @@ The new ChatGPT/developer should ask for everything genuinely missing before imp
 - What explanations already exist?
 - What flashcard content exists?
 - What audio content exists?
+- What diagrams/images already exist?
 
 ### AI
 
@@ -516,6 +916,7 @@ The new ChatGPT/developer should ask for everything genuinely missing before imp
 - Knowledge refresh strategy
 - Citation/source display behavior
 - Fallback behavior when AI/search is unavailable
+- Validation workflow for generated questions/content
 
 ### Integrations
 
@@ -538,11 +939,13 @@ The new ChatGPT/developer should ask for everything genuinely missing before imp
 - Rights for question-bank sources
 - Rights for images/diagrams/audio
 
+**Do not guess unresolved decisions.** Mark them undecided and ask only the questions needed to lock them.
+
 ---
 
-## 23. Asset/media checklist
+## 36. ASSET + MEDIA CHECKLIST
 
-Ask the project owner to provide any existing assets that are actually available:
+Ask the project owner to provide existing assets that are actually available:
 
 - Final ACE JAMB logo — preferably SVG + transparent PNG
 - Favicon/app icon
@@ -565,104 +968,249 @@ Ask the project owner to provide any existing assets that are actually available
 
 ---
 
-## 24. Recommended implementation sequence
+## 37. RECOMMENDED IMPLEMENTATION SEQUENCE
 
-1. Complete the requirements + asset + rights audit.
-2. Create/verify the dedicated Supabase project.
-3. Confirm GitHub repository/branch strategy.
-4. Lock architecture and service boundaries.
-5. Design the final data model.
-6. Set up migrations, RLS and environments.
-7. Build authentication/profile foundation.
-8. Build subjects/syllabus/topics.
-9. Build canonical rich question/content model.
-10. Import and validate the first legal question dataset.
-11. Build Learning + Practice foundations.
-12. Build CBT engine and robust attempt state.
-13. Build scoring, explanations and mastery analytics.
-14. Build Flashcards + Quick Revision.
-15. Build Audio learning.
-16. Build grounded AI/RAG.
-17. Build admin/content management.
-18. Build referrals + ACE Pass/payment entitlement.
-19. Build notifications/community integration.
-20. Harden security, anti-abuse, performance and observability.
-21. Run real-device/low-bandwidth QA.
-22. Launch a controlled beta.
+### Phase 0 — Requirements / assets / rights
+
+1. Complete product gap audit.
+2. Collect available assets.
+3. Audit content sources and rights/licensing.
+4. Lock launch scope and free/paid boundaries.
+
+### Phase 1 — Infrastructure foundation
+
+5. Create/verify the dedicated Supabase project.
+6. Confirm GitHub repository/branch strategy.
+7. Lock architecture/service boundaries.
+8. Set up environments/secrets safely.
+9. Design and review the final data model.
+
+### Phase 2 — Database / security foundation
+
+10. Implement migrations.
+11. Implement RLS.
+12. Add required indexes/constraints.
+13. Add audit/provenance structures.
+14. Run security/performance checks.
+
+### Phase 3 — Student foundation
+
+15. Build authentication.
+16. Build onboarding/profile.
+17. Build target score/institution/course/subject context.
+18. Build account/cloud continuity.
+
+### Phase 4 — Academic structure
+
+19. Build JAMB season engine.
+20. Build subjects.
+21. Build syllabus topics/subtopics.
+22. Build question taxonomy/intelligence.
+
+### Phase 5 — Content engine
+
+23. Build canonical rich question model.
+24. Build media support.
+25. Build provenance/rights metadata.
+26. Build review/publish workflow.
+27. Import and validate the first legal question dataset.
+28. Validate explanations and content quality.
+
+### Phase 6 — Learning / practice
+
+29. Build Learning Mode.
+30. Build standard Practice Mode.
+31. Build question/option randomization.
+32. Build weakness/speed/mistake practice.
+33. Build mistake bank.
+34. Build mastery/performance tracking.
+
+### Phase 7 — CBT
+
+35. Build CBT engine.
+36. Build persistent attempt state.
+37. Build timer/navigation/review.
+38. Build scoring.
+39. Build realistic full mocks.
+40. Build post-exam analysis.
+
+### Phase 8 — Revision / media learning
+
+41. Build Quick Revision.
+42. Build Flashcards.
+43. Build Audio learning.
+
+### Phase 9 — AI / knowledge
+
+44. Select AI provider/model.
+45. Select retrieval/search provider.
+46. Implement knowledge ingestion/indexing.
+47. Implement grounded retrieval.
+48. Build AI tutor/explanations.
+49. Build diagnosis/revision plans.
+50. Build AI-generated practice/question generation with validation.
+51. Implement graceful AI/search fallback.
+
+### Phase 10 — Admin / operations
+
+52. Build admin command center.
+53. Build content management/review.
+54. Build provenance/rights/takedown workflow.
+55. Build moderation/reporting.
+56. Build admin analytics.
+57. Build audit/security-event visibility.
+
+### Phase 11 — Monetization / community / notifications
+
+58. Select and integrate payment provider.
+59. Implement server-side transaction verification.
+60. Implement ₦899 seasonal ACE Pass entitlement lifecycle.
+61. Implement referral codes/qualification/anti-abuse.
+62. Implement community/channel CTA.
+63. Implement honest WhatsApp verification only if technically supported.
+64. Implement in-app/admin/targeted/scheduled notifications.
+65. Implement push notification path if selected.
+
+### Phase 12 — Hardening / launch
+
+66. Security hardening.
+67. Anti-abuse hardening.
+68. Performance optimization.
+69. Low-bandwidth testing.
+70. Low-end Android testing.
+71. Accessibility checks.
+72. Interrupted-session/CBT edge-case testing.
+73. Payment/referral abuse testing.
+74. AI retrieval failure testing.
+75. Real-device QA.
+76. Beta release.
+77. Monitor and iterate.
 
 ---
 
-## 25. First useful milestone
+## 38. FREE-FIRST ECONOMICS + SCALING
 
-Do not attempt to build the entire platform at once.
+Strategic principle:
 
-The first meaningful milestone should prove the core learning loop:
+**Start at ₦0 infrastructure cost where practical, use free tiers aggressively without underbuilding the architecture, then use revenue to fund better infrastructure/features.**
 
-1. Student signs in.
-2. Student chooses a subject/topic.
-3. Student sees syllabus-aligned content/questions.
-4. Question and option randomization works correctly.
-5. Student answers and receives a reliable explanation.
-6. Progress is saved.
-7. Basic performance is reported.
-8. The architecture remains ready for CBT, AI, flashcards, audio and monetization.
+However, production architecture must not assume every provider remains free forever.
 
----
+Known future cost areas include:
 
-## 26. Rules for future development
+- AI usage
+- Search/retrieval
+- Payment transaction fees
+- Higher infrastructure usage
+- Custom domain/paid services
+- Large-scale media/storage/bandwidth
+- App-store distribution if a native wrapper is later pursued
 
-- **Do not confuse ACE JAMB with Ñøvã CBT MAX.**
-- **Do not confuse ACE JAMB with DROP.**
-- Do not silently change the ₦899 seasonal model.
-- Do not silently replace Supabase with D1.
-- Do not build a giant schema before the requirements audit.
-- Do not assume supplied content is copyright-free.
-- Do not fake WhatsApp membership verification.
-- Do not expose secrets in code or chat.
-- Do not optimize desktop-first.
-- Do not let 3D effects damage performance.
-- Do not claim an external resource was created unless it has actually been verified.
-- When something is unresolved, label it **UNDECIDED** and ask the owner.
-- Prefer incremental changes over unnecessary architecture rewrites.
+Provider adapters/service boundaries are therefore important from the beginning.
 
 ---
 
-## 27. Startup prompt for a new ChatGPT account
+## 39. EXPLICITLY DROPPED / SUPERSEDED — DO NOT REVIVE
 
-Paste this after providing this document:
+### Firebase as ACE backend
 
-> I am continuing my project **ÑØVÃ ACE JAMB**. This document is the master handoff from my previous ChatGPT account. Treat it as the current project context.
->
-> **ACE JAMB is separate from Ñøvã CBT MAX and DROP.** Do not merge them.
->
-> Before writing code or creating database tables, perform a complete **PRE-BUILD GAP AUDIT**. Identify what is already decided, what is unresolved, and what assets/media/content/rights/integration information is genuinely required from me. Do not guess unresolved decisions.
->
-> The intended architecture is GitHub + Cloudflare Pages + Supabase, with provider adapters so infrastructure can change later. Do not substitute Cloudflare D1 as the ACE database unless I explicitly change the decision.
->
-> After the audit, produce the final locked architecture and implementation sequence. Only then begin implementation.
+**Dropped/superseded.** Current backend direction is Supabase.
 
----
+### Netlify as ACE production frontend
 
-## 28. Compact project identity
+**Superseded.** Current direction is GitHub → Cloudflare Pages → Supabase.
 
-```text
-NAME: ÑØVÃ ACE JAMB
-TARGET: JAMB students broadly
-PARENT BRAND: ÑØVÃ Academic Resource Series
-FOUNDER STYLE: Ñøvã Kïñg
-TAGLINE: Students Resources Made Easy
-PRICE DIRECTION: ₦899 seasonal ACE Pass
-ALTERNATIVE ACCESS: 5 qualified referrals
-BACKEND: Supabase
-FRONTEND HOSTING/CDN: Cloudflare Pages
-SOURCE CONTROL: GitHub
-STYLE: premium futuristic / progressive 3D
-COLORS: Royal Purple / Metallic Gold / White / Black
-CORE: Syllabus + Past Questions + Learning + Practice + CBT + Quick Revision + Flashcards + Audio + AI Tutor + Analytics
-NON-NEGOTIABLE: rich multimedia questions + question/option randomization + copyright-conscious knowledge system + low-bandwidth/mobile performance
-SEPARATE FROM: Ñøvã CBT MAX and DROP
-```
+### Cloudflare D1 as ACE primary database
+
+**Not current.** D1/Workers experimentation belongs to separate context and must not replace Supabase for ACE unless explicitly reconsidered.
+
+### AppDeploy as ACE production foundation
+
+**Not current production infrastructure.** The AppDeploy prototype is historical/useful work and should not be treated as the final backend/hosting decision.
+
+### Automatic WhatsApp posting
+
+**Not retained.** Community CTA remains; automatic posting must not be assumed.
+
+### ₦800 price
+
+**Superseded by ₦899 seasonal ACE Pass.**
+
+### Anything specifically belonging to Ñøvã CBT MAX or DROP
+
+**Excluded.** Their product-specific implementation decisions, pricing, databases, branding and roadmaps must not be imported into ACE JAMB.
 
 ---
 
-**End of ACE JAMB Master Handoff.**
+## 40. FINAL RETAINED ACE JAMB CAPABILITY MAP
+
+The complete retained capability set is:
+
+- PWA/mobile-first experience
+- Premium futuristic/progressive-3D UI
+- JAMB season engine
+- JAMB syllabus engine
+- Personalized onboarding/profile
+- Target score/institution/course/subject context
+- Subject → topic → subtopic → question intelligence
+- Verified/quality-controlled past-question bank
+- Rich multimedia question model
+- Learning Mode
+- Practice Mode
+- Weakness practice
+- Speed practice
+- Mistake/repeated-mistake practice
+- CBT mode
+- Realistic full mocks
+- Quick Revision
+- Flashcards
+- Audio learning
+- Performance analytics
+- Mastery tracking
+- Mistake bank
+- Speed/accuracy analytics
+- Readiness estimation
+- Adaptive recommendations
+- Final-stretch preparation
+- Personalized study/revision plans
+- Grounded AI tutor
+- AI diagnosis
+- AI explanations
+- AI question generation
+- AI-generated practice
+- Textbook/reference knowledge system
+- Internet-source retrieval
+- Copyright/rights-aware knowledge pipeline
+- Account/cloud progress continuity
+- ₦899 seasonal ACE Pass
+- Payment verification and entitlement history
+- 5 qualified real-user referral route
+- Ñøvã community/channel CTA
+- Push/in-app/targeted/scheduled notifications
+- Admin announcements
+- Admin command center
+- Security
+- Anti-abuse
+- Observability
+- Graceful degradation
+- Provider adapters
+- Sequential QA/hardening
+- Low-bandwidth/low-end-device optimization
+
+---
+
+## 41. IMMEDIATE HANDOFF INSTRUCTION FOR A NEW CHATGPT ACCOUNT
+
+Use this instruction when moving ACE JAMB to another account:
+
+> **I am continuing my project ÑØVÃ ACE JAMB. The attached/pasted document is the canonical master handoff from my previous ChatGPT account. Read it as the current project context. ACE JAMB is separate from Ñøvã CBT MAX and DROP. Before writing code or creating database tables, perform a complete pre-build gap audit: identify every missing decision, asset, media file, content source, licensing issue, integration choice and requirement. Do not guess unresolved decisions. Do not claim external resources were created unless verified. After the audit, give me the final locked architecture and implementation sequence.**
+
+---
+
+## 42. CANONICAL RULE
+
+**This file is the single source of truth for the retained ACE JAMB plan.**
+
+If another ACE JAMB planning document conflicts with this file, use this file as the starting context and resolve any genuinely newer decision explicitly rather than silently reviving superseded choices.
+
+When this file is updated, update this file rather than creating another parallel ACE JAMB handoff/addendum unless a separate document has a genuinely different purpose.
