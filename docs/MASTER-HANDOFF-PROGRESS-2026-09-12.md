@@ -75,6 +75,8 @@ Build every major product capability now. Use free-tier infrastructure first; up
 - Added atomic `ace.set_student_subjects(uuid[])` RPC with authenticated-only execution, active-subject validation and 1–4 selection enforcement.
 - Hardened identity RLS: profiles are authenticated/self-owned only; role records are student-self-read only; privileged admin predicates are no longer executable by `anon`; profile target score and preparation time have defensive database constraints.
 - Added `.github/workflows/verify.yml` for repository typecheck/build verification. The workflow was observed running in GitHub Actions; a later run/status for the final identity changes remains pending and has not been falsely marked successful.
+- Tightened `StudentFoundationGate`: a missing profile (`PGRST116`) is treated as onboarding, while device/RLS/network/other database failures now surface as an explicit retryable account-preparation error instead of silently forcing onboarding.
+- Re-verified identity function execution privileges: `anon` cannot execute `is_admin`, `is_admin_or_editor` or `set_student_subjects`; `authenticated` can. Re-verified student-owned RLS policies on profiles, roles, preferences and selected subjects.
 
 ### Batch 1 gate status
 **NOT CLOSED YET.** Implementation and database hardening are in place, but the authenticated E2E exit gate has not been satisfied. The Supabase project currently has **0 `auth.users` rows**, so a real authenticated test account and end-to-end onboarding/reload/multi-session verification cannot be performed from the connected environment without an actual account/auth flow. No credentials are requested or stored in the repository.
@@ -100,3 +102,9 @@ Build every major product capability now. Use free-tier infrastructure first; up
 
 ## Important
 This file records notable project progress only—milestones, architecture decisions, important blockers, and completed phases. It intentionally does not log every individual command or implementation action.
+
+### 2026-09-12 — Batch 1 continuation: gate hardening verification
+- Fixed `StudentFoundationGate` so only an actual missing profile (`PGRST116`) routes to onboarding; infrastructure, RLS, device-registration and network/database errors now produce a retryable error state.
+- Re-verified the Batch 1 privileged RPC boundary in Supabase: `anon` execution is disabled for `is_admin`, `is_admin_or_editor` and `set_student_subjects`; authenticated execution remains enabled.
+- Re-verified student-owned RLS policies for profiles, roles, student preferences and selected subjects.
+- Supabase currently still contains **0 `auth.users`**, so authenticated E2E remains the only outstanding Batch 1 exit-gate blocker.
