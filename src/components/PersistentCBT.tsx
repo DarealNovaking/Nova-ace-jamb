@@ -1,0 +1,155 @@
+import { useEffect, useMemo, useState } from 'react'
+import { Clock3, Loader2, Trophy } from 'lucide-react'
+import {
+  getRemainingSeconds,
+  loadCbtQuestions,
+  resumeCbt,
+  saveCbtAnswer,
+  startCbt,
+  submitCbt,
+  type CbtAttemptState,
+  type CbtQuestion,
+} from '../lib/cbtService'
+
+type Props = {
+  attemptId?: string | null
+  questionCount?: number
+  durationSeconds?: number
+  onComplete?: (result: Awaited<ReturnType<typeof submitCbt>>) => void
+}
+
+function formatTime(seconds: number) {
+  const safe = Math.max(0, seconds)
+  const h = Math.floor(safe / 3600)
+  const m = Math.floor((safe % 3600) / 60)
+  const s = safe % 60
+  return [h, m, s].map((v) => String(v).padStart(2, '0')).join(':')
+}
+
+export default function PersistentCBT({ attemptId = null, questionCount = 20, durationSeconds = 1800, onComplete }: Props) {
+  const [attempt, setAttempt] = useState<CbtAttemptState | null>(null)
+  const [questions, setQuestions] = useState<CbtQuestion[]>([])
+  const [current, setCurrent] = useState(0)
+  const [remaining, setRemaining] = useState(0)
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState('')
+  const [result, setResult] = useState<Awaited<ReturnType<typeof submitCbt>> | null>(null)
+
+  const answers = useMemo(() => {
+    const map: Record<string, string | null> = {}
+    for (const answer of attempt?.answers ?? []) map[answer.question_id] = answer.selected_option_key
+    return map
+  }, [attempt?.answers])
+
+  const question = questions[current]
+  const selected = question ? answers[question.id] ?? null : null
+
+  async function load(attemptToResume?: string) {
+    setLoading(true)
+    setError('')
+    try {
+      const started = attemptToResume
+        ? await resumeCbt(attemptToResume)
+        : await startCbt({ mode: 'cbt', questionCount, durationSeconds })
+      const state = attemptToResume
+        ? started
+        : await resumeCbt((started as any).attempt_id)
+      const loadedQuestions = await loadCbtQuestions(state.question_order)
+      setAttempt(state)
+      setQuestions(loadedQuestions)
+      setRemaining(state.remaining_seconds ?? getRemainingSeconds(state.started_at, state.duration_seconds))
+      const firstUnanswered = state.question_order.findIndex((id) => !state.answers.some((a) => a.question_id === id && a.selected_option_key !== null))
+      setCurrent(firstUnanswered >= 0 ? firstUnanswered : 0)
+    } catch (e: any) {
+      setError(e?.message ?? 'Unable to load CBT session.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => { void load(attemptId ?? undefined) }, [attemptId])
+
+  useEffect(() => {
+    if (!attempt || attempt.status !== 'active') return
+    const timer = window.setInterval(() => {
+      const next = getRemainingSeconds(attempt.started_at, attempt.duration_seconds)
+      setRemaining(next)
+      if (next <= 0) {
+        window.clearInterval(timer)
+        void finish()
+      }
+    }, 1000)
+    return () => window.clearInterval(timer)
+  }, [attempt?.attempt_id, attempt?.status, attempt?.started_at, attempt?.duration_seconds])
+
+  async function choose(optionKey: string) {
+    if (!attempt || !question || saving || submitting || remaining <= 0) return
+    setSaving(true)
+    setError('')
+    const previous = answers[question.id]
+    try {
+      const startedAt = attempt.answers.find((a) => a.question_id === question.id)?.answered_at
+      const responseMs = startedAt ? Math.max(0, Date.now() - new Date(startedAt).getTime()) : null
+      const saved = await saveCbtAnswer(attempt.attempt_id, question.id, optionKey, responseMs)
+      setAttempt((currentAttempt) => currentAttempt ? {
+        ...currentAttempt,
+        answers: currentAttempt.answers.some((a) => a.question_id === question.id)
+          ? currentAttempt.answers.map((a) => a.question_id === question.id ? { ...a, selected_option_key: saved.selected_option_key, response_ms: responseMs, answered_at: saved.answered_at } : a)
+          : [...currentAttempt.answers, { question_id: question.id, selected_option_key: saved.selected_option_key, response_ms: responseMs, answered_at: saved.answered_at }],
+        answered_count: saved.answered_count,
+      } : currentAttempt)
+    } catch (e: any) {
+      setError(e?.message ?? 'Answer could not be saved.')
+      void previous
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  async function finish() {
+    if (!attempt || submitting) return
+    setSubmitting(true)
+    setError('')
+    try {
+      const submitted = await submitCbt(attempt.attempt_id)
+      setResult(submitted)
+      setAttempt((currentAttempt) => currentAttempt ? { ...currentAttempt, status: 'completed', score: submitted.score, correct_count: submitted.correct_count, answered_count: submitted.answered_count, completed_at: submitted.completed_at, remaining_seconds: 0 } : currentAttempt)
+      onComplete?.(submitted)
+    } catch (e: any) {
+      setError(e?.message ?? 'CBT submission failed.')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  if (loading) return <div className="glass-card rounded-3xl p-8 text-center"><Loader2 className="mx-auto animate-spin"/><p className="mt-3 text-sm text-white/50">Restoring CBT session…</p></div>
+  if (error && !attempt) return <div className="glass-card rounded-3xl p-6"><p className="font-semibold">CBT unavailable</p><p className="mt-2 text-sm text-white/50">{error}</p><button className="mt-5 rounded-xl bg-white px-4 py-3 font-bold text-black" onClick={() => void load(attemptId ?? undefined)}>Retry</button></div>
+  if (result) return <div className="glass-card mx-auto max-w-md rounded-3xl p-8 text-center"><Trophy className="mx-auto"/><p className="mt-4 text-5xl font-black">{result.score}%</p><p className="mt-2 text-white/50">{result.correct_count}/{result.total_questions} correct</p><p className="mt-4 text-xs text-white/30">Saved server-side as attempt {result.attempt_id}</p></div>
+  if (!attempt || !question) return <div className="glass-card rounded-3xl p-6">No CBT questions are currently available.</div>
+
+  const optionKeys = attempt.option_order[question.id] ?? question.options.map((o) => o.key)
+  const optionsByKey = new Map(question.options.map((o) => [o.key, o]))
+
+  return <div className="space-y-5">
+    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div><p className="text-xs uppercase tracking-[.2em] text-purple-300/70">Persistent CBT</p><h1 className="mt-1 text-3xl font-black">JAMB simulation</h1></div>
+      <div className={`rounded-xl px-4 py-2 font-mono ${remaining < 60 ? 'bg-red-500/20 text-red-200' : 'bg-white/5'}`}><Clock3 className="mr-2 inline" size={16}/>{formatTime(remaining)}</div>
+    </div>
+    {error && <div className="rounded-xl border border-red-400/20 bg-red-500/10 p-3 text-sm text-red-100">{error}</div>}
+    <div className="grid gap-5 lg:grid-cols-[1fr_230px]">
+      <section className="glass-card rounded-3xl p-6">
+        <div className="flex items-center justify-between text-xs text-white/40"><span>Question {current + 1} of {questions.length}</span><span>{attempt.answered_count} answered</span></div>
+        <h2 className="mt-5 text-xl font-bold leading-8">{question.text}</h2>
+        <div className="mt-6 grid gap-3">{optionKeys.map((key) => {
+          const option = optionsByKey.get(key)
+          if (!option) return null
+          return <button key={key} disabled={saving || submitting} onClick={() => void choose(key)} className={`rounded-xl border p-4 text-left transition ${selected === key ? 'border-purple-300/60 bg-purple-500/10' : 'border-white/10 bg-white/5 hover:bg-white/10'}`}><span className="mr-3 font-bold">{String.fromCharCode(65 + optionKeys.indexOf(key))}.</span>{option.text}</button>
+        })}</div>
+        <div className="mt-5 flex gap-3"><button disabled={current === 0} onClick={() => setCurrent((v) => Math.max(0, v - 1))} className="flex-1 rounded-xl border border-white/10 py-3 disabled:opacity-30">Previous</button>{current < questions.length - 1 ? <button onClick={() => setCurrent((v) => Math.min(questions.length - 1, v + 1))} className="flex-1 rounded-xl bg-white py-3 font-bold text-black">Next</button> : <button disabled={submitting} onClick={() => void finish()} className="flex-1 rounded-xl bg-purple-500 py-3 font-bold">{submitting ? 'Submitting…' : 'Submit CBT'}</button>}</div>
+      </section>
+      <aside className="glass-card h-fit rounded-2xl p-4"><p className="text-xs text-white/40">Question map</p><div className="mt-3 grid grid-cols-4 gap-2">{questions.map((item, index) => <button key={item.id} onClick={() => setCurrent(index)} className={`h-9 rounded-lg text-xs ${index === current ? 'bg-white text-black' : answers[item.id] != null ? 'bg-purple-500/25' : 'bg-white/5'}`}>{index + 1}</button>)}</div></aside>
+    </div>
+  </div>
+}
