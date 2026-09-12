@@ -12,8 +12,8 @@
 - Existing AppDeploy backend remains intact as a migration fallback; it has not been blindly deleted.
 
 ### Important verification/findings
-- Supabase security advisor previously reported **0 security lints**.
-- Performance advisor has optimization findings (foreign-key indexes, RLS init-plan optimization, and overlapping permissive policies). These remain cleanup work before scale/production.
+- Supabase security advisor currently reports **0 security lints**.
+- Performance advisor still has optimization findings; some foreign-key indexes were added in the final architecture migration, but RLS init-plan and overlapping-policy cleanup remains before scale/production.
 - Supabase's generated public-schema TypeScript types do not currently include the custom `ace` schema, so typed definitions need a deliberate custom-schema strategy rather than being treated as complete.
 - The existing AppDeploy admin mutation routes remain unsafe for production because they are not protected by `requireAuth()`; the new bridge must not inherit that weakness as the final architecture.
 
@@ -34,18 +34,46 @@
 - Added a browser-history back path to return to the main ACE JAMB application while preserving the existing home/learning/admin prototype during the migration.
 - The legacy CBT component remains in `App.tsx` as dormant migration code; it is no longer the intended user entry path. A later cleanup should remove/refactor that dead path after authenticated E2E verification.
 
-### Current state
-- Frontend migration is underway: UI behavior is preserved while data/auth access is being moved behind a provider boundary.
-- Persistent CBT database primitives, service boundary, and production-oriented CBT UI component now exist, and the primary CBT entry path is routed to the persistent implementation.
-- The legacy CBT implementation remains in source temporarily for safe migration rollback and should not be treated as production CBT.
-- No production question dataset, payment, referral, AI, notification, or WhatsApp integration has been enabled.
+## 2026-09-12 — Final architecture foundation milestone
 
-### Next meaningful milestones
-1. Run authenticated E2E CBT verification with representative published question fixtures, including reload/resume, answer persistence, timeout and server scoring.
-2. Refactor/remove the dormant legacy CBT path after E2E passes, so the application has one authoritative CBT implementation.
-3. Complete and verify the Supabase service boundary, including authenticated/admin authorization rather than client-trusted admin mutations.
-4. Clean up current Supabase performance advisor findings as schema/API access patterns stabilize.
-5. Add season/exam configuration and finish syllabus/question intelligence before real content ingestion.
+### Completed
+- Locked the implementation target in `docs/FINAL-ARCHITECTURE.md`.
+- Applied the final ACE platform architecture to Supabase under the `ace` schema.
+- Added season-aware/versioned exam configuration so JAMB rules and composition are data-driven rather than permanently hard-coded.
+- Added student subject/preferences state for personalization.
+- Added rich question media metadata and rights/provenance-aware content support.
+- Added flashcards/review state, learning progress, study plans/items and notification/device infrastructure.
+- Added provider-neutral monetization architecture: payment providers, products, payments, idempotent webhook-event records and server-verified entitlement records. ACE Pass is configured as **₦899**; provider registry is ready for Paystack without exposing secrets in the database.
+- Added referral codes, referral records, configurable campaigns and reward records. The default campaign direction is **5 qualified referrals** with meaningful-usage qualification; actual qualification/reward logic must execute server-side.
+- Added AI provider registry, AI usage/request tracking, rights-aware knowledge sources/chunks with vector embeddings, grounding provenance fields and feature flags. Gemini is represented as the preferred adapter candidate; provider credentials remain server-side.
+- Added product events for the personalization/growth loop and operational analytics, plus centralized entitlement and admin predicates.
+- Added supporting foreign-key indexes and a primary key for learning progress.
+- Enabled RLS on all new protected architecture tables and separated student-owned reads/writes from admin control-plane policies.
+- Verified Supabase security advisor remains at **0 security lints** after the architecture migration.
+
+### Architecture rule locked
+Build every major product capability now. Use free-tier infrastructure first; upgrade/replace infrastructure only when capacity, reliability or provider requirements demand it. Feature existence is not deferred because infrastructure may later become paid.
+
+### Current state
+- Core Supabase architecture now exists for identity, exam configuration, content, learning, CBT, planning, monetization, referrals, AI/knowledge, notifications, engagement and operations.
+- Persistent CBT remains the authoritative CBT implementation direction.
+- Payment/referral/AI/notification/community architecture is now represented in the backend even though provider credentials and production integrations are not yet connected.
+- No production question dataset has been loaded yet.
+- WhatsApp verification remains intentionally unconfigured until a real server-verifiable integration mechanism is selected; no fake client-side membership verification is permitted.
+
+### Remaining implementation milestones
+1. Authenticated E2E CBT verification with published fixtures: reload/resume, answer persistence, timeout and server scoring.
+2. Replace the migration bridge and remove dormant legacy CBT after E2E passes.
+3. Finish authenticated/admin service boundaries and remove unsafe legacy AppDeploy admin mutations from the production path.
+4. Clean remaining Supabase performance advisor findings, especially RLS init-plan and overlapping-policy optimization.
+5. Populate and verify current official JAMB season/exam configuration and syllabus taxonomy.
+6. Build the quality-controlled content ingestion/review/publish pipeline and legal rights workflow.
+7. Build the personalized Learning/Practice/Mistake/Mastery/Recommendation engine.
+8. Implement payment + referral Edge Functions, provider webhook verification and anti-abuse qualification.
+9. Implement grounded AI Edge Functions with the Gemini adapter, quotas, retrieval and generation validation.
+10. Implement flashcards/audio/revision/plans, notifications/push and the admin command center.
+11. Implement the community/WhatsApp connection using only real verifiable capabilities.
+12. Run security, performance, accessibility, low-bandwidth, low-end Android, interrupted-CBT, payment-abuse, referral-abuse and AI-failure QA before launch.
 
 ## Important
-This file records notable project progress only—milestones, architecture decisions, important blockers, and significant changes. It intentionally does not log every individual command or implementation action.
+This file records notable project progress only—milestones, architecture decisions, important blockers, and completed phases. It intentionally does not log every individual command or implementation action.
