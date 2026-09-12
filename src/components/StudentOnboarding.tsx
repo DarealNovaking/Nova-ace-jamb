@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { getStudentProfile, getStudentSubjects, updateStudentProfile, setStudentSubjects } from '../lib/studentService'
+import { getStudentProfile, getStudentSubjects, getStudentPreferences, updateStudentProfile, updateStudentPreferences, setStudentSubjects } from '../lib/studentService'
 import { ace, supabase } from '../lib/supabase'
 
 type Subject = { id: string; name: string; code: string }
@@ -22,7 +22,8 @@ export default function StudentOnboarding({ onComplete }: { onComplete: () => vo
       ace.from('subjects').select('id,name,code').eq('active', true).order('sort_order'),
       getStudentProfile(),
       getStudentSubjects(),
-    ]).then(([subjectResult, profile, currentSubjects]) => {
+      getStudentPreferences(),
+    ]).then(([subjectResult, profile, currentSubjects, preferences]) => {
       if (!active) return
       if (subjectResult.error) throw subjectResult.error
       setSubjects((subjectResult.data ?? []) as Subject[])
@@ -30,7 +31,7 @@ export default function StudentOnboarding({ onComplete }: { onComplete: () => vo
       setTarget(String(profile.target_score ?? 300))
       setInstitution(profile.institution ?? '')
       setCourse(profile.course ?? '')
-      setDailyMinutes(String(Math.max(1, profile.prep_time_minutes ?? 60)))
+      setDailyMinutes(String(Math.max(1, preferences.daily_minutes ?? 60)))
       setSelected(currentSubjects.map((x: { subject_id: string }) => x.subject_id))
     }).catch((error) => setMessage(error instanceof Error ? error.message : 'Could not load your profile.'))
       .finally(() => active && setBusy(false))
@@ -53,7 +54,8 @@ export default function StudentOnboarding({ onComplete }: { onComplete: () => vo
     if (selected.length < 1 || selected.length > 4) return setMessage('Select between 1 and 4 subjects.')
     setSaving(true)
     try {
-      await updateStudentProfile({ display_name: name, target_score: score, institution, course, prep_time_minutes: minutes })
+      await updateStudentProfile({ display_name: name, target_score: score, institution, course })
+      await updateStudentPreferences({ daily_minutes: minutes })
       await setStudentSubjects(selected)
       onComplete()
     } catch (error) {
@@ -77,7 +79,7 @@ export default function StudentOnboarding({ onComplete }: { onComplete: () => vo
         <label className="block"><span className="mb-2 block text-sm text-white/60">Display name</span><input className="field w-full" value={name} onChange={(e) => setName(e.target.value)} maxLength={80} /></label>
         <div className="grid gap-5 sm:grid-cols-2">
           <label className="block"><span className="mb-2 block text-sm text-white/60">Target JAMB score</span><input className="field w-full" type="number" min="0" max="400" value={target} onChange={(e) => setTarget(e.target.value)} /></label>
-          <label className="block"><span className="mb-2 block text-sm text-white/60">Daily preparation minutes</span><input className="field w-full" type="number" min="1" max="1440" value={dailyMinutes} onChange={(e) => setDailyMinutes(e.target.value)} /></label>
+          <label className="block"><span className="mb-2 block text-sm text-white/60">Daily study time (minutes)</span><input className="field w-full" type="number" min="1" max="1440" value={dailyMinutes} onChange={(e) => setDailyMinutes(e.target.value)} /></label>
         </div>
         <div className="grid gap-5 sm:grid-cols-2">
           <label className="block"><span className="mb-2 block text-sm text-white/60">Intended institution</span><input className="field w-full" value={institution} onChange={(e) => setInstitution(e.target.value)} maxLength={160} placeholder="e.g. University of Lagos" /></label>
