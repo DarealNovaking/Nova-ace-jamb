@@ -40,7 +40,7 @@
 - Locked the implementation target in `docs/FINAL-ARCHITECTURE.md`.
 - Applied the final ACE platform architecture to Supabase under the `ace` schema.
 - Added season-aware/versioned exam configuration so JAMB rules and composition are data-driven rather than permanently hard-coded.
-- Added student subject/preferences state for personalization.
+- Added student preferences/subjects state for personalization.
 - Added rich question media metadata and rights/provenance-aware content support.
 - Added flashcards/review state, learning progress, study plans/items and notification/device infrastructure.
 - Added provider-neutral monetization architecture: payment providers, products, payments, idempotent webhook-event records and server-verified entitlement records. ACE Pass is configured as **₦899**; provider registry is ready for Paystack without exposing secrets in the database.
@@ -53,6 +53,14 @@
 
 ### Architecture rule locked
 Build every major product capability now. Use free-tier infrastructure first; upgrade/replace infrastructure only when capacity, reliability or provider requirements demand it. Feature existence is not deferred because infrastructure may later become paid.
+
+### 2026-09-12 — Batch 1: Identity + Student Profile
+- Added automatic Supabase `auth.users` onboarding trigger: creates the ACE profile, default student role, student preferences, notification preferences and deterministic referral code when a new account is created.
+- Added timestamp-maintenance triggers for profiles and student preferences.
+- Hardened trigger function search paths after security-advisor review.
+- Added `src/lib/authService.ts` for browser auth/session operations and `src/lib/studentService.ts` for profile, preferences and selected-subject service boundaries.
+- Student profile service supports target score, institution, course, preparation time and exam-season state; subject selection is limited to 1–4 subjects and persists server-side.
+- Batch 1 backend/service foundation is implemented; full browser authenticated E2E still requires a real test account and auth configuration.
 
 ### Current state
 - Core Supabase architecture now exists for identity, exam configuration, content, learning, CBT, planning, monetization, referrals, AI/knowledge, notifications, engagement and operations.
