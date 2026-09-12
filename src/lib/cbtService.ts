@@ -25,6 +25,16 @@ export type CbtAttemptState = {
   answered_count: number
 }
 
+export type CbtQuestionOption = { key: string; text: string }
+export type CbtQuestion = {
+  id: string
+  text: string
+  options: CbtQuestionOption[]
+  subject_id: string | null
+  topic_id: string | null
+  difficulty: string | null
+}
+
 export type CbtStartOptions = {
   mode: CbtMode
   subjectId?: string | null
@@ -58,6 +68,29 @@ export async function resumeCbt(attemptId: string) {
   const { data, error } = await ace.rpc('resume_attempt', { p_attempt_id: attemptId })
   if (error) throw error
   return data as CbtAttemptState
+}
+
+export async function loadCbtQuestions(questionIds: string[]) {
+  if (!questionIds.length) return [] as CbtQuestion[]
+  const { data, error } = await ace
+    .from('questions')
+    .select('id,question_text,options,subject_id,topic_id,difficulty')
+    .in('id', questionIds)
+  if (error) throw error
+  const byId = new Map((data ?? []).map((q: any) => [q.id, q]))
+  return questionIds.flatMap((id) => {
+    const q: any = byId.get(id)
+    if (!q) return []
+    const options = Array.isArray(q.options) ? q.options : []
+    return [{
+      id: q.id,
+      text: q.question_text ?? '',
+      options: options.map((o: any) => ({ key: String(o.key), text: String(o.text ?? o.label ?? '') })),
+      subject_id: q.subject_id ?? null,
+      topic_id: q.topic_id ?? null,
+      difficulty: q.difficulty ?? null,
+    }]
+  })
 }
 
 export async function saveCbtAnswer(
