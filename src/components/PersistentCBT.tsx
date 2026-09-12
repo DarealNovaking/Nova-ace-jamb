@@ -50,12 +50,13 @@ export default function PersistentCBT({ attemptId = null, questionCount = 20, du
     setLoading(true)
     setError('')
     try {
-      const started = attemptToResume
-        ? await resumeCbt(attemptToResume)
-        : await startCbt({ mode: 'cbt', questionCount, durationSeconds })
-      const state = attemptToResume
-        ? started
-        : await resumeCbt((started as any).attempt_id)
+      let state: CbtAttemptState
+      if (attemptToResume) {
+        state = await resumeCbt(attemptToResume)
+      } else {
+        const started = await startCbt({ mode: 'cbt', questionCount, durationSeconds })
+        state = await resumeCbt(started.attempt_id)
+      }
       const loadedQuestions = await loadCbtQuestions(state.question_order)
       setAttempt(state)
       setQuestions(loadedQuestions)
@@ -88,7 +89,6 @@ export default function PersistentCBT({ attemptId = null, questionCount = 20, du
     if (!attempt || !question || saving || submitting || remaining <= 0) return
     setSaving(true)
     setError('')
-    const previous = answers[question.id]
     try {
       const startedAt = attempt.answers.find((a) => a.question_id === question.id)?.answered_at
       const responseMs = startedAt ? Math.max(0, Date.now() - new Date(startedAt).getTime()) : null
@@ -102,7 +102,6 @@ export default function PersistentCBT({ attemptId = null, questionCount = 20, du
       } : currentAttempt)
     } catch (e: any) {
       setError(e?.message ?? 'Answer could not be saved.')
-      void previous
     } finally {
       setSaving(false)
     }
