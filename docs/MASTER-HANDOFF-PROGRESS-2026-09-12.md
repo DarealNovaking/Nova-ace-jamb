@@ -1,6 +1,6 @@
 # ÑØVÃ ACE JAMB — Master Handoff Progress
 
-## 2026-09-12 — Backend/Supabase audit
+## 2026-09-12 — Backend/Supabase audit + implementation
 
 ### Verified
 - Repository: `DarealNovaking/Nova-ace-jamb`, private, `main` branch.
@@ -11,29 +11,75 @@
 - Existing question model is too narrow for the master handoff: it lacks stable rich-content/provenance/rights/versioning/session metadata requirements.
 - Existing backend does not implement the retained persistent CBT/attempt/scoring architecture.
 
-### Supabase audit
-- Supabase organization available: `czginzwjoomzlwwxniyl` (`petermayowa923@gmail.com's Org`).
-- No Supabase projects currently exist in the connected account.
-- Supabase project creation cost for this organization was checked: **$0/month**.
-- Project creation therefore remains the immediate infrastructure step, but the Supabase tool requires explicit confirmation of the displayed cost before project creation.
+### Supabase project
+- Organization: `czginzwjoomzlwwxniyl`.
+- Project created after explicit owner cost confirmation.
+- Project: `nova-ace-jamb`.
+- Project ref: `uokiqlgmzprqfbzmedaz`.
+- Region: `ca-central-1`.
+- Status verified: `ACTIVE_HEALTHY`.
+- PostgreSQL: 17.x.
+
+### Initial database implementation
+Applied migration: `initial_ace_core_schema`.
+
+Implemented core tables under `ace` schema:
+- profiles
+- roles
+- subjects
+- topics
+- subtopics
+- questions
+- question_versions
+- attempts
+- attempt_answers
+- student_question_stats
+- audit_events
+
+Implemented foundations for:
+- Subject → Topic → Subtopic → Question hierarchy
+- Rich question JSON/media/provenance/rights metadata
+- Stable question identity and versioning
+- Canonical answer mapping separate from presentation order
+- Resumable attempt state with random seed/question order/option order
+- Answer persistence and response timing
+- Student question performance statistics
+- Audit/security events
+- Student/admin/editor role separation
+- Automatic profile + student-role creation on auth user creation
+- Row Level Security on all ACE tables
+- Public read access limited to active/published educational content
+- Owner-only student progress/attempt access
+- Admin/editor mutation policies for content
+
+### Verification
+- Supabase security advisor: **0 lints** after migration.
+- Supabase performance advisor: **0 lints** at this stage.
+- Edge Functions currently: **none**.
+- Database inspection confirmed the new project initially contained only Supabase-managed schemas/tables; ACE application tables were added by the migration above.
 
 ### Architecture decision reinforced
 - The master handoff's Supabase direction is current; the older Phase-0 Worker/D1/R2 proof architecture is legacy and should not be revived as the production backend.
-- Supabase RLS must be enabled for exposed tables, with least-privilege grants and policies. Admin authorization must not rely on client-side state.
+- Supabase RLS must remain mandatory for exposed ACE tables.
 - Secrets/service-role credentials must remain server-side.
+- The existing AppDeploy backend should be migrated behind a service boundary rather than coupling the React UI directly to provider-specific infrastructure.
 
-### Current blocker
-- No Supabase project exists yet, so there is currently nowhere to deploy or inspect the intended database/auth/storage backend.
-- Creation cost has been verified at $0/month; explicit confirmation is required before creating the project.
+### Current state
+- Supabase backend foundation is now implemented and healthy.
+- Frontend is still using `@appdeploy/client` and the existing AppDeploy backend; migration/integration is the next engineering step.
+- No production question dataset has been imported.
+- No payment, referral, AI, notification, or WhatsApp integration has been enabled.
+- No Edge Function API adapter has been deployed yet.
 
-### Next actions after confirmation
-1. Create the Supabase project in the existing organization.
-2. Inspect migrations, tables, extensions, Edge Functions, advisors and API configuration.
-3. Design/apply the initial ACE schema around profiles, roles, syllabus hierarchy, rich questions, attempts, answers, scoring/progress and audit/security foundations.
-4. Replace the AppDeploy backend dependency behind service boundaries rather than coupling UI directly to Supabase.
-5. Add/verify RLS and admin authorization.
-6. Validate the frontend integration and preserve existing functionality.
-7. Update the canonical master handoff with every completed milestone and unresolved decision.
+### Next actions
+1. Build the Supabase-backed API/service adapter without breaking current UI behavior.
+2. Protect/migrate admin operations to server-side authorization.
+3. Implement persistent CBT attempt creation, answer persistence, resume/recovery and server-side scoring.
+4. Add the remaining syllabus/season configuration model before importing content.
+5. Generate typed Supabase client definitions and integrate environment-safe configuration.
+6. Add storage/media policy foundations only when media ingestion begins.
+7. Run security/performance advisors after each significant schema change.
+8. Keep this progress record synchronized and update the canonical master handoff whenever it can be edited safely without replacing retained content.
 
 ## Important
-This file is a durable progress record created during the audit. The canonical handoff remains `docs/ACE-JAMB-MASTER-HANDOFF.md` and must be synchronized with these findings as soon as the file can be updated safely without losing existing handoff content.
+This file is a durable progress record for the canonical project handoff. It exists to ensure no implementation progress is lost between development environments while preserving the existing `docs/ACE-JAMB-MASTER-HANDOFF.md` content intact.
