@@ -1,6 +1,6 @@
 import { StrictMode, useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import PersistentCBT from './components/PersistentCBT';
+import ProtectedCBT from './components/ProtectedCBT';
 import StudentFoundationGate from './components/StudentFoundationGate';
 import './index.css';
 
@@ -37,7 +37,7 @@ function AppShell() {
           >
             ← Back to ACE JAMB
           </button>
-          <PersistentCBT />
+          <ProtectedCBT />
         </div>
       </main>
     );
