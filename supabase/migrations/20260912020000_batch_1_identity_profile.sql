@@ -26,11 +26,11 @@ drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created after insert on auth.users for each row execute function ace.handle_new_user();
 
 create or replace function ace.touch_profile_updated_at()
-returns trigger language plpgsql as $$ begin new.updated_at = now(); return new; end; $$;
+returns trigger language plpgsql set search_path = ace, pg_temp as $$ begin new.updated_at = now(); return new; end; $$;
 drop trigger if exists profiles_touch_updated_at on ace.profiles;
 create trigger profiles_touch_updated_at before update on ace.profiles for each row execute function ace.touch_profile_updated_at();
 
 create or replace function ace.touch_preferences_updated_at()
-returns trigger language plpgsql as $$ begin new.updated_at = now(); return new; end; $$;
+returns trigger language plpgsql set search_path = ace, pg_temp as $$ begin new.updated_at = now(); return new; end; $$;
 drop trigger if exists student_preferences_touch_updated_at on ace.student_preferences;
 create trigger student_preferences_touch_updated_at before update on ace.student_preferences for each row execute function ace.touch_preferences_updated_at();
