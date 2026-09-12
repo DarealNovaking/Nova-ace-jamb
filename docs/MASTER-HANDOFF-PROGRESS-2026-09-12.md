@@ -8,6 +8,7 @@
 - Established the ACE application database foundation under the `ace` schema, including profiles, roles, syllabus hierarchy, rich questions/versioning, attempts/answers, student performance stats, and audit events.
 - Added a browser-safe Supabase client and provider bridge so the existing React app's `@appdeploy/client` import is now routed through a Supabase-backed adapter without rewriting the UI in this milestone.
 - Added Supabase client dependency and Vite alias for the migration bridge.
+- Exposed the `ace` schema through the Supabase API layer and verified the PostgREST schema configuration.
 - Existing AppDeploy backend remains intact as a migration fallback; it has not been blindly deleted.
 
 ### Important verification/findings
