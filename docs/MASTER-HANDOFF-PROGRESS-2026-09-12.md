@@ -69,8 +69,15 @@ Build every major product capability now. Use free-tier infrastructure first; up
 - Added timestamp-maintenance triggers for profiles and student preferences.
 - Hardened trigger function search paths after security-advisor review.
 - Added `src/lib/authService.ts` for browser auth/session operations and `src/lib/studentService.ts` for profile, preferences and selected-subject service boundaries.
-- Student profile service supports target score, institution, course, preparation time and exam-season state; subject selection is limited to 1–4 subjects and persists server-side.
-- Batch 1 backend/service foundation is implemented; full browser authenticated E2E still requires a real test account and auth configuration.
+- Added an authenticated student foundation gate and onboarding UI. New signed-in students are routed through persistent profile setup before entering the main application; the profile captures display name, target score, institution, course, daily study time and 1–4 selected subjects.
+- Added `src/lib/deviceService.ts` to create a locally persistent installation identifier, hash it with SHA-256 and register/update the authenticated device for cross-session continuity. This is a continuity identifier, not a security-grade fingerprint or anti-abuse control.
+- Added a protected CBT entry gate that requires a Supabase session before the persistent CBT UI can be entered.
+- Added atomic `ace.set_student_subjects(uuid[])` RPC with authenticated-only execution, active-subject validation and 1–4 selection enforcement.
+- Hardened identity RLS: profiles are authenticated/self-owned only; role records are student-self-read only; privileged admin predicates are no longer executable by `anon`; profile target score and preparation time have defensive database constraints.
+- Added `.github/workflows/verify.yml` for repository typecheck/build verification. The workflow was observed running in GitHub Actions; a later run/status for the final identity changes remains pending and has not been falsely marked successful.
+
+### Batch 1 gate status
+**NOT CLOSED YET.** Implementation and database hardening are in place, but the authenticated E2E exit gate has not been satisfied. The Supabase project currently has **0 `auth.users` rows**, so a real authenticated test account and end-to-end onboarding/reload/multi-session verification cannot be performed from the connected environment without an actual account/auth flow. No credentials are requested or stored in the repository.
 
 ### Current state
 - Core Supabase architecture now exists for identity, exam configuration, content, learning, CBT, planning, monetization, referrals, AI/knowledge, notifications, engagement and operations.
@@ -80,7 +87,7 @@ Build every major product capability now. Use free-tier infrastructure first; up
 - WhatsApp verification remains intentionally unconfigured until a real server-verifiable integration mechanism is selected; no fake client-side membership verification is permitted.
 
 ### Remaining implementation milestones
-1. Complete Batch 1 authenticated E2E verification and harden identity/profile authorization before Batch 1 can be closed.
+1. Complete Batch 1 authenticated E2E verification and close Batch 1 only after the GitHub verification workflow passes for the final identity changes and a real authenticated onboarding/reload/multi-session test succeeds.
 2. Only after Batch 1 exit: build Batch 2 season + official JAMB configuration and syllabus taxonomy.
 3. Build the quality-controlled question/content ingestion/review/publish pipeline.
 4. Build the personalized Learning/Practice/Mistake/Mastery engine.
