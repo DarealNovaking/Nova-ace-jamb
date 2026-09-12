@@ -1,13 +1,52 @@
-import { StrictMode } from 'react';
+import { StrictMode, useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';
 import PersistentCBT from './components/PersistentCBT';
 import './index.css';
 
-const persistentCbt = new URLSearchParams(window.location.search).get('cbt') === '1';
+function AppShell() {
+  const [cbt, setCbt] = useState(() => new URLSearchParams(window.location.search).get('cbt') === '1');
+
+  useEffect(() => {
+    const onPopState = () => setCbt(new URLSearchParams(window.location.search).get('cbt') === '1');
+    const onNavigate = (event: Event) => {
+      const target = event.target as HTMLElement | null;
+      const button = target?.closest('button');
+      const label = button?.textContent?.replace(/\s+/g, ' ').trim() ?? '';
+      if (/^(Start CBT|CBT Practice)(\s|$)/i.test(label)) {
+        event.preventDefault();
+        window.history.pushState({}, '', `${window.location.pathname}?cbt=1`);
+        setCbt(true);
+      }
+    };
+    window.addEventListener('popstate', onPopState);
+    document.addEventListener('click', onNavigate, true);
+    return () => {
+      window.removeEventListener('popstate', onPopState);
+      document.removeEventListener('click', onNavigate, true);
+    };
+  }, []);
+
+  if (cbt) {
+    return (
+      <main className="min-h-screen bg-[#07050d] px-5 py-10 text-white">
+        <div className="mx-auto max-w-6xl">
+          <button
+            className="mb-5 rounded-xl border border-white/10 px-4 py-2 text-sm text-white/70 hover:bg-white/5"
+            onClick={() => { window.history.pushState({}, '', window.location.pathname); setCbt(false); }}
+          >
+            ← Back to ACE JAMB
+          </button>
+          <PersistentCBT />
+        </div>
+      </main>
+    );
+  }
+  return <App />;
+}
 
 createRoot(document.getElementById('root')!).render(
-    <StrictMode>
-        {persistentCbt ? <main className="min-h-screen bg-[#07050d] px-5 py-10 text-white"><div className="mx-auto max-w-6xl"><PersistentCBT /></div></main> : <App />}
-    </StrictMode>
+  <StrictMode>
+    <AppShell />
+  </StrictMode>,
 );
