@@ -17,19 +17,19 @@
 - Supabase's generated public-schema TypeScript types do not currently include the custom `ace` schema, so typed definitions need a deliberate custom-schema strategy rather than being treated as complete.
 - The existing AppDeploy admin mutation routes remain unsafe for production because they are not protected by `requireAuth()`; the new bridge must not inherit that weakness as the final architecture.
 
-### 2026-09-12 — Persistent CBT service milestone
+## 2026-09-12 — Persistent CBT service milestone
 - Added authenticated Supabase RPCs for the CBT attempt lifecycle: create attempt, persist deterministic question/option randomization, resume/recover state, save validated answers, submit, server-side score, and student-question performance aggregation.
 - CBT functions use `security invoker`, require `auth.uid()`, restrict execution to the `authenticated` role, validate that submitted questions/options belong to the persisted attempt, and keep the canonical answer key server-side.
 - Added supporting attempt/answer indexes and committed the migration source under `supabase/migrations/20260912010000_persistent_cbt_service.sql`.
 - Added `src/lib/cbtService.ts` as the frontend service boundary for the RPC lifecycle.
 - Unauthenticated invocation was explicitly verified to fail; authenticated end-to-end CBT execution still requires a real authenticated test user and published question fixture data.
 
-### 2026-09-12 — Persistent CBT UI integration milestone
+## 2026-09-12 — Persistent CBT UI integration milestone
 - Extended `cbtService` with persisted question loading in the exact stored attempt order and option-key presentation order.
 - Added `src/components/PersistentCBT.tsx` implementing the real attempt lifecycle in React: server-created attempt, deterministic presentation mapping, answer autosave, persisted resume, server-derived timer, question navigation/map, timeout submission, and server-side results.
 - Added a dedicated `?cbt=1` integration entry point in `src/main.tsx` so the persistent CBT UI could be exercised without destroying the existing prototype/admin UI during migration.
 
-### 2026-09-12 — Main CBT route migration bridge
+## 2026-09-12 — Main CBT route migration bridge
 - Updated `src/main.tsx` so the existing visible **Start CBT** and **CBT Practice** entry points are intercepted into the persistent CBT route instead of entering the legacy client-side CBT screen.
 - Added a browser-history back path to return to the main ACE JAMB application while preserving the existing home/learning/admin prototype during the migration.
 - The legacy CBT component remains in `App.tsx` as dormant migration code; it is no longer the intended user entry path. A later cleanup should remove/refactor that dead path after authenticated E2E verification.
@@ -54,7 +54,7 @@
 ### Architecture rule locked
 Build every major product capability now. Use free-tier infrastructure first; upgrade/replace infrastructure only when capacity, reliability or provider requirements demand it. Feature existence is not deferred because infrastructure may later become paid.
 
-### 2026-09-12 — Batch 0: Architecture + Build Lock
+## 2026-09-12 — Batch 0: Architecture + Build Lock
 - Re-checked the canonical master handoff, final architecture document, repository state, package/tooling, Supabase migrations and current database functions before continuing.
 - Locked the sequential implementation contract in `docs/BATCH-GATES.md`: each batch must be implemented, verified, documented and committed before the next batch begins.
 - Confirmed the architecture boundary: React/Vite PWA → service boundaries → Supabase/Postgres/RLS + Edge Functions → provider adapters; client state is never authoritative for scores, CBT timing/completion, payment, entitlement, referrals, admin permissions or AI approval.
@@ -64,7 +64,7 @@ Build every major product capability now. Use free-tier infrastructure first; up
 - Confirmed current Supabase migration state remains eight migrations through `batch_1_identity_function_hardening`; no Batch 2+ implementation was started during Batch 0.
 - Batch 0 exit criteria are satisfied and the final Batch 0 documentation/configuration changes are committed to `main`.
 
-### 2026-09-12 — Batch 1: Identity + Student Profile
+## 2026-09-12 — Batch 1: Identity + Student Profile
 - Added automatic Supabase `auth.users` onboarding trigger: creates the ACE profile, default student role, student preferences, notification preferences and deterministic referral code when a new account is created.
 - Added timestamp-maintenance triggers for profiles and student preferences.
 - Hardened trigger function search paths after security-advisor review.
@@ -74,38 +74,19 @@ Build every major product capability now. Use free-tier infrastructure first; up
 - Added a protected CBT entry gate that requires a Supabase session before the persistent CBT UI can be entered.
 - Added atomic `ace.set_student_subjects(uuid[])` RPC with authenticated-only execution, active-subject validation and 1–4 selection enforcement.
 - Hardened identity RLS: profiles are authenticated/self-owned only; role records are student-self-read only; privileged admin predicates are no longer executable by `anon`; profile target score and preparation time have defensive database constraints.
-- Added `.github/workflows/verify.yml` for repository typecheck/build verification. The workflow was observed running in GitHub Actions; a later run/status for the final identity changes remains pending and has not been falsely marked successful.
+- Added `.github/workflows/verify.yml` for repository typecheck/build verification.
 - Tightened `StudentFoundationGate`: a missing profile (`PGRST116`) is treated as onboarding, while device/RLS/network/other database failures now surface as an explicit retryable account-preparation error instead of silently forcing onboarding.
 - Re-verified identity function execution privileges: `anon` cannot execute `is_admin`, `is_admin_or_editor` or `set_student_subjects`; `authenticated` can. Re-verified student-owned RLS policies on profiles, roles, preferences and selected subjects.
 - Added `src/components/StudentAuth.tsx` as the actual Supabase authentication entry screen. Unauthenticated users are now held at the Supabase email/magic-link flow rather than entering the legacy AppDeploy authentication path; Supabase's documented passwordless flow supports automatic account creation after email verification.
 
+### Batch 1 continuation — gate hardening and CI
+- Fixed the legacy provider-bridge TypeScript contract so the migration shim remains type-safe without restoring the obsolete AppDeploy package.
+- Applied identity performance hardening migration `20260912195056_batch_1_identity_performance_hardening_v2` in Supabase; the migration removes a duplicate learning-progress uniqueness structure and documents the remaining advisor-driven optimization boundary.
+- GitHub Actions verification for commit `087853cdc69d56246cd86a3b28aa8fc46d79b98f` completed successfully: `npm install`, `npm run typecheck`, and `npm run build` all passed.
+- Supabase still has no authenticated test user, so authenticated onboarding/multi-session E2E remains the final Batch 1 gate. No Batch 2 implementation has been started.
+
 ### Batch 1 gate status
-**NOT CLOSED YET.** Implementation and database hardening are in place, but the authenticated E2E exit gate has not been satisfied. The Supabase project currently has **0 `auth.users` rows**, so a real authenticated test account and end-to-end onboarding/reload/multi-session verification cannot be performed from the connected environment without an actual account/auth flow. No credentials are requested or stored in the repository.
-
-### Current state
-- Core Supabase architecture now exists for identity, exam configuration, content, learning, CBT, planning, monetization, referrals, AI/knowledge, notifications, engagement and operations.
-- Persistent CBT remains the authoritative CBT implementation direction.
-- Payment/referral/AI/notification/community architecture is now represented in the backend even though provider credentials and production integrations are not yet connected.
-- No production question dataset has been loaded yet.
-- WhatsApp verification remains intentionally unconfigured until a real server-verifiable integration mechanism is selected; no fake client-side membership verification is permitted.
-
-### Remaining implementation milestones
-1. Complete Batch 1 authenticated E2E verification and close Batch 1 only after the GitHub verification workflow passes for the final identity changes and a real authenticated onboarding/reload/multi-session test succeeds.
-2. Only after Batch 1 exit: build Batch 2 season + official JAMB configuration and syllabus taxonomy.
-3. Build the quality-controlled question/content ingestion/review/publish pipeline.
-4. Build the personalized Learning/Practice/Mistake/Mastery engine.
-5. Complete production CBT E2E verification and remove the dormant legacy CBT path at its gated batch.
-6. Implement payment + referral Edge Functions, provider webhook verification and anti-abuse qualification.
-7. Implement grounded AI Edge Functions with the Gemini adapter, quotas, retrieval and generation validation.
-8. Implement flashcards/audio/revision/plans, notifications/push and the admin command center.
-9. Implement the community/WhatsApp connection using only real verifiable capabilities.
-10. Run security, performance, accessibility, low-bandwidth, low-end Android, interrupted-CBT, payment-abuse, referral-abuse and AI-failure QA before launch.
+**NOT CLOSED YET.** The implementation, database hardening, and CI build verification are passing. The remaining exit-gate blocker is a real authenticated E2E flow using a test account and suitable fixture data; this cannot be truthfully marked passed while `auth.users` has no test account.
 
 ## Important
 This file records notable project progress only—milestones, architecture decisions, important blockers, and completed phases. It intentionally does not log every individual command or implementation action.
-
-### 2026-09-12 — Batch 1 continuation: gate hardening verification
-- Fixed `StudentFoundationGate` so only an actual missing profile (`PGRST116`) routes to onboarding; infrastructure, RLS, device-registration and network/database errors now produce a retryable error state.
-- Re-verified the Batch 1 privileged RPC boundary in Supabase: `anon` execution is disabled for `is_admin`, `is_admin_or_editor` and `set_student_subjects`; authenticated execution remains enabled.
-- Re-verified student-owned RLS policies for profiles, roles, student preferences and selected subjects.
-- Supabase currently still contains **0 `auth.users`**, so authenticated E2E remains the only outstanding Batch 1 exit-gate blocker.
