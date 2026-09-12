@@ -41,7 +41,7 @@ export async function updateStudentProfile(input: Partial<Pick<StudentProfile, '
   const user = await requireUser()
   const patch: Record<string, unknown> = {}
   if (input.display_name !== undefined) {
-    const value = input.display_name.trim()
+    const value = input.display_name?.trim() ?? ''
     if (!value || value.length > 80) throw new Error('Display name must be 1–80 characters.')
     patch.display_name = value
   }
