@@ -58,9 +58,11 @@ Build every major product capability now. Use free-tier infrastructure first; up
 - Re-checked the canonical master handoff, final architecture document, repository state, package/tooling, Supabase migrations and current database functions before continuing.
 - Locked the sequential implementation contract in `docs/BATCH-GATES.md`: each batch must be implemented, verified, documented and committed before the next batch begins.
 - Confirmed the architecture boundary: React/Vite PWA → service boundaries → Supabase/Postgres/RLS + Edge Functions → provider adapters; client state is never authoritative for scores, CBT timing/completion, payment, entitlement, referrals, admin permissions or AI approval.
-- Added `.env.example` for browser-safe Supabase configuration and removed the checked-in publishable-key fallback from `src/lib/supabase.ts`; the publishable key is now required through `VITE_SUPABASE_PUBLISHABLE_KEY`. No service-role/provider secrets belong in browser configuration.
+- Added `.env.example` for browser-safe Supabase configuration and removed the checked-in publishable-key fallback from `src/lib/supabase.ts`; the publishable key is now required through `VITE_SUPABASE_PUBLISHABLE_KEY`.
+- Added `.gitignore` protection for local environment files while retaining `.env.example`.
+- Added a `typecheck` script alongside the existing Vite build script to make the Batch 0/ongoing verification contract explicit.
 - Confirmed current Supabase migration state remains eight migrations through `batch_1_identity_function_hardening`; no Batch 2+ implementation was started during Batch 0.
-- Batch 0 exit criteria are satisfied and committed to `main`.
+- Batch 0 exit criteria are satisfied and the final Batch 0 documentation/configuration changes are committed to `main`.
 
 ### 2026-09-12 — Batch 1: Identity + Student Profile
 - Added automatic Supabase `auth.users` onboarding trigger: creates the ACE profile, default student role, student preferences, notification preferences and deterministic referral code when a new account is created.
