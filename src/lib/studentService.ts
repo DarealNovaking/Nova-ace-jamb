@@ -79,7 +79,7 @@ export async function setStudentSubjects(subjectIds: string[]) {
   await requireUser()
   const unique = [...new Set(subjectIds)]
   if (unique.length < 1 || unique.length > 4) throw new Error('Select between 1 and 4 subjects.')
-  const { data, error } = await supabase.rpc('set_student_subjects', { p_subject_ids: unique })
+  const { data, error } = await ace.rpc('set_student_subjects', { p_subject_ids: unique })
   if (error) throw error
   return data ?? []
 }
