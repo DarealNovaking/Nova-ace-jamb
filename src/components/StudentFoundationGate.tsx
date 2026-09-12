@@ -10,9 +10,11 @@ export default function StudentFoundationGate() {
   const [user, setUser] = useState<User | null>(null)
   const [checking, setChecking] = useState(true)
   const [needsOnboarding, setNeedsOnboarding] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const refresh = async (nextUser: User | null) => {
     setUser(nextUser)
+    setError(null)
     if (!nextUser) {
       setNeedsOnboarding(false)
       setChecking(false)
@@ -21,10 +23,21 @@ export default function StudentFoundationGate() {
     setChecking(true)
     try {
       await registerCurrentDevice()
-      const profile = await getStudentProfile()
+      let profile
+      try {
+        profile = await getStudentProfile()
+      } catch (profileError) {
+        const code = (profileError as { code?: string })?.code
+        if (code === 'PGRST116') {
+          setNeedsOnboarding(true)
+          return
+        }
+        throw profileError
+      }
       setNeedsOnboarding(!profile.display_name || profile.target_score === null || !profile.institution || !profile.course)
-    } catch {
-      setNeedsOnboarding(true)
+    } catch (caught) {
+      setNeedsOnboarding(false)
+      setError(caught instanceof Error ? caught.message : 'Unable to prepare your ACE account. Please try again.')
     } finally {
       setChecking(false)
     }
@@ -32,12 +45,18 @@ export default function StudentFoundationGate() {
 
   useEffect(() => {
     let active = true
-    getCurrentUser().then((currentUser) => active && refresh(currentUser)).catch(() => active && refresh(null))
+    getCurrentUser().then((currentUser) => active && refresh(currentUser)).catch((caught) => {
+      if (active) {
+        setError(caught instanceof Error ? caught.message : 'Unable to check your session.')
+        setChecking(false)
+      }
+    })
     const { data } = onAuthStateChange((nextUser) => { if (active) void refresh(nextUser) })
     return () => { active = false; data.subscription.unsubscribe() }
   }, [])
 
   if (checking) return <div className="grid min-h-screen place-items-center bg-[#07050d] text-white"><p className="text-white/60">Preparing your ACE account…</p></div>
+  if (error) return <div className="grid min-h-screen place-items-center bg-[#07050d] px-6 text-white"><div className="max-w-md text-center"><h1 className="text-xl font-semibold">We couldn’t prepare your account</h1><p className="mt-2 text-sm text-white/60">{error}</p><button type="button" onClick={() => void refresh(user)} className="mt-5 rounded-xl bg-white px-5 py-3 text-sm font-semibold text-black">Try again</button></div></div>
   if (user && needsOnboarding) return <StudentOnboarding onComplete={() => refresh(user)} />
   return <App />
 }
