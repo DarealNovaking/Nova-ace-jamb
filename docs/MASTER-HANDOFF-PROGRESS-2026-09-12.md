@@ -24,14 +24,20 @@
 - Added `src/lib/cbtService.ts` as the frontend service boundary for the RPC lifecycle.
 - Unauthenticated invocation was explicitly verified to fail; authenticated end-to-end CBT execution still requires a real authenticated test user and published question fixture data.
 
+### 2026-09-12 — Persistent CBT UI integration milestone
+- Extended `cbtService` with persisted question loading in the exact stored attempt order and option-key presentation order.
+- Added `src/components/PersistentCBT.tsx` implementing the real attempt lifecycle in React: server-created attempt, deterministic presentation mapping, answer autosave, persisted resume, server-derived timer, question navigation/map, timeout submission, and server-side results.
+- Added a dedicated `?cbt=1` integration entry point in `src/main.tsx` so the persistent CBT UI can be exercised without destroying the existing prototype/admin UI during migration.
+- The main application's existing CBT navigation still points to the prototype screen; final in-app route wiring and authenticated E2E verification remain the next integration step.
+
 ### Current state
 - Frontend migration is underway: UI behavior is preserved while data/auth access is being moved behind a provider boundary.
-- Persistent CBT database/service primitives are now implemented, but the current React CBT screen still uses prototype/demo state and the fixed timer; full UI integration and real authenticated E2E verification are still pending.
+- Persistent CBT database primitives, service boundary, and a production-oriented CBT UI component now exist. The legacy React CBT screen remains prototype state until final route wiring is completed.
 - No production question dataset, payment, referral, AI, notification, or WhatsApp integration has been enabled.
 
 ### Next meaningful milestones
-1. Integrate `cbtService` into the React CBT flow and replace demo answers/fixed timer with persisted attempt state, recovery, randomized presentation, answer autosave, and server submission/results.
-2. Run authenticated E2E CBT verification with representative published question fixtures.
+1. Wire the existing main CBT navigation directly to `PersistentCBT` without retaining the prototype CBT path.
+2. Run authenticated E2E CBT verification with representative published question fixtures, including reload/resume, answer persistence, timeout and server scoring.
 3. Complete and verify the Supabase service boundary, including authenticated/admin authorization rather than client-trusted admin mutations.
 4. Clean up current Supabase performance advisor findings as schema/API access patterns stabilize.
 5. Add season/exam configuration and finish syllabus/question intelligence before real content ingestion.
