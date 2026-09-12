@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import type { User } from '@supabase/supabase-js'
+import StudentAuth from './StudentAuth'
 import StudentOnboarding from './StudentOnboarding'
 import { getCurrentUser, onAuthStateChange } from '../lib/authService'
 import { getStudentProfile } from '../lib/studentService'
@@ -57,6 +58,7 @@ export default function StudentFoundationGate() {
 
   if (checking) return <div className="grid min-h-screen place-items-center bg-[#07050d] text-white"><p className="text-white/60">Preparing your ACE account…</p></div>
   if (error) return <div className="grid min-h-screen place-items-center bg-[#07050d] px-6 text-white"><div className="max-w-md text-center"><h1 className="text-xl font-semibold">We couldn’t prepare your account</h1><p className="mt-2 text-sm text-white/60">{error}</p><button type="button" onClick={() => void refresh(user)} className="mt-5 rounded-xl bg-white px-5 py-3 text-sm font-semibold text-black">Try again</button></div></div>
-  if (user && needsOnboarding) return <StudentOnboarding onComplete={() => refresh(user)} />
+  if (!user) return <StudentAuth />
+  if (needsOnboarding) return <StudentOnboarding onComplete={() => refresh(user)} />
   return <App />
 }
