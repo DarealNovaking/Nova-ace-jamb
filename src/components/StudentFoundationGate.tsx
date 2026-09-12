@@ -3,7 +3,11 @@ import type { User } from '@supabase/supabase-js'
 import StudentAuth from './StudentAuth'
 import StudentOnboarding from './StudentOnboarding'
 import { getCurrentUser, onAuthStateChange } from '../lib/authService'
-import { getStudentProfile } from '../lib/studentService'
+import {
+  getStudentPreferences,
+  getStudentProfile,
+  getStudentSubjects,
+} from '../lib/studentService'
 import { registerCurrentDevice } from '../lib/deviceService'
 import App from '../App'
 
@@ -35,7 +39,20 @@ export default function StudentFoundationGate() {
         }
         throw profileError
       }
-      setNeedsOnboarding(!profile.display_name || profile.target_score === null || !profile.institution || !profile.course)
+
+      const [preferences, subjects] = await Promise.all([
+        getStudentPreferences(),
+        getStudentSubjects(),
+      ])
+
+      setNeedsOnboarding(
+        !profile.display_name ||
+        profile.target_score === null ||
+        !profile.institution ||
+        !profile.course ||
+        !preferences.daily_minutes ||
+        subjects.length < 1,
+      )
     } catch (caught) {
       setNeedsOnboarding(false)
       setError(caught instanceof Error ? caught.message : 'Unable to prepare your ACE account. Please try again.')
