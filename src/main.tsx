@@ -1,7 +1,7 @@
 import { StrictMode, useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import App from './App';
 import PersistentCBT from './components/PersistentCBT';
+import StudentFoundationGate from './components/StudentFoundationGate';
 import './index.css';
 
 function AppShell() {
@@ -42,7 +42,7 @@ function AppShell() {
       </main>
     );
   }
-  return <App />;
+  return <StudentFoundationGate />;
 }
 
 createRoot(document.getElementById('root')!).render(
