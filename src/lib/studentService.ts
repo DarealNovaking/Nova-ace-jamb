@@ -23,62 +23,69 @@ export type StudentPreferences = {
   updated_at: string
 }
 
+async function requireUser() {
+  const { data, error } = await supabase.auth.getUser()
+  if (error) throw error
+  if (!data.user) throw new Error('Authentication required')
+  return data.user
+}
+
 export async function getStudentProfile() {
-  const user = (await supabase.auth.getUser()).data.user
-  if (!user) throw new Error('Authentication required')
+  const user = await requireUser()
   const { data, error } = await ace.from('profiles').select('*').eq('id', user.id).single()
   if (error) throw error
   return data as StudentProfile
 }
 
 export async function updateStudentProfile(input: Partial<Pick<StudentProfile, 'display_name' | 'target_score' | 'institution' | 'course' | 'prep_time_minutes' | 'exam_season'>>) {
-  const user = (await supabase.auth.getUser()).data.user
-  if (!user) throw new Error('Authentication required')
-  const patch = {
-    ...(input.display_name !== undefined ? { display_name: input.display_name.trim() || null } : {}),
-    ...(input.target_score !== undefined ? { target_score: input.target_score } : {}),
-    ...(input.institution !== undefined ? { institution: input.institution?.trim() || null } : {}),
-    ...(input.course !== undefined ? { course: input.course?.trim() || null } : {}),
-    ...(input.prep_time_minutes !== undefined ? { prep_time_minutes: input.prep_time_minutes } : {}),
-    ...(input.exam_season !== undefined ? { exam_season: input.exam_season?.trim() || null } : {}),
+  const user = await requireUser()
+  const patch: Record<string, unknown> = {}
+  if (input.display_name !== undefined) {
+    const value = input.display_name.trim()
+    if (!value || value.length > 80) throw new Error('Display name must be 1–80 characters.')
+    patch.display_name = value
   }
+  if (input.target_score !== undefined) {
+    if (input.target_score !== null && (!Number.isInteger(input.target_score) || input.target_score < 0 || input.target_score > 400)) throw new Error('Target score must be between 0 and 400.')
+    patch.target_score = input.target_score
+  }
+  if (input.institution !== undefined) patch.institution = input.institution?.trim().slice(0, 160) || null
+  if (input.course !== undefined) patch.course = input.course?.trim().slice(0, 160) || null
+  if (input.prep_time_minutes !== undefined) {
+    if (input.prep_time_minutes !== null && (!Number.isInteger(input.prep_time_minutes) || input.prep_time_minutes <= 0 || input.prep_time_minutes > 1440)) throw new Error('Preparation time must be between 1 and 1440 minutes.')
+    patch.prep_time_minutes = input.prep_time_minutes
+  }
+  if (input.exam_season !== undefined) patch.exam_season = input.exam_season?.trim().slice(0, 80) || null
   const { data, error } = await ace.from('profiles').update(patch).eq('id', user.id).select('*').single()
   if (error) throw error
   return data as StudentProfile
 }
 
 export async function getStudentPreferences() {
-  const user = (await supabase.auth.getUser()).data.user
-  if (!user) throw new Error('Authentication required')
+  const user = await requireUser()
   const { data, error } = await ace.from('student_preferences').select('*').eq('user_id', user.id).single()
   if (error) throw error
   return data as StudentPreferences
 }
 
 export async function updateStudentPreferences(input: Partial<Omit<StudentPreferences, 'user_id' | 'updated_at'>>) {
-  const user = (await supabase.auth.getUser()).data.user
-  if (!user) throw new Error('Authentication required')
+  const user = await requireUser()
   const { data, error } = await ace.from('student_preferences').upsert({ user_id: user.id, ...input }).select('*').single()
   if (error) throw error
   return data as StudentPreferences
 }
 
 export async function setStudentSubjects(subjectIds: string[]) {
-  const user = (await supabase.auth.getUser()).data.user
-  if (!user) throw new Error('Authentication required')
+  await requireUser()
   const unique = [...new Set(subjectIds)]
   if (unique.length < 1 || unique.length > 4) throw new Error('Select between 1 and 4 subjects.')
-  const rows = unique.map((subject_id, index) => ({ user_id: user.id, subject_id, is_primary: index === 0, sort_order: index }))
-  const { error: deleteError } = await ace.from('student_subjects').delete().eq('user_id', user.id)
-  if (deleteError) throw deleteError
-  const { data, error } = await ace.from('student_subjects').insert(rows).select('*')
+  const { data, error } = await supabase.rpc('set_student_subjects', { p_subject_ids: unique })
   if (error) throw error
-  return data
+  return data ?? []
 }
 
 export async function getStudentSubjects() {
-  const user = (await supabase.auth.getUser()).data.user
-  if (!user) throw new Error('Authentication required')
+  const user = await requireUser()
   const { data, error } = await ace.from('student_subjects').select('subject_id,is_primary,sort_order').eq('user_id', user.id).order('sort_order')
   if (error) throw error
   return data ?? []
