@@ -3,6 +3,7 @@ import type { User } from '@supabase/supabase-js'
 import StudentOnboarding from './StudentOnboarding'
 import { getCurrentUser, onAuthStateChange } from '../lib/authService'
 import { getStudentProfile } from '../lib/studentService'
+import { registerCurrentDevice } from '../lib/deviceService'
 import App from '../App'
 
 export default function StudentFoundationGate() {
@@ -19,6 +20,7 @@ export default function StudentFoundationGate() {
     }
     setChecking(true)
     try {
+      await registerCurrentDevice()
       const profile = await getStudentProfile()
       setNeedsOnboarding(!profile.display_name || profile.target_score === null || !profile.institution || !profile.course)
     } catch {
