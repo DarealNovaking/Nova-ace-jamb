@@ -54,6 +54,14 @@
 ### Architecture rule locked
 Build every major product capability now. Use free-tier infrastructure first; upgrade/replace infrastructure only when capacity, reliability or provider requirements demand it. Feature existence is not deferred because infrastructure may later become paid.
 
+### 2026-09-12 — Batch 0: Architecture + Build Lock
+- Re-checked the canonical master handoff, final architecture document, repository state, package/tooling, Supabase migrations and current database functions before continuing.
+- Locked the sequential implementation contract in `docs/BATCH-GATES.md`: each batch must be implemented, verified, documented and committed before the next batch begins.
+- Confirmed the architecture boundary: React/Vite PWA → service boundaries → Supabase/Postgres/RLS + Edge Functions → provider adapters; client state is never authoritative for scores, CBT timing/completion, payment, entitlement, referrals, admin permissions or AI approval.
+- Added `.env.example` for browser-safe Supabase configuration and removed the checked-in publishable-key fallback from `src/lib/supabase.ts`; the publishable key is now required through `VITE_SUPABASE_PUBLISHABLE_KEY`. No service-role/provider secrets belong in browser configuration.
+- Confirmed current Supabase migration state remains eight migrations through `batch_1_identity_function_hardening`; no Batch 2+ implementation was started during Batch 0.
+- Batch 0 exit criteria are satisfied and committed to `main`.
+
 ### 2026-09-12 — Batch 1: Identity + Student Profile
 - Added automatic Supabase `auth.users` onboarding trigger: creates the ACE profile, default student role, student preferences, notification preferences and deterministic referral code when a new account is created.
 - Added timestamp-maintenance triggers for profiles and student preferences.
@@ -70,18 +78,16 @@ Build every major product capability now. Use free-tier infrastructure first; up
 - WhatsApp verification remains intentionally unconfigured until a real server-verifiable integration mechanism is selected; no fake client-side membership verification is permitted.
 
 ### Remaining implementation milestones
-1. Authenticated E2E CBT verification with published fixtures: reload/resume, answer persistence, timeout and server scoring.
-2. Replace the migration bridge and remove dormant legacy CBT after E2E passes.
-3. Finish authenticated/admin service boundaries and remove unsafe legacy AppDeploy admin mutations from the production path.
-4. Clean remaining Supabase performance advisor findings, especially RLS init-plan and overlapping-policy optimization.
-5. Populate and verify current official JAMB season/exam configuration and syllabus taxonomy.
-6. Build the quality-controlled content ingestion/review/publish pipeline and legal rights workflow.
-7. Build the personalized Learning/Practice/Mistake/Mastery/Recommendation engine.
-8. Implement payment + referral Edge Functions, provider webhook verification and anti-abuse qualification.
-9. Implement grounded AI Edge Functions with the Gemini adapter, quotas, retrieval and generation validation.
-10. Implement flashcards/audio/revision/plans, notifications/push and the admin command center.
-11. Implement the community/WhatsApp connection using only real verifiable capabilities.
-12. Run security, performance, accessibility, low-bandwidth, low-end Android, interrupted-CBT, payment-abuse, referral-abuse and AI-failure QA before launch.
+1. Complete Batch 1 authenticated E2E verification and harden identity/profile authorization before Batch 1 can be closed.
+2. Only after Batch 1 exit: build Batch 2 season + official JAMB configuration and syllabus taxonomy.
+3. Build the quality-controlled question/content ingestion/review/publish pipeline.
+4. Build the personalized Learning/Practice/Mistake/Mastery engine.
+5. Complete production CBT E2E verification and remove the dormant legacy CBT path at its gated batch.
+6. Implement payment + referral Edge Functions, provider webhook verification and anti-abuse qualification.
+7. Implement grounded AI Edge Functions with the Gemini adapter, quotas, retrieval and generation validation.
+8. Implement flashcards/audio/revision/plans, notifications/push and the admin command center.
+9. Implement the community/WhatsApp connection using only real verifiable capabilities.
+10. Run security, performance, accessibility, low-bandwidth, low-end Android, interrupted-CBT, payment-abuse, referral-abuse and AI-failure QA before launch.
 
 ## Important
 This file records notable project progress only—milestones, architecture decisions, important blockers, and completed phases. It intentionally does not log every individual command or implementation action.
