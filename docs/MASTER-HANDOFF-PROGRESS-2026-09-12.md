@@ -19,8 +19,14 @@
 - Added the `dev:codespaces` script in commit `844dd85ca0f127eb6a92cff4c75c2bc9cfdfec0e`, using `vite --host 0.0.0.0` so the app is reachable through the forwarded Codespaces port.
 - These changes address the Android testing-environment problem without changing application architecture or bypassing authentication. They do **not** supply or commit Supabase credentials.
 
+### Email-code authentication — 2026-09-13
+- Replaced the student magic-link UI flow with a 6-digit email verification-code flow using Supabase `signInWithOtp` + `verifyOtp`, keeping authentication passwordless and session-backed.
+- Updated protected CBT sign-in to use the same email-code flow so authentication behavior is consistent across entry points.
+- This avoids dependence on a Codespaces/browser redirect URL for the student verification step and makes signup testing possible entirely in the current browser session.
+- Supabase email delivery must use the OTP token template (`{{ .Token }}`) rather than a confirmation-link-only template for the code to be delivered as a usable 6-digit code. This configuration is external to the repository and must be set in Supabase Auth email templates before E2E testing.
+
 ### Current Batch 1 gate status
-**NOT CLOSED YET.** Implementation and database hardening are in place. The remaining exit-gate blocker is a real authenticated E2E flow using a dedicated test account and suitable fixture data. Codespaces launch support is now committed to make browser testing reproducible. No Batch 2 implementation has started.
+**NOT CLOSED YET.** Implementation and database hardening are in place. The remaining exit-gate blocker is a real authenticated E2E flow using a dedicated test account and suitable fixture data. Codespaces launch support and email-code authentication are now committed to make browser testing reproducible. No Batch 2 implementation has started.
 
 ## Important
 This file records notable project progress only—milestones, architecture decisions, important blockers, and completed phases. Earlier architecture, CBT, Batch 0, monetization, AI, referral, notification and community milestones remain documented in the canonical handoff and prior project history.
