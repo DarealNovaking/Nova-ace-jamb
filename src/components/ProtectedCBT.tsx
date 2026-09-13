@@ -1,5 +1,4 @@
-import { useState } from 'react'
-import { FormEvent } from 'react'
+import { FormEvent, useEffect, useState } from 'react'
 import PersistentCBT from './PersistentCBT'
 import { getCurrentUser, requestEmailCode, verifyEmailCode } from '../lib/authService'
 
@@ -12,9 +11,9 @@ export default function ProtectedCBT() {
   const [message, setMessage] = useState('')
   const [busy, setBusy] = useState(false)
 
-  useState(() => {
+  useEffect(() => {
     getCurrentUser().then((user) => setSignedIn(Boolean(user))).catch(() => setSignedIn(false)).finally(() => setChecking(false))
-  })
+  }, [])
 
   const requestCode = async (event: FormEvent) => {
     event.preventDefault()
