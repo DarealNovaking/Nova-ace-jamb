@@ -1,6 +1,14 @@
 import { supabase } from './supabase'
 import type { User, Session } from '@supabase/supabase-js'
 
+function normalizeEmail(email: string) {
+  const normalized = email.trim().toLowerCase()
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalized)) {
+    throw new Error('Enter a valid email address.')
+  }
+  return normalized
+}
+
 export async function getCurrentUser(): Promise<User | null> {
   const { data, error } = await supabase.auth.getUser()
   if (error) {
@@ -16,16 +24,29 @@ export async function getCurrentSession(): Promise<Session | null> {
   return data.session
 }
 
-export async function requestMagicLink(email: string) {
-  const normalized = email.trim().toLowerCase()
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalized)) {
-    throw new Error('Enter a valid email address.')
-  }
+export async function requestEmailCode(email: string) {
+  const normalized = normalizeEmail(email)
   const { error } = await supabase.auth.signInWithOtp({
     email: normalized,
-    options: { emailRedirectTo: window.location.origin },
+    options: { shouldCreateUser: true },
   })
   if (error) throw error
+}
+
+export async function verifyEmailCode(email: string, token: string) {
+  const normalized = normalizeEmail(email)
+  const code = token.trim().replace(/\s+/g, '')
+  if (!/^\d{6}$/.test(code)) {
+    throw new Error('Enter the 6-digit verification code from your email.')
+  }
+
+  const { data, error } = await supabase.auth.verifyOtp({
+    email: normalized,
+    token: code,
+    type: 'email',
+  })
+  if (error) throw error
+  return data
 }
 
 export async function signOut() {
