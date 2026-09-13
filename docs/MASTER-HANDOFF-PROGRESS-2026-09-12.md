@@ -14,8 +14,12 @@
 - Hardened `StudentFoundationGate` in commit `5d0fca8b1032d485a1bcaeb6b4c54654a1381e67` so dashboard access requires a valid profile, persisted daily-study preference, and 1–4 selected subjects; retrieval failures cannot silently bypass the gate.
 - Current Supabase state verified: **0 `auth.users`, 0 profiles, 0 preferences, 0 selected-subject rows, 0 devices, 0 roles; 4 active subjects**.
 
+### Codespaces launch path — 2026-09-13
+- Added `.devcontainer/devcontainer.json` in commit `732c3b09dcc99a13576da29e64623f3ac56fe36e` to provide a reproducible Node 20 Codespaces environment, automatically run `npm install`, forward Vite port 5173 and auto-open the forwarded app port.
+- This change addresses the Android testing-environment problem without changing application architecture or bypassing authentication. It does **not** supply or commit Supabase credentials.
+
 ### Current Batch 1 gate status
-**NOT CLOSED YET.** Implementation and database hardening are in place. The latest gate-hardening commit still requires CI verification, and the remaining exit-gate blocker is a real authenticated E2E flow using a dedicated test account and suitable fixture data. No Batch 2 implementation has started.
+**NOT CLOSED YET.** Implementation and database hardening are in place. The remaining exit-gate blocker is a real authenticated E2E flow using a dedicated test account and suitable fixture data. Codespaces launch support is now committed to make browser testing reproducible. No Batch 2 implementation has started.
 
 ## Important
 This file records notable project progress only—milestones, architecture decisions, important blockers, and completed phases. Earlier architecture, CBT, Batch 0, monetization, AI, referral, notification and community milestones remain documented in the canonical handoff and prior project history.
