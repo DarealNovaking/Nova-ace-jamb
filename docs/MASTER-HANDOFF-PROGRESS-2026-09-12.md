@@ -16,7 +16,8 @@
 
 ### Codespaces launch path — 2026-09-13
 - Added `.devcontainer/devcontainer.json` in commit `732c3b09dcc99a13576da29e64623f3ac56fe36e` to provide a reproducible Node 20 Codespaces environment, automatically run `npm install`, forward Vite port 5173 and auto-open the forwarded app port.
-- This change addresses the Android testing-environment problem without changing application architecture or bypassing authentication. It does **not** supply or commit Supabase credentials.
+- Added the `dev:codespaces` script in commit `844dd85ca0f127eb6a92cff4c75c2bc9cfdfec0e`, using `vite --host 0.0.0.0` so the app is reachable through the forwarded Codespaces port.
+- These changes address the Android testing-environment problem without changing application architecture or bypassing authentication. They do **not** supply or commit Supabase credentials.
 
 ### Current Batch 1 gate status
 **NOT CLOSED YET.** Implementation and database hardening are in place. The remaining exit-gate blocker is a real authenticated E2E flow using a dedicated test account and suitable fixture data. Codespaces launch support is now committed to make browser testing reproducible. No Batch 2 implementation has started.
