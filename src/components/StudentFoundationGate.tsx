@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import type { User } from '@supabase/supabase-js'
+import type { AuthChangeEvent, User } from '@supabase/supabase-js'
 import StudentAuth from './StudentAuth'
 import StudentOnboarding from './StudentOnboarding'
 import { getCurrentUser, onAuthStateChange } from '../lib/authService'
@@ -11,17 +11,24 @@ import {
 import { registerCurrentDevice } from '../lib/deviceService'
 import App from '../App'
 
+function hasRecoverySession() {
+  return window.location.hash.includes('type=recovery')
+}
+
 export default function StudentFoundationGate() {
   const [user, setUser] = useState<User | null>(null)
   const [checking, setChecking] = useState(true)
   const [needsOnboarding, setNeedsOnboarding] = useState(false)
+  const [recovery, setRecovery] = useState(hasRecoverySession)
   const [error, setError] = useState<string | null>(null)
 
-  const refresh = async (nextUser: User | null) => {
+  const refresh = async (nextUser: User | null, authEvent?: AuthChangeEvent) => {
     setUser(nextUser)
     setError(null)
+    if (authEvent === 'PASSWORD_RECOVERY') setRecovery(true)
     if (!nextUser) {
       setNeedsOnboarding(false)
+      setRecovery(false)
       setChecking(false)
       return
     }
@@ -71,12 +78,15 @@ export default function StudentFoundationGate() {
         setChecking(false)
       }
     })
-    const { data } = onAuthStateChange((nextUser) => { if (active) void refresh(nextUser) })
+    const { data } = onAuthStateChange((nextUser, _session, event) => {
+      if (active) void refresh(nextUser, event)
+    })
     return () => { active = false; data.subscription.unsubscribe() }
   }, [])
 
   if (checking) return <div className="grid min-h-screen place-items-center bg-[#07050d] text-white"><p className="text-white/60">Preparing your ACE account…</p></div>
   if (error) return <div className="grid min-h-screen place-items-center bg-[#07050d] px-6 text-white"><div className="max-w-md text-center"><h1 className="text-xl font-semibold">We couldn’t prepare your account</h1><p className="mt-2 text-sm text-white/60">{error}</p><button type="button" onClick={() => void refresh(user)} className="mt-5 rounded-xl bg-white px-5 py-3 text-sm font-semibold text-black">Try again</button></div></div>
+  if (recovery) return <StudentAuth recovery />
   if (!user) return <StudentAuth />
   if (needsOnboarding) return <StudentOnboarding onComplete={() => void refresh(user)} />
   return <App />
