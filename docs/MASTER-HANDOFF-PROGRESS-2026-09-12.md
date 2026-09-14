@@ -92,11 +92,17 @@
 - Applied a follow-up catalog normalization migration and recorded both Batch 2 migrations in the repository.
 - Added `src/lib/seasonService.ts`, providing typed service boundaries for active exam blueprints, seasons, syllabus trees, institutions, programs and programme-specific UTME rules.
 
+### Batch 2 continuation — activation validation — 2026-09-14
+- Added `ace.validate_exam_config(uuid)` to validate duration, total questions, option count, required/optional subject presence and question-count integrity before activation.
+- Added `ace.activate_exam_config(uuid)` as an authenticated editor/admin-only activation boundary that deactivates sibling configurations for the same season after validation.
+- Added `ace.activate_syllabus_version(uuid)` requiring approved rights status and at least one active topic before a syllabus version can become active; older versions for the same season/subject are archived automatically.
+- Verified the official 2026 exam configuration passes the new validator: 1 required subject, 24 selectable subjects, 60 required questions, 40-question optional subjects, 180 total questions, 7200 seconds, four options.
+
 ### Current Batch 1 gate status
 **IMPLEMENTATION HARDENING COMPLETE; FORMAL GATE STILL OPEN.** Manual/E2E testing remains intentionally deferred until the product implementation surface is substantially complete. The unresolved earlier “Cannot save your profile” symptom is no longer the active save architecture—the save path has been replaced by the atomic RPC—but its final browser-level resolution remains part of the deferred E2E evidence.
 
 ### Current Batch 2 status
-**IMPLEMENTATION IN PROGRESS.** The season/exam configuration boundary, official 2026 structure, 25-subject catalog, versioned syllabus ownership, structured institution/program catalog schema, UTME rule schema, activation gate, and frontend service boundary are implemented. The authoritative institution/program dataset and actual syllabus topic/subtopic taxonomy still require ingestion/review from JAMB/IBASS before Batch 2 can be declared complete. No invented programme combinations or syllabus topics have been seeded.
+**IMPLEMENTATION IN PROGRESS.** The season/exam configuration boundary, official 2026 structure, 25-subject catalog, versioned syllabus ownership, structured institution/program catalog schema, UTME rule schema, activation/validation gates, and frontend service boundary are implemented. The authoritative institution/program dataset and actual syllabus topic/subtopic taxonomy still require ingestion/review from JAMB/IBASS before Batch 2 can be declared complete. No invented programme combinations or syllabus topics have been seeded.
 
 ## Important
 This file records notable project progress only—milestones, architecture decisions, important blockers, security findings and verification results; do not log every command. Earlier architecture, CBT, Batch 0, monetization, AI, referral, notification and community milestones remain documented in the canonical handoff and prior project history.
