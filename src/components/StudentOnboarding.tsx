@@ -66,7 +66,7 @@ export default function StudentOnboarding({ onComplete }: { onComplete: () => vo
     }
     let active = true
     setCombinationIds([])
-    ace.from('exam_seasons').select('id').eq('status', 'active').order('exam_year', { ascending: false }).limit(1).maybeSingle()
+    Promise.resolve(ace.from('exam_seasons').select('id').eq('status', 'active').order('exam_year', { ascending: false }).limit(1).maybeSingle())
       .then(async ({ data, error }) => {
         if (error) throw error
         if (!data) throw new Error('No active JAMB season is available yet.')
