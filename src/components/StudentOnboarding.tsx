@@ -38,8 +38,6 @@ export default function StudentOnboarding({ onComplete }: { onComplete: () => vo
       setName(profile.display_name ?? '')
       setTarget(String(profile.target_score ?? 300))
       setDailyMinutes(String(Math.max(1, preferences.daily_minutes ?? 60)))
-      setSelectedInstitution(profile.institution_id ?? '')
-      setSelectedProgram(profile.program_id ?? '')
     }).catch((error) => setMessage(error instanceof Error ? error.message : 'Could not load your preparation setup.'))
       .finally(() => active && setBusy(false))
     return () => { active = false }
@@ -49,6 +47,7 @@ export default function StudentOnboarding({ onComplete }: { onComplete: () => vo
     if (!selectedInstitution) {
       setPrograms([])
       setSelectedProgram('')
+      setCombinationIds([])
       return
     }
     let active = true
@@ -67,8 +66,6 @@ export default function StudentOnboarding({ onComplete }: { onComplete: () => vo
     }
     let active = true
     setCombinationIds([])
-    const season = institutions.length >= 0 ? undefined : undefined
-    void season
     ace.from('exam_seasons').select('id').eq('status', 'active').order('exam_year', { ascending: false }).limit(1).maybeSingle()
       .then(async ({ data, error }) => {
         if (error) throw error
@@ -79,7 +76,7 @@ export default function StudentOnboarding({ onComplete }: { onComplete: () => vo
       })
       .catch((error) => active && setMessage(error instanceof Error ? error.message : 'Could not load the verified subject combination.'))
     return () => { active = false }
-  }, [selectedProgram, institutions.length])
+  }, [selectedProgram])
 
   const save = async () => {
     setMessage('')
