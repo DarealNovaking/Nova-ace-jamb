@@ -98,11 +98,20 @@
 - Added `ace.activate_syllabus_version(uuid)` requiring approved rights status and at least one active topic before a syllabus version can become active; older versions for the same season/subject are archived automatically.
 - Verified the official 2026 exam configuration passes the new validator: 1 required subject, 24 selectable subjects, 60 required questions, 40-question optional subjects, 180 total questions, 7200 seconds, four options.
 
+### Batch 2 continuation — catalog publication boundary — 2026-09-14
+- Added live Supabase migration `batch_2_catalog_publication_boundary`, introducing `ace.publish_catalog_batch(uuid)`.
+- Publication is server-side and editor/admin-only. A batch must be explicitly `approved`, its source must be `approved`, and every staged row must have `validation_status='approved'` before anything can be published.
+- Institution and programme rows are published as **draft** records with source/provenance metadata; UTME rules are resolved against the normalized active subject catalogue; syllabus topics/subtopics are published inactive until the syllabus activation gate is satisfied.
+- The function is `SECURITY DEFINER` with a fixed search path; `authenticated` has EXECUTE and `anon` does not. Live privilege verification returned `authenticated_execute=true`, `anon_execute=false`.
+- The publication boundary was committed to GitHub as `supabase/migrations/20260914211930_batch_2_catalog_publication_boundary.sql`, commit `43f1783e44ebc257c2a61f471b354d8fd5ebc888`.
+- Current live catalog remains intentionally unpopulated: **0 institutions, 0 programmes, 0 UTME rules, 0 topics/subtopics**. No unverified JAMB/IBASS data was promoted.
+- Current authoritative research confirms JAMB's IBASS Eligibility Checker exposes institution → programme → UTME subject-combination selection and states that English is selected by default; JAMB's FAQ directs candidates to IBASS to verify the correct combination for each programme. citeturn0search1turn0search4
+
 ### Current Batch 1 gate status
 **IMPLEMENTATION HARDENING COMPLETE; FORMAL GATE STILL OPEN.** Manual/E2E testing remains intentionally deferred until the product implementation surface is substantially complete. The unresolved earlier “Cannot save your profile” symptom is no longer the active save architecture—the save path has been replaced by the atomic RPC—but its final browser-level resolution remains part of the deferred E2E evidence.
 
 ### Current Batch 2 status
-**IMPLEMENTATION IN PROGRESS.** The season/exam configuration boundary, official 2026 structure, 25-subject catalog, versioned syllabus ownership, structured institution/program catalog schema, UTME rule schema, activation/validation gates, and frontend service boundary are implemented. The authoritative institution/program dataset and actual syllabus topic/subtopic taxonomy still require ingestion/review from JAMB/IBASS before Batch 2 can be declared complete. No invented programme combinations or syllabus topics have been seeded.
+**IMPLEMENTATION IN PROGRESS.** The season/exam configuration boundary, official 2026 structure, 25-subject catalog, versioned syllabus ownership, structured institution/program catalog schema, UTME rule schema, activation/validation gates, authoritative source registry, staging/validation pipeline, secure publication boundary, and frontend service boundary are implemented. The actual authoritative institution/program dataset and syllabus topic/subtopic taxonomy still require ingestion/review from JAMB/IBASS before Batch 2 can be declared complete. No invented programme combinations or syllabus topics have been seeded.
 
 ## Important
 This file records notable project progress only—milestones, architecture decisions, important blockers, security findings and verification results; do not log every command. Earlier architecture, CBT, Batch 0, monetization, AI, referral, notification and community milestones remain documented in the canonical handoff and prior project history.
