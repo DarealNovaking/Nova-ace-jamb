@@ -67,12 +67,17 @@ The same Edge Function source is committed at:
 
 ## Live migration reconciliation
 
-Supabase migration history currently contains two Batch 2 migrations after the previously recorded activation-validation migration:
+Supabase migration history contained two Batch 2 migrations after the previously recorded activation-validation migration:
 
 - `20260914211904 batch_2_authoritative_catalog_ingestion`
 - `20260914211919 batch_2_register_authoritative_sources_v2`
 
-These live migration versions were present in Supabase during this continuation check, while their corresponding SQL migration files were not present on the current GitHub `main` tree. This is a repository/backend synchronization gap and is recorded deliberately rather than pretending the files are committed. The live schema/state remains authoritative; the missing migration source files must be reconciled into GitHub before Batch 2 is considered fully documented/committable.
+Their SQL sources were temporarily missing from the GitHub `main` tree. That synchronization gap has now been reconciled and the corresponding repository migrations are committed:
+
+- `20260914211904_batch_2_authoritative_catalog_ingestion.sql` — commit `c66b0b2b3453b359490a6a7b12cc193d90861b5c`
+- `20260914211919_batch_2_register_authoritative_sources_v2.sql` — commit `0f4aa1e76cc7e33cde74e5f329626c46a1fdac67`
+
+The reconciliation preserves the live staging tables, RLS/editor boundaries, validation RPC, and authoritative source registry. No duplicate migration was applied to production; the repository now contains the migration source needed to reproduce the live schema on a fresh environment.
 
 ## Verification performed
 
@@ -81,16 +86,16 @@ These live migration versions were present in Supabase during this continuation 
 - Confirmed the source registry and live season/catalog counts.
 - Confirmed `catalog-import` is ACTIVE with `verify_jwt=true`.
 - Verified official JAMB/IBASS sources through current web evidence.
+- Confirmed the two previously missing migration sources are now committed to GitHub.
 - No browser/manual E2E testing performed, per the project owner's testing pause.
 
 ## Remaining Batch 2 work
 
-1. Reconcile the two live-but-uncommitted Supabase migrations into the repository.
-2. Ingest the authoritative institution/program/UTME-rule dataset from IBASS/brochure sources into staging.
-3. Ingest the actual subject → topic → subtopic syllabus taxonomy from authoritative JAMB syllabus sources, preserving provenance and rights state.
-4. Validate staged rows.
-5. Review and publish only approved rows.
-6. Verify season-aware programme combinations and syllabus activation behavior.
-7. Run Batch 2 verification, document evidence and commit the final Batch 2 state.
+1. Ingest the authoritative institution/program/UTME-rule dataset from IBASS/brochure sources into staging.
+2. Ingest the actual subject → topic → subtopic syllabus taxonomy from authoritative JAMB syllabus sources, preserving provenance and rights state.
+3. Validate staged rows.
+4. Review and publish only approved rows.
+5. Verify season-aware programme combinations and syllabus activation behavior.
+6. Run Batch 2 verification, document evidence and commit the final Batch 2 state.
 
 Batch 2 remains **IMPLEMENTATION IN PROGRESS**. No Batch 3 work has started.
