@@ -1,46 +1,85 @@
-import { useEffect, useState } from 'react'
-import { getStudentProfile, getStudentSubjects, getStudentPreferences, saveStudentFoundation } from '../lib/studentService'
+import { useEffect, useMemo, useState } from 'react'
+import { getStudentPreferences, getStudentProfile, saveStudentFoundationFromCatalog } from '../lib/studentService'
+import { listInstitutions, listPrograms, getProgramUtmeRule } from '../lib/seasonService'
 import { ace, supabase } from '../lib/supabase'
 
 type Subject = { id: string; name: string; code: string }
+type Institution = Awaited<ReturnType<typeof listInstitutions>>[number]
+type Program = Awaited<ReturnType<typeof listPrograms>>[number]
 
 export default function StudentOnboarding({ onComplete }: { onComplete: () => void }) {
   const [subjects, setSubjects] = useState<Subject[]>([])
-  const [selected, setSelected] = useState<string[]>([])
+  const [institutions, setInstitutions] = useState<Institution[]>([])
+  const [programs, setPrograms] = useState<Program[]>([])
+  const [selectedInstitution, setSelectedInstitution] = useState('')
+  const [selectedProgram, setSelectedProgram] = useState('')
+  const [combinationIds, setCombinationIds] = useState<string[]>([])
   const [name, setName] = useState('')
   const [target, setTarget] = useState('300')
-  const [institution, setInstitution] = useState('')
-  const [course, setCourse] = useState('')
   const [dailyMinutes, setDailyMinutes] = useState('60')
   const [busy, setBusy] = useState(true)
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState('')
+
+  const combination = useMemo(() => combinationIds.map((id) => subjects.find((subject) => subject.id === id)).filter(Boolean) as Subject[], [combinationIds, subjects])
 
   useEffect(() => {
     let active = true
     Promise.all([
       ace.from('subjects').select('id,name,code').eq('active', true).order('sort_order'),
       getStudentProfile(),
-      getStudentSubjects(),
       getStudentPreferences(),
-    ]).then(([subjectResult, profile, currentSubjects, preferences]) => {
+      listInstitutions(),
+    ]).then(([subjectResult, profile, preferences, catalog]) => {
       if (!active) return
       if (subjectResult.error) throw subjectResult.error
       setSubjects((subjectResult.data ?? []) as Subject[])
+      setInstitutions(catalog)
       setName(profile.display_name ?? '')
       setTarget(String(profile.target_score ?? 300))
-      setInstitution(profile.institution ?? '')
-      setCourse(profile.course ?? '')
       setDailyMinutes(String(Math.max(1, preferences.daily_minutes ?? 60)))
-      setSelected(currentSubjects.map((x: { subject_id: string }) => x.subject_id))
-    }).catch((error) => setMessage(error instanceof Error ? error.message : 'Could not load your profile.'))
+      setSelectedInstitution(profile.institution_id ?? '')
+      setSelectedProgram(profile.program_id ?? '')
+    }).catch((error) => setMessage(error instanceof Error ? error.message : 'Could not load your preparation setup.'))
       .finally(() => active && setBusy(false))
     return () => { active = false }
   }, [])
 
-  const toggleSubject = (id: string) => {
-    setSelected((current) => current.includes(id) ? current.filter((x) => x !== id) : current.length < 4 ? [...current, id] : current)
-  }
+  useEffect(() => {
+    if (!selectedInstitution) {
+      setPrograms([])
+      setSelectedProgram('')
+      return
+    }
+    let active = true
+    setSelectedProgram('')
+    setCombinationIds([])
+    listPrograms(selectedInstitution)
+      .then((items) => active && setPrograms(items))
+      .catch((error) => active && setMessage(error instanceof Error ? error.message : 'Could not load courses.'))
+    return () => { active = false }
+  }, [selectedInstitution])
+
+  useEffect(() => {
+    if (!selectedProgram) {
+      setCombinationIds([])
+      return
+    }
+    let active = true
+    setCombinationIds([])
+    const season = institutions.length >= 0 ? undefined : undefined
+    void season
+    ace.from('exam_seasons').select('id').eq('status', 'active').order('exam_year', { ascending: false }).limit(1).maybeSingle()
+      .then(async ({ data, error }) => {
+        if (error) throw error
+        if (!data) throw new Error('No active JAMB season is available yet.')
+        const rule = await getProgramUtmeRule(data.id, selectedProgram)
+        if (!rule) throw new Error('No verified UTME subject combination is available for this course yet.')
+        if (active) setCombinationIds(rule.required_subject_ids)
+      })
+      .catch((error) => active && setMessage(error instanceof Error ? error.message : 'Could not load the verified subject combination.'))
+    return () => { active = false }
+  }, [selectedProgram, institutions.length])
 
   const save = async () => {
     setMessage('')
@@ -48,19 +87,17 @@ export default function StudentOnboarding({ onComplete }: { onComplete: () => vo
     const minutes = Number(dailyMinutes)
     if (!name.trim()) return setMessage('Enter your name.')
     if (!Number.isInteger(score) || score < 0 || score > 400) return setMessage('Target score must be between 0 and 400.')
-    if (!institution.trim()) return setMessage('Enter your intended institution.')
-    if (!course.trim()) return setMessage('Enter your intended course.')
+    if (!selectedInstitution || !selectedProgram) return setMessage('Select your institution and course.')
     if (!Number.isInteger(minutes) || minutes < 1 || minutes > 1440) return setMessage('Study time must be between 1 and 1440 minutes.')
-    if (selected.length < 1 || selected.length > 4) return setMessage('Select between 1 and 4 subjects.')
+    if (!combinationIds.length) return setMessage('A verified UTME subject combination is required before you can continue.')
     setSaving(true)
     try {
-      await saveStudentFoundation({
+      await saveStudentFoundationFromCatalog({
         display_name: name,
         target_score: score,
-        institution,
-        course,
+        institution_id: selectedInstitution,
+        program_id: selectedProgram,
         daily_minutes: minutes,
-        subject_ids: selected,
       })
       onComplete()
     } catch (error) {
@@ -77,7 +114,7 @@ export default function StudentOnboarding({ onComplete }: { onComplete: () => vo
       <div className="mb-8">
         <p className="text-xs uppercase tracking-[.2em] text-purple-300/70">ACE JAMB · Student setup</p>
         <h1 className="mt-2 text-4xl font-black sm:text-5xl">Build your preparation profile.</h1>
-        <p className="mt-3 max-w-xl text-white/50">These details stay with your account and will drive your preparation experience.</p>
+        <p className="mt-3 max-w-xl text-white/50">Choose your institution and course. ACE will use the verified JAMB combination for that programme instead of making you guess your subjects.</p>
       </div>
       {message && <div className="mb-5 rounded-xl border border-white/10 bg-white/5 p-3 text-sm text-white/80">{message}</div>}
       <section className="glass-card space-y-5 rounded-3xl p-6">
@@ -86,18 +123,14 @@ export default function StudentOnboarding({ onComplete }: { onComplete: () => vo
           <label className="block"><span className="mb-2 block text-sm text-white/60">Target JAMB score</span><input className="field w-full" type="number" min="0" max="400" value={target} onChange={(e) => setTarget(e.target.value)} /></label>
           <label className="block"><span className="mb-2 block text-sm text-white/60">Daily study time (minutes)</span><input className="field w-full" type="number" min="1" max="1440" value={dailyMinutes} onChange={(e) => setDailyMinutes(e.target.value)} /></label>
         </div>
-        <div className="grid gap-5 sm:grid-cols-2">
-          <label className="block"><span className="mb-2 block text-sm text-white/60">Intended institution</span><input className="field w-full" value={institution} onChange={(e) => setInstitution(e.target.value)} maxLength={160} placeholder="e.g. University of Lagos" /></label>
-          <label className="block"><span className="mb-2 block text-sm text-white/60">Intended course</span><input className="field w-full" value={course} onChange={(e) => setCourse(e.target.value)} maxLength={160} placeholder="e.g. Computer Science" /></label>
+        <label className="block"><span className="mb-2 block text-sm text-white/60">Intended institution</span><select className="field w-full" value={selectedInstitution} onChange={(e) => setSelectedInstitution(e.target.value)}><option value="">Select your institution</option>{institutions.map((institution) => <option key={institution.id} value={institution.id}>{institution.name}</option>)}</select></label>
+        <label className="block"><span className="mb-2 block text-sm text-white/60">Intended course</span><select className="field w-full" value={selectedProgram} onChange={(e) => setSelectedProgram(e.target.value)} disabled={!selectedInstitution}><option value="">{selectedInstitution ? 'Select your course' : 'Select an institution first'}</option>{programs.map((program) => <option key={program.id} value={program.id}>{program.name}</option>)}</select></label>
+        <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+          <p className="text-sm font-semibold">Verified JAMB subject combination</p>
+          <p className="mt-1 text-xs text-white/40">This is derived from the active season and selected programme.</p>
+          {combination.length ? <div className="mt-3 flex flex-wrap gap-2">{combination.map((subject) => <span key={subject.id} className="rounded-full border border-purple-300/30 bg-purple-500/10 px-3 py-1.5 text-xs">{subject.name}</span>)}</div> : <p className="mt-3 text-sm text-white/45">Select a course with an approved combination to continue.</p>}
         </div>
-        <div>
-          <p className="mb-2 text-sm text-white/60">JAMB subjects</p>
-          <p className="mb-3 text-xs text-white/35">Choose 1–4 for now. Final exam composition will come from the active season configuration.</p>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            {subjects.map((subject) => <button key={subject.id} type="button" onClick={() => toggleSubject(subject.id)} className={`rounded-xl border p-3 text-left ${selected.includes(subject.id) ? 'border-purple-300/60 bg-purple-500/15' : 'border-white/10 bg-white/5'}`}><b>{subject.code}</b><span className="mt-1 block text-xs text-white/45">{subject.name}</span></button>)}
-          </div>
-        </div>
-        <button type="button" disabled={saving} onClick={save} className="w-full rounded-xl bg-white py-3 font-bold text-black disabled:opacity-50">{saving ? 'Saving…' : 'Save my ACE profile'}</button>
+        <button type="button" disabled={saving || !combinationIds.length} onClick={save} className="w-full rounded-xl bg-white py-3 font-bold text-black disabled:opacity-50">{saving ? 'Saving…' : 'Continue to ACE'}</button>
       </section>
       <button type="button" onClick={() => supabase.auth.signOut()} className="mt-4 w-full py-3 text-sm text-white/40">Sign out</button>
     </div>
