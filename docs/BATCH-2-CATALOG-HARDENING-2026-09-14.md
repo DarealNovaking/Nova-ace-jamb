@@ -1,14 +1,32 @@
 # Batch 2 Catalog Hardening — 2026-09-14
 
-## Milestone
-Added covering indexes for the three foreign keys identified by the Supabase performance advisor:
+## Milestones
 
+### 1. Catalog validation reconciliation
+The live Supabase migration `20260914214342_batch_2_catalog_validation_hardening` was reconciled into the repository as:
+`supabase/migrations/20260914214342_batch_2_catalog_validation_hardening.sql`.
+
+The validator now enforces:
+- source review/approval state
+- closed/archived season protection
+- dataset/entity-type alignment
+- required external keys
+- institution/programme/UTME-rule/syllabus payload requirements
+- duplicate entity external keys within a batch
+
+The function remains `SECURITY DEFINER` with a fixed search path and authenticated-only execution.
+
+### 2. Foreign-key performance hardening
+Added covering indexes for:
 - `ace.catalog_import_batches.source_id`
 - `ace.program_utme_rules.program_id`
 - `ace.syllabus_versions.subject_id`
 
+Migration:
+`supabase/migrations/20260914220000_batch_2_catalog_fk_indexes.sql`
+
 ## Verification
-- Migration applied successfully to the live `nova-ace-jamb` Supabase project.
+- Both migrations are applied in the live `nova-ace-jamb` project.
 - Performance advisor re-check no longer reports these three foreign keys as unindexed.
 - Remaining performance findings are existing RLS initialization-plan, multiple-permissive-policy, and unused-index findings; they were not changed merely to silence the linter.
 - Security advisor still reports only the known Auth leaked-password-protection warning.
