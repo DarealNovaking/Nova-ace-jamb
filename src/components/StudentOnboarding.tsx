@@ -22,6 +22,7 @@ export default function StudentOnboarding({ onComplete }: { onComplete: () => vo
   const [message, setMessage] = useState('')
 
   const combination = useMemo(() => combinationIds.map((id) => subjects.find((subject) => subject.id === id)).filter(Boolean) as Subject[], [combinationIds, subjects])
+  const fixedCombination = combinationIds.length === 4
 
   useEffect(() => {
     let active = true
@@ -86,7 +87,7 @@ export default function StudentOnboarding({ onComplete }: { onComplete: () => vo
     if (!Number.isInteger(score) || score < 0 || score > 400) return setMessage('Target score must be between 0 and 400.')
     if (!selectedInstitution || !selectedProgram) return setMessage('Select your institution and course.')
     if (!Number.isInteger(minutes) || minutes < 1 || minutes > 1440) return setMessage('Study time must be between 1 and 1440 minutes.')
-    if (!combinationIds.length) return setMessage('A verified UTME subject combination is required before you can continue.')
+    if (!fixedCombination) return setMessage('This course has alternative UTME subject choices. Complete the subject-choice step before continuing.')
     setSaving(true)
     try {
       await saveStudentFoundationFromCatalog({
@@ -125,9 +126,9 @@ export default function StudentOnboarding({ onComplete }: { onComplete: () => vo
         <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
           <p className="text-sm font-semibold">Verified JAMB subject combination</p>
           <p className="mt-1 text-xs text-white/40">This is derived from the active season and selected programme.</p>
-          {combination.length ? <div className="mt-3 flex flex-wrap gap-2">{combination.map((subject) => <span key={subject.id} className="rounded-full border border-purple-300/30 bg-purple-500/10 px-3 py-1.5 text-xs">{subject.name}</span>)}</div> : <p className="mt-3 text-sm text-white/45">Select a course with an approved combination to continue.</p>}
+          {combination.length === 4 ? <div className="mt-3 flex flex-wrap gap-2">{combination.map((subject) => <span key={subject.id} className="rounded-full border border-purple-300/30 bg-purple-500/10 px-3 py-1.5 text-xs">{subject.name}</span>)}</div> : combination.length ? <p className="mt-3 text-sm text-amber-200/80">This programme has alternative subject choices. ACE will require an explicit subject-choice step rather than guessing one for you.</p> : <p className="mt-3 text-sm text-white/45">Select a course with an approved combination to continue.</p>}
         </div>
-        <button type="button" disabled={saving || !combinationIds.length} onClick={save} className="w-full rounded-xl bg-white py-3 font-bold text-black disabled:opacity-50">{saving ? 'Saving…' : 'Continue to ACE'}</button>
+        <button type="button" disabled={saving || !fixedCombination} onClick={save} className="w-full rounded-xl bg-white py-3 font-bold text-black disabled:opacity-50">{saving ? 'Saving…' : 'Continue to ACE'}</button>
       </section>
       <button type="button" onClick={() => supabase.auth.signOut()} className="mt-4 w-full py-3 text-sm text-white/40">Sign out</button>
     </div>
