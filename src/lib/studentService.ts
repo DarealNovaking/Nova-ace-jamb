@@ -84,6 +84,38 @@ export async function setStudentSubjects(subjectIds: string[]) {
   return data ?? []
 }
 
+export async function saveStudentFoundation(input: {
+  display_name: string
+  target_score: number
+  institution: string
+  course: string
+  daily_minutes: number
+  subject_ids: string[]
+}) {
+  await requireUser()
+  const displayName = input.display_name.trim()
+  const institution = input.institution.trim()
+  const course = input.course.trim()
+  const uniqueSubjects = [...new Set(input.subject_ids)]
+
+  if (!displayName || displayName.length > 80) throw new Error('Display name must be 1–80 characters.')
+  if (!Number.isInteger(input.target_score) || input.target_score < 0 || input.target_score > 400) throw new Error('Target score must be between 0 and 400.')
+  if (!institution || institution.length > 160) throw new Error('Intended institution must be 1–160 characters.')
+  if (!course || course.length > 160) throw new Error('Intended course must be 1–160 characters.')
+  if (!Number.isInteger(input.daily_minutes) || input.daily_minutes < 1 || input.daily_minutes > 1440) throw new Error('Study time must be between 1 and 1440 minutes.')
+  if (uniqueSubjects.length < 1 || uniqueSubjects.length > 4) throw new Error('Select between 1 and 4 subjects.')
+
+  const { error } = await ace.rpc('save_student_foundation', {
+    p_display_name: displayName,
+    p_target_score: input.target_score,
+    p_institution: institution,
+    p_course: course,
+    p_daily_minutes: input.daily_minutes,
+    p_subject_ids: uniqueSubjects,
+  })
+  if (error) throw error
+}
+
 export async function getStudentSubjects() {
   const user = await requireUser()
   const { data, error } = await ace.from('student_subjects').select('subject_id,is_primary,sort_order').eq('user_id', user.id).order('sort_order')
