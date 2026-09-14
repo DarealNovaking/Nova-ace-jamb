@@ -47,8 +47,16 @@
 - Fix committed on `main` as `aa93ba3f8b9ac6e6a1a0128a658f4a136dffc816` (`fix(batch-1): align protected CBT with password auth`).
 - Local build verification after this fix is still required before declaring the white-screen blocker closed.
 
+### Batch 1 continuation — account-preparation API privilege blocker — 2026-09-14
+- The exact browser error was confirmed as **“We couldn’t prepare your account / Unable to prepare your ACE account. Please try again.”** This is the `StudentFoundationGate` retry state, not the signup error itself.
+- Supabase inspection showed the account creation trigger was succeeding: **2 auth users, 2 profiles, 2 roles, 2 preferences, 2 notification-preferences and 2 referral-code rows**, while `ace.devices` and `ace.student_subjects` remained at 0.
+- Root cause identified: the `authenticated` PostgREST role had **no `USAGE` privilege on schema `ace` and no table privileges** for the student-facing tables. RLS policies existed, but RLS cannot be reached through the Data API without the required grants. This caused `registerCurrentDevice()` and subsequent student retrieval to fail before onboarding could render.
+- Applied Supabase migration `batch_1_api_privileges` granting only the required authenticated access: schema `ace` usage; profile select/update; student-preferences select/update; student-subject select; device select/insert/update; and execution of `ace.set_student_subjects(uuid[])`.
+- Recorded the same migration in GitHub as `supabase/migrations/20260914120000_batch_1_api_privileges.sql`, commit `709acd75f2fa37b9882ef019798e45880fd4b0c2`.
+- Re-verified the database privileges after migration: authenticated schema usage and required table/function privileges are now **true**. RLS remains the row-level security boundary.
+
 ### Current Batch 1 gate status
-**NOT CLOSED YET.** Implementation and database hardening are in place. The remaining exit-gate blocker is a real authenticated E2E flow using a dedicated test account and suitable fixture data. The white-screen build blocker has been fixed in `ProtectedCBT.tsx`, but the fix still requires local build verification. Codespaces launch support and authentication implementation are committed to make browser testing reproducible. Supabase's **Confirm email** setting is now disabled, so password signup can be tested without confirmation email. No Batch 2 implementation has started.
+**NOT CLOSED YET.** Implementation and database hardening are in place. The account-preparation privilege blocker is fixed and verified at the database privilege level. The remaining exit-gate work is the real browser E2E: confirm the UI now reaches onboarding, complete onboarding with 1–4 subjects, verify persistence after reload, sign out/sign back in, verify cross-session/device continuity, protected-route behavior and final RLS isolation evidence. The white-screen build blocker was fixed in `ProtectedCBT.tsx`; the local build was subsequently reported as passing by the project owner, but the full authenticated E2E is still outstanding. Batch 2 remains locked.
 
 ## Important
 This file records notable project progress only—milestones, architecture decisions, important blockers, security findings and verification results; do not log every command. Earlier architecture, CBT, Batch 0, monetization, AI, referral, notification and community milestones remain documented in the canonical handoff and prior project history.
