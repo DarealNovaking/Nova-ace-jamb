@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { getStudentProfile, getStudentSubjects, getStudentPreferences, updateStudentProfile, updateStudentPreferences, setStudentSubjects } from '../lib/studentService'
+import { getStudentProfile, getStudentSubjects, getStudentPreferences, saveStudentFoundation } from '../lib/studentService'
 import { ace, supabase } from '../lib/supabase'
 
 type Subject = { id: string; name: string; code: string }
@@ -54,9 +54,14 @@ export default function StudentOnboarding({ onComplete }: { onComplete: () => vo
     if (selected.length < 1 || selected.length > 4) return setMessage('Select between 1 and 4 subjects.')
     setSaving(true)
     try {
-      await updateStudentProfile({ display_name: name, target_score: score, institution, course })
-      await updateStudentPreferences({ daily_minutes: minutes })
-      await setStudentSubjects(selected)
+      await saveStudentFoundation({
+        display_name: name,
+        target_score: score,
+        institution,
+        course,
+        daily_minutes: minutes,
+        subject_ids: selected,
+      })
       onComplete()
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Could not save your profile.')
