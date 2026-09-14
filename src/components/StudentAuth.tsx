@@ -81,7 +81,7 @@ export default function StudentAuth({ recovery = false }: { recovery?: boolean }
           {!forgotMode && (
             <>
               <label className="block text-sm font-semibold">
-                New password{signupMode || recoveryMode ? '' : ''}
+                {recoveryMode || signupMode ? 'New password' : 'Password'}
                 <input autoComplete={recoveryMode ? 'new-password' : signupMode ? 'new-password' : 'current-password'} type="password" minLength={8} required value={password} onChange={(event) => setPassword(event.target.value)} placeholder="••••••••" className="field mt-2 w-full" />
               </label>
               {(signupMode || recoveryMode) && (
