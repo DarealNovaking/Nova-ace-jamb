@@ -41,8 +41,14 @@
 - Current performance advisor reports RLS initialization-plan and multiple-permissive-policy warnings plus unused-index informational findings. These are optimization findings, not a Batch 1 correctness blocker; no unsafe schema change was made merely to silence them.
 - Current Batch 1 blocker remains the real browser E2E: complete onboarding, verify persistence after reload, sign out/sign back in, verify cross-session continuity, protected-route behavior and final RLS isolation evidence. Batch 2 remains locked.
 
+### Batch 1 continuation — white-screen build blocker — 2026-09-14
+- Browser testing exposed a white screen because the repository still contained a stale `ProtectedCBT.tsx` import of the removed OTP functions `requestEmailCode` and `verifyEmailCode` from `authService.ts`.
+- Replaced that protected-CBT email-code flow with the canonical password sign-in flow using `signInWithPassword`, aligned with the current student authentication architecture.
+- Fix committed on `main` as `aa93ba3f8b9ac6e6a1a0128a658f4a136dffc816` (`fix(batch-1): align protected CBT with password auth`).
+- Local build verification after this fix is still required before declaring the white-screen blocker closed.
+
 ### Current Batch 1 gate status
-**NOT CLOSED YET.** Implementation and database hardening are in place. The remaining exit-gate blocker is a real authenticated E2E flow using a dedicated test account and suitable fixture data. Codespaces launch support and authentication implementation are committed to make browser testing reproducible. Supabase's **Confirm email** setting is now disabled, so password signup can be tested without confirmation email. No Batch 2 implementation has started.
+**NOT CLOSED YET.** Implementation and database hardening are in place. The remaining exit-gate blocker is a real authenticated E2E flow using a dedicated test account and suitable fixture data. The white-screen build blocker has been fixed in `ProtectedCBT.tsx`, but the fix still requires local build verification. Codespaces launch support and authentication implementation are committed to make browser testing reproducible. Supabase's **Confirm email** setting is now disabled, so password signup can be tested without confirmation email. No Batch 2 implementation has started.
 
 ## Important
 This file records notable project progress only—milestones, architecture decisions, important blockers, security findings and verification results; do not log every command. Earlier architecture, CBT, Batch 0, monetization, AI, referral, notification and community milestones remain documented in the canonical handoff and prior project history.
