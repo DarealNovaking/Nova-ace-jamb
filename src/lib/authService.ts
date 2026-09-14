@@ -1,5 +1,5 @@
 import { supabase } from './supabase'
-import type { User, Session } from '@supabase/supabase-js'
+import type { AuthChangeEvent, User, Session } from '@supabase/supabase-js'
 
 function normalizeEmail(email: string) {
   const normalized = email.trim().toLowerCase()
@@ -7,6 +7,12 @@ function normalizeEmail(email: string) {
     throw new Error('Enter a valid email address.')
   }
   return normalized
+}
+
+function validatePassword(password: string) {
+  if (password.length < 8) {
+    throw new Error('Use a password with at least 8 characters.')
+  }
 }
 
 export async function getCurrentUser(): Promise<User | null> {
@@ -24,27 +30,39 @@ export async function getCurrentSession(): Promise<Session | null> {
   return data.session
 }
 
-export async function requestEmailCode(email: string) {
+export async function signUpWithPassword(email: string, password: string) {
   const normalized = normalizeEmail(email)
-  const { error } = await supabase.auth.signInWithOtp({
+  validatePassword(password)
+  const { data, error } = await supabase.auth.signUp({
     email: normalized,
-    options: { shouldCreateUser: true },
+    password,
+  })
+  if (error) throw error
+  return data
+}
+
+export async function signInWithPassword(email: string, password: string) {
+  const normalized = normalizeEmail(email)
+  if (!password) throw new Error('Enter your password.')
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email: normalized,
+    password,
+  })
+  if (error) throw error
+  return data
+}
+
+export async function requestPasswordReset(email: string) {
+  const normalized = normalizeEmail(email)
+  const { error } = await supabase.auth.resetPasswordForEmail(normalized, {
+    redirectTo: window.location.origin,
   })
   if (error) throw error
 }
 
-export async function verifyEmailCode(email: string, token: string) {
-  const normalized = normalizeEmail(email)
-  const code = token.trim().replace(/\s+/g, '')
-  if (!/^\d{6}$/.test(code)) {
-    throw new Error('Enter the 6-digit verification code from your email.')
-  }
-
-  const { data, error } = await supabase.auth.verifyOtp({
-    email: normalized,
-    token: code,
-    type: 'email',
-  })
+export async function updatePassword(password: string) {
+  validatePassword(password)
+  const { data, error } = await supabase.auth.updateUser({ password })
   if (error) throw error
   return data
 }
@@ -54,8 +72,8 @@ export async function signOut() {
   if (error) throw error
 }
 
-export function onAuthStateChange(callback: (user: User | null, session: Session | null) => void) {
-  return supabase.auth.onAuthStateChange((_event, session) => {
-    callback(session?.user ?? null, session)
+export function onAuthStateChange(callback: (user: User | null, session: Session | null, event: AuthChangeEvent) => void) {
+  return supabase.auth.onAuthStateChange((event, session) => {
+    callback(session?.user ?? null, session, event)
   })
 }
