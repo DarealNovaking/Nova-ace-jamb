@@ -62,7 +62,7 @@
 - Root cause: the earlier Batch 1 API-privileges migration granted access to the student profile/preferences/device tables and subject-selection RPC, but omitted `SELECT` on `ace.subjects`. The onboarding query therefore could not render the subject options.
 - Applied Supabase migration `batch_1_subject_catalog_api_privileges` granting `SELECT` on `ace.subjects` to `authenticated`, without changing the existing RLS policy.
 - Verified `has_table_privilege('authenticated','ace.subjects','SELECT')` is now **true**.
-- Recorded the applied migration in GitHub as `supabase/migrations/20260914120500_batch_1_subject_catalog_api_privileges.sql`, commit `93d536d5fe247677ad96676ec004dd41e32569e4`.
+- Recorded the applied migration in GitHub as `supabase/migrations/20260914120500_batch_1_subject_catalog_api_privileges.sql`, commit `93d536d5fe2476777a40c9b18a063cc3ab23fc75`.
 - This fixes the current Batch 1 onboarding blocker at the database/API privilege layer. The browser must now be refreshed/reloaded and the subject controls verified before the fix is considered E2E-complete.
 
 ### Batch 1 continuation — E2E pause until product completion — 2026-09-14
@@ -78,11 +78,25 @@
 - The function is `SECURITY DEFINER` with a fixed `search_path`; `EXECUTE` is explicitly granted to `authenticated` and revoked from `anon`/`public`.
 - Updated `studentService.ts` with `saveStudentFoundation()` and switched `StudentOnboarding.tsx` to use it, preventing partial onboarding state when one write fails.
 - Applied Supabase migration `batch_1_atomic_student_foundation_save`; verified it is present in the project migration history as `20260914190328`.
-- Re-verified privileges: `authenticated` can execute the new RPC, `anon` cannot, and authenticated schema usage remains enabled.
 - Recorded the migration in GitHub as `supabase/migrations/20260914200000_batch_1_atomic_student_foundation_save.sql`, commit `ae22fe5d1a7f567f040832eeaf4de4bf2c0ad0ee`.
 
+### Batch 2 — JAMB Season + Syllabus Engine — implementation started 2026-09-14
+- Re-checked the canonical master handoff, gated implementation plan, final architecture, current repository and live Supabase schema before beginning Batch 2.
+- Verified that the existing architecture already contained base `exam_seasons`, `exam_configs`, `subjects`, `topics` and `subtopics`, but lacked the normalized season-to-subject exam composition, versioned syllabus ownership, and structured institution/program/UTME-rule catalog needed for the final onboarding and season-aware engine.
+- Applied Supabase migration `batch_2_jamb_season_syllabus_engine`, adding `exam_config_subjects`, `syllabus_versions`, `institutions`, `programs`, and `program_utme_rules`; attached `syllabus_version_id` to topics/subtopics; added indexes, authenticated read access, editor/admin write policies, and season/config activation boundaries.
+- Added `ace.activate_exam_season(uuid)` as an authenticated editor/admin-only server-side activation gate. A season cannot activate without an active exam configuration and at least one active syllabus version, and activating one season archives any previously active season.
+- Added `ace.get_active_exam_blueprint()` as the student-facing read boundary for the currently active exam configuration.
+- Verified against JAMB's official 2026 training manual: UTME structure is 180 questions total, 2 hours, with Use of English compulsory at 60 questions and three other chosen subjects at 40 questions each; each question has four options. citeturn2search0
+- Seeded official 2026 subject catalog to **25 active approved UTME subjects**, normalized duplicate legacy placeholders, and created a closed 2026 season with the verified official 2026 exam structure. The 2027 season is intentionally a **draft scaffold** with no invented dates, composition or programme requirements.
+- Added 2026 and 2027 syllabus-version records for all 25 subjects. These are intentionally draft/pending-rights records pointing to JAMB/IBASS as the authoritative source; topic/subtopic extraction is not fabricated.
+- Applied a follow-up catalog normalization migration and recorded both Batch 2 migrations in the repository.
+- Added `src/lib/seasonService.ts`, providing typed service boundaries for active exam blueprints, seasons, syllabus trees, institutions, programs and programme-specific UTME rules.
+
 ### Current Batch 1 gate status
-**IMPLEMENTATION HARDENING COMPLETE; FORMAL GATE STILL OPEN.** The Batch 1 student foundation implementation and database hardening are in place, including atomic onboarding persistence. Manual/E2E testing remains intentionally deferred until the product implementation surface is substantially complete. We must not claim Batch 1 is formally closed until the deferred comprehensive E2E cycle is executed and produces evidence for signup/authentication, onboarding persistence/reload, sign-out/sign-in continuity, multi-device retrieval, protected-route behavior and RLS isolation. The unresolved earlier “Cannot save your profile” symptom is no longer the active save architecture—the save path has been replaced by the atomic RPC—but its final browser-level resolution remains part of the deferred E2E evidence.
+**IMPLEMENTATION HARDENING COMPLETE; FORMAL GATE STILL OPEN.** Manual/E2E testing remains intentionally deferred until the product implementation surface is substantially complete. The unresolved earlier “Cannot save your profile” symptom is no longer the active save architecture—the save path has been replaced by the atomic RPC—but its final browser-level resolution remains part of the deferred E2E evidence.
+
+### Current Batch 2 status
+**IMPLEMENTATION IN PROGRESS.** The season/exam configuration boundary, official 2026 structure, 25-subject catalog, versioned syllabus ownership, structured institution/program catalog schema, UTME rule schema, activation gate, and frontend service boundary are implemented. The authoritative institution/program dataset and actual syllabus topic/subtopic taxonomy still require ingestion/review from JAMB/IBASS before Batch 2 can be declared complete. No invented programme combinations or syllabus topics have been seeded.
 
 ## Important
 This file records notable project progress only—milestones, architecture decisions, important blockers, security findings and verification results; do not log every command. Earlier architecture, CBT, Batch 0, monetization, AI, referral, notification and community milestones remain documented in the canonical handoff and prior project history.
