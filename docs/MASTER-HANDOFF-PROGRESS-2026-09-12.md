@@ -25,8 +25,16 @@
 - This avoids dependence on a Codespaces/browser redirect URL for the student verification step and makes signup testing possible entirely in the current browser session.
 - Supabase email delivery must use the OTP token template (`{{ .Token }}`) rather than a confirmation-link-only template for the code to be delivered as a usable 6-digit code. This configuration is external to the repository and must be set in Supabase Auth email templates before E2E testing.
 
+### Password authentication decision — 2026-09-14
+- Replaced the temporary passwordless email-code implementation with standard **email + password** authentication for student signup and sign-in.
+- Added password validation (minimum 8 characters), password signup, password sign-in, password-reset email request, and password update/recovery handling.
+- Updated the student auth UI to provide **Create account**, **Sign in**, **Forgot password**, and recovery/new-password states. Normal signup no longer depends on a confirmation email.
+- Added recovery-session handling in `StudentFoundationGate` so Supabase password-reset sessions are routed to the in-app new-password screen before the normal student foundation gate.
+- Product decision: keep Supabase's default email service for now; do **not** introduce custom SMTP solely for signup confirmation. Signup confirmation will be disabled after the repository flow is ready for E2E. Password-reset email remains the recovery mechanism.
+- No payment, referral, WhatsApp/community, Batch 2+, or other later-batch implementation was started by this authentication change.
+
 ### Current Batch 1 gate status
-**NOT CLOSED YET.** Implementation and database hardening are in place. The remaining exit-gate blocker is a real authenticated E2E flow using a dedicated test account and suitable fixture data. Codespaces launch support and email-code authentication are now committed to make browser testing reproducible. No Batch 2 implementation has started.
+**NOT CLOSED YET.** Implementation and database hardening are in place. The remaining exit-gate blocker is a real authenticated E2E flow using a dedicated test account and suitable fixture data. Codespaces launch support and authentication implementation are committed to make browser testing reproducible. Supabase's **Confirm email** setting still needs to be disabled by the project owner before password signup can be tested without confirmation email. No Batch 2 implementation has started.
 
 ## Important
 This file records notable project progress only—milestones, architecture decisions, important blockers, and completed phases. Earlier architecture, CBT, Batch 0, monetization, AI, referral, notification and community milestones remain documented in the canonical handoff and prior project history.
