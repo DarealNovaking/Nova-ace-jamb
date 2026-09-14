@@ -33,8 +33,16 @@
 - Product decision: keep Supabase's default email service for now; do **not** introduce custom SMTP solely for signup confirmation. Signup confirmation will be disabled after the repository flow is ready for E2E. Password-reset email remains the recovery mechanism.
 - No payment, referral, WhatsApp/community, Batch 2+, or other later-batch implementation was started by this authentication change.
 
+### Batch 1 continuation — password flow E2E readiness — 2026-09-14
+- Verified the password-auth implementation is present on `main`, including `signUpWithPassword`, `signInWithPassword`, password reset/update handling, and recovery-session routing.
+- Project owner disabled Supabase **Authentication → Providers → Email → Confirm email**, removing signup confirmation as a dependency for the password-based E2E flow.
+- Supabase project `nova-ace-jamb` is healthy and now contains **1 auth user, 1 ACE profile, 1 student-preferences row, 1 notification-preferences row and 1 referral-code row**; the account has not yet completed student-device registration/onboarding because `ace.devices` and `ace.student_subjects` remain empty.
+- Current security advisor has no RLS/security lint finding except the Supabase Auth warning that **Leaked Password Protection is disabled**. This is a dashboard-level security setting and remains a recommended pre-release hardening item.
+- Current performance advisor reports RLS initialization-plan and multiple-permissive-policy warnings plus unused-index informational findings. These are optimization findings, not a Batch 1 correctness blocker; no unsafe schema change was made merely to silence them.
+- Current Batch 1 blocker remains the real browser E2E: complete onboarding, verify persistence after reload, sign out/sign back in, verify cross-session continuity, protected-route behavior and final RLS isolation evidence. Batch 2 remains locked.
+
 ### Current Batch 1 gate status
-**NOT CLOSED YET.** Implementation and database hardening are in place. The remaining exit-gate blocker is a real authenticated E2E flow using a dedicated test account and suitable fixture data. Codespaces launch support and authentication implementation are committed to make browser testing reproducible. Supabase's **Confirm email** setting still needs to be disabled by the project owner before password signup can be tested without confirmation email. No Batch 2 implementation has started.
+**NOT CLOSED YET.** Implementation and database hardening are in place. The remaining exit-gate blocker is a real authenticated E2E flow using a dedicated test account and suitable fixture data. Codespaces launch support and authentication implementation are committed to make browser testing reproducible. Supabase's **Confirm email** setting is now disabled, so password signup can be tested without confirmation email. No Batch 2 implementation has started.
 
 ## Important
-This file records notable project progress only—milestones, architecture decisions, important blockers, and completed phases. Earlier architecture, CBT, Batch 0, monetization, AI, referral, notification and community milestones remain documented in the canonical handoff and prior project history.
+This file records notable project progress only—milestones, architecture decisions, important blockers, security findings and verification results; do not log every command. Earlier architecture, CBT, Batch 0, monetization, AI, referral, notification and community milestones remain documented in the canonical handoff and prior project history.
