@@ -107,6 +107,13 @@
 - Current live catalog remains intentionally unpopulated: **0 institutions, 0 programmes, 0 UTME rules, 0 topics/subtopics**. No unverified JAMB/IBASS data was promoted.
 - Current authoritative research confirms JAMB's IBASS Eligibility Checker exposes institution → programme → UTME subject-combination selection and states that English is selected by default; JAMB's FAQ directs candidates to IBASS to verify the correct combination for each programme. citeturn0search1turn0search4
 
+### Batch 2 continuation — catalog-safe onboarding state — 2026-09-15
+- Updated `StudentOnboarding.tsx` so an unpublished/empty verified catalogue is handled as an explicit product state rather than a confusing blank dropdown.
+- When the authoritative institution catalogue is empty, onboarding now explains that the verified catalogue is not yet published, disables institution/course selection and the continuation action, and explicitly avoids guessing a JAMB subject combination.
+- Added an accessible `role="alert"` around onboarding messages.
+- Commit `78ce160bcff095f5d0bc8a1a8946621d0d77605e` (`fix(batch-2): handle unpublished catalog state`).
+- This is a frontend-affecting Batch 2 change and requires the repository Playwright gate before being considered verified.
+
 ### Current Batch 1 gate status
 **IMPLEMENTATION HARDENING COMPLETE; FORMAL GATE STILL OPEN.** Manual/E2E testing remains intentionally deferred until the product implementation surface is substantially complete. The unresolved earlier “Cannot save your profile” symptom is no longer the active save architecture—the save path has been replaced by the atomic RPC—but its final browser-level resolution remains part of the deferred E2E evidence.
 
