@@ -8,8 +8,10 @@
 - Existing authorization architecture was preserved: `ace.is_admin()` and `ace.is_admin_or_editor()` remain the role gates; RLS policies continue to enforce least-privilege access.
 - Added `ace.set_user_role(uuid,text)` as an admin-only `SECURITY DEFINER` function with a fixed search path. It accepts only `student`, `editor`, or `admin`; verifies the target Auth user exists; prevents removal of the last admin; updates `ace.roles`; and writes an auditable `role_changed` event to `ace.audit_events`.
 - Revoked function execution from `public`/`anon` and granted it only to `authenticated`.
-- Applied live Supabase migration `batch_2_admin_role_management`.
-- Recorded the same migration in GitHub as `supabase/migrations/20260916090000_batch_2_admin_role_management.sql`, commit `58b20a0e1e5585152a1934ad9300885e74a3f953`.
+- Applied live Supabase migrations `batch_2_admin_role_management` and `batch_2_admin_role_management_fix_audit`.
+- Corrected the audit insert before relying on the new role-management function; the final repository migration is `supabase/migrations/20260916090000_batch_2_admin_role_management.sql`, with GitHub fix commit `4ebcffcecf460c7223479a1ed95855d079a6b732`.
+- Recorded the original migration commit as `58b20a0e1e5585152a1934ad9300885e74a3f953` and the documentation commit as `2b065b1a029c02e358d1440f9cd91cb22a1fef4e`.
+- The initial direct admin bootstrap is also recorded in `ace.audit_events` as `role_bootstrap`.
 - Live role verification confirms the project owner's account is now `admin`.
 
 ## Batch 2 state after this change
