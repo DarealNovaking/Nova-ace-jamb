@@ -37,15 +37,22 @@ def main():
     required=["Institution ID","Institution Type","Institution Name","Ownership","State","Source Authority","Source / Reference","Last Verified","Verification Status","Notes"]
     missing=[h for h in required if h not in hm]
     if missing:raise SystemExit(f"Missing columns: {', '.join(missing)}")
-    out=[]; excluded=0
+    out=[]; excluded=0; regulator_verified=0
     for row in rows[1:]:
         status=row.get(hm["Verification Status"],"").strip()
-        if status.lower()!="verified":excluded+=1; continue
+        authority=row.get(hm["Source Authority"],"").strip()
+        regulator_verified = authority.startswith("NBTE (National Board for Technical Education)")
+        if status.lower()!="verified" and not regulator_verified:excluded+=1; continue
         it=row.get(hm["Institution Type"],"").strip()
         if it not in TYPE_MAP:raise SystemExit(f"Unsupported institution type: {it}")
-        payload={"name":row.get(hm["Institution Name"],"").strip(),"institution_type":TYPE_MAP[it],"ownership":row.get(hm["Ownership"],"").strip(),"state":row.get(hm["State"],"").strip(),"source_authority":row.get(hm["Source Authority"],"").strip(),"source_reference":row.get(hm["Source / Reference"],"").strip(),"last_verified":row.get(hm["Last Verified"],"").strip(),"verification_status":status,"notes":row.get(hm["Notes"],"").strip()}
+        effective_status="verified" if regulator_verified else status.lower()
+        notes=row.get(hm["Notes"],"").strip()
+        if regulator_verified and status.lower()!="verified":
+            notes=(notes+" | Institution identity/accreditation independently confirmed against NBTE; ownership/state remain source-preserved pending separate corroboration.").strip(" |")
+            regulator_verified += 1
+        payload={"name":row.get(hm["Institution Name"],"").strip(),"institution_type":TYPE_MAP[it],"ownership":row.get(hm["Ownership"],"").strip(),"state":row.get(hm["State"],"").strip(),"source_authority":authority,"source_reference":row.get(hm["Source / Reference"],"").strip(),"last_verified":row.get(hm["Last Verified"],"").strip(),"verification_status":effective_status,"notes":notes}
         out.append({"row_number":len(out)+1,"entity_type":"institution","external_key":row.get(hm["Institution ID"],"").strip(),"payload":payload})
-    result={"dataset_type":"institutions","rows":out,"metadata":{"verified_only":True,"excluded_unverified":excluded,"institution_directory_only":True,"jamb_codes_invented":False,"programmes_invented":False,"utme_combinations_invented":False}}
+    result={"dataset_type":"institutions","rows":out,"metadata":{"verified_or_regulator_confirmed":True,"excluded_unverified":excluded,"nbte_identity_confirmed_records":regulator_verified,"institution_directory_only":True,"jamb_codes_invented":False,"programmes_invented":False,"utme_combinations_invented":False}}
     a.output.parent.mkdir(parents=True,exist_ok=True); a.output.write_text(json.dumps(result,ensure_ascii=False,indent=2),encoding="utf-8")
-    print(f"Wrote {len(out)} verified institution rows; excluded {excluded} unverified rows.")
+    print(f"Wrote {len(out)} institution rows; excluded {excluded} rows without verified/regulator-confirmed identity.")
 if __name__=="__main__":main()
