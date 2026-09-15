@@ -18,6 +18,11 @@ const json = (body: unknown, status = 200) =>
     headers: { "content-type": "application/json" },
   });
 
+const sha256Hex = async (value: string) => {
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value));
+  return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
+};
+
 Deno.serve(async (req) => {
   if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
 
@@ -122,6 +127,24 @@ Deno.serve(async (req) => {
   );
   if (invalid) return json({ error: `Invalid catalog row at row ${invalid.row_number}` }, 400);
 
+  const snapshotHash = await sha256Hex(raw);
+  const { data: existingBatch, error: existingBatchError } = await adminClient
+    .schema("ace")
+    .from("catalog_import_batches")
+    .select("id,status,row_count")
+    .eq("snapshot_hash", snapshotHash)
+    .maybeSingle();
+  if (existingBatchError) return json({ error: "Unable to check import idempotency" }, 500);
+  if (existingBatch) {
+    return json({
+      batch_id: existingBatch.id,
+      status: existingBatch.status,
+      row_count: existingBatch.row_count,
+      idempotent: true,
+      message: "This exact catalog snapshot was already staged.",
+    }, 200);
+  }
+
   const { data: batch, error: batchError } = await adminClient
     .schema("ace")
     .from("catalog_import_batches")
@@ -131,6 +154,7 @@ Deno.serve(async (req) => {
       dataset_type: body.dataset_type,
       status: "staged",
       row_count: normalizedRows.length,
+      snapshot_hash: snapshotHash,
       metadata: {
         ...(body.metadata ?? {}),
         source_title: source.title,
@@ -163,5 +187,6 @@ Deno.serve(async (req) => {
     row_count: rows.length,
     source: source.title,
     imported_by: userData.user.id,
+    snapshot_hash: snapshotHash,
   }, 201);
 });
