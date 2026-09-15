@@ -23,6 +23,7 @@ export default function StudentOnboarding({ onComplete }: { onComplete: () => vo
 
   const combination = useMemo(() => combinationIds.map((id) => subjects.find((subject) => subject.id === id)).filter(Boolean) as Subject[], [combinationIds, subjects])
   const fixedCombination = combinationIds.length === 4
+  const catalogUnavailable = !busy && institutions.length === 0
 
   useEffect(() => {
     let active = true
@@ -39,6 +40,9 @@ export default function StudentOnboarding({ onComplete }: { onComplete: () => vo
       setName(profile.display_name ?? '')
       setTarget(String(profile.target_score ?? 300))
       setDailyMinutes(String(Math.max(1, preferences.daily_minutes ?? 60)))
+      if (catalog.length === 0) {
+        setMessage('The verified JAMB institution catalogue has not been published yet. Your preparation data is safe; return when the catalogue is available.')
+      }
     }).catch((error) => setMessage(error instanceof Error ? error.message : 'Could not load your preparation setup.'))
       .finally(() => active && setBusy(false))
     return () => { active = false }
@@ -114,21 +118,21 @@ export default function StudentOnboarding({ onComplete }: { onComplete: () => vo
         <h1 className="mt-2 text-4xl font-black sm:text-5xl">Build your preparation profile.</h1>
         <p className="mt-3 max-w-xl text-white/50">Choose your institution and course. ACE will use the verified JAMB combination for that programme instead of making you guess your subjects.</p>
       </div>
-      {message && <div className="mb-5 rounded-xl border border-white/10 bg-white/5 p-3 text-sm text-white/80">{message}</div>}
+      {message && <div role="alert" className="mb-5 rounded-xl border border-white/10 bg-white/5 p-3 text-sm text-white/80">{message}</div>}
       <section className="glass-card space-y-5 rounded-3xl p-6">
         <label className="block"><span className="mb-2 block text-sm text-white/60">Display name</span><input className="field w-full" value={name} onChange={(e) => setName(e.target.value)} maxLength={80} /></label>
         <div className="grid gap-5 sm:grid-cols-2">
           <label className="block"><span className="mb-2 block text-sm text-white/60">Target JAMB score</span><input className="field w-full" type="number" min="0" max="400" value={target} onChange={(e) => setTarget(e.target.value)} /></label>
           <label className="block"><span className="mb-2 block text-sm text-white/60">Daily study time (minutes)</span><input className="field w-full" type="number" min="1" max="1440" value={dailyMinutes} onChange={(e) => setDailyMinutes(e.target.value)} /></label>
         </div>
-        <label className="block"><span className="mb-2 block text-sm text-white/60">Intended institution</span><select className="field w-full" value={selectedInstitution} onChange={(e) => setSelectedInstitution(e.target.value)}><option value="">Select your institution</option>{institutions.map((institution) => <option key={institution.id} value={institution.id}>{institution.name}</option>)}</select></label>
-        <label className="block"><span className="mb-2 block text-sm text-white/60">Intended course</span><select className="field w-full" value={selectedProgram} onChange={(e) => setSelectedProgram(e.target.value)} disabled={!selectedInstitution}><option value="">{selectedInstitution ? 'Select your course' : 'Select an institution first'}</option>{programs.map((program) => <option key={program.id} value={program.id}>{program.name}</option>)}</select></label>
+        <label className="block"><span className="mb-2 block text-sm text-white/60">Intended institution</span><select className="field w-full" value={selectedInstitution} onChange={(e) => setSelectedInstitution(e.target.value)} disabled={catalogUnavailable}><option value="">{catalogUnavailable ? 'Verified institution catalogue unavailable' : 'Select your institution'}</option>{institutions.map((institution) => <option key={institution.id} value={institution.id}>{institution.name}</option>)}</select></label>
+        <label className="block"><span className="mb-2 block text-sm text-white/60">Intended course</span><select className="field w-full" value={selectedProgram} onChange={(e) => setSelectedProgram(e.target.value)} disabled={!selectedInstitution || catalogUnavailable}><option value="">{catalogUnavailable ? 'Waiting for verified catalogue' : selectedInstitution ? 'Select your course' : 'Select an institution first'}</option>{programs.map((program) => <option key={program.id} value={program.id}>{program.name}</option>)}</select></label>
         <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
           <p className="text-sm font-semibold">Verified JAMB subject combination</p>
           <p className="mt-1 text-xs text-white/40">This is derived from the active season and selected programme.</p>
-          {combination.length === 4 ? <div className="mt-3 flex flex-wrap gap-2">{combination.map((subject) => <span key={subject.id} className="rounded-full border border-purple-300/30 bg-purple-500/10 px-3 py-1.5 text-xs">{subject.name}</span>)}</div> : combination.length ? <p className="mt-3 text-sm text-amber-200/80">This programme has alternative subject choices. ACE will require an explicit subject-choice step rather than guessing one for you.</p> : <p className="mt-3 text-sm text-white/45">Select a course with an approved combination to continue.</p>}
+          {catalogUnavailable ? <p className="mt-3 text-sm text-white/45">No verified institution/course catalogue is published yet. ACE will not guess your combination.</p> : combination.length === 4 ? <div className="mt-3 flex flex-wrap gap-2">{combination.map((subject) => <span key={subject.id} className="rounded-full border border-purple-300/30 bg-purple-500/10 px-3 py-1.5 text-xs">{subject.name}</span>)}</div> : combination.length ? <p className="mt-3 text-sm text-amber-200/80">This programme has alternative subject choices. ACE will require an explicit subject-choice step rather than guessing one for you.</p> : <p className="mt-3 text-sm text-white/45">Select a course with an approved combination to continue.</p>}
         </div>
-        <button type="button" disabled={saving || !fixedCombination} onClick={save} className="w-full rounded-xl bg-white py-3 font-bold text-black disabled:opacity-50">{saving ? 'Saving…' : 'Continue to ACE'}</button>
+        <button type="button" disabled={saving || !fixedCombination || catalogUnavailable} onClick={save} className="w-full rounded-xl bg-white py-3 font-bold text-black disabled:opacity-50">{saving ? 'Saving…' : catalogUnavailable ? 'Waiting for verified catalogue' : 'Continue to ACE'}</button>
       </section>
       <button type="button" onClick={() => supabase.auth.signOut()} className="mt-4 w-full py-3 text-sm text-white/40">Sign out</button>
     </div>
