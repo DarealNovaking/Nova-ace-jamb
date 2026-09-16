@@ -1,25 +1,56 @@
-# Batch 2 Authenticated Import Blocker — 2026-09-16
+# Batch 2 Authenticated Import / IBASS Discovery — 2026-09-16
 
 ## Verification performed
 
-- Re-checked the live Nova Ace JAMB Supabase database: `ace.institutions=0`, `ace.catalog_import_batches=1`, `ace.catalog_import_rows=1`.
-- Re-checked the authoritative Phase 1 workbook locally: `INSTITUTIONS` contains exactly 791 records with the expected authority split of NUC 328, NBTE 199 and NCCE 264.
-- Re-checked the importer implementation: `/admin-import` requires an authenticated session and `ace.is_admin`, then uses the secured `catalog-import` Edge Function followed by validate → approve → publish → count verification.
-- GitHub Actions push verification for current `main` commit `29ac17f8f3487bca9c5614c92c5913b776c9b5e0` is green for both `Verify` and `ACE JAMB E2E`. The current Playwright suite remains smoke coverage and does not perform authenticated admin import.
+- Live Supabase remains empty for published institutions/programmes/UTME rules; the secure catalogue pipeline remains the only approved ingestion path.
+- Phase 1 institution workbook remains 791 records with NUC 328, NBTE 199, NCCE 264.
+- `/admin-import` requires authenticated admin access and uses secure stage → validate → approve → publish.
+- GitHub Actions was previously verified green on the then-current main commit; authenticated admin E2E remains outstanding.
 
-## Browser authentication result
+## Browser authentication blocker
 
-- Attempted browser verification of the Supabase project using the available authenticated-profile path.
-- Supabase redirected to its sign-in page. No active Supabase session cookies/tokens were present and no vault credentials were configured.
-- Therefore the `/admin-import` authenticated flow cannot currently be executed through browser automation.
-- No direct database insertion, service-role bypass, or other privileged workaround was used.
+- Supabase dashboard browser automation previously reached sign-in with no active session/vault credentials.
+- No service-role or direct privileged bypass was used.
+
+## New authoritative IBASS discovery — 2026-09-16
+
+Public inspection of the JAMB IBASS Eligibility Checker confirmed:
+
+1. Institution hierarchy endpoint:
+   `https://eligibility.jamb.gov.ng/institution_data.json?v=1`
+   - GET JSON.
+   - Hierarchy: school_type → institution_category → institution.
+   - Institution records expose JAMB institution IDs, names and category IDs.
+
+2. Programme endpoint:
+   `https://eligibility.jamb.gov.ng/load_programs.php?school={institution_id}`
+   - GET JSON.
+   - Returns programme ID + programme title for an institution.
+   - Example institution 1189 (Ahmadu Bello University) returned 100+ programmes.
+
+3. UTME subject catalogue:
+   `https://eligibility.jamb.gov.ng/subjects_jamb.json?v=1`
+   - GET JSON.
+   - Provides the available UTME subject universe.
+
+4. Critical limitation discovered:
+   The public institution and programme endpoints do **not** expose programme-specific UTME subject combinations. The programme endpoint only returns programme IDs/titles; the subject JSON is a flat subject universe. Therefore ACE must not infer or invent course-specific combinations from these endpoints.
+
+## Engineering decision
+
+- IBASS institution/programme endpoints are approved authoritative discovery sources for the institution → programme catalogue layer.
+- Programme-specific UTME rules require a separate authoritative extraction path (e.g. official IBASS/JAMB brochure/eligibility data that actually contains the rule).
+- Do not scrape or automate eligibility checks with invented parameters merely to manufacture mappings.
+- Preserve alternative subject combinations explicitly when authoritative source data provides them.
 
 ## Gate status
 
 **Batch 2 remains IN PROGRESS. Batch 3 remains LOCKED.**
 
-The remaining critical gate is an authenticated administrator browser session followed by the real 791-row secured import and verification. Do not claim the catalogue is published until the database contains exactly 791 verified published institution records and the authority/status evidence is recorded.
-
 ## Next action
 
-When an authenticated Supabase browser session is available, run the Phase 1 workbook through `/admin-import` and verify the complete staging → validation → approval → publication pipeline. Then record the final database counts and authority/status breakdown in the master handoff before closing Batch 2.
+1. Build the safe IBASS institution/programme ingestion adapter around the verified public endpoints.
+2. Identify and validate the authoritative programme-specific UTME rule source/path.
+3. Continue through secure stage → validation → approval → publication.
+4. Obtain an authenticated admin browser session to execute the existing 791-institution import and final authenticated E2E verification.
+5. Record all resulting counts and evidence before closing Batch 2.
