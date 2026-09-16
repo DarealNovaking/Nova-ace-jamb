@@ -8,13 +8,28 @@
 - There are 5 approved catalogue sources in the live database.
 - Re-checked `src/main.tsx` and confirmed the newly wired `/admin-import` route called `createRoot(...)` without importing it from `react-dom`.
 - Fixed the compile blocker by adding `import { createRoot } from 'react-dom/client';`.
-- Commit: `7c69d1e3179a54b680468478de367f303e0ab1d3` (`fix(batch-2): restore createRoot import`).
+- Fix commit: `7c69d1e3179a54b680468478de367f303e0ab1d3` (`fix(batch-2): restore createRoot import`).
 
-## Verification state
+## Verification state — updated
 
-- The previous CI failure was a TypeScript error caused by the missing `createRoot` import; this fix addresses that exact error.
-- A fresh CI run must still be observed before claiming typecheck/build/Playwright success.
+- GitHub Actions was re-run on the corrected main branch commit `8a40b101fae4ea0046d856ba6c856c0a93152898`.
+- `Verify` workflow run `35097937614` completed successfully.
+- `ACE JAMB E2E` workflow run `35097937595` completed successfully.
+- The E2E job completed typecheck, build, Playwright browser installation, and browser tests successfully.
+- The current Playwright CI suite is a smoke suite covering the student entry surface and mobile overflow behavior. It does not authenticate an admin account or execute the catalogue import pipeline.
+- Therefore CI/browser smoke health is green, but authenticated `/admin-import` verification and the real 791-row catalogue promotion gate remain open.
 - No production catalogue data was inserted or promoted by this change.
+
+## Live database verification
+
+Verified against Supabase project `nova-ace-jamb` (`uokiqlgmzprqfbzmedaz`):
+
+- `ace.institutions`: 0
+- `ace.catalog_import_batches`: 1
+- `ace.catalog_import_rows`: 1
+- approved `ace.catalog_sources`: 5
+
+The 1 staged row is not evidence of the 791-row production catalogue.
 
 ## Batch 2 gate
 
@@ -22,7 +37,7 @@ Batch 2 remains **IN PROGRESS**. Batch 3 remains locked.
 
 ## Next required gate
 
-1. Confirm GitHub Actions runs against commit `7c69d1e...` and inspect typecheck/build results.
-2. Run authenticated browser/Playwright verification of `/admin-import` when an authenticated browser session is available.
-3. Exercise the secure staged → validated → approved → published pipeline using the authoritative 791-row workbook.
-4. Verify the final published `ace.institutions` count is exactly 791 and document the result before any gate closure.
+1. Obtain an authenticated browser session and verify `/admin-import` access control and admin UI behavior with Playwright/browser automation.
+2. Exercise the secure staged → validated → approved → published pipeline using the authoritative 791-row workbook.
+3. Verify the final published `ace.institutions` count is exactly 791 and inspect source-authority counts and validation status.
+4. Record the complete import evidence in the master handoff before any Batch 2 gate closure.
