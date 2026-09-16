@@ -1,4 +1,5 @@
 import { StrictMode, useEffect, useState } from 'react';
+import { createRoot } from 'react-dom/client';
 import ProtectedCBT from './components/ProtectedCBT';
 import StudentFoundationGate from './components/StudentFoundationGate';
 import AdminCatalogueImport from './components/AdminCatalogueImport';
