@@ -4,7 +4,7 @@ import { buildIbassBrochureUrl, fetchIbassInstitutions, fetchIbassProgrammes, no
 
 const MAX_INSTITUTIONS = 25;
 const IBASS_PROGRAM_SOURCE_ID = "16388e42-7bed-4541-89ff-8ffb0e648425";
-const IBASS_BROCHURE_SOURCE_ID = "0b337599-1ca5-4d20-ba83-5ea4e8ab016";
+const IBASS_BROCHURE_SOURCE_ID = "9959f7d6-0071-4ab3-880c-a79f3c81e561";
 const SUBJECT_ALIASES: Record<string, string[]> = {
   AGR:["agriculture"],ARA:["arabic"],ART:["art","fine art"],BIO:["biology"],CHE:["chemistry"],CRS:["christian religious studies","christian religion"],COM:["commerce"],CST:["computer studies","computer science"],ECO:["economics"],FRE:["french"],GEO:["geography"],GOV:["government"],HAU:["hausa"],HIS:["history"],HEC:["home economics"],IGB:["igbo"],ISS:["islamic studies","islamic religion"],LIT:["literature in english","literature-in-english","literature"],MAT:["mathematics","maths"],MUS:["music"],PHY:["physics"],POA:["principles of account","principles of accounts","accounting"],ENG:["english language","use of english","english"],YOR:["yoruba"],PHE:["physical and health education","physical education"]
 };
