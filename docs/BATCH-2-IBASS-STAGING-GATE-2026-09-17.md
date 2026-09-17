@@ -19,13 +19,15 @@ A valid non-archived season is available for the controlled smoke run:
 
 ## Verification pass — 2026-09-17
 
-- Re-checked repository branch `batch-2/ibass-staging-execution`; current pre-documentation tip was `ecf05e09a73fa3706f2a34987abfe3044f7b4a32`.
+- Re-checked repository branch `batch-2/ibass-staging-execution` and current Batch 2 documentation state.
 - Re-checked the deployed Edge Function source and confirmed it still enforces `POST`, Bearer authentication, Supabase user validation, and `admin`/`editor` role authorization before any IBASS catalogue work.
 - Re-checked the database schema. The season table is `ace.exam_seasons` (not `ace.seasons`); the initial verification query used the wrong table name and failed. That query was corrected before continuing; no data was changed by the failed query.
 - Confirmed `jamb-2027` exists with status `draft`.
 - Confirmed the two IBASS sources used by the executor exist with statuses `approved` (programme endpoint) and `reviewed` (brochure detail pages).
 - Confirmed the previous 791-institution batch is currently `rejected`; no production institution rows were written by this verification pass.
 - Ran Supabase security advisors. The only returned warning is **Leaked Password Protection Disabled**; this is an Auth security hardening item and is not the IBASS staging executor gate failure.
+- Checked `ace.roles` and `auth.users`: an existing confirmed Auth user is already assigned the `admin` application role and has a prior sign-in. This means an application-level admin identity exists in Supabase; the remaining issue is obtaining a valid authenticated session in the execution environment, not creating another admin row blindly.
+- No password, access token, JWT, or other credential was requested or exposed.
 
 ## Required next action
 
