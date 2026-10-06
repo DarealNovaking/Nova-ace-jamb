@@ -12,10 +12,16 @@ const ENTITY_TYPES = new Set([
 ]);
 const DATASET_TYPES = new Set(["institutions", "programs", "utme_rules", "syllabus"]);
 
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+};
+
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), {
     status,
-    headers: { "content-type": "application/json" },
+    headers: { ...corsHeaders, "content-type": "application/json" },
   });
 
 const sha256Hex = async (value: string) => {
@@ -24,6 +30,7 @@ const sha256Hex = async (value: string) => {
 };
 
 Deno.serve(async (req) => {
+  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
 
   const authHeader = req.headers.get("authorization");
@@ -73,14 +80,16 @@ Deno.serve(async (req) => {
   const { data: userData, error: userError } = await userClient.auth.getUser();
   if (userError || !userData.user) return json({ error: "Invalid authentication" }, 401);
 
-  const { data: role, error: roleError } = await adminClient
+  // Use the authenticated user's security-definer role check instead of querying
+  // ace.roles through the service-role PostgREST client. This keeps the privilege
+  // decision tied to the caller's JWT and avoids custom-schema permission drift.
+  const { data: canManageCatalog, error: permissionError } = await userClient
     .schema("ace")
-    .from("roles")
-    .select("role")
-    .eq("user_id", userData.user.id)
-    .maybeSingle();
-  if (roleError) return json({ error: "Unable to verify permissions" }, 500);
-  if (!role || !["admin", "editor"].includes(role.role)) {
+    .rpc("can_manage_catalog");
+  if (permissionError) {
+    return json({ error: "Unable to verify permissions", detail: permissionError.message }, 500);
+  }
+  if (canManageCatalog !== true) {
     return json({ error: "Admin/editor access required" }, 403);
   }
 
