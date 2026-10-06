@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { ace, supabase } from '../lib/supabase'
-import { getCurrentUser, onAuthStateChange } from '../lib/authService'
+import { getCurrentUser } from '../lib/authService'
 import AdminCatalogueImport from './AdminCatalogueImport'
 
 export default function AdminFoundationGate() {
@@ -8,37 +8,42 @@ export default function AdminFoundationGate() {
   const [allowed, setAllowed] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const check = async () => {
-    setChecking(true)
-    setError(null)
-    try {
-      const user = await getCurrentUser()
-      if (!user) {
-        setAllowed(false)
-        return
-      }
-      const { data, error: roleError } = await ace.rpc('is_admin')
-      if (roleError) throw roleError
-      if (!data) {
-        setAllowed(false)
-        setError('Administrator access is required.')
-        return
-      }
-      setAllowed(true)
-    } catch (caught) {
-      setAllowed(false)
-      setError(caught instanceof Error ? caught.message : 'Unable to verify administrator access.')
-    } finally {
-      setChecking(false)
-    }
-  }
-
   useEffect(() => {
+    let active = true
+
+    const check = async () => {
+      try {
+        const user = await getCurrentUser()
+        if (!user) {
+          if (active) setAllowed(false)
+          return
+        }
+
+        const { data, error: roleError } = await ace.rpc('is_admin')
+        if (roleError) throw roleError
+        if (!data) {
+          if (active) {
+            setAllowed(false)
+            setError('Administrator access is required.')
+          }
+          return
+        }
+
+        if (active) setAllowed(true)
+      } catch (caught) {
+        if (active) {
+          setAllowed(false)
+          setError(caught instanceof Error ? caught.message : 'Unable to verify administrator access.')
+        }
+      } finally {
+        if (active) setChecking(false)
+      }
+    }
+
     void check()
-    const { data } = onAuthStateChange((_user, _session, event) => {
-      if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') void check()
-    })
-    return () => data.subscription.unsubscribe()
+    return () => {
+      active = false
+    }
   }, [])
 
   const signOut = async () => {
