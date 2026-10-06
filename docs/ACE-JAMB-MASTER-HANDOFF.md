@@ -923,6 +923,20 @@ Verified source workbook: `nigeria_tertiary_institutions_phase1.xlsx`
 The workbook is the source of truth for Kill 1 and is **not committed to GitHub** unless explicitly requested.
 
 
+
+### Kill 2 — Programme + UTME ingestion started (2026-10-06)
+
+- Live baseline before Kill 2: `ace.programs` = **0**; `ace.program_utme_rules` = **0**.
+- Official JAMB/IBASS public sources were re-verified: IBASS brochure-by-institution pages expose institution programme lists; the JAMB Eligibility Checker states English is selected by default and exposes the approved UTME subject set. Programme/subject data will remain source-derived; ambiguous alternatives are withheld rather than inferred. 
+- Existing approved catalogue sources verified live: `JAMB IBASS programme endpoint` and `JAMB IBASS Programme Brochure Detail Pages`.
+- Added secure RPC `ace.get_catalog_institutions()` to expose the imported institution catalogue to the authenticated Kill 2 executor without direct custom-schema PostgREST table access.
+- Upgraded live `ibass-catalog-stage` to **v4**, JWT protected, bundle SHA **`360be6111d432648d1babbaf03f1f004f5c37f817b39a4cde478e844044a0524`**.
+- v4 accepts **1–25 database institution UUIDs per run**, deterministically maps them to official IBASS institutions by normalized exact institution name, fetches IBASS programme data and brochure detail pages, stages programme records, and stages only unambiguous UTME subject rules through the hardened `catalog-import` v7 path. Unmatched/ambiguous institutions and subject requirements are returned as unresolved instead of guessed.
+- A dedicated Git branch `feat/batch2-kill2-ibass-programmes` was created for Kill 2 work; no production merge has been made.
+- **Kill 2 is NOT COMPLETE yet.** No programme/rule rows are counted until a real staging run is executed and the resulting records pass validate → approve → publish and live count verification.
+
+**Next verification:** execute the v4 IBASS stage against a first 1–25-institution batch, inspect mapped/unresolved results, then proceed in batches only after the first batch is validated. Do not infer or fabricate unmatched IBASS mappings or UTME combinations.
+
 ### Current Batch 2 gate
 
 - **Kill 1 Institutions:** COMPLETE — live count **791/791** verified on 2026-10-06.
