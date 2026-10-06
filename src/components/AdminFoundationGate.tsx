@@ -35,7 +35,9 @@ export default function AdminFoundationGate() {
 
   useEffect(() => {
     void check()
-    const { data } = onAuthStateChange(() => void check())
+    const { data } = onAuthStateChange((_user, _session, event) => {
+      if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') void check()
+    })
     return () => data.subscription.unsubscribe()
   }, [])
 
