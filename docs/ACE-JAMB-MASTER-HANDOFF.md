@@ -1007,6 +1007,25 @@ A stronger follow-up fix was implemented on the active admin-routing branch:
 
 **Do not replace/recreate the workbook based on the current error. Current evidence does not indicate a workbook defect.**
 
+**Root cause isolated and backend fix deployed (2026-10-06):**
+
+- The diagnostic run exposed the exact failure: **HTTP 500 `{"error":"Unable to verify permissions"}`** during NUC staging.
+- The failing path was the Edge Function's server-side PostgREST lookup of `ace.roles` through the service-role client. The database itself is correct: the admin account has an `ace.roles` row with role `admin`.
+- To remove this custom-schema permission drift from the authorization path, a new security-definer RPC was added:
+  - `ace.can_manage_catalog()`
+  - returns true only when `auth.uid()` has role `admin` or `editor`
+  - executable by `authenticated` only
+  - `search_path` is pinned to `ace, public`
+- `catalog-import` now performs its permission decision through the authenticated caller's JWT context using `userClient.schema("ace").rpc("can_manage_catalog")`, while retaining the service-role client only for privileged catalog writes/reads.
+- CORS/preflight handling remains enabled.
+- Live deployment: **catalog-import v4**, bundle SHA **`0a41d6b16c59c6fc5960c62be578e730296d43ec2d76b8d7161bfe9fd48f4a20`**.
+- Repository commits on the active branch:
+  - importer fix: **`173506568c89ddb31a8fa01ab4f9cd227ec4e50a`**
+  - migration record: **`ad2ea8949a5ec34cca35574acb1460025c083655`**
+- The workbook remains verified and unchanged.
+- No institutions have been published; Kill 1 remains blocked until a fresh live import completes and the final database count is exactly **791**.
+
+**Next verification:** run the same XLSX import once against the newly deployed `catalog-import v4`. If NUC staging succeeds, continue through NBTE/NCCE and the existing validate → approve → publish → exact-count gate. If another error appears, capture its exact status/body before changing the workbook or data.
 ### Supabase Edge Functions
 
 Verified functions include:
