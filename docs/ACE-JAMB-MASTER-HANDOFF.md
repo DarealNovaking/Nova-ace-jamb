@@ -904,7 +904,7 @@ Batch 2 is being executed as:
 3. **Kill 3 — Syllabus**
 4. **Final Batch 2 gate**
 
-**Kill 1 is NOT complete yet.** The live `ace.institutions` table was previously verified at **0 records** before the import attempt. Do not count the institution dataset as imported until the final database count is exactly 791 and the import flow reports verified completion.
+**Kill 1 — Institutions: COMPLETE and live-verified.** The live `ace.institutions` table is now **791 records**, matching the authoritative workbook exactly: 328 universities + 199 polytechnics + 264 colleges of education. No institutions were counted from the rejected staging batch. The final importer flow completed successfully and the database count was independently verified at 791.
 
 ### Institution source workbook
 
@@ -921,6 +921,16 @@ Verified source workbook: `nigeria_tertiary_institutions_phase1.xlsx`
 - Institution names unique: yes
 
 The workbook is the source of truth for Kill 1 and is **not committed to GitHub** unless explicitly requested.
+
+
+### Current Batch 2 gate
+
+- **Kill 1 Institutions:** COMPLETE — live count **791/791** verified on 2026-10-06.
+- **Kill 2 Programmes + UTME combinations:** NOT STARTED. Live counts currently verified: `ace.programs` = **0**, `ace.program_utme_rules` = **0**.
+- **Kill 3 Syllabus:** BLOCKED until Kill 2 is gated.
+- **Batch 2 final gate:** BLOCKED until Kills 2 and 3 pass their verification gates.
+
+**Next execution:** begin Kill 2 by inspecting the existing IBASS staging/executor path and importing authoritative programme records institution-by-institution, then stage only source-derived/unambiguous UTME subject rules. Do not infer programme combinations.
 
 ### Current importer
 
