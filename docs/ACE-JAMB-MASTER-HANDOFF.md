@@ -1059,6 +1059,14 @@ A stronger follow-up fix was implemented on the active admin-routing branch:
 - The workbook remains verified and unchanged. No institutions have been published; Kill 1 remains blocked.
 
 **Next verification:** run the same workbook against `catalog-import` v7. If staging succeeds, the existing `validate_catalog_batch` → `approve_catalog_batch` → `publish_catalog_batch` sequence is already implemented as security-definer database functions. Capture any new exact status/body if a later gate fails.
+**Kill 1 institution import — VERIFIED COMPLETE (2026-10-06):**
+
+- Live `ace.institutions` count is **791**.
+- Composition matches the verified Phase 1 workbook exactly: **328 universities + 199 polytechnics + 264 colleges of education = 791**.
+- Published institution import batches are all complete: NUC **328/328**, NBTE **199/199**, NCCE **264/264**.
+- Data-quality verification: **0 missing names, 0 missing institution types, 0 missing ownership values, 0 missing states, 791 distinct institution names**.
+- The previously rejected 791-row batch remains rejected and was not counted. The three successful authority batches are the ones that produced the live 791-record dataset.
+- Kill 1 is therefore **gated as complete**. Batch 2 may proceed to Kill 2 (programmes + UTME combinations).
 ### Supabase Edge Functions
 
 Verified functions include:
