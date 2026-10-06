@@ -1036,6 +1036,17 @@ A stronger follow-up fix was implemented on the active admin-routing branch:
 - Workbook remains unchanged and verified. No institutions have been published; Kill 1 remains blocked.
 
 **Next verification:** run the same workbook once against `catalog-import` v5. If NUC staging succeeds, continue the existing validation → approval → publication → exact-count gate. Do not recreate the workbook.
+**Follow-up root cause isolation — import idempotency lookup (2026-10-06):**
+
+- The next live diagnostic reached catalog-source loading successfully but failed at the following server-side step with **HTTP 500 `{"error":"Unable to check import idempotency"}`**.
+- Database inspection showed the custom `ace` tables did not expose explicit `service_role` table grants in `information_schema.role_table_grants`; the Edge Function's direct service-role PostgREST lookup of `ace.catalog_import_batches` was therefore another fragile custom-schema access path.
+- Added security-definer RPC `ace.check_catalog_import_idempotency(text)` for authenticated callers. It checks `ace.catalog_import_batches` by `snapshot_hash` without relying on direct PostgREST table access from the Edge Function.
+- `catalog-import` now uses this RPC for idempotency checking.
+- Live deployment: **catalog-import v6**, bundle SHA **`5f5b09f40abd8d3f7a437a07cd04b9394b7280aa13220c33d7e8f76ce19e92c2`**.
+- Repository commits: importer fix **`944ab1c4e4fe81843ba52f96c910f8290b5cc35a`**; migration record **`9c1931961ae5abe172676a5577b0d7393f065381`**.
+- Workbook remains verified and unchanged. No institutions have been published; Kill 1 remains blocked.
+
+**Next verification:** run the same workbook once against `catalog-import` v6. If idempotency succeeds, the next gate is batch creation/row staging; capture any further exact status/body before changing the workbook.
 ### Supabase Edge Functions
 
 Verified functions include:
