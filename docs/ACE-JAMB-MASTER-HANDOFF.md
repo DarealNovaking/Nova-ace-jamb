@@ -993,6 +993,20 @@ A stronger follow-up fix was implemented on the active admin-routing branch:
 
 **Do not claim the XLSX loop is fixed until that live test succeeds.**
 **Do not claim the 791 institutions were imported until the database verification reports exactly 791 records.**
+**New verified diagnostic blocker — non-2xx staging response (2026-10-06):**
+
+- After the CORS/preflight fix, the Android XLSX flow no longer fails with the generic browser transport error.
+- The live importer now reaches `catalog-import`, but the function returns a **non-2xx HTTP response** during the NUC staging request.
+- This confirms the workbook is being read/preflighted successfully and the failure is now inside the staging request path or its server-side authorization/data checks.
+- The uploaded workbook was re-verified: 791 `INSTITUTIONS` rows; NUC 328 / NBTE 199 / NCCE 264; no missing cells; unique institution IDs and names.
+- The live `ace.catalog_sources` table was also verified to contain the approved NUC institutional authority source.
+- No new institution rows were published; `ace.institutions` remains unverified for import completion and Kill 1 remains blocked.
+- The importer previously exposed only `error.message`. A diagnostic UI change was committed on the active branch as **`b6575b39aac277b24de747eeff3ab87131cbd79d`**.
+- The diagnostic change now reads the Edge Function HTTP status and response body from the Supabase Functions error context, so the next test should reveal the actual server-side error instead of the generic non-2xx message.
+- Next gate: deploy/verify the diagnostic frontend, run the NUC import once, capture the exact HTTP status/body, fix the underlying server-side cause, then re-run the complete 791-row import and verify the final database count is exactly 791.
+
+**Do not replace/recreate the workbook based on the current error. Current evidence does not indicate a workbook defect.**
+
 ### Supabase Edge Functions
 
 Verified functions include:
