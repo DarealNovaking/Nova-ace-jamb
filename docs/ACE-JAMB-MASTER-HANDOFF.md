@@ -1455,3 +1455,34 @@ Use this instruction when moving ACE JAMB to another account:
 If another ACE JAMB planning document conflicts with this file, use this file as the starting context and resolve any genuinely newer decision explicitly rather than silently reviving superseded choices.
 
 When this file is updated, update this file rather than creating another parallel ACE JAMB handoff/addendum unless a separate document has a genuinely different purpose.
+
+
+### Kill 2 continuation — verified execution prerequisites and admin runner (2026-10-06)
+
+- Re-verified live Supabase season state before programme ingestion:
+  - **JAMB UTME 2026** (`jamb-2026`) is closed.
+  - **JAMB UTME 2027** (`jamb-2027`) is draft and is the current target season for the Kill 2 catalogue ingestion.
+  - Target season ID: `23fc8eb7-2d2e-474f-b4db-c0a69f22cd62`.
+- Re-verified the approved IBASS catalogue sources:
+  - Programme endpoint source: `16388e42-7bed-4541-89ff-8ffb0e648425`.
+  - Programme brochure detail source: `9959f7d6-0071-4ab3-880c-a79f3c81e561`.
+  - Institution hierarchy source: `a92b9d45-a123-4daf-9350-7b362fb72e32`.
+  - IBASS eligibility source: `5fecefe2-fdbc-4b91-9b0d-494846888505`.
+- Re-verified the secure catalogue RPC surface:
+  - `ace.get_catalog_institutions()`
+  - `ace.stage_catalog_import(...)`
+  - `ace.validate_catalog_batch(uuid)`
+  - `ace.approve_catalog_batch(uuid)`
+  - `ace.publish_catalog_batch(uuid)`
+- Live `ibass-catalog-stage` is **v4**, JWT-protected, bundle SHA `360be6111d432648d1babbaf03f1f004f5c37f817b39a4cde478e844044a0524`.
+- Created the guarded admin runner on branch `feat/batch2-kill2-ibass-programmes`:
+  - `src/components/AdminIBASSProgrammeImport.tsx`
+  - processes at most 25 institutions per user-triggered batch
+  - invokes `ibass-catalog-stage` with the authenticated admin session
+  - validates → approves → publishes both programme and UTME-rule batches
+  - stops safely on errors
+  - does not infer ambiguous UTME combinations
+  - branch commits: `ca320c179416692fa088b69ac3c82bf7c05c7c04` and `4fe72ef0cc9e54e7fb1384237ccb720ccd0cd0ef`
+- The runner is exposed from `/admin-import` on the Kill 2 branch.
+- **Kill 2 is NOT yet gated complete.** No programme/rule publication is claimed yet. The next verified action is to deploy/open the Kill 2 branch and run the first 1–25 institution batch while authenticated as the admin account, then inspect the exact returned mapped/unresolved/programme/rule counts and live database counts.
+- Local build verification could not be performed in this environment because outbound GitHub DNS/network access is unavailable; do not mark the branch build verified until CI or a local/Codespaces build succeeds.
