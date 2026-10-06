@@ -1047,6 +1047,18 @@ A stronger follow-up fix was implemented on the active admin-routing branch:
 - Workbook remains verified and unchanged. No institutions have been published; Kill 1 remains blocked.
 
 **Next verification:** run the same workbook once against `catalog-import` v6. If idempotency succeeds, the next gate is batch creation/row staging; capture any further exact status/body before changing the workbook.
+**Follow-up root cause isolation — import batch creation (2026-10-06):**
+
+- The next live diagnostic reached idempotency successfully but failed when the Edge Function attempted to create `ace.catalog_import_batches`: **HTTP 500 `{"error":"Unable to create import batch"}`**.
+- The staging Edge Function previously mixed authenticated-RPC checks with direct service-role PostgREST writes into the custom `ace` schema. The latter is fragile because the custom schema's API privileges are intentionally restricted.
+- Reworked staging into one transactional security-definer RPC: `ace.stage_catalog_import(...)`.
+- The RPC now performs, atomically: admin/editor authorization, dataset/row-count validation, approved-source validation, season validation, snapshot idempotency, batch creation, and all catalog-row inserts.
+- `catalog-import` v7 now calls only the secure staging RPC for batch/row creation; direct service-role table writes were removed from this staging path.
+- Live deployment: **catalog-import v7**, bundle SHA **`1375dfc3a777e6376516851dee00e3ae564a7b082063bd52f7bfb7e2b13dfd47`**.
+- Repository commits: importer refactor **`a6d5a7b0cd1cbdb520c89eb87973c698cf2d19c7`**; migration record **`d7904b93964d0ac936be3311bf14d10b810e183c`**.
+- The workbook remains verified and unchanged. No institutions have been published; Kill 1 remains blocked.
+
+**Next verification:** run the same workbook against `catalog-import` v7. If staging succeeds, the existing `validate_catalog_batch` → `approve_catalog_batch` → `publish_catalog_batch` sequence is already implemented as security-definer database functions. Capture any new exact status/body if a later gate fails.
 ### Supabase Edge Functions
 
 Verified functions include:
