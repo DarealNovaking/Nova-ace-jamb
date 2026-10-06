@@ -137,13 +137,13 @@ Deno.serve(async (req) => {
   if (invalid) return json({ error: `Invalid catalog row at row ${invalid.row_number}` }, 400);
 
   const snapshotHash = await sha256Hex(raw);
-  const { data: existingBatch, error: existingBatchError } = await adminClient
+  const { data: existingRows, error: existingBatchError } = await userClient
     .schema("ace")
-    .from("catalog_import_batches")
-    .select("id,status,row_count")
-    .eq("snapshot_hash", snapshotHash)
-    .maybeSingle();
-  if (existingBatchError) return json({ error: "Unable to check import idempotency" }, 500);
+    .rpc("check_catalog_import_idempotency", { p_snapshot_hash: snapshotHash });
+  if (existingBatchError) {
+    return json({ error: "Unable to check import idempotency", detail: existingBatchError.message }, 500);
+  }
+  const existingBatch = existingRows?.[0];
   if (existingBatch) {
     return json({
       batch_id: existingBatch.id,
