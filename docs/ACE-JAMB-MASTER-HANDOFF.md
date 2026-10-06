@@ -964,10 +964,20 @@ Cloudflare verified for `dd42002`:
 
 ### Current XLSX importer test state
 
-The user can now reach the Admin Dashboard, but the XLSX import loop was observed before the latest auth-event fix. The latest fix is deployed and **the importer still requires live end-to-end verification**.
+The user can reach the Admin Dashboard, but selecting the XLSX workbook on Android was still causing the page to return to the administrator-access validation state after the previous auth-event fix.
 
-Do not claim the 791 institutions were imported until the user successfully selects the workbook and the database verification reports 791.
+The previous mitigation (dd42002) was therefore **not sufficient** and Kill 1 remains blocked.
 
+A stronger follow-up fix was implemented on the active admin-routing branch:
+
+- Admin authorization in AdminFoundationGate is now intended to run once on mount rather than subscribe to Supabase auth-state lifecycle events.
+- The gate includes protection against updating state after unmount.
+- Latest follow-up fix commit: **42acb021d7345b2ec67a4999d43aeefcc65fb31d**.
+- This fix still requires Cloudflare deployment and live Android XLSX end-to-end verification.
+- Expected successful flow: Admin Dashboard → Choose XLSX → Android file picker → select workbook → importer remains on the importer screen and proceeds to workbook reading/validation.
+
+**Do not claim the XLSX loop is fixed until that live test succeeds.**
+**Do not claim the 791 institutions were imported until the database verification reports exactly 791 records.**
 ### Supabase Edge Functions
 
 Verified functions include:
