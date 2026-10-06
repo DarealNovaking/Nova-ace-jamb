@@ -8,6 +8,7 @@ import {
   getStudentProfile,
   getStudentSubjects,
 } from '../lib/studentService'
+import { ace } from '../lib/supabase'
 import { registerCurrentDevice } from '../lib/deviceService'
 import App from '../App'
 
@@ -34,6 +35,13 @@ export default function StudentFoundationGate() {
     }
     setChecking(true)
     try {
+      const { data: isAdmin, error: roleError } = await ace.rpc('is_admin')
+      if (roleError) throw roleError
+      if (isAdmin) {
+        window.location.assign('/admin')
+        return
+      }
+
       await registerCurrentDevice()
       let profile
       try {
