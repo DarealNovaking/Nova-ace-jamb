@@ -93,13 +93,13 @@ Deno.serve(async (req) => {
     return json({ error: "Admin/editor access required" }, 403);
   }
 
-  const { data: source, error: sourceError } = await adminClient
+  const { data: sourceRows, error: sourceError } = await userClient
     .schema("ace")
-    .from("catalog_sources")
-    .select("id,title,status,source_type")
-    .eq("id", body.source_id)
-    .maybeSingle();
-  if (sourceError) return json({ error: "Unable to load catalog source" }, 500);
+    .rpc("get_catalog_source", { p_source_id: body.source_id });
+  if (sourceError) {
+    return json({ error: "Unable to load catalog source", detail: sourceError.message }, 500);
+  }
+  const source = sourceRows?.[0];
   if (!source) return json({ error: "Catalog source not found" }, 404);
   if (!["reviewed", "approved"].includes(source.status)) {
     return json({ error: "Catalog source must be reviewed or approved before import" }, 409);
