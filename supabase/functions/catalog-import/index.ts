@@ -75,8 +75,6 @@ Deno.serve(async (req) => {
   const userClient = createClient(supabaseUrl, serviceRoleKey, {
     global: { headers: { Authorization: authHeader } },
   });
-  const adminClient = createClient(supabaseUrl, serviceRoleKey);
-
   const { data: userData, error: userError } = await userClient.auth.getUser();
   if (userError || !userData.user) return json({ error: "Invalid authentication" }, 401);
 
@@ -93,17 +91,6 @@ Deno.serve(async (req) => {
     return json({ error: "Admin/editor access required" }, 403);
   }
 
-  const { data: sourceRows, error: sourceError } = await userClient
-    .schema("ace")
-    .rpc("get_catalog_source", { p_source_id: body.source_id });
-  if (sourceError) {
-    return json({ error: "Unable to load catalog source", detail: sourceError.message }, 500);
-  }
-  const source = sourceRows?.[0];
-  if (!source) return json({ error: "Catalog source not found" }, 404);
-  if (!["reviewed", "approved"].includes(source.status)) {
-    return json({ error: "Catalog source must be reviewed or approved before import" }, 409);
-  }
 
   const normalizedRows = body.rows.map((row, index) => ({
     row_number: Number.isInteger(row.row_number) && (row.row_number as number) > 0
@@ -142,12 +129,4 @@ Deno.serve(async (req) => {
   }
 
   return json(staged, staged.idempotent ? 200 : 201);
-  return json({
-    batch_id: batch.id,
-    status: "staged",
-    row_count: rows.length,
-    source: source.title,
-    imported_by: userData.user.id,
-    snapshot_hash: snapshotHash,
-  }, 201);
 });
