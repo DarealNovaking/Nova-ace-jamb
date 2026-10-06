@@ -1026,6 +1026,16 @@ A stronger follow-up fix was implemented on the active admin-routing branch:
 - No institutions have been published; Kill 1 remains blocked until a fresh live import completes and the final database count is exactly **791**.
 
 **Next verification:** run the same XLSX import once against the newly deployed `catalog-import v4`. If NUC staging succeeds, continue through NBTE/NCCE and the existing validate → approve → publish → exact-count gate. If another error appears, capture its exact status/body before changing the workbook or data.
+**Follow-up root cause isolation — catalog source lookup (2026-10-06):**
+
+- The next live diagnostic reached permission verification successfully but then failed at the Edge Function's catalog-source lookup with **HTTP 500 `{"error":"Unable to load catalog source"}`**.
+- Live database verification confirms the required NUC institutional source exists and is `approved`.
+- The importer was changed again to resolve the source through a security-definer RPC, `ace.get_catalog_source(uuid)`, using the authenticated caller's JWT context instead of the failing direct custom-schema PostgREST lookup.
+- Live `catalog-import` deployment is now **v5**, bundle SHA **`3231374c414b83912fce6b96c731ae90e80c4c9bea3981c14b37db6f741a3978`**.
+- Repository commits: importer fix **`73ba928e4c88c672b719f5243d0a91a8bec69c93`**; migration record **`75367dd71de8b332e4f22914b7220b2e01ba95b9`**.
+- Workbook remains unchanged and verified. No institutions have been published; Kill 1 remains blocked.
+
+**Next verification:** run the same workbook once against `catalog-import` v5. If NUC staging succeeds, continue the existing validation → approval → publication → exact-count gate. Do not recreate the workbook.
 ### Supabase Edge Functions
 
 Verified functions include:
