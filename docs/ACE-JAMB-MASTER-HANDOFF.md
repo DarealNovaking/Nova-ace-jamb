@@ -703,21 +703,24 @@ Those earlier choices are superseded or historical.
 
 The project must remain separate from unrelated Supabase projects such as DROP, `nova-anonymous-session`, and Ñøvã pre CBT.
 
-### Status at handoff
+### Current verified Supabase state
 
-Supabase project creation was **not safely confirmed** when this handoff was prepared.
+- **Project:** `nova-ace-jamb`
+- **Project ref:** `uokiqlgmzprqfbzmedaz`
+- **Organization:** `The ace team` (`czginzwjoomzlwwxniyl`)
+- **Region:** `ca-central-1`
+- **Status:** `ACTIVE_HEALTHY` (verified 2026-10-06 after restore)
+- **PostgreSQL:** 17.6.1.166
+- **Admin account:** `petermayowa923@gmail.com` verified through `ace.is_admin`
+- **Student account:** `lamilakes@gmail.com` verified
 
-Do not claim the project exists until the Supabase dashboard/API confirms it.
+The earlier `eu-west-1 planned` statement is superseded by the actual verified project region above.
 
-### Next Supabase action
+### Current backend foundation
 
-1. Confirm organization **The ace team**
-2. Create **NOVA ACE JAMB** in **eu-west-1**
-3. Verify the project is healthy/ready
-4. Complete the pre-build requirements/asset/rights audit
-5. Only then lock schema/migrations
+Batch 2 backend work is already implemented and must not be treated as merely planned. This includes the academic/catalogue schema, exam configuration, syllabus-version structures, catalogue staging/publication flow, RLS/security boundaries, and IBASS catalogue staging/executor work.
 
-Do not blindly create the full production schema before requirements are locked.
+Do not recreate the project or blindly rebuild the schema. Inspect the existing migrations and live state first.
 
 ---
 
@@ -862,10 +865,10 @@ However, the current production architecture in this document takes precedence w
 | ₦899 seasonal ACE Pass | Direction confirmed |
 | 5-qualified-referral route | Direction confirmed |
 | Supabase organization | The ace team |
-| Supabase project | Planned; creation not safely confirmed |
-| Supabase region | eu-west-1 planned |
+| Supabase project | **Verified active:** `nova-ace-jamb` (`uokiqlgmzprqfbzmedaz`) |
+| Supabase region | **Verified:** `ca-central-1` |
 | GitHub repo | Exists: `DarealNovaking/Nova-ace-jamb` |
-| Cloudflare Pages | Intended frontend hosting/CDN |
+| Frontend hosting | **Cloudflare Workers/Pages pipeline verified; live preview deployed** |
 | Database schema | Not final; audit first |
 | Payment provider | **UNDECIDED** |
 | WhatsApp verification mechanism | **UNDECIDED** |
@@ -880,7 +883,120 @@ However, the current production architecture in this document takes precedence w
 
 ---
 
-## 35. PRE-BUILD GAP AUDIT — MUST HAPPEN BEFORE SCHEMA IMPLEMENTATION
+## 35. CURRENT IMPLEMENTATION + BATCH 2 HANDOFF
+
+**Last verified:** 2026-10-06
+
+### Repository
+
+- Repository: `DarealNovaking/Nova-ace-jamb`
+- Main branch: `main`
+- Active fix branch: `fix/admin-role-routing`
+- Current PR: **#2 — `fix: route administrators to protected admin dashboard`**
+- PR #2 is intentionally **not merged yet**.
+
+### Batch 2 execution state
+
+Batch 2 is being executed as:
+
+1. **Kill 1 — Institutions**
+2. **Kill 2 — Programmes + UTME combinations**
+3. **Kill 3 — Syllabus**
+4. **Final Batch 2 gate**
+
+**Kill 1 is NOT complete yet.** The live `ace.institutions` table was previously verified at **0 records** before the import attempt. Do not count the institution dataset as imported until the final database count is exactly 791 and the import flow reports verified completion.
+
+### Institution source workbook
+
+Verified source workbook: `nigeria_tertiary_institutions_phase1.xlsx`
+
+- `INSTITUTIONS`: 791 rows × 10 columns
+- Universities: 328
+- Polytechnics: 199
+- Colleges of Education: 264
+- Authority groups: NUC 328 / NBTE 199 / NCCE 264
+- Verification status: 703 Verified / 88 Needs Verification (Ownership/State)
+- Missing values: 0 across the 10 columns
+- Institution IDs unique: yes
+- Institution names unique: yes
+
+The workbook is the source of truth for Kill 1 and is **not committed to GitHub** unless explicitly requested.
+
+### Current importer
+
+`src/components/AdminCatalogueImport.tsx` performs:
+
+- admin session check
+- `ace.rpc('is_admin')`
+- XLSX parsing
+- exact 791-row preflight
+- unique ID/name validation
+- NUC/NBTE/NCCE grouping
+- approved `catalog_sources` lookup
+- secured `catalog-import` Edge Function staging
+- batch validation
+- approval
+- publication
+- final exact 791-row database verification
+
+The importer is intentionally fail-safe and stops before publication on validation errors.
+
+### Admin routing / Cloudflare deployment
+
+PR #2 fixes the admin-routing blocker discovered after the first Cloudflare deployment:
+
+- `src/components/AdminFoundationGate.tsx` protects `/admin` and `/admin-import`.
+- `StudentFoundationGate.tsx` routes authenticated administrators to `/admin`.
+- Normal students remain in the student flow.
+- Admin authorization uses `ace.rpc('is_admin')`.
+
+Cloudflare first failed because `npx wrangler preview` required a `previews` block. This was fixed by adding `wrangler.jsonc` with the required `"previews": {}` configuration and SPA asset handling.
+
+Cloudflare then reported **Build: Success** and **Deployment: Success** for commit `5d02b19`.
+
+A second issue was discovered during mobile XLSX selection: Android file-picker interaction caused the admin gate to re-run because it listened to every auth-state event. The gate was changed to re-check only on `SIGNED_IN`/`SIGNED_OUT` events. Latest commit: **`dd42002`**.
+
+Cloudflare verified for `dd42002`:
+
+- **Build:** Success
+- **Deployment:** Success
+- Preview URL: `https://fix-admin-role-routing-nova-ace-jamb.novaking5002.workers.dev`
+
+### Current XLSX importer test state
+
+The user can now reach the Admin Dashboard, but the XLSX import loop was observed before the latest auth-event fix. The latest fix is deployed and **the importer still requires live end-to-end verification**.
+
+Do not claim the 791 institutions were imported until the user successfully selects the workbook and the database verification reports 791.
+
+### Supabase Edge Functions
+
+Verified functions include:
+
+- `ibass-catalog-stage` — ACTIVE, JWT verification enabled
+- `catalog-import` — ACTIVE
+
+The institution importer uses `catalog-import`; IBASS programme ingestion uses the separate IBASS staging executor.
+
+### IBASS / academic catalogue work already completed
+
+Batch 2 backend work includes:
+
+- verified IBASS endpoint registration
+- deterministic IBASS brochure adapter
+- packaged IBASS staging adapter/executor
+- staging only unambiguous programme/UTME rules
+- preservation of unresolved/alternative requirements
+- delegation through `catalog-import`
+
+Do not start programme ingestion until Kill 1 is actually gated as complete.
+
+### Batch 2 gate rule
+
+**IMPLEMENT → VERIFY → DOCUMENT → COMMIT → GATE**
+
+Do not begin Kill 2 until Kill 1 is verified and documented. Do not begin Batch 3 until the complete Batch 2 gate is passed.
+
+## 36. PRE-BUILD GAP AUDIT — MUST HAPPEN BEFORE SCHEMA IMPLEMENTATION
 
 Before writing production code or creating the final database schema, identify every genuinely missing decision, asset, content source, integration choice, rights issue and requirement.
 
@@ -943,7 +1059,7 @@ Before writing production code or creating the final database schema, identify e
 
 ---
 
-## 36. ASSET + MEDIA CHECKLIST
+## 37. ASSET + MEDIA CHECKLIST
 
 Ask the project owner to provide existing assets that are actually available:
 
@@ -968,7 +1084,7 @@ Ask the project owner to provide existing assets that are actually available:
 
 ---
 
-## 37. RECOMMENDED IMPLEMENTATION SEQUENCE
+## 38. RECOMMENDED IMPLEMENTATION SEQUENCE
 
 ### Phase 0 — Requirements / assets / rights
 
@@ -1088,7 +1204,7 @@ Ask the project owner to provide existing assets that are actually available:
 
 ---
 
-## 38. FREE-FIRST ECONOMICS + SCALING
+## 39. FREE-FIRST ECONOMICS + SCALING
 
 Strategic principle:
 
@@ -1110,7 +1226,7 @@ Provider adapters/service boundaries are therefore important from the beginning.
 
 ---
 
-## 39. EXPLICITLY DROPPED / SUPERSEDED — DO NOT REVIVE
+## 40. EXPLICITLY DROPPED / SUPERSEDED — DO NOT REVIVE
 
 ### Firebase as ACE backend
 
@@ -1142,7 +1258,7 @@ Provider adapters/service boundaries are therefore important from the beginning.
 
 ---
 
-## 40. FINAL RETAINED ACE JAMB CAPABILITY MAP
+## 41. FINAL RETAINED ACE JAMB CAPABILITY MAP
 
 The complete retained capability set is:
 
@@ -1199,7 +1315,7 @@ The complete retained capability set is:
 
 ---
 
-## 41. IMMEDIATE HANDOFF INSTRUCTION FOR A NEW CHATGPT ACCOUNT
+## 42. IMMEDIATE HANDOFF INSTRUCTION FOR A NEW CHATGPT ACCOUNT
 
 Use this instruction when moving ACE JAMB to another account:
 
@@ -1207,7 +1323,7 @@ Use this instruction when moving ACE JAMB to another account:
 
 ---
 
-## 42. CANONICAL RULE
+## 43. CANONICAL RULE
 
 **This file is the single source of truth for the retained ACE JAMB plan.**
 
