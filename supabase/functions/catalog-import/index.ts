@@ -105,20 +105,6 @@ Deno.serve(async (req) => {
     return json({ error: "Catalog source must be reviewed or approved before import" }, 409);
   }
 
-  if (body.season_id) {
-    const { data: season, error: seasonError } = await adminClient
-      .schema("ace")
-      .from("exam_seasons")
-      .select("id,status")
-      .eq("id", body.season_id)
-      .maybeSingle();
-    if (seasonError) return json({ error: "Unable to load season" }, 500);
-    if (!season) return json({ error: "Season not found" }, 404);
-    if (season.status === "archived") {
-      return json({ error: "Cannot import into an archived season" }, 409);
-    }
-  }
-
   const normalizedRows = body.rows.map((row, index) => ({
     row_number: Number.isInteger(row.row_number) && (row.row_number as number) > 0
       ? row.row_number
@@ -137,59 +123,25 @@ Deno.serve(async (req) => {
   if (invalid) return json({ error: `Invalid catalog row at row ${invalid.row_number}` }, 400);
 
   const snapshotHash = await sha256Hex(raw);
-  const { data: existingRows, error: existingBatchError } = await userClient
+  const { data: staged, error: stageError } = await userClient
     .schema("ace")
-    .rpc("check_catalog_import_idempotency", { p_snapshot_hash: snapshotHash });
-  if (existingBatchError) {
-    return json({ error: "Unable to check import idempotency", detail: existingBatchError.message }, 500);
-  }
-  const existingBatch = existingRows?.[0];
-  if (existingBatch) {
+    .rpc("stage_catalog_import", {
+      p_source_id: body.source_id,
+      p_season_id: body.season_id ?? null,
+      p_dataset_type: body.dataset_type,
+      p_snapshot_hash: snapshotHash,
+      p_metadata: body.metadata ?? {},
+      p_rows: normalizedRows,
+    });
+
+  if (stageError || !staged) {
     return json({
-      batch_id: existingBatch.id,
-      status: existingBatch.status,
-      row_count: existingBatch.row_count,
-      idempotent: true,
-      message: "This exact catalog snapshot was already staged.",
-    }, 200);
+      error: "Unable to stage catalog import",
+      detail: stageError?.message ?? "No staging result returned",
+    }, 500);
   }
 
-  const { data: batch, error: batchError } = await adminClient
-    .schema("ace")
-    .from("catalog_import_batches")
-    .insert({
-      source_id: body.source_id,
-      season_id: body.season_id ?? null,
-      dataset_type: body.dataset_type,
-      status: "staged",
-      row_count: normalizedRows.length,
-      snapshot_hash: snapshotHash,
-      metadata: {
-        ...(body.metadata ?? {}),
-        source_title: source.title,
-        imported_by: userData.user.id,
-      },
-    })
-    .select("id")
-    .single();
-  if (batchError || !batch) return json({ error: "Unable to create import batch" }, 500);
-
-  const rows = normalizedRows.map((row) => ({
-    ...row,
-    batch_id: batch.id,
-    validation_status: "pending",
-    validation_errors: [],
-  }));
-  const { error: rowsError } = await adminClient
-    .schema("ace")
-    .from("catalog_import_rows")
-    .insert(rows);
-
-  if (rowsError) {
-    await adminClient.schema("ace").from("catalog_import_batches").delete().eq("id", batch.id);
-    return json({ error: "Unable to stage catalog rows" }, 500);
-  }
-
+  return json(staged, staged.idempotent ? 200 : 201);
   return json({
     batch_id: batch.id,
     status: "staged",
