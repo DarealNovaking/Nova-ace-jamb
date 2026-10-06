@@ -976,14 +976,31 @@ A stronger follow-up fix was implemented on the active admin-routing branch:
 - This fix still requires Cloudflare deployment and live Android XLSX end-to-end verification.
 - Expected successful flow: Admin Dashboard → Choose XLSX → Android file picker → select workbook → importer remains on the importer screen and proceeds to workbook reading/validation.
 
+**New verified blocker — Edge Function request/CORS failure (2026-10-06):**
+
+- After the Android XLSX flow progressed past the previous admin-routing loop, the importer reached the first NUC staging request.
+- The live UI reported: **“NUC staging failed: Failed to send a request to the Edge Function.”**
+- Inspection of the deployed `catalog-import` v2 showed that its browser-facing response path had **no CORS headers and no OPTIONS preflight handler**.
+- This is consistent with Supabase's documented browser-side Edge Function fetch failure mode when CORS/preflight handling is missing.
+- `catalog-import` was redeployed with CORS headers and an `OPTIONS` handler as **version 3**:
+  - bundle SHA: **26571842ffcfff3bd55824e93f2ac4ddd81dc5fec528174ffc32ff6461da00fc**
+- `ibass-catalog-stage` was also proactively redeployed with the same browser CORS/preflight handling as **version 3**:
+  - bundle SHA: **0ba846b63d099b54152665b9ce7332fb45e24907a028cdb0c3d05415b0886709**
+- Both functions remain **ACTIVE** with JWT verification enabled.
+- Live `ace.institutions` count remains **0** after this failed attempt.
+- The importer has **not** been marked complete.
+- The next verification gate is a fresh live Android XLSX run. Do not retry blindly or count Kill 1 complete until the NUC staging request succeeds and the final database count reaches exactly 791.
+
 **Do not claim the XLSX loop is fixed until that live test succeeds.**
 **Do not claim the 791 institutions were imported until the database verification reports exactly 791 records.**
 ### Supabase Edge Functions
 
 Verified functions include:
 
-- `ibass-catalog-stage` — ACTIVE, JWT verification enabled
-- `catalog-import` — ACTIVE
+- `ibass-catalog-stage` — ACTIVE, **version 3**, JWT verification enabled; latest bundle SHA `0ba846b63d099b54152665b9ce7332fb45e24907a028cdb0c3d05415b0886709`
+- `catalog-import` — ACTIVE, **version 3**, JWT verification enabled; latest bundle SHA `26571842ffcfff3bd55824e93f2ac4ddd81dc5fec528174ffc32ff6461da00fc`
+
+The browser-facing staging boundary now explicitly handles CORS preflight and returns the required CORS headers.
 
 The institution importer uses `catalog-import`; IBASS programme ingestion uses the separate IBASS staging executor.
 
