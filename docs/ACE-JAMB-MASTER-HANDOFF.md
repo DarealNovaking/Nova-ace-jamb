@@ -197,7 +197,6 @@ Learning Mode should:
 - Feed mastery/recommendation systems
 
 ---
-
 ## 9. PRACTICE SYSTEM
 
 ### Standard Practice
@@ -397,8 +396,7 @@ Do **not** build ACE as a wholesale mirror of copyrighted textbooks.
 
 The knowledge system must be rights-aware:
 
-- Use material the project has permission/right to use
-- Use legally permissible excerpts or derived knowledge where appropriate
+- Use material the project has permission/right to use- Use legally permissible excerpts or derived knowledge where appropriate
 - Store provenance and rights/licensing metadata
 - Index knowledge for retrieval rather than exposing entire copyrighted books as a free mirror
 - Provide admin review/takedown controls
@@ -598,7 +596,6 @@ Required principles:
 - Minimize sensitive data collection
 - Log important security/business events without excessive PII
 - Graceful degradation when external services fail
-
 ---
 
 ## 26. OBSERVABILITY
@@ -797,8 +794,7 @@ Every major feature must be tested beyond a single successful desktop run.
 Test:
 
 - Real Android devices
-- Slow/poor networks
-- Interrupted sessions
+- Slow/poor networks- Interrupted sessions
 - Reloads
 - CBT timer edge cases
 - Randomization and answer-key integrity
@@ -997,8 +993,7 @@ A stronger follow-up fix was implemented on the active admin-routing branch:
 - Admin authorization in AdminFoundationGate is now intended to run once on mount rather than subscribe to Supabase auth-state lifecycle events.
 - The gate includes protection against updating state after unmount.
 - Latest follow-up fix commit: **42acb021d7345b2ec67a4999d43aeefcc65fb31d**.
-- This fix still requires Cloudflare deployment and live Android XLSX end-to-end verification.
-- Expected successful flow: Admin Dashboard → Choose XLSX → Android file picker → select workbook → importer remains on the importer screen and proceeds to workbook reading/validation.
+- This fix still requires Cloudflare deployment and live Android XLSX end-to-end verification.- Expected successful flow: Admin Dashboard → Choose XLSX → Android file picker → select workbook → importer remains on the importer screen and proceeds to workbook reading/validation.
 
 **New verified blocker — Edge Function request/CORS failure (2026-10-06):**
 
@@ -1197,8 +1192,7 @@ Ask the project owner to provide existing assets that are actually available:
 - Syllabus/reference files
 - Authorized textbook/reference files
 - Formula sheets
-- Question diagrams/images
-- Audio lessons/recordings
+- Question diagrams/images- Audio lessons/recordings
 - Existing explanations
 - Existing flashcards
 - Existing prototype/source files
@@ -1397,8 +1391,7 @@ The complete retained capability set is:
 - Verified/quality-controlled past-question bank
 - Rich multimedia question model
 - Learning Mode
-- Practice Mode
-- Weakness practice
+- Practice Mode- Weakness practice
 - Speed practice
 - Mistake/repeated-mistake practice
 - CBT mode
@@ -1498,3 +1491,18 @@ When this file is updated, update this file rather than creating another paralle
 - GitHub Actions verification is currently running for both **Verify** and **ACE JAMB E2E**. At the latest check, dependency installation was still in progress; no success/failure is claimed yet.
 - No production merge has been made and no programme/UTME-rule rows have been claimed as published.
 - **Next gate:** wait for CI/E2E results; if green, proceed to the live authenticated admin execution path for the first 1–25 institution batch. If CI fails, fix the exact failure before any merge or catalogue publication.
+
+### Authentication routing fix — admin role redirect (2026-10-07)
+
+- Root cause confirmed in `main`: `src/main.tsx` was hard-wired to render `StudentFoundationGate`, so every authenticated user entered the student flow regardless of role.
+- Supabase role RPC `ace.is_admin()` exists and returns boolean; the live admin account `petermayowa923@gmail.com` is already assigned the `admin` role.
+- Implemented the smallest role-aware routing fix on branch `fix/admin-routing-main`:
+  - Added `src/components/AdminFoundationGate.tsx` with authenticated-session verification and server-side `ace.is_admin()` authorization.
+  - Updated `src/components/StudentFoundationGate.tsx` to check `ace.is_admin()` immediately after authentication and redirect administrators to `/admin` before student device registration/onboarding.
+  - Updated `src/main.tsx` so both `/admin` and `/admin-import` use the protected admin gate instead of exposing the importer directly.
+- This preserves student onboarding for non-admin users and keeps admin/importer access behind the database role check.
+- Branch commits: `51412011ebe8aaec7b5a67631614cd41a7fe4726`, `f4cae2cf800fc0fa2d116b9a5596b7e3baa1efc0`, `010667f37411daac7a8f60407a297d4b814e8a46`.
+- Verification performed: repository source inspection confirmed the previous hard-wired student root; Supabase inspection confirmed `ace.is_admin()` exists; branch source now contains the role check and protected admin route. CI/browser verification is still required before merging/deployment.
+- **Required user action:** after the branch preview is deployed, sign in once with the admin account and confirm that the app automatically lands on `/admin` and shows **Admin Dashboard / Administrator**. Do not start Kill 2 publication until this auth-routing gate passes.
+- **Next step:** run GitHub Verify + E2E on the fix branch, then perform authenticated browser verification before merge.
+
