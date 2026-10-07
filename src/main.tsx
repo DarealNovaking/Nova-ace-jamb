@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import ProtectedCBT from './components/ProtectedCBT';
 import StudentFoundationGate from './components/StudentFoundationGate';
 import AdminCatalogueImport from './components/AdminCatalogueImport';
+import AdminIBASSProgrammeImport from './components/AdminIBASSProgrammeImport';
 import './index.css';
 
 function AppShell() {
@@ -38,6 +39,7 @@ function AppShell() {
             <p className="mt-2 text-white/50">Secure Batch 2 institution ingestion.</p>
           </header>
           <AdminCatalogueImport />
+          <div className="mt-8"><AdminIBASSProgrammeImport /></div>
         </div>
       </main>
     );
