@@ -1441,3 +1441,16 @@ Use this instruction when moving ACE JAMB to another account:
 If another ACE JAMB planning document conflicts with this file, use this file as the starting context and resolve any genuinely newer decision explicitly rather than silently reviving superseded choices.
 
 When this file is updated, update this file rather than creating another parallel ACE JAMB handoff/addendum unless a separate document has a genuinely different purpose.
+
+### Cloudflare Wrangler preview failure — diagnosed and fixed (2026-10-07)
+
+- Reviewed the user-supplied Cloudflare deployment log from 2026-10-06.
+- Vite production build completed successfully: **1637 modules transformed**, build completed in **6.88s**. The >500 kB JavaScript chunk is a warning, not the deployment failure.
+- The actual deployment failure was Wrangler **4.147.0** rejecting `npx wrangler preview` because the project configuration lacked a `previews` block.
+- Repository inspection confirmed the Kill 2 branch did not contain a `wrangler.jsonc` configuration, so the reported failure was reproducible from repository state rather than an application build failure.
+- Added `wrangler.jsonc` to `feat/batch2-kill2-ibass-programmes` with the existing ACE architecture: static assets from `./dist`, SPA fallback, observability enabled, compatibility date `2026-10-01`, and the required empty `previews: {}` block.
+- Fix commit: **`3fcc4614d27239d81ed622c74fc450e8fd5dca7a`**.
+- No production merge or catalogue publication was performed as part of this fix.
+- **Verification status:** repository configuration is corrected; the Cloudflare build/deploy must be rerun to verify the platform accepts the corrected Wrangler configuration. Do not claim Cloudflare deployment success until a fresh run is green.
+- **Next gate:** rerun the Cloudflare preview deployment for the Kill 2 branch; if green, continue the existing CI/E2E gate before the first authenticated 1–25 institution IBASS batch.
+
