@@ -32,7 +32,24 @@ export default function AdminCatalogueImport({ onMessage }:{onMessage?:(message:
         const source=sourceFor(sources as Source[],key); if(!source) throw new Error(`No approved ${key} catalogue source is registered.`);
         const body={source_id:source.id,dataset_type:'institutions',rows:group.map(({sourceAuthority:_,...r})=>r),metadata:{importer:'nova-ace-admin-catalogue-import',workbook:file.name,authority:key,expected_rows:group.length}};
         const bytes=new TextEncoder().encode(JSON.stringify(body)).byteLength;if(bytes>=3500000) throw new Error(`${key} payload is too large (${bytes} bytes); stopped before submission.`);
-        setStatus(`Staging ${group.length} ${key} institutions…`); const {data:staged,error:ie}=await supabase.functions.invoke('catalog-import',{body}); if(ie) throw new Error(`${key} staging failed: ${ie.message}`); if(!staged?.batch_id) throw new Error(`${key} staging returned no batch ID.`);
+        setStatus(`Staging ${group.length} ${key} institutions…`);
+        const {data:staged,error:ie}=await supabase.functions.invoke('catalog-import',{body});
+        if(ie){
+          const fnError=ie as {message?:string;context?:Response};
+          let detail=fnError.message||'Edge Function request failed';
+          if(fnError.context){
+            try{
+              const responseBody=await fnError.context.clone().text();
+              const trimmed=responseBody.trim();
+              if(trimmed) detail=`${detail}; HTTP ${fnError.context.status}: ${trimmed.slice(0,1200)}`;
+              else detail=`${detail}; HTTP ${fnError.context.status}`;
+            }catch{
+              detail=`${detail}; HTTP ${fnError.context.status}`;
+            }
+          }
+          throw new Error(`${key} staging failed: ${detail}`);
+        }
+        if(!staged?.batch_id) throw new Error(`${key} staging returned no batch ID.`);
         setStatus(`Validating ${key} batch…`); const {data:v,error:ve}=await ace.rpc('validate_catalog_batch',{p_batch_id:staged.batch_id}); if(ve) throw new Error(`${key} validation failed: ${ve.message}`); if(v?.error_count) throw new Error(`${key} validation found ${v.error_count} error(s); batch remains unpublished.`);
         setStatus(`Approving ${key} batch…`); const {error:ae}=await ace.rpc('approve_catalog_batch',{p_batch_id:staged.batch_id}); if(ae) throw new Error(`${key} approval failed: ${ae.message}`);
         setStatus(`Publishing ${key} batch…`); const {data:p,error:pe}=await ace.rpc('publish_catalog_batch',{p_batch_id:staged.batch_id}); if(pe) throw new Error(`${key} publication failed: ${pe.message}`); if(p?.published_rows!==group.length) throw new Error(`${key} publication count mismatch.`);
