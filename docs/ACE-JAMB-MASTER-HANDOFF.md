@@ -1486,3 +1486,15 @@ When this file is updated, update this file rather than creating another paralle
 - The runner is exposed from `/admin-import` on the Kill 2 branch.
 - **Kill 2 is NOT yet gated complete.** No programme/rule publication is claimed yet. The next verified action is to deploy/open the Kill 2 branch and run the first 1–25 institution batch while authenticated as the admin account, then inspect the exact returned mapped/unresolved/programme/rule counts and live database counts.
 - Local build verification could not be performed in this environment because outbound GitHub DNS/network access is unavailable; do not mark the branch build verified until CI or a local/Codespaces build succeeds.
+
+
+### Kill 2 continuation — live execution gate preparation (2026-10-07)
+
+- Re-inspected the canonical handoff and current repository state before continuing Kill 2.
+- Confirmed branch `feat/batch2-kill2-ibass-programmes` contains the guarded `AdminIBASSProgrammeImport` runner and exposes it at `/admin-import`.
+- Created PR #3: `feat(batch-2): add guarded IBASS programme and UTME ingestion runner` targeting `main`.
+- PR #3 was intentionally created as draft first, then marked ready for review so repository verification workflows would execute.
+- Current head commit: `4fe72ef0cc9e54e7fb1384237ccb720ccd0cd0ef`.
+- GitHub Actions verification is currently running for both **Verify** and **ACE JAMB E2E**. At the latest check, dependency installation was still in progress; no success/failure is claimed yet.
+- No production merge has been made and no programme/UTME-rule rows have been claimed as published.
+- **Next gate:** wait for CI/E2E results; if green, proceed to the live authenticated admin execution path for the first 1–25 institution batch. If CI fails, fix the exact failure before any merge or catalogue publication.
