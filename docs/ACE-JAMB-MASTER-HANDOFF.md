@@ -197,6 +197,7 @@ Learning Mode should:
 - Feed mastery/recommendation systems
 
 ---
+
 ## 9. PRACTICE SYSTEM
 
 ### Standard Practice
@@ -396,7 +397,8 @@ Do **not** build ACE as a wholesale mirror of copyrighted textbooks.
 
 The knowledge system must be rights-aware:
 
-- Use material the project has permission/right to use- Use legally permissible excerpts or derived knowledge where appropriate
+- Use material the project has permission/right to use
+- Use legally permissible excerpts or derived knowledge where appropriate
 - Store provenance and rights/licensing metadata
 - Index knowledge for retrieval rather than exposing entire copyrighted books as a free mirror
 - Provide admin review/takedown controls
@@ -596,6 +598,7 @@ Required principles:
 - Minimize sensitive data collection
 - Log important security/business events without excessive PII
 - Graceful degradation when external services fail
+
 ---
 
 ## 26. OBSERVABILITY
@@ -794,7 +797,8 @@ Every major feature must be tested beyond a single successful desktop run.
 Test:
 
 - Real Android devices
-- Slow/poor networks- Interrupted sessions
+- Slow/poor networks
+- Interrupted sessions
 - Reloads
 - CBT timer edge cases
 - Randomization and answer-key integrity
@@ -993,7 +997,8 @@ A stronger follow-up fix was implemented on the active admin-routing branch:
 - Admin authorization in AdminFoundationGate is now intended to run once on mount rather than subscribe to Supabase auth-state lifecycle events.
 - The gate includes protection against updating state after unmount.
 - Latest follow-up fix commit: **42acb021d7345b2ec67a4999d43aeefcc65fb31d**.
-- This fix still requires Cloudflare deployment and live Android XLSX end-to-end verification.- Expected successful flow: Admin Dashboard → Choose XLSX → Android file picker → select workbook → importer remains on the importer screen and proceeds to workbook reading/validation.
+- This fix still requires Cloudflare deployment and live Android XLSX end-to-end verification.
+- Expected successful flow: Admin Dashboard → Choose XLSX → Android file picker → select workbook → importer remains on the importer screen and proceeds to workbook reading/validation.
 
 **New verified blocker — Edge Function request/CORS failure (2026-10-06):**
 
@@ -1192,7 +1197,8 @@ Ask the project owner to provide existing assets that are actually available:
 - Syllabus/reference files
 - Authorized textbook/reference files
 - Formula sheets
-- Question diagrams/images- Audio lessons/recordings
+- Question diagrams/images
+- Audio lessons/recordings
 - Existing explanations
 - Existing flashcards
 - Existing prototype/source files
@@ -1391,7 +1397,8 @@ The complete retained capability set is:
 - Verified/quality-controlled past-question bank
 - Rich multimedia question model
 - Learning Mode
-- Practice Mode- Weakness practice
+- Practice Mode
+- Weakness practice
 - Speed practice
 - Mistake/repeated-mistake practice
 - CBT mode
