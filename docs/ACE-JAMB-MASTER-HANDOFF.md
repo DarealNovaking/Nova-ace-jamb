@@ -1574,3 +1574,14 @@ When this file is updated, update this file rather than creating another paralle
 - **Verification:** the failure was diagnosed from the actual GitHub Actions job logs. The workflow edit is committed; the new run triggered by this commit must still be checked. No successful production deployment is claimed.
 - **Blockers / required user action:** none expected for this specific Wrangler-version fix; watch the next run. If Cloudflare returns a permissions error, review the exact error and adjust the token's least-privilege permissions only as required. Do not share secret values.
 - **Next step:** inspect the run triggered by commit `06e3b6c`. If deploy succeeds, verify the production Worker `nova-ace-jamb`, then test admin login redirect, `/admin-import`, session persistence, non-admin denial, and production Supabase `is_admin` RPC traffic. Keep Kill 2 IBASS importer paused until all acceptance checks pass.
+
+
+## 2026-10-12 — Diagnose second Cloudflare deployment failure
+
+- **Observed run:** [Deploy production Worker run 38206807033](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/38206807033), commit `06e3b6c56419179fa5d352f15bf759dd3041bba0`.
+- **Verified:** all four secrets are present; install, typecheck, and Vite build passed. Wrangler v4 started, then failed with `Headers.set: ... is an invalid header value`. The failure occurs while Wrangler constructs an HTTP header from the Cloudflare credential. Logs redact the credential, so do not infer the exact secret content; embedded line breaks or surrounding whitespace from copy/paste are a plausible cause. Do not print or request the secret value.
+- **Fix committed:** `.github/workflows/deploy-production.yml` now normalizes CR/LF and surrounding whitespace for the Cloudflare API token and account ID inside the runner without logging them, then runs `npx --yes wrangler@4 deploy` directly. Commit: `2ee1415c501556228a8cc41a808b4879352ddc74`.
+- **Affected files:** `.github/workflows/deploy-production.yml`; this handoff.
+- **Verification:** actual logs confirmed validation/install/typecheck/build success and identified the failure at the Wrangler HTTP-header stage. The normalization fix is committed; the new run triggered by this commit must still be checked. No production deployment success is claimed.
+- **Security:** secret values were not exposed. Normalization only removes line breaks and surrounding whitespace; it does not change token contents otherwise. If the next run reports authentication/authorization failure, verify that the Cloudflare token is valid, not revoked/expired, and scoped to the account owning Worker `nova-ace-jamb`; rotate/recreate it in Cloudflare if necessary and replace the GitHub secret without sharing it in chat.
+- **Next step:** inspect the run triggered by this commit. If deploy succeeds, test the live production Worker and administrator routing/access controls. Keep Kill 2 IBASS importer paused until acceptance passes.
