@@ -1480,3 +1480,14 @@ When this file is updated, update this file rather than creating another paralle
 - GitHub's workflow-run/status connector has not returned runs or status checks for the new integration head yet; this is **pending**, not a pass. No local build, Playwright/browser test, or Cloudflare deployment has been run in this session.
 - PR #5 remains open and unmerged: https://github.com/DarealNovaking/Nova-ace-jamb/pull/5
 - Next: wait for/inspect PR #5 Verify and ACE JAMB E2E checks; fix any failures; then verify admin redirect, student onboarding, unauthenticated/admin-route denial, and both importer panels in a browser before considering merge/deployment.
+
+
+### Follow-up: admin login still lands in student flow (2026-10-12)
+
+- User reports that signing in with an administrator email/password still does not open the admin dashboard.
+- Rechecked actual PR state: PR #4 (`fix/admin-routing-main` → `main`) and PR #5 (`fix/admin-routing-kill2-integration` → `feat/batch2-kill2-ibass-programmes`) are both still open and unmerged. PR #5 does not deploy itself. Therefore the reported live-site behavior is consistent with the fix not yet being in the production branch/deployment; deployment was not verified.
+- Rechecked source on the Kill 2 base branch: `src/main.tsx` still routed all non-CBT requests to `StudentFoundationGate` and directly rendered importer components on `/admin-import`, confirming the old route logic there.
+- Checked the live Supabase database (project `uokiqlgmzprqfbzmedaz`): `ace.is_admin()` exists as a zero-argument boolean SECURITY DEFINER function that checks `ace.roles` for `auth.uid()` with role `admin`; the authenticated role has schema USAGE and EXECUTE permission. Exactly one admin-role binding exists. The SQL connector has no end-user JWT session, so its current-user match is not evidence about the user's login.
+- This supports the current leading cause being **unmerged/un-deployed frontend routing**, not a missing RPC function or missing admin role row. Still required: inspect PR #5 CI, test using the actual admin session in a browser, and verify the deployed build/URL. Do not change role data or bypass server-side authorization to mask the symptom.
+- No production changes or data imports were made during this investigation.
+- Next step: ensure the protected routing integration is merged through the intended PR/base workflow only after required checks pass, then verify the Cloudflare deployment points to that commit and test admin sign-in plus direct `/admin` and `/admin-import` access.
