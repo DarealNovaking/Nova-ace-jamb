@@ -1454,3 +1454,20 @@ When this file is updated, update this file rather than creating another paralle
 - **Verification status:** repository configuration is corrected; the Cloudflare build/deploy must be rerun to verify the platform accepts the corrected Wrangler configuration. Do not claim Cloudflare deployment success until a fresh run is green.
 - **Next gate:** rerun the Cloudflare preview deployment for the Kill 2 branch; if green, continue the existing CI/E2E gate before the first authenticated 1–25 institution IBASS batch.
 
+
+
+### Admin routing + Kill 2 integration investigation (2026-10-12)
+
+- GitHub connector access was restored after repository access was changed to include this private repository. Repository access is verified; no credentials or secrets were changed.
+- Re-read this canonical handoff and inspected the actual branch contents before editing.
+- **Important discrepancy:** the earlier handoff described the admin-routing fix on `fix/admin-routing-main` and PR #4, but the actual `main` branch's `src/main.tsx` still rendered `AdminCatalogueImport` directly at `/admin-import` and otherwise rendered `StudentFoundationGate`. It did not contain the protected `/admin` route or the role-aware student redirect. Therefore the fix was not present in `main` at inspection time.
+- The Kill 2 branch `feat/batch2-kill2-ibass-programmes` contains the newer `AdminIBASSProgrammeImport` runner and both catalogue-import sections, so replacing its route with the older PR #4 snapshot would risk dropping Kill 2 functionality.
+- Created integration branch `fix/admin-routing-kill2-integration` from `feat/batch2-kill2-ibass-programmes` to preserve the runner while applying the role-routing fix.
+- Changed files on the integration branch:
+  - `src/components/AdminFoundationGate.tsx` — new server-authorized gate using the authenticated session and `ace.rpc('is_admin')`; includes the existing institution importer and the Kill 2 IBASS runner; fails closed on role-check errors; sign-out errors are handled.
+  - `src/components/StudentFoundationGate.tsx` — checks the admin role before student device registration/onboarding and redirects admins to `/admin`; limits auth-state refreshes to sign-in, sign-out, and password-recovery events to avoid unnecessary repeated profile work.
+  - `src/main.tsx` — routes both `/admin` and `/admin-import` through the protected gate, preserving CBT and student routing.
+- Commits on the integration branch: `d0f536787c9c42cee27d0a053ec2d04a994e5ee0`, `647e6bf632c4d8dda3952f0676236cd7317f107a`, `9e4971d87f2c32660645799ab58d3d6c7cc6db7a`.
+- Verification to date: repository/source inspection completed; existing Kill 2 base commit `4fe72ef0cc9e54e7fb1384237ccb720ccd0cd0ef` has successful GitHub Actions **Verify** and **ACE JAMB E2E** runs. The new integration commits do not yet have CI results, and no authenticated browser/Playwright test or Cloudflare deployment verification has been performed for this integration.
+- **Safety gate:** do not run the IBASS importer or publish programme/UTME-rule rows until the integration branch passes CI/E2E, the admin and student flows are verified in a browser, and the intended deployment is confirmed.
+- **Next step:** open a review PR from `fix/admin-routing-kill2-integration` into `feat/batch2-kill2-ibass-programmes` to trigger CI without merging or deploying production changes. Then address any failing checks and complete authenticated browser verification.
