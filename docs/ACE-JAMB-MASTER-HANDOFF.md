@@ -1498,3 +1498,18 @@ When this file is updated, update this file rather than creating another paralle
 - GitHub Actions verification is currently running for both **Verify** and **ACE JAMB E2E**. At the latest check, dependency installation was still in progress; no success/failure is claimed yet.
 - No production merge has been made and no programme/UTME-rule rows have been claimed as published.
 - **Next gate:** wait for CI/E2E results; if green, proceed to the live authenticated admin execution path for the first 1–25 institution batch. If CI fails, fix the exact failure before any merge or catalogue publication.
+
+### Authentication routing fix — admin role redirect (2026-10-07)
+
+- Root cause confirmed in `main`: `src/main.tsx` was hard-wired to render `StudentFoundationGate`, so every authenticated user entered the student flow regardless of role.
+- Supabase role RPC `ace.is_admin()` exists and returns boolean; the live admin account `petermayowa923@gmail.com` is already assigned the `admin` role.
+- Implemented the smallest role-aware routing fix on branch `fix/admin-routing-main`:
+  - Added `src/components/AdminFoundationGate.tsx` with authenticated-session verification and server-side `ace.is_admin()` authorization.
+  - Updated `src/components/StudentFoundationGate.tsx` to check `ace.is_admin()` immediately after authentication and redirect administrators to `/admin` before student device registration/onboarding.
+  - Updated `src/main.tsx` so both `/admin` and `/admin-import` use the protected admin gate instead of exposing the importer directly.
+- This preserves student onboarding for non-admin users and keeps admin/importer access behind the database role check.
+- Branch commits: `51412011ebe8aaec7b5a67631614cd41a7fe4726`, `f4cae2cf800fc0fa2d116b9a5596b7e3baa1efc0`, `010667f37411daac7a8f60407a297d4b814e8a46`.
+- Verification performed: repository source inspection confirmed the previous hard-wired student root; Supabase inspection confirmed `ace.is_admin()` exists; branch source now contains the role check and protected admin route. CI/browser verification is still required before merging/deployment.
+- **Required user action:** after the branch preview is deployed, sign in once with the admin account and confirm that the app automatically lands on `/admin` and shows **Admin Dashboard / Administrator**. Do not start Kill 2 publication until this auth-routing gate passes.
+- **Next step:** run GitHub Verify + E2E on the fix branch, then perform authenticated browser verification before merge.
+
