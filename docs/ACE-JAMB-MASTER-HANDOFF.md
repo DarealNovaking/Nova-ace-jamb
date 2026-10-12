@@ -1471,3 +1471,12 @@ When this file is updated, update this file rather than creating another paralle
 - Verification to date: repository/source inspection completed; existing Kill 2 base commit `4fe72ef0cc9e54e7fb1384237ccb720ccd0cd0ef` has successful GitHub Actions **Verify** and **ACE JAMB E2E** runs. The new integration commits do not yet have CI results, and no authenticated browser/Playwright test or Cloudflare deployment verification has been performed for this integration.
 - **Safety gate:** do not run the IBASS importer or publish programme/UTME-rule rows until the integration branch passes CI/E2E, the admin and student flows are verified in a browser, and the intended deployment is confirmed.
 - **Next step:** open a review PR from `fix/admin-routing-kill2-integration` into `feat/batch2-kill2-ibass-programmes` to trigger CI without merging or deploying production changes. Then address any failing checks and complete authenticated browser verification.
+
+
+### Integration review follow-up (2026-10-12)
+
+- A post-edit source review caught an over-escaped whitespace regular expression in the preserved CBT click-navigation handler in `src/main.tsx`. Corrected the expression so button-label normalization and matching continue to operate on whitespace as intended.
+- Correction commit: `76e69b13c883323d910451fbb6522ddd07ba913d`.
+- GitHub's workflow-run/status connector has not returned runs or status checks for the new integration head yet; this is **pending**, not a pass. No local build, Playwright/browser test, or Cloudflare deployment has been run in this session.
+- PR #5 remains open and unmerged: https://github.com/DarealNovaking/Nova-ace-jamb/pull/5
+- Next: wait for/inspect PR #5 Verify and ACE JAMB E2E checks; fix any failures; then verify admin redirect, student onboarding, unauthenticated/admin-route denial, and both importer panels in a browser before considering merge/deployment.
