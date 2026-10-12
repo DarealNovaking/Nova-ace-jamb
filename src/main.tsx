@@ -13,8 +13,8 @@ function AppShell() {
     const onNavigate = (event: Event) => {
       const target = event.target as HTMLElement | null;
       const button = target?.closest('button');
-      const label = button?.textContent?.replace(/\\s+/g, ' ').trim() ?? '';
-      if (/^(Start CBT|CBT Practice)(\\s|$)/i.test(label)) {
+      const label = button?.textContent?.replace(/\s+/g, ' ').trim() ?? '';
+      if (/^(Start CBT|CBT Practice)(\s|$)/i.test(label)) {
         event.preventDefault();
         window.history.pushState({}, '', `${window.location.pathname}?cbt=1`);
         setCbt(true);
