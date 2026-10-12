@@ -87,7 +87,10 @@ export default function StudentFoundationGate() {
       }
     })
     const { data } = onAuthStateChange((nextUser, _session, event) => {
-      if (active) void refresh(nextUser, event)
+      if (!active) return
+      if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'PASSWORD_RECOVERY') {
+        void refresh(nextUser, event)
+      }
     })
     return () => { active = false; data.subscription.unsubscribe() }
   }, [])
