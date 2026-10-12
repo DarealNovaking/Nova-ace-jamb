@@ -1563,3 +1563,14 @@ When this file is updated, update this file rather than creating another paralle
 - **Required user action:** in GitHub, open repository Settings → Secrets and variables → Actions. Add the four values as repository secrets, or add them to the `production` environment used by the workflow. For Cloudflare, use an API token scoped to deploy/edit Workers and the account ID for the account owning `nova-ace-jamb`. Use the same Supabase URL and publishable/anon client key used by the working app build. Never commit or send these values in chat.
 - **Rerun:** open the Deploy production Worker workflow run and choose Re-run jobs, or open Actions → Deploy production Worker → Run workflow after adding secrets.
 - **Acceptance remains mandatory:** a green workflow/deploy alone is not proof of correct admin routing. Confirm the production Worker calls `/rest/v1/rpc/is_admin` after admin sign-in, routes the admin to `/admin`, allows `/admin-import`, and denies non-admin access. Keep Kill 2 importer paused until those live checks pass.
+
+
+## 2026-10-12 — Diagnose and fix production deployment workflow failure
+
+- **Observed run:** [Deploy production Worker run 38201626777, attempt 3](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/38201626777).
+- **Verified:** all four GitHub Actions secrets are now present in the workflow environment; validation passed, dependency installation passed, typecheck passed, and Vite production build passed. Deployment failed inside `cloudflare/wrangler-action@v3` with `Missing entry-point` because the action selected Wrangler 3.90.0, which does not understand this repository's Workers static-assets-only `wrangler.jsonc` configuration as configured.
+- **Fix committed:** updated `.github/workflows/deploy-production.yml` to pin the action's Wrangler version to `4.x`, matching the static-assets Worker configuration. Commit: `06e3b6c56419179fa5d352f15bf759dd3041bba0`.
+- **Affected files:** `.github/workflows/deploy-production.yml`; this handoff.
+- **Verification:** the failure was diagnosed from the actual GitHub Actions job logs. The workflow edit is committed; the new run triggered by this commit must still be checked. No successful production deployment is claimed.
+- **Blockers / required user action:** none expected for this specific Wrangler-version fix; watch the next run. If Cloudflare returns a permissions error, review the exact error and adjust the token's least-privilege permissions only as required. Do not share secret values.
+- **Next step:** inspect the run triggered by commit `06e3b6c`. If deploy succeeds, verify the production Worker `nova-ace-jamb`, then test admin login redirect, `/admin-import`, session persistence, non-admin denial, and production Supabase `is_admin` RPC traffic. Keep Kill 2 IBASS importer paused until all acceptance checks pass.
