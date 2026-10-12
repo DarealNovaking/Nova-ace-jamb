@@ -1513,3 +1513,14 @@ When this file is updated, update this file rather than creating another paralle
 - **Required user action:** after the branch preview is deployed, sign in once with the admin account and confirm that the app automatically lands on `/admin` and shows **Admin Dashboard / Administrator**. Do not start Kill 2 publication until this auth-routing gate passes.
 - **Next step:** run GitHub Verify + E2E on the fix branch, then perform authenticated browser verification before merge.
 
+
+
+## 2026-10-12 — Admin routing fix merged; live verification pending
+
+- **Root cause confirmed:** `main` routed the default application to `StudentFoundationGate` and had no dedicated routing for `/admin` or `/admin-import`, so an authenticated administrator could fall into the student flow.
+- **Change merged:** PR [#4](https://github.com/DarealNovaking/Nova-ace-jamb/pull/4), squash commit `1c013517a7ad818f33ea5f987e00df4d22c772c2`. It adds `AdminFoundationGate`, checks the admin role through `ace.rpc('is_admin')`, routes `/admin` and `/admin-import` through the protected gate, and checks admin role before student onboarding.
+- **Files in PR:** `src/main.tsx`, `src/components/AdminFoundationGate.tsx`, `src/components/StudentFoundationGate.tsx`, and this handoff.
+- **Verification:** Before merge, GitHub Verify run 178 and ACE JAMB E2E run 107 passed on PR head `6841f3968ea8e84bf7e9820fd02e9245cc6dcbb1`. After merge, main-branch Verify run 179 and ACE JAMB E2E run 112 started on merge commit `1c013517a7ad818f33ea5f987e00df4d22c772c2`; final results were not yet available at the time of this note.
+- **Security/data integrity:** Supabase `ace.is_admin()` exists and is executable by authenticated users; it is a `SECURITY DEFINER` function checking `ace.roles` against `auth.uid()`. The SQL inspection connection does not carry the administrator's JWT, so it cannot confirm the current browser user's role.
+- **Not yet verified:** authenticated browser login/redirect on the live Cloudflare deployment, direct access to `/admin` and `/admin-import`, and deployed commit/version. No importer was run and no catalogue data was written.
+- **Next actions:** wait for the post-merge Verify/E2E runs to finish; confirm Cloudflare deploys the merge commit; then test using the existing admin account: sign in, confirm redirect to `/admin`, open `/admin-import`, and confirm a non-admin cannot access either admin route. Keep Kill 2 import blocked until these checks pass.
