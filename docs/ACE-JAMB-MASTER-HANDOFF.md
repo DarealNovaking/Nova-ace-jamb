@@ -1929,3 +1929,26 @@ Inspect the repository versions of both Edge Functions, the catalogue import con
 - Detailed evidence, options, safety boundaries, and acceptance criteria: `docs/CATALOGUE-REPLACEMENT-INVESTIGATION-2026-10-19.md`.
 - No application code, database data, Edge Functions or deployment changed in this investigation. Main branch lacks `src/components/AdminIBASSProgrammeImport.tsx` (404), so do not assume that historical importer UI is present on main.
 - Next action: inspect SQL definitions and RLS/constraints for `save_student_foundation_catalog_with_subjects` and onboarding completion, then implement a minimal additive preparation-only onboarding path with tests. Keep Batch 2 IN PROGRESS and Batch 3 LOCKED.
+
+
+---
+
+## Catalogue-independent preparation onboarding — 2026-10-19
+
+### Implemented on `main`
+- Added `supabase/migrations/20261019120000_preparation_onboarding_without_catalogue.sql`, defining authenticated RPC `ace.save_student_preparation_foundation`. It validates authentication, profile fields, daily minutes, four distinct active subject IDs, and updates profile/preferences/subjects atomically without requiring institution/programme/rule records.
+- Student institution/course inputs are optional intended goals. The RPC stores them as text only and clears structured institution/programme IDs unless both goals still match the existing linked catalogue records; this avoids representing free-text goals as verified catalogue links.
+- Updated `src/lib/studentService.ts` with `saveStudentPreparationFoundation`.
+- Reworked `src/components/StudentOnboarding.tsx` to load active subjects and let students choose four preparation subjects regardless of catalogue coverage. It explicitly says subject choices are not a verified course combination and links to the official JAMB IBASS eligibility checker.
+- Updated `src/components/StudentFoundationGate.tsx` so missing institution/course no longer blocks app access; onboarding completion requires profile basics, daily study time, and exactly four saved subjects.
+- Added SQL integration assertions to `tests/sql/utme_subject_choice.test.sql` for preparation-only saves, null/unverified goals, four saved subjects, daily study minutes, and unauthenticated rejection. The existing CI migration job runs this SQL test.
+- The schema/data/catalogue tables and existing catalogue RPC remain intact. No production migration was applied manually, no catalogue rows were changed, and no deployment was initiated by the agent.
+
+### Verification status
+- Read-only live schema inspection confirmed `ace.profiles.institution`, `course`, `institution_id`, and `program_id` are nullable; `student_preferences.daily_minutes` and `student_subjects` are present.
+- GitHub writes succeeded for migration, frontend, service, gate, and SQL-test changes. Latest commit must be rechecked before relying on this record.
+- Typecheck/build and the disposable PostgreSQL migration test have not yet been observed passing for these changes. Await GitHub Actions and inspect failures before calling this complete.
+- Remaining risks: production migration has not been applied; live onboarding/E2E is not verified; official course requirements remain unresolved until a verified season-specific catalogue rule exists.
+
+### Next action
+Fetch latest `main` HEAD and GitHub Actions runs. Fix any type/build/SQL failures, rerun relevant checks, then update both handoff documents with the actual run result. Do not manually apply the migration to production until CI is green and the normal migration/deployment path is confirmed.
