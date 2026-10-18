@@ -28,3 +28,13 @@
 - Prompt-pack commit: `261716c12f1df17c814302febf950166f7657d14`.
 - No application code, database data, or deployment was changed. Prompt pack was written successfully; read-back verification is the next check.
 - Next action remains restoring read-only Supabase inspection and reconciling the deployed/repository `catalog-import` function before implementation.
+
+
+## Verified live-system and agent-continuity update — 2026-10-18
+- Repository: DarealNovaking/Nova-ace-jamb, branch main. HEAD observed after master-handoff update: 420e3918b6f48ed59a27781aea69c4a750d93309.
+- docs/AGENT-PROMPTS.md now makes one universal instruction canonical for every agent; role-specific sections are optional bounded task briefs. Commit: e79d863963d8c48d87cdb26b1ceff550cbc407c9.
+- Supabase access is working for this inspection; do not call Supabase blocked. Read-only SQL, migration listing, table/schema listing, and deployed function retrieval succeeded.
+- Live counts: ace.institutions=791, ace.programs=0, ace.program_utme_rules=0, ace.subjects=25.
+- Deployed functions: catalog-import v7 and ibass-catalog-stage v4, both verify_jwt=true. No database writes or deployments performed.
+- Catalogue remains Batch 2 in progress because programme and UTME-rule tables are empty. Do not re-upload the institution workbook without fresh evidence.
+- Next action: compare both deployed function implementations with repository source, catalogue contract, migrations/RPCs, and AdminCatalogueImport caller. Validate official IBASS parsing on a bounded non-publishing sample, then implement and test the smallest safe correction. Batch 3 remains locked.
