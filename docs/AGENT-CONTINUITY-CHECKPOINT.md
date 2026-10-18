@@ -252,7 +252,7 @@
 - **Decision approved by user:** keep the catalogue and decouple preparation onboarding from catalogue completeness.
 - **Code added:** `supabase/migrations/20261019120000_preparation_onboarding_without_catalogue.sql`; new authenticated RPC validates 4 distinct active subjects, auth, score, display name and study minutes; unresolved institution/course text is not treated as verified structured catalogue data.
 - **Frontend/service:** `src/lib/studentService.ts` now calls the new preparation RPC; `src/components/StudentOnboarding.tsx` selects four preparation subjects without institution/programme/rule dependencies and labels them as not an official combination; `src/components/StudentFoundationGate.tsx` no longer requires institution/course text to enter the app and requires exactly four saved subjects.
-- **Tests:** extended `tests/sql/utme_subject_choice.test.sql` with preparation-only save assertions and unauthenticated-call rejection. CI's PostgreSQL job runs this test file.
+- **Tests:** extended `tests/sql/utme_subject_choice.test.sql` with preparation-only save assertions, unauthenticated-call rejection, and deletion of fixture catalogue rows before the prep-only save to prove the empty-catalogue path. This runs only in disposable CI PostgreSQL.
 - **Live schema read:** profile institution/course text and structured institution/programme IDs are nullable; student preferences and student subjects tables are present. No production data changes or migration application performed.
 - **Changes committed through multiple GitHub Contents API commits; latest HEAD and CI status still need verification.**
 - **Not yet verified:** npm typecheck/build, SQL migration test, authenticated browser/E2E, production migration/deployment.
