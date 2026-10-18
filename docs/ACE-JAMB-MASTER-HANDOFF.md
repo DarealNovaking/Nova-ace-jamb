@@ -1786,3 +1786,8 @@ Inspect the repository versions of both Edge Functions, the catalogue import con
 - Enumerated API routes referenced in the current official frontend bundle: `/inst-type`, `/inst-category`, `/ibass/institutions?page=`, `/ibass/institution/programmes/`, `/ibass/eligibility-checker/`, and `/ibass/eligibility-checker/submit`. A read-only synthetic eligibility-checker submit returned HTTP 500 with a generic error; no valid detail response was recovered. No attempt was made to use credentials or mutate JAMB records.
 - CI now passed on latest parser source commit `5c4ce3b97ff3f0d3c0e976a8e4bd5fece579d4f5`: GitHub Actions `Verify` and `ACE JAMB E2E` both succeeded. CI also passed for docs commit `f1a4395a4b91d79091be90cb1f4e0a455a1ece9f`. This confirms TypeScript typecheck/build and existing Playwright suite, but does not test the Deno Edge Function against official payload fixtures.
 - Next action: do not deploy or stage yet. Continue read-only endpoint/source investigation or use official brochure documents as reviewed fixtures; only implement a detailed-requirements parser once a source response is confirmed to contain authoritative UTME requirements and alternatives. Batch 2 remains IN PROGRESS; Batch 3 remains LOCKED.
+
+
+## Live-state recheck — 2026-10-18
+- Rechecked active Supabase project `uokiqlgmzprqfbzmedaz` after the source-only changes: `catalog-import` remains ACTIVE v7 and `ibass-catalog-stage` remains ACTIVE v4, both `verify_jwt=true`. No function deployment occurred.
+- Current read-only counts: 791 institutions, 0 programmes, 0 UTME rules, 4 catalog import batches. This confirms the current work did not add catalogue rows; existing batches predate this check.
