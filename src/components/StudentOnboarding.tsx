@@ -6,6 +6,7 @@ import { ace, supabase } from '../lib/supabase'
 type Subject = { id: string; name: string; code: string }
 type Institution = Awaited<ReturnType<typeof listInstitutions>>[number]
 type Program = Awaited<ReturnType<typeof listPrograms>>[number]
+type ProgramUtmeRule = { required_subject_ids: string[]; alternative_groups: Array<{ subject_codes?: string[]; minimum_required?: number }>; minimum_optional_subjects: number; notes: string | null }
 
 export default function StudentOnboarding({ onComplete }: { onComplete: () => void }) {
   const [subjects, setSubjects] = useState<Subject[]>([])
@@ -14,6 +15,7 @@ export default function StudentOnboarding({ onComplete }: { onComplete: () => vo
   const [selectedInstitution, setSelectedInstitution] = useState('')
   const [selectedProgram, setSelectedProgram] = useState('')
   const [combinationIds, setCombinationIds] = useState<string[]>([])
+  const [programRule, setProgramRule] = useState<ProgramUtmeRule | null>(null)
   const [name, setName] = useState('')
   const [target, setTarget] = useState('300')
   const [dailyMinutes, setDailyMinutes] = useState('60')
@@ -22,7 +24,20 @@ export default function StudentOnboarding({ onComplete }: { onComplete: () => vo
   const [message, setMessage] = useState('')
 
   const combination = useMemo(() => combinationIds.map((id) => subjects.find((subject) => subject.id === id)).filter(Boolean) as Subject[], [combinationIds, subjects])
-  const fixedCombination = combinationIds.length === 4
+  const requiredIds = programRule?.required_subject_ids ?? []
+  const optionalGroups = programRule?.alternative_groups ?? []
+  const optionalSubjects = useMemo(() => {
+    const codes = new Set(optionalGroups.flatMap((group) => group.subject_codes ?? []))
+    const required = new Set(requiredIds)
+    return subjects.filter((subject) => codes.has(subject.code) && !required.has(subject.id))
+  }, [optionalGroups, requiredIds, subjects])
+  const groupSelectionsValid = optionalGroups.every((group) => {
+    const codes = new Set(group.subject_codes ?? [])
+    const selectedCount = combination.filter((subject) => codes.has(subject.code)).length
+    return selectedCount >= (group.minimum_required ?? 1)
+  })
+  const fixedCombination = Boolean(programRule) && combinationIds.length === 4 &&
+    requiredIds.every((id) => combinationIds.includes(id)) && groupSelectionsValid
   const catalogUnavailable = !busy && institutions.length === 0
 
   useEffect(() => {
@@ -52,11 +67,13 @@ export default function StudentOnboarding({ onComplete }: { onComplete: () => vo
     if (!selectedInstitution) {
       setPrograms([])
       setSelectedProgram('')
+      setProgramRule(null)
       setCombinationIds([])
       return
     }
     let active = true
     setSelectedProgram('')
+    setProgramRule(null)
     setCombinationIds([])
     listPrograms(selectedInstitution)
       .then((items) => active && setPrograms(items))
@@ -66,6 +83,7 @@ export default function StudentOnboarding({ onComplete }: { onComplete: () => vo
 
   useEffect(() => {
     if (!selectedProgram) {
+      setProgramRule(null)
       setCombinationIds([])
       return
     }
@@ -77,7 +95,10 @@ export default function StudentOnboarding({ onComplete }: { onComplete: () => vo
         if (!data) throw new Error('No active JAMB season is available yet.')
         const rule = await getProgramUtmeRule(data.id, selectedProgram)
         if (!rule) throw new Error('No verified UTME subject combination is available for this course yet.')
-        if (active) setCombinationIds(rule.required_subject_ids)
+        if (active) {
+          setProgramRule(rule as ProgramUtmeRule)
+          setCombinationIds(rule.required_subject_ids)
+        }
       })
       .catch((error) => active && setMessage(error instanceof Error ? error.message : 'Could not load the verified subject combination.'))
     return () => { active = false }
@@ -91,7 +112,7 @@ export default function StudentOnboarding({ onComplete }: { onComplete: () => vo
     if (!Number.isInteger(score) || score < 0 || score > 400) return setMessage('Target score must be between 0 and 400.')
     if (!selectedInstitution || !selectedProgram) return setMessage('Select your institution and course.')
     if (!Number.isInteger(minutes) || minutes < 1 || minutes > 1440) return setMessage('Study time must be between 1 and 1440 minutes.')
-    if (!fixedCombination) return setMessage('This course has alternative UTME subject choices. Complete the subject-choice step before continuing.')
+    if (!fixedCombination) return setMessage('Select the required UTME subjects and satisfy every official alternative group before continuing.')
     setSaving(true)
     try {
       await saveStudentFoundationFromCatalog({
@@ -100,6 +121,7 @@ export default function StudentOnboarding({ onComplete }: { onComplete: () => vo
         institution_id: selectedInstitution,
         program_id: selectedProgram,
         daily_minutes: minutes,
+        subject_ids: combinationIds,
       })
       onComplete()
     } catch (error) {
@@ -130,7 +152,12 @@ export default function StudentOnboarding({ onComplete }: { onComplete: () => vo
         <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
           <p className="text-sm font-semibold">Verified JAMB subject combination</p>
           <p className="mt-1 text-xs text-white/40">This is derived from the active season and selected programme.</p>
-          {catalogUnavailable ? <p className="mt-3 text-sm text-white/45">No verified institution/course catalogue is published yet. ACE will not guess your combination.</p> : combination.length === 4 ? <div className="mt-3 flex flex-wrap gap-2">{combination.map((subject) => <span key={subject.id} className="rounded-full border border-purple-300/30 bg-purple-500/10 px-3 py-1.5 text-xs">{subject.name}</span>)}</div> : combination.length ? <p className="mt-3 text-sm text-amber-200/80">This programme has alternative subject choices. ACE will require an explicit subject-choice step rather than guessing one for you.</p> : <p className="mt-3 text-sm text-white/45">Select a course with an approved combination to continue.</p>}
+          {catalogUnavailable ? <p className="mt-3 text-sm text-white/45">No verified institution/course catalogue is published yet. ACE will not guess your combination.</p> : !programRule ? <p className="mt-3 text-sm text-white/45">Select a course with an approved combination to continue.</p> : <>
+            {combination.length > 0 && <div className="mt-3 flex flex-wrap gap-2">{combination.map((subject) => <span key={subject.id} className="rounded-full border border-purple-300/30 bg-purple-500/10 px-3 py-1.5 text-xs">{subject.name}{requiredIds.includes(subject.id) ? ' · Required' : ' · Selected'}</span>)}</div>}
+            {optionalSubjects.length > 0 && <fieldset className="mt-4 space-y-2"><legend className="text-sm text-white/70">Choose your alternative UTME subject(s)</legend><p className="text-xs text-white/40">Select enough options to complete four subjects. Required subjects cannot be removed.</p>{optionalSubjects.map((subject) => <label key={subject.id} className="flex cursor-pointer items-center gap-3 rounded-xl border border-white/10 p-3 text-sm"><input type="checkbox" checked={combinationIds.includes(subject.id)} disabled={!combinationIds.includes(subject.id) && combinationIds.length >= 4} onChange={(event) => { setMessage(''); setCombinationIds((current) => event.target.checked ? (current.length < 4 ? [...current, subject.id] : current) : current.filter((id) => id !== subject.id)) }} /><span>{subject.name}</span></label>)}</fieldset>}
+            {programRule.notes && <p className="mt-3 text-xs text-white/45">Official requirement: {programRule.notes}</p>}
+            {!fixedCombination && <p className="mt-3 text-sm text-amber-200/80">Choose the official alternative subject(s) above to complete your four-subject combination.</p>}
+          </>}
         </div>
         <button type="button" disabled={saving || !fixedCombination || catalogUnavailable} onClick={save} className="w-full rounded-xl bg-white py-3 font-bold text-black disabled:opacity-50">{saving ? 'Saving…' : catalogUnavailable ? 'Waiting for verified catalogue' : 'Continue to ACE'}</button>
       </section>
