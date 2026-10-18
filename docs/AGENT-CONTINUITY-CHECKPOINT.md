@@ -113,3 +113,9 @@
 - Current official API `POST /ibass/institution/programmes/1306?page=1` returns only 3 FUTA programmes and all returned rows have empty `subjects`, `utme_requirements`, and `details`. Searching this API for Microbiology and Agricultural Engineering returns zero rows, while the legacy endpoint has many more. The current official app bundle only references `/inst-type`, `/inst-category`, `/ibass/institutions?page=`, `/ibass/institution/programmes/`, `/ibass/eligibility-checker/`, and `/ibass/eligibility-checker/submit`. A synthetic eligibility-checker submit probe returned HTTP 500, so no requirement details were recovered.
 - This leaves the requirement source unresolved. The code now safely handles nested institution tree mapping and refuses to stage any batch if it parsed zero UTME rules. No live function deployment, catalogue staging, approval, publication, or database write occurred.
 - **Next action:** inspect the official brochure's downloadable documents/alternative authoritative payloads and build fixtures before changing parser logic. Do not switch to the newer API list as source of truth until programme coverage and requirement completeness are confirmed. Batch 2 IN PROGRESS; Batch 3 LOCKED.
+
+
+## Post-investigation live recheck — 2026-10-18
+- Reconfirmed live Supabase project `uokiqlgmzprqfbzmedaz`: `catalog-import` ACTIVE v7 and `ibass-catalog-stage` ACTIVE v4, both JWT verification enabled. Neither function was redeployed.
+- Read-only database counts remain: 791 institutions, 0 programmes, 0 UTME rules, 4 import batches. No catalogue rows were added during this continuation.
+- Latest source commit `5c4ce3b97ff3f0d3c0e976a8e4bd5fece579d4f5` passed Verify and Playwright. Current remaining blocker is authoritative programme requirement/alternative data access; keep importer fail-closed and do not stage/deploy until the current official source is parsed and fixture-tested.
