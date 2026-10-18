@@ -29,7 +29,7 @@ begin
   if p_display_name is null or length(btrim(p_display_name)) = 0 or length(btrim(p_display_name)) > 80 then raise exception 'Display name must be 1–80 characters.' using errcode = '22023'; end if;
   if p_target_score is null or p_target_score < 0 or p_target_score > 400 then raise exception 'Target score must be between 0 and 400.' using errcode = '22023'; end if;
   if p_daily_minutes is null or p_daily_minutes < 1 or p_daily_minutes > 1440 then raise exception 'Study time must be between 1 and 1440 minutes.' using errcode = '22023'; end if;
-  if p_subject_ids is null or cardinality(p_subject_ids) <> 4 or (select count(distinct x) from unnest(p_subject_ids) as x) <> 4 then
+  if p_subject_ids is null or cardinality(p_subject_ids) <> 4 or (select count(distinct input_subject_id) from unnest(p_subject_ids) as input_subjects(input_subject_id)) <> 4 then
     raise exception 'Select exactly four distinct UTME subjects.' using errcode = '22023';
   end if;
 
