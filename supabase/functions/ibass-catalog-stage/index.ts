@@ -28,7 +28,7 @@ Deno.serve(async req=>{
   // IBASS returns a nested tree (school type -> category -> institution), not a flat list.
   const ib:any[]=[];const visit=(node:any)=>{if(Array.isArray(node)){for(const item of node)visit(item);return;}if(!node||typeof node!=="object")return;if(node.type==="institution"&&node.id&&node.name)ib.push({id:String(node.id),name:String(node.name)});if(node.children)visit(node.children);};visit(catalogue);
   const unique=[...new Map(ib.map(x=>[x.id,x])).values()];const mapped:any[]=[],unresolved:any[]=[];
-  const institutionName=(name:string,state?:string|null)=>{let value=name;if(state?.trim())value=value.replace(new RegExp("[,\\s]+"+state.trim()+"(?:\\s+STATE)?\\s*$","i"),"");return norm(value);};
+  const institutionName=(name:string,state?:string|null)=>{const normalized=norm(name);const suffix=state?.trim()?norm(state):"";return suffix&&normalized.endsWith(" "+suffix)?normalized.slice(0,-suffix.length-1).trim():normalized;};
   for(const inst of selected){const target=institutionName(inst.name,inst.state);const matches=unique.filter(x=>institutionName(x.name,inst.state)===target);if(matches.length!==1){unresolved.push({institution_id:inst.id,name:inst.name,reason:matches.length?"ambiguous IBASS match after state normalization":"no normalized IBASS match"});continue;}mapped.push({...inst,ibass_id:matches[0].id,ibass_name:matches[0].name});}
  const programs:any[]=[],rules:any[]=[];
  for(const inst of mapped){let pdata:any[];try{pdata=await (await get("https://eligibility.jamb.gov.ng/load_programs.php?school="+encodeURIComponent(inst.ibass_id),{accept:"application/json"})).json();}catch(e){unresolved.push({institution_id:inst.id,name:inst.name,reason:String(e)});continue;}
