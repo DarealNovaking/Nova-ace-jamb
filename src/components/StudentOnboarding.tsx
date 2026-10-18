@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { getStudentPreferences, getStudentProfile, saveStudentPreparationFoundation } from '../lib/studentService'
+import { getStudentPreferences, getStudentProfile, getStudentSubjects, saveStudentPreparationFoundation } from '../lib/studentService'
 import { ace, supabase } from '../lib/supabase'
 
 type Subject = { id: string; name: string; code: string }
@@ -32,9 +32,8 @@ export default function StudentOnboarding({ onComplete }: { onComplete: () => vo
       setInstitutionGoal(profile.institution ?? '')
       setCourseGoal(profile.course ?? '')
       // Keep an existing valid subject selection if it is still in the active subject list.
-      return ace.from('student_subjects').select('subject_id,sort_order').order('sort_order').then(({ data, error }) => {
-        if (error) throw error
-        if (active) setSelectedSubjects((data ?? []).map((row) => row.subject_id).filter((id) => (subjectResult.data ?? []).some((subject) => subject.id === id)).slice(0, 4))
+      return getStudentSubjects().then((rows) => {
+        if (active) setSelectedSubjects(rows.map((row) => row.subject_id).filter((id) => (subjectResult.data ?? []).some((subject) => subject.id === id)).slice(0, 4))
       })
     }).catch((error) => setMessage(error instanceof Error ? error.message : 'Could not load your preparation setup.'))
       .finally(() => active && setBusy(false))
