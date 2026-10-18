@@ -1,18 +1,7 @@
 name: Deploy production Worker
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - "src/**"
-      - "public/**"
-      - "index.html"
-      - "package.json"
-      - "package-lock.json"
-      - "vite.config.*"
-      - "tsconfig*.json"
-      - "wrangler.jsonc"
-      - ".github/workflows/deploy-production.yml"
+  # Production deployments must be explicitly initiated after verification.
   workflow_dispatch:
 
 permissions:
