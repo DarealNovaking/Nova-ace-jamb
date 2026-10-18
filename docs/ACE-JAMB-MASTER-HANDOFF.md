@@ -1630,3 +1630,16 @@ When this file is updated, update this file rather than creating another paralle
 - **No live data changed in this discovery step.** No programme/rule records were inserted and no institution/season was activated.
 - **Completion sequence:** (1) exact/ambiguous institution reconciliation against official JAMB hierarchy; (2) persist verified JAMB institution IDs and reviewed institution activation; (3) ingest programmes for matched schools through stage → validate → approve → publish; (4) ingest source-backed UTME rules preserving alternatives for the draft 2027 season; (5) review/activate only after integrity checks; (6) test student onboarding end-to-end. Keep unmatched/ambiguous records in draft and report coverage.
 - **Verification:** live endpoint examples returned authoritative hierarchy, subject catalogue, and programme list; database query confirmed current subject list and season states. Student catalogue remains incomplete, and no completion is claimed.
+
+
+
+---
+
+## 36. MULTI-AGENT CONTINUITY
+
+Cross-agent continuation is now standardized in:
+
+- `docs/AGENT-CONTINUITY-PROTOCOL.md` — mandatory startup, safety, delegation, verification, and handoff rules; includes a reusable prompt for any new agent/chat.
+- `docs/AGENT-CONTINUITY-CHECKPOINT.md` — concise current checkpoint with evidence, blockers, safety constraints, and one concrete next action. Refresh it from verified repository/live-system state; stale checkpoint data must not override current evidence.
+
+Use this workflow across AI providers and chats. GitHub remains the durable shared source; this does not automatically grant another agent access to GitHub/Supabase or share credentials. Every agent must independently verify access, current HEAD, live data when relevant, and tests. See the protocol for exact rules.
