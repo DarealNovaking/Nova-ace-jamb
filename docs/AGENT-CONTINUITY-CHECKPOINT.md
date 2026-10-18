@@ -267,3 +267,12 @@
 - Latest parser/test commits: `74175a7f402977420132f95409ce7561414f29cc`, `7087af857d5e3394a3ca748f4841baf4c279b867`. Current CI for those commits still needs inspection.
 - No live data, production migration or deployment changed.
 - Next action: inspect CI for parser commits, then find complete current IBASS subject inventory and compare against `ace.subjects`; do not bulk-add unverified entries.
+
+
+## CI verification and IBASS inventory follow-up — 2026-10-19
+- Refreshed repository state: `main` HEAD `f489713e5ada29b3e06b750c2929644e1c587a26`.
+- Verify workflow run `39177813651` passed on this HEAD: parser/review-only-stage Node tests, Deno type check for `ibass-catalog-stage`, `npm run typecheck`, `npm run build`, and disposable PostgreSQL `utme-subject-choice.test` migration job all succeeded.
+- ACE JAMB E2E workflow run `39177813601` passed on this HEAD, including typecheck, build, Playwright browser tests and artifact upload. The exact official-label parser test also passed in Verify run `39177774340` for commit `7087af857d5e3394a3ca748f4841baf4c279b867`.
+- Official IBASS e-syllabus page displays 12 entries and client-side pagination controls. Adding URL query parameters `?page=2` / `?page=3` did not change extracted results; this approach does not retrieve the remaining pages. Search results and visible first-page content confirm Computer Studies is included. No current official evidence for Physical and Health Education was found in these searches.
+- Inventory conclusion unchanged: the official eligibility JSON's 22 rows are not exhaustive; ACE production has 25 active subject rows; PHE remains unverified and must not be deleted without evidence. No live subject rows, production migration, or deployment changed.
+- **Next action:** inspect IBASS's actual pagination/data-loading mechanism or discover an authoritative full subject inventory endpoint, then compare each source label to `ace.subjects`. Do not bulk-add or delete subjects based on incomplete extraction. Batch 2 IN PROGRESS; Batch 3 LOCKED.
