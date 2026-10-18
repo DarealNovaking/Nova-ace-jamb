@@ -99,3 +99,10 @@
 - Live source investigation proves the current IBASS brochure page has changed to a React application; old modal/table selectors are absent. The legacy programme endpoint still returns `{id,title}` records. A read-only call to the newer API list endpoint returned a limited 3-row result for FUTA with empty UTME requirement fields, so it is not yet a validated replacement. Official requirements/alternatives endpoint remains to be identified.
 - **No deployment, staging request, catalogue write, approval, publication, or database mutation was performed.** Source commits are un-deployed. Typecheck/build/Deno tests/Playwright remain unrun and unverified; no local clone is available because the container cannot resolve GitHub.
 - **Exact next action:** inspect current IBASS app-bundle API calls and use read-only calls to identify the endpoint that supplies `programme_utme_subject_data`, `programme_utme_requirements_data`, and alternatives; capture representative official payload fixtures (including alternative/optional subject wording); implement/test a parser against those fixtures. Then run TypeScript/Deno checks, build, and Playwright in a network-enabled repository runtime. Do not deploy or stage until the tests pass. Batch 2 IN PROGRESS; Batch 3 LOCKED.
+
+
+## Verification follow-up — 2026-10-18
+- Latest parser source commit: `5c4ce3b97ff3f0d3c0e976a8e4bd5fece579d4f5` (normalized state suffix matching no longer constructs a dynamic regex).
+- Confirmed GitHub Actions passed on prior source commit `a6bc5aa65bbf0315dfc5fa58648049f9b3be881b`: `Verify` passed (TypeScript typecheck + production build) and `ACE JAMB E2E` passed (Playwright). This does not validate the subsequent `5c4ce3b` edit.
+- At checkpoint time, `Verify` run `39132839357` and `ACE JAMB E2E` run `39132839355` for `5c4ce3b` were in progress; recheck these exact runs before claiming the latest source passes.
+- No live staging/deployment/database write occurred. The live IBASS brochure's old DOM selectors are obsolete; identify the current official endpoint for detailed UTME requirements and alternatives before changing the importer further.
