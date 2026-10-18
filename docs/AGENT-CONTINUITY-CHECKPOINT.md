@@ -54,3 +54,11 @@
 - Confirmed remaining blocking contract defects: IBASS parser emits `alternative_subject_groups`, live publication expects `alternative_groups`; alternative requirements are not represented safely by current parser; rule source status is `reviewed` while publication requires `approved`; deployed catalog-import v7 returns RPC-shaped JSON while repository implementation/UI expect `batch_id`.
 - Current counts last verified: institutions 791 (all draft), programs 0, rules 0, subjects 25. No catalogue data rows staged/published. No build/typecheck/Playwright/parser integration tests performed.
 - Exact next action: reconcile catalog-import contract and migration/RPC shapes, add non-publishing tests for official IBASS payloads and alternatives, fix the payload key and source approval gate, then add explicit admin staging UI and verify with Playwright. Do not deploy functions or import/publish programmes/rules until those checks pass. Batch 3 locked.
+
+
+## Batch 2 continuation — 2026-10-18 (payload contract correction)
+- Committed `de5cb5a103b949ef65fb6c8ccc49e2fc68bf5516`: IBASS function now emits `alternative_groups` to match the live publication RPC/contract. Source-only; no deployment.
+- Alternative subject requirement handling remains conservative but incomplete: parser declines to stage text containing common alternative/choice terms; no real endpoint fixture/parser tests have run.
+- An attempted `AdminCatalogueImport.tsx` UI patch was blocked by tool safety checks before the GitHub write; the UI remains institution-workbook-only. Do not document this as implemented.
+- No catalogue data writes or function deployments. Last verified live counts: 791 institutions (draft), 0 programmes, 0 rules, 25 subjects.
+- Next concrete action: add an isolated admin UI for selecting a valid season and up to 25 institutions, invoke the existing authenticated IBASS staging function, then test official payload parsing, RPC response contract, typecheck/build, and Playwright. Keep staging/review separate from approval/publication; Batch 3 remains locked.
