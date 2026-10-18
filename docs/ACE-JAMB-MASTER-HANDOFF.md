@@ -1945,6 +1945,8 @@ Inspect the repository versions of both Edge Functions, the catalogue import con
 - The schema/data/catalogue tables and existing catalogue RPC remain intact. No production migration was applied manually, no catalogue rows were changed, and no deployment was initiated by the agent.
 
 ### Verification status
+
+- SQL coverage was tightened to delete the test fixture's institution, programme and programme-rule rows before invoking the new preparation RPC, so the isolated test exercises a genuinely empty catalogue. This only affects the disposable CI schema, never production.
 - Read-only live schema inspection confirmed `ace.profiles.institution`, `course`, `institution_id`, and `program_id` are nullable; `student_preferences.daily_minutes` and `student_subjects` are present.
 - GitHub writes succeeded for migration, frontend, service, gate, and SQL-test changes. Latest commit must be rechecked before relying on this record.
 - Typecheck/build and the disposable PostgreSQL migration test have not yet been observed passing for these changes. Await GitHub Actions and inspect failures before calling this complete.
