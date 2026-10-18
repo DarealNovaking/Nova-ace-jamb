@@ -1643,3 +1643,43 @@ Cross-agent continuation is now standardized in:
 - `docs/AGENT-CONTINUITY-CHECKPOINT.md` — concise current checkpoint with evidence, blockers, safety constraints, and one concrete next action. Refresh it from verified repository/live-system state; stale checkpoint data must not override current evidence.
 
 Use this workflow across AI providers and chats. GitHub remains the durable shared source; this does not automatically grant another agent access to GitHub/Supabase or share credentials. Every agent must independently verify access, current HEAD, live data when relevant, and tests. See the protocol for exact rules.
+
+
+---
+
+## 36. MULTI-AGENT CONTINUITY + CURRENT VERIFIED BLOCKERS (2026-10-18)
+
+This section supersedes any older checkpoint wording where the two conflict. The full product vision and architecture above remain authoritative.
+
+### Continuity documents
+- Multi-agent rules: `docs/AGENT-CONTINUITY-PROTOCOL.md`
+- Current agent checkpoint: `docs/AGENT-CONTINUITY-CHECKPOINT.md`
+- Reusable role-specific prompts: `docs/AGENT-PROMPTS.md`
+- Latest known Batch 2 data-source handoff: `docs/MASTER-HANDOFF-BATCH-2-IBASS-ENDPOINTS-2026-09-16.md`
+
+Use one integrator to own `main`, resolve competing agent recommendations, approve production changes, run final verification, and update this master handoff plus the checkpoint. Other agents must have bounded scopes and must not edit the same files or mutate production data concurrently.
+
+### Fresh repository evidence
+- On 2026-10-18, GitHub read access succeeded for the private repository. The `main` branch was observed at commit `0627479eb5f5ddf891c2f55b2a8325c1137f3ea1` before the role prompt pack/checkpoint refresh commits.
+- The catalogue import contract, admin catalogue importer, repository `supabase/functions/catalog-import/index.ts`, continuity protocol, and Batch 2 progress handoff were read.
+- New role prompt pack was committed as `e8789b4a22869b97bd244eb3800954c9cadf31fc`; checkpoint refresh commit: `03309a30c2c05774ca86be94e24b0268a77ac1af`. Re-check latest HEAD before the next change.
+
+### Catalogue and Edge Function safety warning
+The live Supabase Edge Function `catalog-import` was fetched and observed ACTIVE at version 7 with `verify_jwt=true`. Its implementation differs materially from repository source:
+- Deployed version handles CORS `OPTIONS`, checks caller permission through `ace.can_manage_catalog`, and stages through `ace.stage_catalog_import`.
+- Repository version checks `ace.roles`, queries `catalog_sources` and `exam_seasons`, and inserts import batches/rows directly.
+- **Do not deploy either version blindly.** First inspect migrations, RPC definitions, grants, RLS, deployed function, repository function, and frontend request contract. Decide which behavior is intended, reconcile code safely, then run authenticated smoke tests before deployment.
+
+### Live database access blocker
+Read-only Supabase migration and table inspection attempts on 2026-10-18 failed with PostgreSQL password-authentication errors for the configured database users. No database writes were performed. Previously reported counts (791 institutions, zero programs, zero UTME rules) are historical and must not be presented as freshly verified until a read-only live query succeeds through a working authorized connection.
+
+**Human action if connector keeps failing:** reconnect/refresh the Supabase integration through its supported connection settings, then request the agent to retry read-only inspection. If it still fails, use Supabase Dashboard → SQL Editor to run read-only counts on `ace.institutions`, `ace.programs`, and `ace.program_utme_rules`, and share only result counts/errors. Never share DB passwords, service-role keys, access tokens, or student PII in chat.
+
+### Current Batch 2 next steps
+1. Restore a working read-only Supabase inspection path and capture current catalogue counts/schema/migrations/RPCs.
+2. Independently verify official JAMB/IBASS programme and eligibility response shapes, including alternatives/optional UTME subjects and stable institution identifiers.
+3. Reconcile deployed/repository `catalog-import` drift and review authorization, RLS, idempotency, CORS and source/season validation.
+4. Only then implement the smallest safe importer fix, run typecheck/build and authenticated Playwright/E2E plus security/integrity checks where available.
+5. Stage → validate → approve → publish only source-verified catalogue data. Keep uncertain records inactive/draft. Batch 3 remains locked until Batch 2 acceptance evidence is recorded.
+
+No institution workbook re-upload is requested at this point. The existing admin/student routing issue should not be reopened without new evidence.
