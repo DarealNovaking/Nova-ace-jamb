@@ -2,9 +2,9 @@
 
 > Refresh from verified repository/system state at the start and end of meaningful work. This is a navigation aid, not a substitute for source code or live evidence.
 
-- **Updated at (UTC):** 2026-10-18 (exact time not asserted)
+- **Updated at (UTC):** 2026-10-19 (exact time not asserted)
 - **Repository:** `DarealNovaking/Nova-ace-jamb`
-- **Branch / HEAD commit:** `main`; latest observed commit before this checkpoint refresh: `e8789b4a22869b97bd244eb3800954c9cadf31fc` (added `docs/AGENT-PROMPTS.md`). Re-fetch HEAD after this checkpoint commit.
+- **Branch / HEAD commit:** `main`; latest HEAD must be refreshed after the catalogue-independent onboarding commits.
 - **Task / milestone:** Multi-agent continuity; Batch 2 catalogue pipeline remains the highest-value product milestone.
 - **Status:** Continuity protocol and role-specific prompt pack committed; catalogue implementation is blocked on live DB inspection and official programme/UTME data validation.
 - **Goal / acceptance criteria:** Agents can switch safely across providers/chats, know who owns integration, avoid duplicate investigations, make scoped changes, verify them, and keep handoff current.
@@ -246,3 +246,14 @@
 - Recommended direction: do not drop catalogue tables/records. Make preparation onboarding independent of catalogue completeness, with subject selection available and institution/course eligibility clearly unresolved until backed by a verified season-specific rule. Retain a small audited local catalogue/cache and an official JAMB checker fallback. Detailed investigation: `docs/CATALOGUE-REPLACEMENT-INVESTIGATION-2026-10-19.md`.
 - No app code changed; no tests run. Main branch's historical `src/components/AdminIBASSProgrammeImport.tsx` path returns 404 and must not be assumed present.
 - Next action: inspect SQL/RLS for `save_student_foundation_catalog_with_subjects` and onboarding completion, then implement the smallest additive preparation-only save path with tests. Batch 2 remains IN PROGRESS; Batch 3 remains LOCKED.
+
+
+## Preparation onboarding decoupling — 2026-10-19
+- **Decision approved by user:** keep the catalogue and decouple preparation onboarding from catalogue completeness.
+- **Code added:** `supabase/migrations/20261019120000_preparation_onboarding_without_catalogue.sql`; new authenticated RPC validates 4 distinct active subjects, auth, score, display name and study minutes; unresolved institution/course text is not treated as verified structured catalogue data.
+- **Frontend/service:** `src/lib/studentService.ts` now calls the new preparation RPC; `src/components/StudentOnboarding.tsx` selects four preparation subjects without institution/programme/rule dependencies and labels them as not an official combination; `src/components/StudentFoundationGate.tsx` no longer requires institution/course text to enter the app and requires exactly four saved subjects.
+- **Tests:** extended `tests/sql/utme_subject_choice.test.sql` with preparation-only save assertions and unauthenticated-call rejection. CI's PostgreSQL job runs this test file.
+- **Live schema read:** profile institution/course text and structured institution/programme IDs are nullable; student preferences and student subjects tables are present. No production data changes or migration application performed.
+- **Changes committed through multiple GitHub Contents API commits; latest HEAD and CI status still need verification.**
+- **Not yet verified:** npm typecheck/build, SQL migration test, authenticated browser/E2E, production migration/deployment.
+- **Exact next action:** fetch current `main` HEAD and latest Verify workflow runs; inspect logs for typecheck/build/SQL failures and fix before any production migration. Keep Batch 2 IN PROGRESS and Batch 3 LOCKED.
