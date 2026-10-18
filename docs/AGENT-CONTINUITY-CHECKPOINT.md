@@ -142,14 +142,14 @@
 
 ## Exact continuation checkpoint — UTME alternatives + deployment guard (2026-10-18)
 - Verified official API response shape: GET `/api/ibass/eligibility-checker/{institutionId}` returns a top-level `status` and `data` programme list; POST `/api/ibass/eligibility-checker/submit` returns structured `programme_utme_subject_data`. Four FUTA programme examples tested read-only: Microbiology, Biochemistry, Computer Science, Agricultural Engineering. Subject aliases used are present as active codes in live `ace.subjects`.
-- Onboarding now renders official optional-subject checkboxes and sends four selected subject IDs to new RPC `ace.save_student_foundation_catalog_with_subjects`. New migration: `supabase/migrations/20261018143100_batch_2_utme_subject_choice.sql`; current final migration commit `30cc19001519ddc01215e9c523d6c92555e24846`. Do not apply until SQL is tested in a disposable database. Live Supabase still has no programs/rules; no stage request has been sent.
+- Onboarding now renders official optional-subject checkboxes and sends four selected subject IDs to new RPC `ace.save_student_foundation_catalog_with_subjects`. New migration: `supabase/migrations/20261018143241_batch_2_utme_subject_choice.sql`; current final migration commit `30cc19001519ddc01215e9c523d6c92555e24846`. Do not apply until SQL is tested in a disposable database. Live Supabase still has no programs/rules; no stage request has been sent.
 - Deno parser check, Node parser fixtures, frontend typecheck/build and E2E passed on earlier commits: Verify `91df16fab9360da38918007216ca6e4463ce4924` passed; E2E also passed for that commit. Verify for onboarding commit `ed85fca0c4d175a332ba90f9ef7eb5690f773775` passed. Recheck latest workflow-guard commit `1f2e3366f8dcaaef99f6ab8c844fedb7ad42bb2d` before claiming current checks pass.
 - Important deployment finding: automatic push deploy ran as workflow `39135691876`, but Cloudflare API rejected the configured token (10000/9109) at the deploy step, so no Worker deploy succeeded. The workflow now has only `workflow_dispatch`; do not initiate it until credentials are repaired and the user explicitly authorizes production deployment.
 - Exact next action: recheck latest Verify/E2E; test migration/RPC in a disposable database, including fixed, one-of, missing-required, wrong-option, duplicate, and inactive-subject cases; add/execute frontend onboarding test. Then review before applying migration. Afterwards stage one institution only into review batches and validate; do not approve or publish. Batch 2 IN PROGRESS; Batch 3 LOCKED.
 
 
 ## SQL migration test checkpoint (2026-10-18)
-- New isolated Postgres 16 integration test `tests/sql/utme_subject_choice.test.sql` is wired into `.github/workflows/verify.yml`. It executes migration `20261018143100_batch_2_utme_subject_choice.sql` against disposable fixture schemas and checks valid alternative selection plus invalid/missing/duplicate/inactive choices.
+- New isolated Postgres 16 integration test `tests/sql/utme_subject_choice.test.sql` is wired into `.github/workflows/verify.yml`. It executes migration `20261018143241_batch_2_utme_subject_choice.sql` against disposable fixture schemas and checks valid alternative selection plus invalid/missing/duplicate/inactive choices.
 - First job `39136090924` failed because test calls used integer `300` while RPC argument is `smallint`. Fixture corrected to `300::smallint` in commit `024dd88295f49ab16aed85fcad65959c3a4f83dc`. Recheck latest CI; do not infer migration pass from the failed fixture run.
 - No live migration deployment or Supabase writes. Deployment workflow is manual-only; prior Cloudflare deploy run failed at token authentication and did not deploy.
 
@@ -157,3 +157,9 @@
 ## PostgreSQL migration test result — 2026-10-18
 - Corrected fixture commit `024dd88295f49ab16aed85fcad65959c3a4f83dc`: disposable PostgreSQL 16 migration test job passed (`39136190437`). The real migration applied in the isolated database; valid alternative selection and rejection cases for missing required subject, wrong option, duplicates and inactive subject all passed. English was asserted as primary subject.
 - Full frontend Verify/E2E for the newest checkpoint commit may still be running; recheck before claiming all latest CI complete. Live migration not applied; no catalogue staging/publication.
+
+
+## Live migration applied — 2026-10-18
+- Applied migration `batch_2_utme_subject_choice` to Supabase project `uokiqlgmzprqfbzmedaz`; verified recorded version `20261018143241` and function privileges/signature by read-only SQL. Repository file is `supabase/migrations/20261018143241_batch_2_utme_subject_choice.sql` and the disposable SQL test points to that file.
+- Verified live catalogue unchanged: 791 institutions, 0 programmes, 0 UTME rules, 4 pre-existing batches. No staging/approval/publication or Edge Function deployment.
+- Confirm CI for the synchronized filename; then inspect security advisors and stage one institution into review-only batches with authenticated admin/editor access. Do not approve or publish. The 2027 season is still draft; no active season exists.
