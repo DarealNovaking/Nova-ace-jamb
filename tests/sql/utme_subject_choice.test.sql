@@ -120,7 +120,7 @@ select set_config('request.jwt.claim.sub', 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa
 
 -- Valid Microbiology selection: all required subjects plus Mathematics.
 select ace.save_student_foundation_catalog_with_subjects(
-  'Test Student', 300,
+  'Test Student', 300::smallint,
   'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',
   'cccccccc-cccc-4ccc-8ccc-cccccccccccc',
   60,
@@ -152,7 +152,7 @@ declare v_message text;
 begin
   begin
     perform ace.save_student_foundation_catalog_with_subjects(
-      'Test Student', 300,
+      'Test Student', 300::smallint,
       'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',
       'cccccccc-cccc-4ccc-8ccc-cccccccccccc',
       60,
@@ -177,7 +177,7 @@ declare v_message text;
 begin
   begin
     perform ace.save_student_foundation_catalog_with_subjects(
-      'Test Student', 300,
+      'Test Student', 300::smallint,
       'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',
       'cccccccc-cccc-4ccc-8ccc-cccccccccccc',
       60,
@@ -202,7 +202,7 @@ declare v_message text;
 begin
   begin
     perform ace.save_student_foundation_catalog_with_subjects(
-      'Test Student', 300,
+      'Test Student', 300::smallint,
       'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',
       'cccccccc-cccc-4ccc-8ccc-cccccccccccc',
       60,
@@ -227,7 +227,7 @@ declare v_message text;
 begin
   begin
     perform ace.save_student_foundation_catalog_with_subjects(
-      'Test Student', 300,
+      'Test Student', 300::smallint,
       'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',
       'cccccccc-cccc-4ccc-8ccc-cccccccccccc',
       60,
