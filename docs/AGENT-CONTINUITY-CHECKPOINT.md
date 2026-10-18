@@ -152,3 +152,8 @@
 - New isolated Postgres 16 integration test `tests/sql/utme_subject_choice.test.sql` is wired into `.github/workflows/verify.yml`. It executes migration `20261018150000_batch_2_utme_subject_choice.sql` against disposable fixture schemas and checks valid alternative selection plus invalid/missing/duplicate/inactive choices.
 - First job `39136090924` failed because test calls used integer `300` while RPC argument is `smallint`. Fixture corrected to `300::smallint` in commit `024dd88295f49ab16aed85fcad65959c3a4f83dc`. Recheck latest CI; do not infer migration pass from the failed fixture run.
 - No live migration deployment or Supabase writes. Deployment workflow is manual-only; prior Cloudflare deploy run failed at token authentication and did not deploy.
+
+
+## PostgreSQL migration test result — 2026-10-18
+- Corrected fixture commit `024dd88295f49ab16aed85fcad65959c3a4f83dc`: disposable PostgreSQL 16 migration test job passed (`39136190437`). The real migration applied in the isolated database; valid alternative selection and rejection cases for missing required subject, wrong option, duplicates and inactive subject all passed. English was asserted as primary subject.
+- Full frontend Verify/E2E for the newest checkpoint commit may still be running; recheck before claiming all latest CI complete. Live migration not applied; no catalogue staging/publication.
