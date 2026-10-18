@@ -1683,3 +1683,10 @@ Read-only Supabase migration and table inspection attempts on 2026-10-18 failed 
 5. Stage → validate → approve → publish only source-verified catalogue data. Keep uncertain records inactive/draft. Batch 3 remains locked until Batch 2 acceptance evidence is recorded.
 
 No institution workbook re-upload is requested at this point. The existing admin/student routing issue should not be reopened without new evidence.
+
+
+### Agent anti-drift controls added — 2026-10-18
+
+The prompt pack `docs/AGENT-PROMPTS.md` now includes mandatory anti-drift rules and **Agent 9 — Primary ChatGPT / Project Partner**. These rules apply to every AI agent, including the primary assistant: project-only scope; inspect actual GitHub/handoffs/live evidence; distinguish verified implementation from historical notes and plans; one accountable integrator; no unapproved scope changes or unsafe production writes; no repeated failed calls without a new approach; truthful test/deployment claims; Playwright for user-facing changes when available; update both handoff documents after meaningful work; and end with concrete status, blockers, human action and next step.
+
+Prompt pack commit: `261716c12f1df17c814302febf950166f7657d14`. This was documentation-only; no app code, database rows, or deployment changed. The immediate blocker remains live Supabase read access, followed by safe reconciliation of deployed/repository `catalog-import` behavior.
