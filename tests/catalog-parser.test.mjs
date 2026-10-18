@@ -98,3 +98,26 @@ test("parses an official five-option group with one required choice", () => {
   ]);
   assert.equal(result.minimumOptionalSubjects, 1);
 });
+
+
+test("accepts exact subject labels returned by the official JAMB eligibility subject endpoint", () => {
+  const officialLabels = [
+    "Agriculture", "Arabic", "Art", "Biology", "Chemistry",
+    "Christian Religious Studies", "Commerce", "Economics", "French",
+    "Geography", "Government", "Hausa Language", "History",
+    "Home Economics", "Igbo Language", "Islamic Religious Studies",
+    "Literature in English", "Mathematics", "Music", "Physics",
+    "Principles of Accounts", "Yoruba Language",
+  ];
+
+  for (const label of officialLabels) {
+    const result = parseIbassUtmeRule({
+      title: "English Language and any one of " + label,
+      required_subjects: ",English Language,",
+      optional_subjects: "," + label + ",",
+      subject_count: 1,
+      optional_subjects_by_group2: "",
+    });
+    assert.equal(result.ok, true, label + " should map from the official source label");
+  }
+});
