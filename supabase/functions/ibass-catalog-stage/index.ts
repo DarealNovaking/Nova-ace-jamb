@@ -23,7 +23,7 @@ Deno.serve(async req=>{
  const {data:userData,error:userError}=await client.auth.getUser();if(userError||!userData.user)return json({error:"Invalid authentication"},401);
  const {data:allowed,error:permError}=await client.schema("ace").rpc("can_manage_catalog");if(permError)return json({error:"Unable to verify permissions",detail:permError.message},500);if(allowed!==true)return json({error:"Admin/editor access required"},403);
  let body:any;try{body=await req.json()}catch{return json({error:"Invalid JSON"},400)}
- const ids=[...new Set((body.institution_ids||[]).map(String))];if(ids.length<1||ids.length>25)return json({error:"institution_ids must contain 1-25 database IDs"},400);if(!body.season_id)return json({error:"season_id is required"},400);
+ const ids: string[]=Array.from(new Set<string>((body.institution_ids||[]).map((id:any)=>String(id))));if(ids.length<1||ids.length>25)return json({error:"institution_ids must contain 1-25 database IDs"},400);if(!body.season_id)return json({error:"season_id is required"},400);
  const {data:db,error:dbError}=await client.schema("ace").rpc("get_catalog_institutions");if(dbError)return json({error:"Unable to load institutions",detail:dbError.message},500);
  const selected=(db||[]).filter((x:any)=>ids.includes(x.id));if(selected.length!==ids.length)return json({error:"Unknown database institution ID",missing:ids.filter((id:string)=>!(db||[]).some((x:any)=>x.id===id))},404);
  const catalogue=await (await get("https://eligibility.jamb.gov.ng/institution_data.json?v=1",{accept:"application/json"})).json();
