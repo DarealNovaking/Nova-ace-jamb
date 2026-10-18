@@ -134,3 +134,7 @@
 - Verify run `39134557338` for commit `25e0d20cbc1e66c325131fc11c26871f14f0f912` passed all six Node parser tests, then failed at Deno check because the Supabase Edge Runtime remote declaration references missing `npm:openai@^4.52.5`. Frontend typecheck/build were skipped. This is a toolchain/declaration dependency issue requiring verification, not a passed Edge Function check.
 - Verify workflow now runs `deno check --no-check=remote supabase/functions/ibass-catalog-stage/index.ts` at commit `26f381d6972848fc112fd732db7be75af0920b57`. Verify run `39134695379` and E2E run `39134695400` were still in progress at checkpoint time. Recheck both and read logs for any new errors.
 - **Next action:** confirm the adjusted CI result; if local check still fails, use a dedicated Deno configuration or an isolated local syntax/typecheck that does not resolve the unrelated remote OpenAI declaration. Then continue evaluator-contract review before any staging trial. No deployment/staging/approval/publication or DB writes.
+
+
+## Latest source adjustment — 2026-10-18
+- Deno check still failed with `--no-check=remote` because the explicit Supabase Edge Runtime declaration imported an unrelated missing OpenAI npm type dependency. Removed `import "jsr:@supabase/functions-js/edge-runtime.d.ts";` from `supabase/functions/ibass-catalog-stage/index.ts` in commit `3ca00b5a831556090be41991d7545e4dda94e87e`. Verify and E2E for that commit were queued; check run outcomes. No deploy or database write.
