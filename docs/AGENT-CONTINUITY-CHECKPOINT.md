@@ -38,3 +38,11 @@
 - Deployed functions: catalog-import v7 and ibass-catalog-stage v4, both verify_jwt=true. No database writes or deployments performed.
 - Catalogue remains Batch 2 in progress because programme and UTME-rule tables are empty. Do not re-upload the institution workbook without fresh evidence.
 - Next action: compare both deployed function implementations with repository source, catalogue contract, migrations/RPCs, and AdminCatalogueImport caller. Validate official IBASS parsing on a bounded non-publishing sample, then implement and test the smallest safe correction. Batch 3 remains locked.
+
+
+## Batch 2 investigation findings — 2026-10-18
+- Live state: 791 institutions, all draft; 0 programs; 0 UTME rules; 25 subjects. Import batches: 3 published, 1 rejected. No data was changed.
+- Active deployed ibass-catalog-stage v4 has no matching source file at supabase/functions/ibass-catalog-stage/index.ts on current main (404). Repo only lists catalog-import under supabase/functions. Treat deployed-only code as source-control drift; do not redeploy.
+- AdminCatalogueImport is institution-workbook-only and never invokes ibass-catalog-stage. It expects catalog-import response property batch_id. Deployed catalog-import v7 delegates to ace.stage_catalog_import; verify actual RPC return shape and compatibility before touching code. Repository catalog-import has different CORS and response behavior.
+- A previous expected migration filename was absent at the exact path. Enumerate actual repository migrations and map them to live migration ledger before making schema claims.
+- Next action: reconcile the missing deployed function source and response contracts, then implement a safe, explicit admin action to stage programme/rule discovery only after official source payload and requirement parsing are validated on a bounded sample. Keep all new records unactivated until validation/approval/publication gates pass.
