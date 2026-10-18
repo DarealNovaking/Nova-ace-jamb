@@ -63,10 +63,8 @@ export default function StudentFoundationGate() {
       setNeedsOnboarding(
         !profile.display_name ||
         profile.target_score === null ||
-        !profile.institution ||
-        !profile.course ||
         !preferences.daily_minutes ||
-        subjects.length < 1,
+        subjects.length !== 4,
       )
     } catch (caught) {
       setNeedsOnboarding(false)
