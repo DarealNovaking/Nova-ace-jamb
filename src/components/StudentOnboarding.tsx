@@ -1,21 +1,14 @@
-import { useEffect, useMemo, useState } from 'react'
-import { getStudentPreferences, getStudentProfile, saveStudentFoundationFromCatalog } from '../lib/studentService'
-import { listInstitutions, listPrograms, getProgramUtmeRule } from '../lib/seasonService'
+import { useEffect, useState } from 'react'
+import { getStudentPreferences, getStudentProfile, saveStudentPreparationFoundation } from '../lib/studentService'
 import { ace, supabase } from '../lib/supabase'
 
 type Subject = { id: string; name: string; code: string }
-type Institution = Awaited<ReturnType<typeof listInstitutions>>[number]
-type Program = Awaited<ReturnType<typeof listPrograms>>[number]
-type ProgramUtmeRule = { required_subject_ids: string[]; alternative_groups: Array<{ subject_codes?: string[]; minimum_required?: number }>; minimum_optional_subjects: number; notes: string | null }
 
 export default function StudentOnboarding({ onComplete }: { onComplete: () => void }) {
   const [subjects, setSubjects] = useState<Subject[]>([])
-  const [institutions, setInstitutions] = useState<Institution[]>([])
-  const [programs, setPrograms] = useState<Program[]>([])
-  const [selectedInstitution, setSelectedInstitution] = useState('')
-  const [selectedProgram, setSelectedProgram] = useState('')
-  const [combinationIds, setCombinationIds] = useState<string[]>([])
-  const [programRule, setProgramRule] = useState<ProgramUtmeRule | null>(null)
+  const [selectedSubjects, setSelectedSubjects] = useState<string[]>([])
+  const [institutionGoal, setInstitutionGoal] = useState('')
+  const [courseGoal, setCourseGoal] = useState('')
   const [name, setName] = useState('')
   const [target, setTarget] = useState('300')
   const [dailyMinutes, setDailyMinutes] = useState('60')
@@ -23,87 +16,30 @@ export default function StudentOnboarding({ onComplete }: { onComplete: () => vo
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState('')
 
-  const combination = useMemo(() => combinationIds.map((id) => subjects.find((subject) => subject.id === id)).filter(Boolean) as Subject[], [combinationIds, subjects])
-  const requiredIds = programRule?.required_subject_ids ?? []
-  const optionalGroups = programRule?.alternative_groups ?? []
-  const optionalSubjects = useMemo(() => {
-    const codes = new Set(optionalGroups.flatMap((group) => group.subject_codes ?? []))
-    const required = new Set(requiredIds)
-    return subjects.filter((subject) => codes.has(subject.code) && !required.has(subject.id))
-  }, [optionalGroups, requiredIds, subjects])
-  const groupSelectionsValid = optionalGroups.every((group) => {
-    const codes = new Set(group.subject_codes ?? [])
-    const selectedCount = combination.filter((subject) => codes.has(subject.code)).length
-    return selectedCount >= (group.minimum_required ?? 1)
-  })
-  const fixedCombination = Boolean(programRule) && combinationIds.length === 4 &&
-    requiredIds.every((id) => combinationIds.includes(id)) && groupSelectionsValid
-  const catalogUnavailable = !busy && institutions.length === 0
-
   useEffect(() => {
     let active = true
     Promise.all([
       ace.from('subjects').select('id,name,code').eq('active', true).order('sort_order'),
       getStudentProfile(),
       getStudentPreferences(),
-      listInstitutions(),
-    ]).then(([subjectResult, profile, preferences, catalog]) => {
+    ]).then(([subjectResult, profile, preferences]) => {
       if (!active) return
       if (subjectResult.error) throw subjectResult.error
       setSubjects((subjectResult.data ?? []) as Subject[])
-      setInstitutions(catalog)
       setName(profile.display_name ?? '')
       setTarget(String(profile.target_score ?? 300))
       setDailyMinutes(String(Math.max(1, preferences.daily_minutes ?? 60)))
-      if (catalog.length === 0) {
-        setMessage('The verified JAMB institution catalogue has not been published yet. Your preparation data is safe; return when the catalogue is available.')
-      }
+      setInstitutionGoal(profile.institution ?? '')
+      setCourseGoal(profile.course ?? '')
+      // Keep an existing valid subject selection if it is still in the active subject list.
+      return ace.from('student_subjects').select('subject_id,sort_order').order('sort_order').then(({ data, error }) => {
+        if (error) throw error
+        if (active) setSelectedSubjects((data ?? []).map((row) => row.subject_id).filter((id) => (subjectResult.data ?? []).some((subject) => subject.id === id)).slice(0, 4))
+      })
     }).catch((error) => setMessage(error instanceof Error ? error.message : 'Could not load your preparation setup.'))
       .finally(() => active && setBusy(false))
     return () => { active = false }
   }, [])
-
-  useEffect(() => {
-    if (!selectedInstitution) {
-      setPrograms([])
-      setSelectedProgram('')
-      setProgramRule(null)
-      setCombinationIds([])
-      return
-    }
-    let active = true
-    setSelectedProgram('')
-    setProgramRule(null)
-    setCombinationIds([])
-    listPrograms(selectedInstitution)
-      .then((items) => active && setPrograms(items))
-      .catch((error) => active && setMessage(error instanceof Error ? error.message : 'Could not load courses.'))
-    return () => { active = false }
-  }, [selectedInstitution])
-
-  useEffect(() => {
-    if (!selectedProgram) {
-      setProgramRule(null)
-      setCombinationIds([])
-      return
-    }
-    let active = true
-    setProgramRule(null)
-    setCombinationIds([])
-    Promise.resolve(ace.from('exam_seasons').select('id').eq('status', 'active').order('exam_year', { ascending: false }).limit(1).maybeSingle())
-      .then(async ({ data, error }) => {
-        if (error) throw error
-        if (!data) throw new Error('No active JAMB season is available yet.')
-        const rule = await getProgramUtmeRule(data.id, selectedProgram)
-        if (!rule) throw new Error('No verified UTME subject combination is available for this course yet.')
-        if (active) {
-          setProgramRule(rule as ProgramUtmeRule)
-          setCombinationIds(rule.required_subject_ids)
-        }
-      })
-      .catch((error) => active && setMessage(error instanceof Error ? error.message : 'Could not load the verified subject combination.'))
-    return () => { active = false }
-  }, [selectedProgram])
 
   const save = async () => {
     setMessage('')
@@ -111,18 +47,17 @@ export default function StudentOnboarding({ onComplete }: { onComplete: () => vo
     const minutes = Number(dailyMinutes)
     if (!name.trim()) return setMessage('Enter your name.')
     if (!Number.isInteger(score) || score < 0 || score > 400) return setMessage('Target score must be between 0 and 400.')
-    if (!selectedInstitution || !selectedProgram) return setMessage('Select your institution and course.')
     if (!Number.isInteger(minutes) || minutes < 1 || minutes > 1440) return setMessage('Study time must be between 1 and 1440 minutes.')
-    if (!fixedCombination) return setMessage('Select the required UTME subjects and satisfy every official alternative group before continuing.')
+    if (selectedSubjects.length !== 4) return setMessage('Choose exactly four subjects to prepare for.')
     setSaving(true)
     try {
-      await saveStudentFoundationFromCatalog({
+      await saveStudentPreparationFoundation({
         display_name: name,
         target_score: score,
-        institution_id: selectedInstitution,
-        program_id: selectedProgram,
+        institution_goal: institutionGoal,
+        course_goal: courseGoal,
         daily_minutes: minutes,
-        subject_ids: combinationIds,
+        subject_ids: selectedSubjects,
       })
       onComplete()
     } catch (error) {
@@ -139,28 +74,35 @@ export default function StudentOnboarding({ onComplete }: { onComplete: () => vo
       <div className="mb-8">
         <p className="text-xs uppercase tracking-[.2em] text-purple-300/70">ACE JAMB · Student setup</p>
         <h1 className="mt-2 text-4xl font-black sm:text-5xl">Build your preparation profile.</h1>
-        <p className="mt-3 max-w-xl text-white/50">Choose your institution and course. ACE will use the verified JAMB combination for that programme instead of making you guess your subjects.</p>
+        <p className="mt-3 max-w-xl text-white/50">Choose four subjects to prepare for and set your study goal. Institution and course are optional until a verified JAMB catalogue entry is available.</p>
       </div>
       {message && <div role="alert" className="mb-5 rounded-xl border border-white/10 bg-white/5 p-3 text-sm text-white/80">{message}</div>}
       <section className="glass-card space-y-5 rounded-3xl p-6">
-        <label className="block"><span className="mb-2 block text-sm text-white/60">Display name</span><input className="field w-full" value={name} onChange={(e) => setName(e.target.value)} maxLength={80} /></label>
+        <label className="block"><span className="mb-2 block text-sm text-white/60">Display name</span><input className="field w-full" value={name} onChange={(e) => setName(e.target.value)} maxLength={80} autoComplete="name" /></label>
         <div className="grid gap-5 sm:grid-cols-2">
           <label className="block"><span className="mb-2 block text-sm text-white/60">Target JAMB score</span><input className="field w-full" type="number" min="0" max="400" value={target} onChange={(e) => setTarget(e.target.value)} /></label>
           <label className="block"><span className="mb-2 block text-sm text-white/60">Daily study time (minutes)</span><input className="field w-full" type="number" min="1" max="1440" value={dailyMinutes} onChange={(e) => setDailyMinutes(e.target.value)} /></label>
         </div>
-        <label className="block"><span className="mb-2 block text-sm text-white/60">Intended institution</span><select className="field w-full" value={selectedInstitution} onChange={(e) => setSelectedInstitution(e.target.value)} disabled={catalogUnavailable}><option value="">{catalogUnavailable ? 'Verified institution catalogue unavailable' : 'Select your institution'}</option>{institutions.map((institution) => <option key={institution.id} value={institution.id}>{institution.name}</option>)}</select></label>
-        <label className="block"><span className="mb-2 block text-sm text-white/60">Intended course</span><select className="field w-full" value={selectedProgram} onChange={(e) => setSelectedProgram(e.target.value)} disabled={!selectedInstitution || catalogUnavailable}><option value="">{catalogUnavailable ? 'Waiting for verified catalogue' : selectedInstitution ? 'Select your course' : 'Select an institution first'}</option>{programs.map((program) => <option key={program.id} value={program.id}>{program.name}</option>)}</select></label>
+        <fieldset className="space-y-2">
+          <legend className="mb-2 text-sm font-semibold">Subjects you want to prepare for</legend>
+          <p className="mb-3 text-xs text-white/40">Select exactly four. These are your preparation choices, not a confirmation that they satisfy a specific course's official JAMB requirements.</p>
+          <div className="grid gap-2 sm:grid-cols-2">
+            {subjects.map((subject) => <label key={subject.id} className="flex cursor-pointer items-center gap-3 rounded-xl border border-white/10 p-3 text-sm">
+              <input type="checkbox" checked={selectedSubjects.includes(subject.id)} disabled={!selectedSubjects.includes(subject.id) && selectedSubjects.length >= 4} onChange={(event) => { setMessage(''); setSelectedSubjects((current) => event.target.checked ? [...current, subject.id].slice(0, 4) : current.filter((id) => id !== subject.id)) }} />
+              <span>{subject.name}</span>
+            </label>)}
+          </div>
+          {subjects.length === 0 && <p className="text-sm text-amber-200/80">The subject list is unavailable right now. Please try again later.</p>}
+          <p className="text-xs text-white/50">{selectedSubjects.length} of 4 selected</p>
+        </fieldset>
         <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-          <p className="text-sm font-semibold">Verified JAMB subject combination</p>
-          <p className="mt-1 text-xs text-white/40">This is derived from the active season and selected programme.</p>
-          {catalogUnavailable ? <p className="mt-3 text-sm text-white/45">No verified institution/course catalogue is published yet. ACE will not guess your combination.</p> : !programRule ? <p className="mt-3 text-sm text-white/45">Select a course with an approved combination to continue.</p> : <>
-            {combination.length > 0 && <div className="mt-3 flex flex-wrap gap-2">{combination.map((subject) => <span key={subject.id} className="rounded-full border border-purple-300/30 bg-purple-500/10 px-3 py-1.5 text-xs">{subject.name}{requiredIds.includes(subject.id) ? ' · Required' : ' · Selected'}</span>)}</div>}
-            {optionalSubjects.length > 0 && <fieldset className="mt-4 space-y-2"><legend className="text-sm text-white/70">Choose your alternative UTME subject(s)</legend><p className="text-xs text-white/40">Select enough options to complete four subjects. Required subjects cannot be removed.</p>{optionalSubjects.map((subject) => <label key={subject.id} className="flex cursor-pointer items-center gap-3 rounded-xl border border-white/10 p-3 text-sm"><input type="checkbox" checked={combinationIds.includes(subject.id)} disabled={!combinationIds.includes(subject.id) && combinationIds.length >= 4} onChange={(event) => { setMessage(''); setCombinationIds((current) => event.target.checked ? (current.length < 4 ? [...current, subject.id] : current) : current.filter((id) => id !== subject.id)) }} /><span>{subject.name}</span></label>)}</fieldset>}
-            {programRule.notes && <p className="mt-3 text-xs text-white/45">Official requirement: {programRule.notes}</p>}
-            {!fixedCombination && <p className="mt-3 text-sm text-amber-200/80">Choose the official alternative subject(s) above to complete your four-subject combination.</p>}
-          </>}
+          <p className="text-sm font-semibold">Admission goals (optional)</p>
+          <p className="mt-1 text-xs text-white/40">These are saved as your intended goals only. ACE will not mark them verified or infer your official subject combination.</p>
+          <label className="mt-4 block"><span className="mb-2 block text-sm text-white/60">Intended institution</span><input className="field w-full" value={institutionGoal} onChange={(e) => setInstitutionGoal(e.target.value)} maxLength={160} placeholder="e.g. your preferred institution" /></label>
+          <label className="mt-4 block"><span className="mb-2 block text-sm text-white/60">Intended course</span><input className="field w-full" value={courseGoal} onChange={(e) => setCourseGoal(e.target.value)} maxLength={160} placeholder="e.g. your intended course" /></label>
+          <p className="mt-3 text-xs text-white/40">Verify official requirements using the <a className="text-purple-200 underline" href="https://ibass.jamb.gov.ng/eligibility-checker" target="_blank" rel="noreferrer">JAMB IBASS eligibility checker</a>.</p>
         </div>
-        <button type="button" disabled={saving || !fixedCombination || catalogUnavailable} onClick={save} className="w-full rounded-xl bg-white py-3 font-bold text-black disabled:opacity-50">{saving ? 'Saving…' : catalogUnavailable ? 'Waiting for verified catalogue' : 'Continue to ACE'}</button>
+        <button type="button" disabled={saving || subjects.length < 4 || selectedSubjects.length !== 4} onClick={save} className="w-full rounded-xl bg-white py-3 font-bold text-black disabled:opacity-50">{saving ? 'Saving…' : 'Continue to ACE'}</button>
       </section>
       <button type="button" onClick={() => supabase.auth.signOut()} className="mt-4 w-full py-3 text-sm text-white/40">Sign out</button>
     </div>
