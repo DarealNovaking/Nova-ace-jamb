@@ -20,3 +20,11 @@
 - **Next action:** Restore read-only Supabase access and inspect the live schema/data; in parallel, use a read-only research agent to validate official JAMB programme and eligibility payload shapes. Then reconcile deployed/repo Edge Function drift before any importer code or deployment change.
 - **Do not repeat / safety constraints:** Do not re-upload the institution workbook without evidence it is missing. Do not reopen the resolved admin/student routing issue without new evidence. Do not guess JAMB IDs or UTME combinations. Do not deploy the repository version of `catalog-import` blindly. Do not activate unverified records. Never store secrets or student PII in handoffs.
 - **Definition of done:** Prompt pack exists and is readable; checkpoint reflects verified evidence and honest blockers; next agent has one concrete next action; future meaningful changes update checkpoint and master handoff.
+
+
+## Anti-drift prompt update — 2026-10-18
+- Added mandatory project-only scope and anti-drift rules to `docs/AGENT-PROMPTS.md`, including a dedicated Agent 9 prompt for the primary ChatGPT project partner.
+- Rules cover truthful status labels, inspect-before-propose, single-owner integration, no scope drift, no repeated failed calls, production safety, evidence-based verification, handoff updates, and concise action reports.
+- Prompt-pack commit: `261716c12f1df17c814302febf950166f7657d14`.
+- No application code, database data, or deployment was changed. Prompt pack was written successfully; read-back verification is the next check.
+- Next action remains restoring read-only Supabase inspection and reconciling the deployed/repository `catalog-import` function before implementation.
