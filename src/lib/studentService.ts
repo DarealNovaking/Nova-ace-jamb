@@ -124,20 +124,24 @@ export async function saveStudentFoundationFromCatalog(input: {
   institution_id: string
   program_id: string
   daily_minutes: number
+  subject_ids: string[]
 }) {
   await requireUser()
   const displayName = input.display_name.trim()
+  const subjectIds = [...new Set(input.subject_ids)]
   if (!displayName || displayName.length > 80) throw new Error('Display name must be 1–80 characters.')
   if (!Number.isInteger(input.target_score) || input.target_score < 0 || input.target_score > 400) throw new Error('Target score must be between 0 and 400.')
   if (!input.institution_id || !input.program_id) throw new Error('Select an institution and course.')
   if (!Number.isInteger(input.daily_minutes) || input.daily_minutes < 1 || input.daily_minutes > 1440) throw new Error('Study time must be between 1 and 1440 minutes.')
+  if (subjectIds.length !== 4) throw new Error('Select exactly four UTME subjects.')
 
-  const { error } = await ace.rpc('save_student_foundation_catalog', {
+  const { error } = await ace.rpc('save_student_foundation_catalog_with_subjects', {
     p_display_name: displayName,
     p_target_score: input.target_score,
     p_institution_id: input.institution_id,
     p_program_id: input.program_id,
     p_daily_minutes: input.daily_minutes,
+    p_subject_ids: subjectIds,
   })
   if (error) throw error
 }
