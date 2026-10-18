@@ -88,6 +88,7 @@ export default function StudentOnboarding({ onComplete }: { onComplete: () => vo
       return
     }
     let active = true
+    setProgramRule(null)
     setCombinationIds([])
     Promise.resolve(ace.from('exam_seasons').select('id').eq('status', 'active').order('exam_year', { ascending: false }).limit(1).maybeSingle())
       .then(async ({ data, error }) => {
