@@ -1954,3 +1954,24 @@ Inspect the repository versions of both Edge Functions, the catalogue import con
 
 ### Next action
 Fetch latest `main` HEAD and GitHub Actions runs. Fix any type/build/SQL failures, rerun relevant checks, then update both handoff documents with the actual run result. Do not manually apply the migration to production until CI is green and the normal migration/deployment path is confirmed.
+
+
+## Official JAMB UTME subject inventory research — 2026-10-19
+
+### Official source inspected
+- JAMB eligibility subject data endpoint: `https://eligibility.jamb.gov.ng/subjects_jamb.json?v=1`
+- Current IBASS eligibility checker: `https://ibass.jamb.gov.ng/eligibility-checker`
+- Current IBASS e-syllabus: `https://ibass.jamb.gov.ng/e-syllabus`
+- IBASS brochure by institution: `https://ibass.jamb.gov.ng/brochure-by-institution`
+
+The official eligibility endpoint returned 22 records? **Count the payload before publishing a count**: the observed JSON entries were Agriculture, Arabic, Art, Biology, Chemistry, Christian Religious Studies, Commerce, Economics, French, Geography, Government, Hausa Language, History, Home Economics, Igbo Language, Islamic Religious Studies, Literature in English, Mathematics, Music, Physics, Principles of Accounts, and Yoruba Language. English Language was not included in that JSON payload; the IBASS eligibility checker explicitly instructs candidates to select four UTME subjects including English, so English remains a required/default subject in the product's combination logic. The endpoint is official and reachable but its returned list should not be assumed to prove an exhaustive list of every current JAMB subject: IBASS e-syllabus page extraction is paginated and did not expose the complete row list in the fetched text.
+
+### Code correction
+- Updated `supabase/functions/ibass-catalog-stage/parser.js` to accept exact source labels `Hausa Language`, `Igbo Language`, `Islamic Religious Studies`, `Yoruba Language`, and `Agriculture Science` in addition to existing aliases.
+- Extended `tests/catalog-parser.test.mjs` to assert parser acceptance for every subject label returned by the observed official eligibility JSON payload.
+- This corrects a known import rejection risk; it does not certify that the endpoint lists every subject in current 2027 UTME.
+
+### Verification
+- Prior onboarding changes had green Verify and ACE JAMB E2E runs at the documentation checkpoint commit `f95a58e6fdeb3480f1d5ce90855f5215556f61f1`; the newly added official-label parser test and aliases are later commits and still require their own CI run.
+- No live catalogue data was changed and no production migration/deployment was initiated.
+- Continue researching the full current IBASS subject catalogue (including paginated syllabus subjects and any subjects absent from the legacy eligibility JSON), then reconcile with ACE's `ace.subjects` rows and add any missing official subjects only after source validation.
