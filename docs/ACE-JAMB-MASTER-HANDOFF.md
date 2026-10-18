@@ -1690,3 +1690,22 @@ No institution workbook re-upload is requested at this point. The existing admin
 The prompt pack `docs/AGENT-PROMPTS.md` now includes mandatory anti-drift rules and **Agent 9 — Primary ChatGPT / Project Partner**. These rules apply to every AI agent, including the primary assistant: project-only scope; inspect actual GitHub/handoffs/live evidence; distinguish verified implementation from historical notes and plans; one accountable integrator; no unapproved scope changes or unsafe production writes; no repeated failed calls without a new approach; truthful test/deployment claims; Playwright for user-facing changes when available; update both handoff documents after meaningful work; and end with concrete status, blockers, human action and next step.
 
 Prompt pack commit: `261716c12f1df17c814302febf950166f7657d14`. This was documentation-only; no app code, database rows, or deployment changed. The immediate blocker remains live Supabase read access, followed by safe reconciliation of deployed/repository `catalog-import` behavior.
+
+
+## Verified continuity update — 2026-10-18
+
+### Agent coordination
+- Canonical instruction: docs/AGENT-PROMPTS.md now begins with one universal instruction intended to be pasted unchanged into every agent. Specialist prompts are optional bounded task briefs, not separate objectives or mandatory prompt combinations.
+- The primary integrator remains the sole accountable owner for milestone selection, main-branch integration, verification, and continuity documentation.
+
+### Live Supabase state (verified read-only on 2026-10-18)
+- Project: uokiqlgmzprqfbzmedaz.
+- Read-only SQL succeeded. Current row counts: ace.institutions = 791; ace.programs = 0; ace.program_utme_rules = 0; ace.subjects = 25.
+- Migration listing succeeded and includes the Batch 2 catalogue migrations through add_ibass_institution_stage_lookup (2026-10-06).
+- Active deployed Edge Functions: catalog-import version 7 and ibass-catalog-stage version 4; both have verify_jwt=true.
+- Deployed catalog-import checks the authenticated user, calls ace.can_manage_catalog using the caller JWT, and stages rows through ace.stage_catalog_import. ibass-catalog-stage also authenticates and checks catalog-management permission, matches institution names against official IBASS catalogue data, fetches programme listings and parses brochure subject requirements, and stages discovered programmes/rules through catalog-import.
+- This evidence confirms the institution rows exist but programme and UTME-rule catalogues are still empty. Do not ask the user to re-upload the institution workbook without new evidence.
+- No database writes, Edge Function deployments, catalogue activations, or production data changes were performed in this update.
+
+### Exact next action
+Inspect the repository versions of both Edge Functions, the catalogue import contract, current migrations/RPC definitions, and AdminCatalogueImport request/response behavior together. Identify whether the deployed IBASS staging path is actually invokable from the UI and whether its payload/mapping can populate program records and rules safely. Then test the official endpoints and matching/parsing logic on a bounded sample without publishing records. Only after that evidence, make the smallest safe implementation change and run authenticated staging tests. Batch 3 remains locked until Batch 2 acceptance criteria are met.
