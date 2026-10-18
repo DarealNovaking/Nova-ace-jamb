@@ -2,7 +2,6 @@
 // Deployed function: ibass-catalog-stage, version 4, verify_jwt=true.
 // This is a source-control recovery, not a claim that the implementation has passed review.
 // Review and test before any future deployment.
-import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.0";
 import { parseIbassUtmeRule } from "./parser.js";
 const PROGRAM_SOURCE="16388e42-7bed-4541-89ff-8ffb0e648425";
