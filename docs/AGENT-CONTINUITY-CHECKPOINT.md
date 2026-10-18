@@ -257,3 +257,12 @@
 - **Changes committed through multiple GitHub Contents API commits; latest HEAD and CI status still need verification.**
 - **Not yet verified:** npm typecheck/build, SQL migration test, authenticated browser/E2E, production migration/deployment.
 - **Exact next action:** fetch current `main` HEAD and latest Verify workflow runs; inspect logs for typecheck/build/SQL failures and fix before any production migration. Keep Batch 2 IN PROGRESS and Batch 3 LOCKED.
+
+
+## Official subject inventory research and parser aliases — 2026-10-19
+- Inspected JAMB eligibility subject endpoint `https://eligibility.jamb.gov.ng/subjects_jamb.json?v=1`, IBASS eligibility checker, e-syllabus and brochure pages.
+- The observed endpoint returns these subject labels: Agriculture, Arabic, Art, Biology, Chemistry, Christian Religious Studies, Commerce, Economics, French, Geography, Government, Hausa Language, History, Home Economics, Igbo Language, Islamic Religious Studies, Literature in English, Mathematics, Music, Physics, Principles of Accounts, Yoruba Language. English is not in that JSON response, but IBASS eligibility checker explicitly says select 4 UTME subjects including English. Do not treat this endpoint payload as proven exhaustive; e-syllabus content is paginated and fetch extraction did not reveal every row.
+- Updated parser aliases for Agriculture Science and exact labels Hausa Language, Igbo Language, Islamic Religious Studies, Yoruba Language; added parser test coverage for every observed label.
+- Latest parser/test commits: `74175a7f402977420132f95409ce7561414f29cc`, `7087af857d5e3394a3ca748f4841baf4c279b867`. Current CI for those commits still needs inspection.
+- No live data, production migration or deployment changed.
+- Next action: inspect CI for parser commits, then find complete current IBASS subject inventory and compare against `ace.subjects`; do not bulk-add unverified entries.
