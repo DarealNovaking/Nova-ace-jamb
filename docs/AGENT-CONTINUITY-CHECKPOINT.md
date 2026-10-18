@@ -62,3 +62,11 @@
 - An attempted `AdminCatalogueImport.tsx` UI patch was blocked by tool safety checks before the GitHub write; the UI remains institution-workbook-only. Do not document this as implemented.
 - No catalogue data writes or function deployments. Last verified live counts: 791 institutions (draft), 0 programmes, 0 rules, 25 subjects.
 - Next concrete action: add an isolated admin UI for selecting a valid season and up to 25 institutions, invoke the existing authenticated IBASS staging function, then test official payload parsing, RPC response contract, typecheck/build, and Playwright. Keep staging/review separate from approval/publication; Batch 3 remains locked.
+
+
+## Batch 2 continuation — 2026-10-18 (admin staging UI added, verification pending)
+- Created `src/components/AdminIbassStage.tsx` (commit `d46ef6975d2b74460cdeb5232847da05e31423c9`) and mounted it on `src/admin-import.tsx` (commit `ada5133419395b9d96aa980b72cfe3c64a7c565e`).
+- UI checks session and `ace.is_admin()`, loads institution options via `get_catalog_institutions`, loads seasons from verified `ace.exam_seasons` columns, limits each action to 25 institutions, calls `ibass-catalog-stage`, and reports staged batches/unresolved items. It deliberately does not approve or publish.
+- Supabase schema query verified current seasons: JAMB UTME 2027 (draft), JAMB UTME 2026 (closed). IBASS programme source status is approved; brochure-detail source is reviewed. Keep review/approval/publication separate.
+- No data rows staged or published; no function deployment. Source writes succeeded, but no typecheck/build/Playwright/runtime staging verification has been run. The deployed/repository `catalog-import` response shape and official payload parsing remain unverified; alternative requirements are still conservatively unresolved rather than faithfully modeled.
+- Exact next action: verify actual deployed response shape and stage response IDs without publishing; add parser fixtures/tests for official programme JSON and brochure HTML; run typecheck/build/Playwright; update this checkpoint and master handoff before any deployment. Batch 3 locked.
