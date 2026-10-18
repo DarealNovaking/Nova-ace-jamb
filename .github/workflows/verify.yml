@@ -17,5 +17,6 @@ jobs:
           cache: npm
           cache-dependency-path: package.json
       - run: npm install
+      - run: node --test tests/catalog-parser.test.mjs
       - run: npm run typecheck
       - run: npm run build
