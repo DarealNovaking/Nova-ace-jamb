@@ -114,7 +114,7 @@ insert into ace.exam_configs values
 insert into ace.profiles (id) values ('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa');
 
 -- Apply the actual repository migration.
-\i supabase/migrations/20261018143100_batch_2_utme_subject_choice.sql
+\i supabase/migrations/20261018143241_batch_2_utme_subject_choice.sql
 
 select set_config('request.jwt.claim.sub', 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', false);
 
