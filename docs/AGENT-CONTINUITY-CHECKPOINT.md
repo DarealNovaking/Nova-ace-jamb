@@ -163,3 +163,8 @@
 - Applied migration `batch_2_utme_subject_choice` to Supabase project `uokiqlgmzprqfbzmedaz`; verified recorded version `20261018143241` and function privileges/signature by read-only SQL. Repository file is `supabase/migrations/20261018143241_batch_2_utme_subject_choice.sql` and the disposable SQL test points to that file.
 - Verified live catalogue unchanged: 791 institutions, 0 programmes, 0 UTME rules, 4 pre-existing batches. No staging/approval/publication or Edge Function deployment.
 - Confirm CI for the synchronized filename; then inspect security advisors and stage one institution into review-only batches with authenticated admin/editor access. Do not approve or publish. The 2027 season is still draft; no active season exists.
+
+
+## Post-apply advisor verification (2026-10-18)
+- Security advisors after applying the RPC migration reported only the pre-existing `auth_leaked_password_protection` warning; no new security lint was returned. The function remains intentionally SECURITY DEFINER, requires `auth.uid()`, and grants EXECUTE to authenticated only (anon/public denied).
+- CI for latest filename/docs synchronization is still in progress; prior commit `024dd88295f49ab16aed85fcad65959c3a4f83dc` passed Verify, isolated PostgreSQL migration tests, and E2E. Confirm latest CI before closing the current action.
