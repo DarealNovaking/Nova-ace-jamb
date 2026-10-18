@@ -42,7 +42,7 @@ begin
   select * into v_rule from ace.program_utme_rules where season_id = v_season_id and program_id = p_program_id and status = 'active' order by version desc limit 1;
   if not found then raise exception 'No verified UTME subject combination is available for this course.' using errcode = '22023'; end if;
 
-  select array_agg(s.id order by s.sort_order) into v_subject_ids
+  select array_agg(s.id order by case when s.code = 'ENG' then 0 else 1 end, s.sort_order) into v_subject_ids
   from ace.subjects s
   where s.id = any(p_subject_ids) and s.active = true;
   if coalesce(cardinality(v_subject_ids), 0) <> 4 then raise exception 'One or more selected UTME subjects are invalid.' using errcode = '22023'; end if;
@@ -58,7 +58,7 @@ begin
   for v_group in select value from jsonb_array_elements(coalesce(v_rule.alternative_groups, '[]'::jsonb)) as groups(value)
   loop
     v_group_minimum := coalesce((v_group->>'minimum_required')::integer, 0);
-    if jsonb_typeof(v_group->'subject_codes') <> 'array' or v_group_minimum < 1 then
+    if coalesce(jsonb_typeof(v_group->'subject_codes'), 'null') <> 'array' or v_group_minimum < 1 then
       raise exception 'The active programme rule has an invalid alternative-subject group.' using errcode = '22023';
     end if;
     select count(*) into v_group_selected
