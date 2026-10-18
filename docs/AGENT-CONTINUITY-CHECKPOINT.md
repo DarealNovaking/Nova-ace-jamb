@@ -146,3 +146,9 @@
 - Deno parser check, Node parser fixtures, frontend typecheck/build and E2E passed on earlier commits: Verify `91df16fab9360da38918007216ca6e4463ce4924` passed; E2E also passed for that commit. Verify for onboarding commit `ed85fca0c4d175a332ba90f9ef7eb5690f773775` passed. Recheck latest workflow-guard commit `1f2e3366f8dcaaef99f6ab8c844fedb7ad42bb2d` before claiming current checks pass.
 - Important deployment finding: automatic push deploy ran as workflow `39135691876`, but Cloudflare API rejected the configured token (10000/9109) at the deploy step, so no Worker deploy succeeded. The workflow now has only `workflow_dispatch`; do not initiate it until credentials are repaired and the user explicitly authorizes production deployment.
 - Exact next action: recheck latest Verify/E2E; test migration/RPC in a disposable database, including fixed, one-of, missing-required, wrong-option, duplicate, and inactive-subject cases; add/execute frontend onboarding test. Then review before applying migration. Afterwards stage one institution only into review batches and validate; do not approve or publish. Batch 2 IN PROGRESS; Batch 3 LOCKED.
+
+
+## SQL migration test checkpoint (2026-10-18)
+- New isolated Postgres 16 integration test `tests/sql/utme_subject_choice.test.sql` is wired into `.github/workflows/verify.yml`. It executes migration `20261018150000_batch_2_utme_subject_choice.sql` against disposable fixture schemas and checks valid alternative selection plus invalid/missing/duplicate/inactive choices.
+- First job `39136090924` failed because test calls used integer `300` while RPC argument is `smallint`. Fixture corrected to `300::smallint` in commit `024dd88295f49ab16aed85fcad65959c3a4f83dc`. Recheck latest CI; do not infer migration pass from the failed fixture run.
+- No live migration deployment or Supabase writes. Deployment workflow is manual-only; prior Cloudflare deploy run failed at token authentication and did not deploy.
