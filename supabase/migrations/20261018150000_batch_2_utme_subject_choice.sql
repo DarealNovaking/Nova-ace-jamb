@@ -45,7 +45,7 @@ begin
   select array_agg(s.id order by s.sort_order) into v_subject_ids
   from ace.subjects s
   where s.id = any(p_subject_ids) and s.active = true;
-  if cardinality(v_subject_ids) <> 4 then raise exception 'One or more selected UTME subjects are invalid.' using errcode = '22023'; end if;
+  if coalesce(cardinality(v_subject_ids), 0) <> 4 then raise exception 'One or more selected UTME subjects are invalid.' using errcode = '22023'; end if;
 
   v_subject_count := cardinality(coalesce(v_rule.required_subject_ids, '{}'::uuid[]));
   if v_subject_count < 1 or v_subject_count + coalesce(v_rule.minimum_optional_subjects, 0) <> 4 then
