@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { ace, supabase } from '../lib/supabase'
 import { getCurrentUser } from '../lib/authService'
 import AdminCatalogueImport from './AdminCatalogueImport'
+import AdminReviewOnlyStage from './AdminReviewOnlyStage'
 
 export default function AdminFoundationGate() {
   const [checking, setChecking] = useState(true)
@@ -86,6 +87,7 @@ export default function AdminFoundationGate() {
           <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-5"><p className="text-xs uppercase tracking-wider text-white/35">Kill</p><p className="mt-2 text-xl font-black">Kill 1 · Institutions</p></div>
         </div>
 
+        <AdminReviewOnlyStage />
         <AdminCatalogueImport />
       </div>
     </main>
