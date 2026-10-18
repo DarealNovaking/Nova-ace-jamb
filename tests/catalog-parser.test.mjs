@@ -81,3 +81,20 @@ test("requires English Language to be explicit in the official required list", (
   assert.equal(result.ok, false);
   assert.match(result.reason, /does not include English Language/);
 });
+
+test("parses an official five-option group with one required choice", () => {
+  const result = parseIbassUtmeRule({
+    title: "English Language,Mathematics,Physics and any One (1) of Agricultural Science,Biology,Chemistry,Economics or Geography",
+    required_subjects: ",English Language,Mathematics,Physics,",
+    optional_subjects: ",Agricultural Science,Biology,Chemistry,Economics,Geography,",
+    subject_count: 1,
+    optional_subjects_by_group2: "",
+  });
+
+  assert.equal(result.ok, true);
+  assert.deepEqual(result.requiredSubjectCodes, ["ENG", "MAT", "PHY"]);
+  assert.deepEqual(result.alternativeGroups, [
+    { subject_codes: ["AGR", "BIO", "CHE", "ECO", "GEO"], minimum_required: 1 },
+  ]);
+  assert.equal(result.minimumOptionalSubjects, 1);
+});
