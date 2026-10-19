@@ -413,3 +413,35 @@
 - CI on this commit is pending and must be checked before treating the new spec as passed. The first-time onboarding code fix in `b0a003f63bc5d6c7ff97e605b784ae4bb0c50e19` has passed both Verify and E2E workflows on `a9f0485990ef5c3d2448bb2bda8933f97129691e`, but those E2E specs predated this regression test.
 - Still missing: save/reload persistence and Learning/CBT navigation tests; review live SECURITY DEFINER RPC body/authorization and leaked-password protection warning. Batch 2 remains OPEN; no user action required.
 - Exact next action: fetch workflow result for the latest test commit, correct any failure, then extend the mocked authenticated journey to cover save/reload and Learning/CBT navigation.
+
+
+## Active continuity checkpoint — preparation-first onboarding (2026-10-19)
+
+### Source of truth
+- Repository: `DarealNovaking/Nova-ace-jamb`, branch `main`.
+- Latest commit observed: `e912d5e5c0b7b0127ddddcf15c3fc6465c30e1be` — `docs: checkpoint onboarding browser test`.
+- Product direction: **catalogue is no longer used as a prerequisite for student onboarding/preparation**. Do not make empty institutions/programmes/UTME-rule tables a blocker for the active core student journey. Institution/course are optional goals. Do not delete legacy catalogue infrastructure without dependency review.
+
+### Current verified implementation
+- `StudentFoundationGate.tsx` checks admin role, registers the current device, then reads the student profile and preferences/subjects. A missing profile is routed to onboarding.
+- `StudentOnboarding.tsx` treats PGRST116 for absent profile/preferences as a first-time-user state, uses default preparation values, requires active subject loading, and saves through `saveStudentPreparationFoundation`.
+- `b0a003f63bc5d6c7ff97e605b784ae4bb0c50e19` introduced the absent-row fix.
+- `c25d7b95fa02aa839e37d463516bf903a443e6a8` adds mocked authenticated Playwright coverage for rendering onboarding without catalogue rows, English preselected/disabled, and three additional subject choices. The test intercepts Supabase requests and does not mutate production data.
+- `e912d5e5c0b7b0127ddddcf15c3fc6465c30e1be` records that test and explicitly leaves its CI outcome pending.
+
+### Current user-visible issue / evidence boundary
+- Reported screen error: “Unable to prepare your ACE account. Please try again.”
+- Root cause is **not verified**. In the gate, `registerCurrentDevice()` executes before profile/onboarding checks and can fail the entire initialization; inspect its implementation and relevant Supabase logs before changing it. Also verify `is_admin` RPC and profile/preferences/subjects requests. Do not present device registration as the confirmed cause.
+- Current Verify/E2E workflow status for the latest commit has not been confirmed in this checkpoint. No claim that the latest browser regression passed.
+- No production writes, privileged auth bypass, or deployment were performed during this checkpoint.
+
+### Remaining acceptance criteria
+1. Confirm current CI/Verify/E2E results for `main`; fix any failing run and rerun.
+2. Identify the actual cause of the account-preparation error using implementation plus sanitized logs; fix safely and add regression coverage.
+3. Extend the browser journey through save, persisted reload, and Learning/CBT navigation. Keep mocked tests clearly labelled; distinguish them from a real authenticated persistence check.
+4. Review the preparation RPC's SECURITY DEFINER body/authorization and the existing leaked-password-protection warning.
+5. Update master handoff, this checkpoint, and the historical Batch 2 blocker handoff to reflect the corrected product direction and evidence.
+6. Batch 2 remains OPEN until the core student journey is verified. Do not deploy production unless explicitly authorized and deployment credentials are functional.
+
+### Exact next action
+Fetch the latest Verify and ACE JAMB E2E workflow results, then inspect `src/lib/deviceService.ts`, the `is_admin`/preparation RPC definitions, and recent relevant Supabase logs. Establish the actual failure before editing application code. No user action is currently required.
