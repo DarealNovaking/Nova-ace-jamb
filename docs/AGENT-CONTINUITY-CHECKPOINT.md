@@ -383,3 +383,14 @@
 - CI at `f758b231a9eec2488c1ed62511fde5a0b67d2666`: Verify passed; ACE JAMB E2E passed. Treat these as pipeline outcomes only, not proof that revised acceptance criteria are all covered.
 - **Batch 2 remains OPEN** pending Playwright-spec audit and evidence for empty-catalogue onboarding, English plus three selection, persistence/reload and navigation to learning/CBT. Do not unlock/declare Batch 2 complete just because catalogue is optional.
 - Next action: inspect current E2E specs and all onboarding save/gate call sites, add targeted regression coverage, run CI, and update both handoff documents with real results. Do not ask the user to re-upload catalogue data or require any manual action yet.
+
+
+## Preparation-first validation hardening — 2026-10-19
+
+- Latest test change: 54833febb635c2e45d0e2d17960e39940c7ce6c9 expands tests/sql/utme_subject_choice.test.sql with empty institution/programme/rule rows and server rejection checks for missing ENG, duplicate subjects and inactive subjects.
+- Active onboarding call path uses saveStudentPreparationFoundation → save_student_preparation_foundation; legacy catalogue RPC wrappers remain in studentService.ts but have no call from the active onboarding component. The gate checks profile/preferences/four saved subjects, not institution/programme/rule records.
+- Current Playwright tests are only smoke checks (entry surface and mobile body). No authenticated onboarding assertions yet for English disabled/preselected, exactly three additional subjects, persistence/reload, empty catalogue, error handling or Learning/CBT navigation.
+- Read-only production SQL confirms preparation RPC signature, authenticated EXECUTE=true, anon EXECUTE=false and English validation. No production writes were performed in this step.
+- Supabase Security Advisor flags authenticated-executable SECURITY DEFINER functions (including this RPC) and disabled leaked-password protection. Review RPC body/authorization deliberately; signed-in students must be able to save only their own profile through auth.uid().
+- Verify run 39331339786 and E2E run 39331339916 were in progress at time of note, both targeting 54833febb635c2e45d0e2d17960e39940c7ce6c9. Do not record them as passed until final workflow result is fetched. Local checks were not run.
+- Exact next action: fetch final workflow/job outcomes; resolve any SQL failure; add authenticated Playwright coverage for onboarding selection, persistence/reload and Learning/CBT navigation. Batch 2 remains OPEN; no user action required yet.
