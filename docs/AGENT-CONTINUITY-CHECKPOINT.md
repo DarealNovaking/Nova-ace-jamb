@@ -405,3 +405,11 @@
 - Found that a missing profile causes StudentFoundationGate to show onboarding, while StudentOnboarding previously rejected PGRST116 from getStudentProfile/getStudentPreferences, leaving first-time users with a load error.
 - Fixed in b0a003f63bc5d6c7ff97e605b784ae4bb0c50e19: PGRST116 is treated as an absent optional profile/preferences row and default values are used; unrelated errors still fail visibly. Active-subject loading remains required.
 - Wait for CI on the fix, then add authenticated Playwright coverage for setup with absent profile/preferences and no catalogue rows, English locked + three additional subjects, save/reload, and Learning/CBT navigation. Batch 2 remains OPEN.
+
+
+## Authenticated onboarding E2E added — 2026-10-19
+
+- Commit `c25d7b95fa02aa839e37d463516bf903a443e6a8` updates `tests/e2e/smoke.spec.ts` with mocked authenticated first-time student setup. All calls to the Supabase project URL are intercepted; test user/session data is synthetic. Test covers absent profile/preferences, preparation UI without catalogue rows, ENG preselected/disabled, exactly three additional selections, selection count and button enablement/limit behavior.
+- CI on this commit is pending and must be checked before treating the new spec as passed. The first-time onboarding code fix in `b0a003f63bc5d6c7ff97e605b784ae4bb0c50e19` has passed both Verify and E2E workflows on `a9f0485990ef5c3d2448bb2bda8933f97129691e`, but those E2E specs predated this regression test.
+- Still missing: save/reload persistence and Learning/CBT navigation tests; review live SECURITY DEFINER RPC body/authorization and leaked-password protection warning. Batch 2 remains OPEN; no user action required.
+- Exact next action: fetch workflow result for the latest test commit, correct any failure, then extend the mocked authenticated journey to cover save/reload and Learning/CBT navigation.
