@@ -479,3 +479,11 @@ Re-run Verify/E2E CI for the latest main commits, then reproduce sign-in with th
 - CI wrapper returned no workflow runs/statuses for current HEAD; latest typecheck/build/E2E are not verified. No application code, DB data, migration, or deployment changed during this audit.
 - **Exact next action:** trace active build/route entrypoint; obtain exact read-only counts for subjects/topics/subtopics/seasons/configs/syllabus versions/questions; inspect existing academic services/admin controls; implement the smallest verified gap with RLS and review/publish safeguards; run typecheck/build/Playwright and update both handoff files.
 - **Status: Batch 3 IN PROGRESS (audit only; implementation not yet started).**
+
+
+## Legacy provider removal — 2026-10-20
+
+- Removed unused legacy prototype/integration files: `src/App.tsx`, `src/providerBridge.ts`, `src/types/appdeploy-client.d.ts`, `appdeploy.auth-login.json`; removed `@appdeploy/client` alias from `vite.config.ts`.
+- Actual entrypoint confirmed as `src/main.tsx`, using Supabase-backed student/admin gates and CBT component. No production DB or deployment changes.
+- Code commits: `35fc382fd8ace91464c743973da332eadf196c21`, `216dc14e1d0859abb0d43e4651a8b48e6806b613`, `4c03678ed0dc9fd051c20f1d01b8bd9d5166e2e8`, `f3740d5712033263a651905d7cf94591b1fbca52`, `f253e249370e170f97eb0151422015513c2636a5`.
+- Build/typecheck/E2E remain unverified after changes. Next: residual-reference scan, run typecheck/build and Playwright, resolve errors, then continue Batch 3.
