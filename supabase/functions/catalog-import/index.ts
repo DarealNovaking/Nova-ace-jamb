@@ -12,10 +12,16 @@ const ENTITY_TYPES = new Set([
 ]);
 const DATASET_TYPES = new Set(["institutions", "programs", "utme_rules", "syllabus"]);
 
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+};
+
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), {
     status,
-    headers: { "content-type": "application/json" },
+    headers: { ...corsHeaders, "content-type": "application/json" },
   });
 
 const sha256Hex = async (value: string) => {
@@ -24,6 +30,7 @@ const sha256Hex = async (value: string) => {
 };
 
 Deno.serve(async (req) => {
+  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
 
   const authHeader = req.headers.get("authorization");
@@ -68,47 +75,18 @@ Deno.serve(async (req) => {
   const userClient = createClient(supabaseUrl, serviceRoleKey, {
     global: { headers: { Authorization: authHeader } },
   });
-  const adminClient = createClient(supabaseUrl, serviceRoleKey);
-
   const { data: userData, error: userError } = await userClient.auth.getUser();
   if (userError || !userData.user) return json({ error: "Invalid authentication" }, 401);
 
-  const { data: role, error: roleError } = await adminClient
+  // Authorization is evaluated from the caller JWT. The staging RPC repeats this
+  // check inside the transaction boundary before touching catalogue tables.
+  const { data: canManageCatalog, error: permissionError } = await userClient
     .schema("ace")
-    .from("roles")
-    .select("role")
-    .eq("user_id", userData.user.id)
-    .maybeSingle();
-  if (roleError) return json({ error: "Unable to verify permissions" }, 500);
-  if (!role || !["admin", "editor"].includes(role.role)) {
-    return json({ error: "Admin/editor access required" }, 403);
+    .rpc("can_manage_catalog");
+  if (permissionError) {
+    return json({ error: "Unable to verify permissions" }, 500);
   }
-
-  const { data: source, error: sourceError } = await adminClient
-    .schema("ace")
-    .from("catalog_sources")
-    .select("id,title,status,source_type")
-    .eq("id", body.source_id)
-    .maybeSingle();
-  if (sourceError) return json({ error: "Unable to load catalog source" }, 500);
-  if (!source) return json({ error: "Catalog source not found" }, 404);
-  if (!["reviewed", "approved"].includes(source.status)) {
-    return json({ error: "Catalog source must be reviewed or approved before import" }, 409);
-  }
-
-  if (body.season_id) {
-    const { data: season, error: seasonError } = await adminClient
-      .schema("ace")
-      .from("exam_seasons")
-      .select("id,status")
-      .eq("id", body.season_id)
-      .maybeSingle();
-    if (seasonError) return json({ error: "Unable to load season" }, 500);
-    if (!season) return json({ error: "Season not found" }, 404);
-    if (season.status === "archived") {
-      return json({ error: "Cannot import into an archived season" }, 409);
-    }
-  }
+  if (canManageCatalog !== true) return json({ error: "Admin/editor access required" }, 403);
 
   const normalizedRows = body.rows.map((row, index) => ({
     row_number: Number.isInteger(row.row_number) && (row.row_number as number) > 0
@@ -123,70 +101,27 @@ Deno.serve(async (req) => {
     !row.entity_type ||
     !ENTITY_TYPES.has(row.entity_type) ||
     !row.payload ||
-    typeof row.payload !== "object",
+    typeof row.payload !== "object" ||
+    Array.isArray(row.payload),
   );
   if (invalid) return json({ error: `Invalid catalog row at row ${invalid.row_number}` }, 400);
 
   const snapshotHash = await sha256Hex(raw);
-  const { data: existingBatch, error: existingBatchError } = await adminClient
+  const { data: staged, error: stageError } = await userClient
     .schema("ace")
-    .from("catalog_import_batches")
-    .select("id,status,row_count")
-    .eq("snapshot_hash", snapshotHash)
-    .maybeSingle();
-  if (existingBatchError) return json({ error: "Unable to check import idempotency" }, 500);
-  if (existingBatch) {
-    return json({
-      batch_id: existingBatch.id,
-      status: existingBatch.status,
-      row_count: existingBatch.row_count,
-      idempotent: true,
-      message: "This exact catalog snapshot was already staged.",
-    }, 200);
+    .rpc("stage_catalog_import", {
+      p_source_id: body.source_id,
+      p_season_id: body.season_id ?? null,
+      p_dataset_type: body.dataset_type,
+      p_snapshot_hash: snapshotHash,
+      p_metadata: body.metadata ?? {},
+      p_rows: normalizedRows,
+    });
+
+  if (stageError || !staged) {
+    // Do not leak raw database errors or internal schema details to clients.
+    return json({ error: "Unable to stage catalog import" }, 500);
   }
 
-  const { data: batch, error: batchError } = await adminClient
-    .schema("ace")
-    .from("catalog_import_batches")
-    .insert({
-      source_id: body.source_id,
-      season_id: body.season_id ?? null,
-      dataset_type: body.dataset_type,
-      status: "staged",
-      row_count: normalizedRows.length,
-      snapshot_hash: snapshotHash,
-      metadata: {
-        ...(body.metadata ?? {}),
-        source_title: source.title,
-        imported_by: userData.user.id,
-      },
-    })
-    .select("id")
-    .single();
-  if (batchError || !batch) return json({ error: "Unable to create import batch" }, 500);
-
-  const rows = normalizedRows.map((row) => ({
-    ...row,
-    batch_id: batch.id,
-    validation_status: "pending",
-    validation_errors: [],
-  }));
-  const { error: rowsError } = await adminClient
-    .schema("ace")
-    .from("catalog_import_rows")
-    .insert(rows);
-
-  if (rowsError) {
-    await adminClient.schema("ace").from("catalog_import_batches").delete().eq("id", batch.id);
-    return json({ error: "Unable to stage catalog rows" }, 500);
-  }
-
-  return json({
-    batch_id: batch.id,
-    status: "staged",
-    row_count: rows.length,
-    source: source.title,
-    imported_by: userData.user.id,
-    snapshot_hash: snapshotHash,
-  }, 201);
+  return json(staged, staged.idempotent ? 200 : 201);
 });
