@@ -2198,3 +2198,12 @@ The authoritative direction is now `docs/CATALOGUE-REPLACEMENT-INVESTIGATION-202
 
 ### Status
 **Batch 3 / Academic Structure: IN PROGRESS — audit only; implementation has not yet started.** No production changes made.
+
+
+## Legacy provider removal — 2026-10-20
+
+- Owner instruction: remove every AppDeploy-related integration from the ACE JAMB repository.
+- Deleted `src/App.tsx` (unused prototype not imported by the actual Vite entrypoint `src/main.tsx`), `src/providerBridge.ts`, `src/types/appdeploy-client.d.ts`, and `appdeploy.auth-login.json`.
+- Removed the `@appdeploy/client` Vite alias from `vite.config.ts`. The actual app entrypoint remains `src/main.tsx`, which uses Supabase-backed student/admin gates and persistent CBT components.
+- Sequential GitHub commits: `35fc382fd8ace91464c743973da332eadf196c21`, `216dc14e1d0859abb0d43e4651a8b48e6806b613`, `4c03678ed0dc9fd051c20f1d01b8bd9d5166e2e8`, `f3740d5712033263a651905d7cf94591b1fbca52`, `f253e249370e170f97eb0151422015513c2636a5`.
+- No database changes or deployment were performed. Build/typecheck/tests have not yet been run after these removals. Next action: search the repository for residual provider references, run typecheck/build and relevant Playwright tests, fix breakages, then continue Batch 3 academic-structure implementation.
