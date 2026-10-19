@@ -298,3 +298,11 @@
 - Use the existing 25 active production subject rows as the working baseline. Keep existing Computer Studies and Use of English entries and retain Physical and Health Education pending new authoritative current-season evidence. Do not bulk-add/delete rows or claim the inventory is fully certified.
 - Known limitation: official eligibility JSON has 22 labels and is incomplete; IBASS e-syllabus confirms Computer Studies; English is required by the eligibility UI; current-season PHE status remains unresolved. This is deferred, not treated as verified.
 - **Next concrete action:** refresh current main CI results and inspect catalogue-import deployed/source drift plus onboarding migration readiness. Continue implementation after verification; no production migration/deployment without passing checks and a confirmed safe path. Batch 2 IN PROGRESS; Batch 3 LOCKED.
+
+
+## Execution checkpoint — 2026-10-19
+- Current main HEAD before this note: 3cae57fe9497fa5bb084c6474d8e4f0738c7723d.
+- Verify run 39179042756 passed parser tests, Deno check, npm typecheck/build and disposable PostgreSQL subject-choice migration test. E2E run 39179042775 passed typecheck/build but Playwright browser installation/tests were still running at last check.
+- Production migration history ends at 20261018143241_batch_2_utme_subject_choice. New migration 20261019120000_preparation_onboarding_without_catalogue.sql is not applied; read-only function lookup returned null. No migration/data writes performed.
+- catalog-import repo source and deployed v7 differ materially. Repo checks source review/season state and writes batch/rows directly; deployed v7 uses can_manage_catalog and stage_catalog_import RPC, with CORS handling, but lacks the source-review/season checks visible in repo source. Do not redeploy before reconciling and testing both behavior and RPC privileges.
+- Next: refresh E2E result, inspect stage_catalog_import migration/privileges and import tests, reconcile drift with regression coverage. Keep onboarding migration unapplied pending verification. Subject inventory research is closed/deferred. Batch 2 IN PROGRESS; Batch 3 LOCKED.
