@@ -291,3 +291,10 @@
 - Official IBASS extraction still exposes only the first 12 e-syllabus cards and hides the app bundle/API references; pagination URL probes did not retrieve pages 2–3. `robots.txt` permits crawling, but `sitemap.xml` returned empty content through the extraction provider. This route remains inconclusive.
 - No production subject changes, migrations, staging or deployments. Current inventory is still not certified complete.
 - Next action: inspect the official frontend bundle or live eligibility UI's selectable subject list and compare against the current-season JAMB source; then make only evidence-backed catalogue changes with tests. Batch 2 IN PROGRESS; Batch 3 LOCKED.
+
+
+## Decision — stop subject-inventory investigation and proceed — 2026-10-19
+- Subject inventory research is timeboxed and **closed for this workstream**. Do not repeat official IBASS pagination probes or keep catalogue completeness as a blocker.
+- Use the existing 25 active production subject rows as the working baseline. Keep existing Computer Studies and Use of English entries and retain Physical and Health Education pending new authoritative current-season evidence. Do not bulk-add/delete rows or claim the inventory is fully certified.
+- Known limitation: official eligibility JSON has 22 labels and is incomplete; IBASS e-syllabus confirms Computer Studies; English is required by the eligibility UI; current-season PHE status remains unresolved. This is deferred, not treated as verified.
+- **Next concrete action:** refresh current main CI results and inspect catalogue-import deployed/source drift plus onboarding migration readiness. Continue implementation after verification; no production migration/deployment without passing checks and a confirmed safe path. Batch 2 IN PROGRESS; Batch 3 LOCKED.
