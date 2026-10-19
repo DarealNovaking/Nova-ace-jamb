@@ -2151,3 +2151,12 @@ The authoritative direction is now `docs/CATALOGUE-REPLACEMENT-INVESTIGATION-202
 **Security review:** prior evidence reported Security Advisor warnings for authenticated-executable SECURITY DEFINER functions (including the preparation RPC) and disabled leaked-password protection. Review the function body and ownership/authorization checks using `auth.uid()`; do not blindly revoke legitimate student access or bypass authentication. Leaked-password protection remains a separate hardening item.
 
 **Next action:** fetch current Verify/E2E workflow status for the latest `main` commit and inspect the device-registration/RPC error path against logs. Add/finish mocked save-and-reload plus Learning/CBT navigation coverage; where feasible, perform a controlled authenticated persistence test without privileged bypass. Then update this handoff and the continuity checkpoint with exact evidence. Batch 2 remains OPEN until the core onboarding journey and checks pass.
+
+
+## First-time profile creation fix — 2026-10-20
+
+- Added `src/components/StudentFoundationGate.tsx` error extraction so Supabase/PostgREST errors that are plain objects can expose their message instead of always collapsing to the generic fallback.
+- Added migration `supabase/migrations/20261020000100_first_time_preparation_profile.sql` and applied it to Supabase project `uokiqlgmzprqfbzmedaz`. The preparation-save RPC now inserts a profile row for the currently authenticated user if missing, using `auth.uid()` and the JWT email, with `ON CONFLICT (id) DO NOTHING`; it then updates that user's profile/preferences/subjects as before. No catalogue dependency was introduced.
+- Live verification: queried `pg_get_functiondef` and confirmed the deployed RPC contains both the profile insert and `auth.uid()` authorization. This verifies deployed function definition only; no real student save/reload browser journey was run.
+- The generic account-initialization error remains not fully diagnosed: error extraction is now better, but the actual failing request from the affected student's session has not been captured. Do not claim the login/initialization screen is fixed until retested.
+- CI/build/E2E after these commits has not been verified. Batch 2 remains OPEN.
