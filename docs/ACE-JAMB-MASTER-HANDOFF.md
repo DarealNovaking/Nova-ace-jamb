@@ -2160,3 +2160,13 @@ The authoritative direction is now `docs/CATALOGUE-REPLACEMENT-INVESTIGATION-202
 - Live verification: queried `pg_get_functiondef` and confirmed the deployed RPC contains both the profile insert and `auth.uid()` authorization. This verifies deployed function definition only; no real student save/reload browser journey was run.
 - The generic account-initialization error remains not fully diagnosed: error extraction is now better, but the actual failing request from the affected student's session has not been captured. Do not claim the login/initialization screen is fixed until retested.
 - CI/build/E2E after these commits has not been verified. Batch 2 remains OPEN.
+
+
+## Batch 2 closure — student journey confirmed by project owner (2026-10-20)
+
+- The project owner reports successfully logging into a student account and confirms all three acceptance checks work: login, preparation setup/save, and persistence after refresh plus Learning/CBT navigation.
+- Based on this live user verification, **Batch 2 is CLOSED for the active preparation-first student journey**. The empty institution/programme/UTME-rule catalogue is not a blocker and is not part of this batch's acceptance criteria.
+- Code/database evidence already recorded above: first-time profile-save migration is applied to live Supabase project `uokiqlgmzprqfbzmedaz`; read-only function-definition check confirmed profile creation and `auth.uid()` usage. This was not a synthetic auth bypass.
+- Evidence boundary: the end-to-end journey is user-confirmed, not independently observed by the agent. Current CI/build results and automated authenticated persistence/navigation coverage remain unverified. These are follow-up QA tasks, not reasons to keep the user-confirmed Batch 2 student journey open unless a regression is found.
+- No frontend deployment was performed as part of this closure.
+- **Next action:** proceed to the next project milestone from the canonical roadmap; keep CI/build and automated end-to-end coverage in the QA queue.
