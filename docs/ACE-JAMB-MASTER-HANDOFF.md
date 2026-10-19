@@ -2029,3 +2029,11 @@ The official eligibility endpoint returned 22 subject records: Agriculture, Arab
 - Existing disposable PostgreSQL test script tests/sql/utme_subject_choice.test.sql also applies 20261019120000_preparation_onboarding_without_catalogue.sql and checks prep-only save with empty goals, four active subjects, preference persistence, clearing unverified structured catalogue IDs, and unauthenticated rejection. Verify workflow runs this SQL script; the latest workflow rerun after importer test/Deno-check correction is still in progress at time of this note.
 - The onboarding RPC remains absent from production (to_regprocedure(...) previously returned null); no migration has been applied.
 - Next: confirm current Verify + E2E runs; if green, design a separate forward-only source reconciliation for missing catalog RPC/indexes using live definitions and disposable PostgreSQL tests, then review onboarding deployment safety. No production changes/deployments.
+
+
+
+### Importer Deno check failure and correction — 2026-10-19
+- First run with expanded Verify coverage: contract tests passed (14 total), disposable PostgreSQL onboarding/UTME migration test passed, but Deno check for catalog-import failed before checking the function because the optional edge-runtime.d.ts import triggered a missing npm:openai package resolution in the runner. The deployed function's sibling ibass-catalog-stage source does not use this type-only import.
+- Removed the unnecessary edge-runtime.d.ts import from supabase/functions/catalog-import/index.ts in commit fe83e32501790e4139e6b8729b9cfe6be7cc83bb; Deno provides the runtime globals and the file still uses Deno.serve. Fresh Verify/E2E is pending. Do not count the importer Deno check as passed until a new run succeeds.
+- Existing run 39180989334: contract tests PASS; disposable PostgreSQL migration test PASS (including prep-only onboarding assertions); importer Deno check FAIL due to package resolution; later steps skipped. Failure diagnosed from job logs, not inferred.
+- Next action: confirm Deno check and full Verify/E2E on the current HEAD; if Deno still fails, adjust the type-check setup without adding unnecessary runtime dependencies. No production migration/deployment.
