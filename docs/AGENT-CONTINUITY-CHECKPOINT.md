@@ -394,3 +394,6 @@
 - Supabase Security Advisor flags authenticated-executable SECURITY DEFINER functions (including this RPC) and disabled leaked-password protection. Review RPC body/authorization deliberately; signed-in students must be able to save only their own profile through auth.uid().
 - Verify run 39331339786 and E2E run 39331339916 were in progress at time of note, both targeting 54833febb635c2e45d0e2d17960e39940c7ce6c9. Do not record them as passed until final workflow result is fetched. Local checks were not run.
 - Exact next action: fetch final workflow/job outcomes; resolve any SQL failure; add authenticated Playwright coverage for onboarding selection, persistence/reload and Learning/CBT navigation. Batch 2 remains OPEN; no user action required yet.
+
+
+- **Failed investigation / correction:** Verify run 39331339786 failed in the disposable SQL test because request.jwt.claim.sub was cleared for the unauthenticated case and not restored before new English/duplicate/inactive assertions. Job logs proved the auth guard fired first; the assertions were not actually validating the target rules. Fixed by restoring the synthetic test user claim before those assertions in commit b95e72071995a2ce99a4a5b893be5efac90f9c92. Await fresh Verify/E2E results; do not count the earlier failed run as a pass.
