@@ -2170,3 +2170,31 @@ The authoritative direction is now `docs/CATALOGUE-REPLACEMENT-INVESTIGATION-202
 - Evidence boundary: the end-to-end journey is user-confirmed, not independently observed by the agent. Current CI/build results and automated authenticated persistence/navigation coverage remain unverified. These are follow-up QA tasks, not reasons to keep the user-confirmed Batch 2 student journey open unless a regression is found.
 - No frontend deployment was performed as part of this closure.
 - **Next action:** proceed to the next project milestone from the canonical roadmap; keep CI/build and automated end-to-end coverage in the QA queue.
+
+
+## Batch 3 kickoff — Academic Structure audit (2026-10-20)
+
+### Scope and continuity
+- Batch 2 is closed for the active preparation-first student journey based on the project owner's direct confirmation. This kickoff follows the canonical roadmap's **Phase 4 — Academic structure** (JAMB season engine, subjects, syllabus topics/subtopics, question taxonomy); it does not revive catalogue ingestion as a student onboarding prerequisite.
+- Repository checked: `DarealNovaking/Nova-ace-jamb`, default branch `main`, observed HEAD `20c0910ccc551e06468bdd5b339b985fc67be764` (commit message: `docs: close Batch 2 after student journey confirmation`).
+
+### Existing structure confirmed in source
+- Migration `supabase/migrations/20260914210000_batch_2_jamb_season_syllabus_engine.sql` already defines exam configuration subjects, versioned syllabi, syllabus-version links on topics/subtopics, and season/config scaffolding; it also contains historical 2026 exam configuration and a 2027 draft season. Do not create duplicate tables or blindly reapply/rewrite this migration.
+- Existing schema also has `ace.subjects`, `ace.topics`, `ace.subtopics`, `ace.questions`, `ace.exam_seasons`, `ace.exam_configs`, `ace.syllabus_versions`, and `ace.learning_progress`, all reported by the connected Supabase schema listing with RLS enabled.
+- Existing question rows support subject/topic/subtopic mapping, difficulty, year, media/provenance/rights metadata, content version, review state, and active status. Persistent CBT RPCs use published questions and stable stored answer keys.
+- Current `src/components/StudentOnboarding.tsx` loads active subjects and intentionally does not require institution/programme/UTME catalogue records.
+
+### Verification boundaries / risks found
+- The connected Supabase table-list tool reported approximate row counts of zero for `ace.subjects`, `ace.topics`, `ace.subtopics`, `ace.questions`, `ace.exam_seasons`, `ace.exam_configs`, and `ace.syllabus_versions`, while it reported eight rows for `ace.student_subjects`. These are tool-reported counts, not independently confirmed SQL counts; because the owner has verified the live onboarding journey, treat the apparent mismatch as **requiring a targeted read-path/count check**, not proof that the live subject catalogue is empty or broken.
+- CI status for current HEAD is not established by the commit-workflow wrapper (it returned no workflow runs/statuses). Do not claim the latest build/typecheck/E2E is green.
+- The current main `src/App.tsx` appears to be a separate AppDeploy-style prototype (`@appdeploy/client`), while the preparation-first Supabase onboarding lives in components and libraries. Before adding academic-structure UI, trace the actual entrypoint/router/build path so changes land in the active application rather than a dormant prototype.
+- No code, database rows, migrations, or deployment were changed during this kickoff audit.
+
+### Next concrete action
+1. Trace `src/main.tsx`, `index.html`, Vite config, and the actual routing/entrypoint to establish which UI is built and deployed.
+2. Reconcile the live academic table counts through a supported read-only path, and inspect current subject/season/config records without writing data.
+3. Inventory the actual subject/topic/subtopic read/write services, question taxonomy and admin/editor workflows. Then implement the smallest missing academic-structure capability with RLS and review/publish gates; do not seed invented JAMB syllabus data or activate unverified seasons/configuration.
+4. Run typecheck/build and relevant Playwright checks, then update this handoff and the continuity checkpoint with exact results.
+
+### Status
+**Batch 3 / Academic Structure: IN PROGRESS — audit only; implementation has not yet started.** No production changes made.
