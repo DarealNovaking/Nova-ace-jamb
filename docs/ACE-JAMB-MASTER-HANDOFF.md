@@ -2120,3 +2120,11 @@ The authoritative direction is now `docs/CATALOGUE-REPLACEMENT-INVESTIGATION-202
 
 
 - **CI failure investigated and fixed (2026-10-19):** the first expanded disposable SQL run failed because the test had intentionally cleared request.jwt.claim.sub for the unauthenticated test and did not restore it before the new English/duplicate/inactive validation cases. Logs confirmed the function rejected those cases at the authentication guard, so those assertions had not tested their intended branches. Updated test commit b95e72071995a2ce99a4a5b893be5efac90f9c92 restores the test user claim before the new validation cases. Fresh workflows must pass before these checks are considered verified.
+
+
+## First-time onboarding defect found and corrected — 2026-10-19
+
+- Verified previous corrected SQL and E2E workflows both passed on commit 89c0718db20c78513846f205b588bcdb066471ca. Verify included npm typecheck, build, catalogue/parser tests, Deno checks and disposable PostgreSQL migration test; E2E included Playwright, but the existing Playwright specs remain only smoke tests.
+- New code inspection found a real first-time setup defect: StudentFoundationGate routes a missing profile to StudentOnboarding, but StudentOnboarding previously loaded profile and preferences with Promise.all and treated PGRST116 (no row yet) as a fatal load error. This prevented the intended first-time student setup from loading.
+- Fixed src/components/StudentOnboarding.tsx in commit b0a003f63bc5d6c7ff97e605b784ae4bb0c50e19. Missing profile/preferences rows now default to blank/default preparation values; other errors still surface rather than being swallowed. The active-subject query remains required.
+- Verification of this new fix is pending the workflows triggered by this commit. Authenticated Playwright coverage for the complete onboarding journey is still absent; do not mark Batch 2 complete until that gap is addressed.
