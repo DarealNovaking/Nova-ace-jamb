@@ -2064,3 +2064,21 @@ The official eligibility endpoint returned 22 subject records: Agriculture, Arab
 - **Deployed staging function confirmed:** `ibass-catalog-stage` is ACTIVE version 4 with JWT verification enabled. Its code checks the caller's user identity and `ace.can_manage_catalog()`, limits each request to 1–25 institution IDs, resolves IBASS institution names, discovers programme data, and stages programme/rule rows through `catalog-import`. It does not approve or publish those rows itself. It does rely on the currently deployed `catalog-import` endpoint, whose repository/deployment drift is already documented; do not redeploy that endpoint as part of this step.
 - **Access limitation remains:** connected tools provide no signed-in administrator browser session, so no live staging request was submitted. UI route wiring and CI are verified; end-to-end authenticated staging and resulting batch contents remain unverified.
 - **Next action:** open the deployed app in a signed-in administrator session, visit `/admin`, choose the intended exam season and a small previously agreed institution subset, stage once, then inspect the returned batch IDs, row counts, unresolved requirements and database batch statuses. Do not approve/publish until source requirements are reviewed. Keep Batch 3 locked. The existing 25-subject baseline remains fixed.
+
+
+## Product direction correction — preparation-first onboarding (2026-10-19)
+
+The authoritative direction is now `docs/CATALOGUE-REPLACEMENT-INVESTIGATION-2026-10-19.md`: the admissions catalogue is not the primary student journey and must not block preparation access. Do not resume bulk catalogue ingestion as the next product task. Retain legacy catalogue infrastructure until a safe deprecation plan is verified; admission eligibility must never be inferred from unverified data.
+
+### Student subject selection rule
+- English (subject code `ENG`) is automatically included and visibly marked as included in onboarding.
+- Students choose exactly three additional active subjects; the persisted preparation set remains four subjects total.
+- The server RPC validates that the four distinct active subject IDs include active English. Client-only enforcement is insufficient.
+- Preparation setup remains separate from official course eligibility. Institution/course are optional goals until verified by season-specific source-backed rules.
+
+### Implementation and verification — 2026-10-19
+- Updated `src/components/StudentOnboarding.tsx` to preselect English, lock its checkbox, initialize saved selections with English plus up to three other valid subjects, and display the “English included + N of 3” count.
+- Updated `supabase/migrations/20261019120000_preparation_onboarding_without_catalogue.sql` to reject a submitted set that omits active English.
+- Applied the migration to the connected Supabase project successfully. Before application, read-only checks showed one active ENG subject, 25 active subjects, and the preparation RPC absent. This confirms the RPC was not previously deployed and the required English record exists.
+- UI build/typecheck and browser E2E have not yet been run in this session. Confirm current GitHub Actions for the resulting commits; do not call the user journey end-to-end verified until runtime tests pass.
+- Next: run build/typecheck and Playwright onboarding coverage, then inspect CI and verify live RPC signature/grants after migration. Do not make production catalogue changes as part of this work.
