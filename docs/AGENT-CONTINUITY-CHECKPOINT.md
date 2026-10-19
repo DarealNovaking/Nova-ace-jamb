@@ -397,3 +397,11 @@
 
 
 - **Failed investigation / correction:** Verify run 39331339786 failed in the disposable SQL test because request.jwt.claim.sub was cleared for the unauthenticated case and not restored before new English/duplicate/inactive assertions. Job logs proved the auth guard fired first; the assertions were not actually validating the target rules. Fixed by restoring the synthetic test user claim before those assertions in commit b95e72071995a2ce99a4a5b893be5efac90f9c92. Await fresh Verify/E2E results; do not count the earlier failed run as a pass.
+
+
+## First-time onboarding defect found and corrected — 2026-10-19
+
+- Previous corrected SQL Verify and E2E workflows passed on 89c0718db20c78513846f205b588bcdb066471ca. These runs did not include authenticated onboarding tests; existing browser specs are smoke tests only.
+- Found that a missing profile causes StudentFoundationGate to show onboarding, while StudentOnboarding previously rejected PGRST116 from getStudentProfile/getStudentPreferences, leaving first-time users with a load error.
+- Fixed in b0a003f63bc5d6c7ff97e605b784ae4bb0c50e19: PGRST116 is treated as an absent optional profile/preferences row and default values are used; unrelated errors still fail visibly. Active-subject loading remains required.
+- Wait for CI on the fix, then add authenticated Playwright coverage for setup with absent profile/preferences and no catalogue rows, English locked + three additional subjects, save/reload, and Learning/CBT navigation. Batch 2 remains OPEN.
