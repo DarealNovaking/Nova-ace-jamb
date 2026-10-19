@@ -7,6 +7,8 @@ type Subject = { id: string; name: string; code: string }
 export default function StudentOnboarding({ onComplete }: { onComplete: () => void }) {
   const [subjects, setSubjects] = useState<Subject[]>([])
   const [selectedSubjects, setSelectedSubjects] = useState<string[]>([])
+  const englishSubject = subjects.find((subject) => subject.code.toUpperCase() === 'ENG')
+  const additionalSelectedSubjects = selectedSubjects.filter((id) => id !== englishSubject?.id)
   const [institutionGoal, setInstitutionGoal] = useState('')
   const [courseGoal, setCourseGoal] = useState('')
   const [name, setName] = useState('')
@@ -25,7 +27,9 @@ export default function StudentOnboarding({ onComplete }: { onComplete: () => vo
     ]).then(([subjectResult, profile, preferences]) => {
       if (!active) return
       if (subjectResult.error) throw subjectResult.error
-      setSubjects((subjectResult.data ?? []) as Subject[])
+      const activeSubjects = (subjectResult.data ?? []) as Subject[]
+      setSubjects(activeSubjects)
+      const english = activeSubjects.find((subject) => subject.code.toUpperCase() === 'ENG')
       setName(profile.display_name ?? '')
       setTarget(String(profile.target_score ?? 300))
       setDailyMinutes(String(Math.max(1, preferences.daily_minutes ?? 60)))
@@ -33,7 +37,11 @@ export default function StudentOnboarding({ onComplete }: { onComplete: () => vo
       setCourseGoal(profile.course ?? '')
       // Keep an existing valid subject selection if it is still in the active subject list.
       return getStudentSubjects().then((rows) => {
-        if (active) setSelectedSubjects(rows.map((row) => row.subject_id).filter((id) => (subjectResult.data ?? []).some((subject) => subject.id === id)).slice(0, 4))
+        if (active) {
+          const validIds = rows.map((row) => row.subject_id).filter((id) => activeSubjects.some((subject) => subject.id === id))
+          const otherThree = validIds.filter((id) => id !== english?.id).slice(0, 3)
+          setSelectedSubjects(english ? [english.id, ...otherThree] : otherThree)
+        }
       })
     }).catch((error) => setMessage(error instanceof Error ? error.message : 'Could not load your preparation setup.'))
       .finally(() => active && setBusy(false))
@@ -47,7 +55,8 @@ export default function StudentOnboarding({ onComplete }: { onComplete: () => vo
     if (!name.trim()) return setMessage('Enter your name.')
     if (!Number.isInteger(score) || score < 0 || score > 400) return setMessage('Target score must be between 0 and 400.')
     if (!Number.isInteger(minutes) || minutes < 1 || minutes > 1440) return setMessage('Study time must be between 1 and 1440 minutes.')
-    if (selectedSubjects.length !== 4) return setMessage('Choose exactly four subjects to prepare for.')
+    if (!englishSubject) return setMessage('English is unavailable in the subject list. Please try again later.')
+    if (additionalSelectedSubjects.length !== 3) return setMessage('Choose three additional subjects. English is included automatically.')
     setSaving(true)
     try {
       await saveStudentPreparationFoundation({
@@ -84,15 +93,28 @@ export default function StudentOnboarding({ onComplete }: { onComplete: () => vo
         </div>
         <fieldset className="space-y-2">
           <legend className="mb-2 text-sm font-semibold">Subjects you want to prepare for</legend>
-          <p className="mb-3 text-xs text-white/40">Select exactly four. These are your preparation choices, not a confirmation that they satisfy a specific course's official JAMB requirements.</p>
+          <p className="mb-3 text-xs text-white/40">English is included automatically. Choose any three other subjects. This is your preparation selection, not confirmation of a course's official JAMB requirements.</p>
           <div className="grid gap-2 sm:grid-cols-2">
-            {subjects.map((subject) => <label key={subject.id} className="flex cursor-pointer items-center gap-3 rounded-xl border border-white/10 p-3 text-sm">
-              <input type="checkbox" checked={selectedSubjects.includes(subject.id)} disabled={!selectedSubjects.includes(subject.id) && selectedSubjects.length >= 4} onChange={(event) => { setMessage(''); setSelectedSubjects((current) => event.target.checked ? [...current, subject.id].slice(0, 4) : current.filter((id) => id !== subject.id)) }} />
-              <span>{subject.name}</span>
-            </label>)}
+            {subjects.map((subject) => {
+              const isEnglish = subject.code.toUpperCase() === 'ENG'
+              const isSelected = selectedSubjects.includes(subject.id)
+              return <label key={subject.id} className={`flex cursor-pointer items-center gap-3 rounded-xl border border-white/10 p-3 text-sm ${isEnglish ? 'opacity-90' : ''}`}>
+                <input type="checkbox" checked={isSelected} disabled={isEnglish || (!isSelected && additionalSelectedSubjects.length >= 3)} onChange={(event) => {
+                  setMessage('')
+                  if (isEnglish) return
+                  setSelectedSubjects((current) => {
+                    const englishId = englishSubject?.id
+                    const others = current.filter((id) => id !== englishId && id !== subject.id)
+                    const nextOthers = event.target.checked ? [...others, subject.id].slice(0, 3) : others
+                    return englishId ? [englishId, ...nextOthers] : nextOthers
+                  })
+                }} />
+                <span>{subject.name}{isEnglish ? ' · Included automatically' : ''}</span>
+              </label>
+            })}
           </div>
           {subjects.length === 0 && <p className="text-sm text-amber-200/80">The subject list is unavailable right now. Please try again later.</p>}
-          <p className="text-xs text-white/50">{selectedSubjects.length} of 4 selected</p>
+          <p className="text-xs text-white/50">English included + {additionalSelectedSubjects.length} of 3 additional subjects selected</p>
         </fieldset>
         <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
           <p className="text-sm font-semibold">Admission goals (optional)</p>
@@ -101,7 +123,7 @@ export default function StudentOnboarding({ onComplete }: { onComplete: () => vo
           <label className="mt-4 block"><span className="mb-2 block text-sm text-white/60">Intended course</span><input className="field w-full" value={courseGoal} onChange={(e) => setCourseGoal(e.target.value)} maxLength={160} placeholder="e.g. your intended course" /></label>
           <p className="mt-3 text-xs text-white/40">Verify official requirements using the <a className="text-purple-200 underline" href="https://ibass.jamb.gov.ng/eligibility-checker" target="_blank" rel="noreferrer">JAMB IBASS eligibility checker</a>.</p>
         </div>
-        <button type="button" disabled={saving || subjects.length < 4 || selectedSubjects.length !== 4} onClick={save} className="w-full rounded-xl bg-white py-3 font-bold text-black disabled:opacity-50">{saving ? 'Saving…' : 'Continue to ACE'}</button>
+        <button type="button" disabled={saving || !englishSubject || subjects.length < 4 || additionalSelectedSubjects.length !== 3} onClick={save} className="w-full rounded-xl bg-white py-3 font-bold text-black disabled:opacity-50">{saving ? 'Saving…' : 'Continue to ACE'}</button>
       </section>
       <button type="button" onClick={() => supabase.auth.signOut()} className="mt-4 w-full py-3 text-sm text-white/40">Sign out</button>
     </div>
