@@ -322,3 +322,12 @@
 - Updated `.github/workflows/verify.yml` to run the new contract test and type-check the importer with Deno (`--no-check=remote`) in commit `3eefab18992c276794aac2323faa8f5672c6824b`. CI for this change is pending.
 - Live deployed function v7 still has raw `detail` response fields for permission/staging errors and accepts array payloads as object payloads. Repository source sanitizes those errors and rejects arrays. Do not claim deployed/source parity or deploy before the missing historical migration source is reconciled and the new CI passes.
 - **Next action:** verify the workflow run for the current main HEAD, then continue source recovery for the five production-only migration versions and onboarding migration readiness. No production writes/deployments.
+
+
+
+### Migration-source recovery and onboarding test review — 2026-10-19
+- GitHub file-history queries for three representative missing migration paths (20261006124552_add_catalog_manager_role_check.sql, 20261006125836_add_atomic_catalog_import_staging.sql, 20261006130820_add_ibass_institution_stage_lookup.sql) returned no commits. These five production-ledger migration source files cannot be recovered from those expected repository paths/history; do not fabricate their original historical contents.
+- Read-only production schema inspection confirmed catalog staging functions, constraints and indexes exist, including unique partial index ace.uq_catalog_import_batches_snapshot_hash. Keep this source-control drift open and avoid deployment until a safe forward reconciliation is designed and tested.
+- Existing disposable PostgreSQL test script tests/sql/utme_subject_choice.test.sql also applies 20261019120000_preparation_onboarding_without_catalogue.sql and checks prep-only save with empty goals, four active subjects, preference persistence, clearing unverified structured catalogue IDs, and unauthenticated rejection. Verify workflow runs this SQL script; the latest workflow rerun after importer test/Deno-check correction is still in progress at time of this note.
+- The onboarding RPC remains absent from production (to_regprocedure(...) previously returned null); no migration has been applied.
+- Next: confirm current Verify + E2E runs; if green, design a separate forward-only source reconciliation for missing catalog RPC/indexes using live definitions and disposable PostgreSQL tests, then review onboarding deployment safety. No production changes/deployments.
