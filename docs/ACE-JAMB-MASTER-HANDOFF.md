@@ -2082,3 +2082,26 @@ The authoritative direction is now `docs/CATALOGUE-REPLACEMENT-INVESTIGATION-202
 - Applied the migration to the connected Supabase project successfully. Before application, read-only checks showed one active ENG subject, 25 active subjects, and the preparation RPC absent. This confirms the RPC was not previously deployed and the required English record exists.
 - UI build/typecheck and browser E2E have not yet been run in this session. Confirm current GitHub Actions for the resulting commits; do not call the user journey end-to-end verified until runtime tests pass.
 - Next: run build/typecheck and Playwright onboarding coverage, then inspect CI and verify live RPC signature/grants after migration. Do not make production catalogue changes as part of this work.
+
+
+## Batch 2 scope reset — preparation-first release gate (2026-10-19)
+
+**Decision:** Batch 2 must no longer be held hostage by catalogue population. The catalogue replacement investigation is authoritative for the student journey: preparation onboarding, learning, practice and CBT must function without institution/programme/UTME-rule records. Catalogue/eligibility verification remains a separate deferred capability; never delete the schema or claim eligibility from unverified records.
+
+### Batch 2 completion criteria (revised)
+1. **Preparation foundation:** student can save profile/study goals and exactly four preparation subjects, with English auto-included plus three student-selected subjects. Server RPC validates authentication, active distinct subjects, English inclusion, profile ownership and study-time/score bounds.
+2. **No catalogue hard gate:** onboarding and the foundation gate do not require published institutions, programmes or UTME rules. Missing catalogue or unavailable JAMB service cannot block entry to the preparation product.
+3. **Season/syllabus integrity:** active season handling is explicit; syllabus/topic data is not fabricated; no unverified course-subject combination is shown as official. Any exam composition shown as official must be season-scoped and source-verified.
+4. **Security and regression:** authenticated-only RPC grants, RLS and authorization are verified; legacy catalogue RPCs remain intact until all call sites are audited. No destructive catalogue cleanup or publication of unverified rows.
+5. **User-flow QA:** CI typecheck/build and Playwright cover first-time onboarding with empty catalogue, English locked/preselected, exactly three additional subjects, persistence/reload, and the learning/CBT destination. Include error cases for missing ENG, inactive/duplicate subjects, RPC failure and auth failure.
+6. **Evidence and handoff:** record actual live schema/RPC/grants, workflow outcomes and browser results in both canonical handoff documents. Batch 2 may be marked complete only when all applicable criteria pass; otherwise keep it open with specific blockers.
+
+### Explicitly separated / not a Batch 2 release blocker
+- Bulk IBASS catalogue population, external endpoint contract reverse engineering, and publication of programme/UTME rules are no longer prerequisites for student preparation access. Keep this as a separate optional admissions-verification capability with its own evidence and safety gates.
+- Do not delete catalogue tables, migrations, RPCs, importer functions, or existing records just because onboarding is decoupled.
+
+### Current verified evidence at scope reset
+- UI change commit `a9d731604984a3de5c664023fada4fa4affc69e8`: English is preselected/locked and three other subjects are selected by the student.
+- Database migration source commit `28bf75b6d4f1699e46b625f85e710bd97fa27564`; live migration `preparation_onboarding_without_catalogue` applied successfully. Read-only SQL verified RPC arguments, authenticated execute=true, anon execute=false, and English enforcement=true.
+- GitHub `Verify` and `ACE JAMB E2E` workflow runs on HEAD `f758b231a9eec2488c1ed62511fde5a0b67d2666` both completed successfully. This is CI evidence only; inspect E2E coverage before treating each revised criterion as covered. A real authenticated student journey and empty-catalogue scenario are not yet manually verified in this record.
+- Next concrete action: inspect current Playwright specs and StudentFoundationGate/onboarding call sites, add the missing revised acceptance tests, run workflows, verify persisted student setup with a test account without exposing PII, and only then decide whether Batch 2 passes. Refresh HEAD before editing.
