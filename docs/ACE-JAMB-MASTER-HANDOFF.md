@@ -2128,3 +2128,13 @@ The authoritative direction is now `docs/CATALOGUE-REPLACEMENT-INVESTIGATION-202
 - New code inspection found a real first-time setup defect: StudentFoundationGate routes a missing profile to StudentOnboarding, but StudentOnboarding previously loaded profile and preferences with Promise.all and treated PGRST116 (no row yet) as a fatal load error. This prevented the intended first-time student setup from loading.
 - Fixed src/components/StudentOnboarding.tsx in commit b0a003f63bc5d6c7ff97e605b784ae4bb0c50e19. Missing profile/preferences rows now default to blank/default preparation values; other errors still surface rather than being swallowed. The active-subject query remains required.
 - Verification of this new fix is pending the workflows triggered by this commit. Authenticated Playwright coverage for the complete onboarding journey is still absent; do not mark Batch 2 complete until that gap is addressed.
+
+
+## Authenticated first-time onboarding regression coverage — 2026-10-19
+
+- Current main before docs update: `c25d7b95fa02aa839e37d463516bf903a443e6a8`; prior first-time onboarding fix is `b0a003f63bc5d6c7ff97e605b784ae4bb0c50e19`. Branch `main`.
+- Added a Playwright case to `tests/e2e/smoke.spec.ts` that seeds a synthetic authenticated student session and intercepts every Supabase request. It models no profile/preferences rows, an empty saved-subject list, and active subjects including ENG; it asserts onboarding renders without catalogue records, English is checked and disabled, three additional subjects are selectable, the count updates, Continue remains disabled before three choices and enabled after, and unselected subjects are disabled at the limit.
+- The browser test intercepts all requests to the configured Supabase project URL; it must not access or mutate production data. This is UI-contract coverage with mocked API responses, not a live authenticated-user persistence test.
+- CI results for the new test commit are pending at documentation time. Do not claim this regression test passed until the E2E workflow for the commit is complete. Previous Verify and E2E workflows both passed on `a9f0485990ef5c3d2448bb2bda8933f97129691e`; that E2E run used only the prior smoke specs.
+- Remaining gaps: save/reload persistence and Learning/CBT navigation are not yet covered by authenticated Playwright; security advisor warnings (SECURITY DEFINER review and leaked-password protection) remain open. Batch 2 remains OPEN. No user action required yet.
+- Next action: check CI for the Playwright regression commit; fix any test issue, then add mocked save/reload and Learning/CBT journey assertions before considering this acceptance criterion covered.
