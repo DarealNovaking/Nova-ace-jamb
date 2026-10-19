@@ -83,3 +83,12 @@ The adapter is intentionally separate from persistence: discovered data must sti
 3. Obtain an authenticated admin browser session to execute the existing 791-institution import and final authenticated E2E verification.
 4. Run typecheck/build/Playwright and record evidence.
 5. Record all resulting counts and evidence before closing Batch 2.
+
+
+---
+
+## Continuity correction — current Batch 2 scope (2026-10-19)
+
+This document preserves historical catalogue investigation notes; those notes are not the current product direction. **The project owner has since confirmed that ACE is no longer using the catalogue for the active student preparation/onboarding journey.** Do not resume institution/programme/UTME-rule import as a Batch 2 prerequisite, and do not infer course-specific official combinations. Institution/course goals remain optional and the onboarding flow must work with no catalogue rows. Existing catalogue ingestion code/tables are legacy/adjacent and must not be destructively removed without dependency review.
+
+The current active blocker is the student account initialization/onboarding journey, not catalogue population. Latest observed repository commit: `e912d5e5c0b7b0127ddddcf15c3fc6465c30e1be`. The first-time PGRST116 handling fix and mocked onboarding UI regression test are in main, but latest CI status has not yet been verified. The production message “Unable to prepare your ACE account. Please try again.” remains unroot-caused. Inspect the `is_admin` call, device registration, and profile/preferences/subject reads using implementation and sanitized logs. Add save/reload persistence and Learning/CBT navigation tests. Batch 2 remains OPEN until these are verified.
