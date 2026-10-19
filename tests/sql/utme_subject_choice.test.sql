@@ -249,6 +249,11 @@ $assert$;
 
 select 'UTME subject-choice migration tests passed' as result;
 
+-- Preparation onboarding must remain available when catalogue rows are absent.
+delete from ace.program_utme_rules;
+delete from ace.programs;
+delete from ace.institutions;
+
 -- Catalogue-independent preparation onboarding must work even with no programme/rule rows.
 \i supabase/migrations/20261019120000_preparation_onboarding_without_catalogue.sql
 
@@ -300,6 +305,66 @@ begin
   exception when others then
     get stacked diagnostics v_message = message_text;
     if v_message = 'expected_auth_rejection' or v_message not like '%Authentication required%' then raise; end if;
+  end;
+end
+$assert$;
+
+
+-- Missing English must be rejected by the server even when four other subjects are active.
+do $assert$
+declare v_message text;
+begin
+  begin
+    perform ace.save_student_preparation_foundation(
+      'Missing English', 200::smallint, '', '', 30,
+      array[
+        '00000000-0000-4000-8000-000000000001'::uuid,
+        '00000000-0000-4000-8000-000000000002'::uuid,
+        '00000000-0000-4000-8000-000000000004'::uuid,
+        '00000000-0000-4000-8000-000000000005'::uuid
+      ]
+    );
+    raise exception 'expected_english_rejection';
+  exception when others then
+    get stacked diagnostics v_message = message_text;
+    if v_message = 'expected_english_rejection' or v_message not like '%English must be included%' then raise; end if;
+  end;
+end
+$assert$;
+
+-- Duplicate IDs and inactive subjects must be rejected by the preparation RPC.
+do $assert$
+declare v_message text;
+begin
+  begin
+    perform ace.save_student_preparation_foundation(
+      'Duplicate', 200::smallint, '', '', 30,
+      array[
+        '00000000-0000-4000-8000-000000000001'::uuid,
+        '00000000-0000-4000-8000-000000000002'::uuid,
+        '00000000-0000-4000-8000-000000000003'::uuid,
+        '00000000-0000-4000-8000-000000000003'::uuid
+      ]
+    );
+    raise exception 'expected_duplicate_rejection';
+  exception when others then
+    get stacked diagnostics v_message = message_text;
+    if v_message = 'expected_duplicate_rejection' or v_message not like '%four distinct preparation subjects%' then raise; end if;
+  end;
+  begin
+    perform ace.save_student_preparation_foundation(
+      'Inactive', 200::smallint, '', '', 30,
+      array[
+        '00000000-0000-4000-8000-000000000001'::uuid,
+        '00000000-0000-4000-8000-000000000002'::uuid,
+        '00000000-0000-4000-8000-000000000003'::uuid,
+        '00000000-0000-4000-8000-000000000007'::uuid
+      ]
+    );
+    raise exception 'expected_inactive_rejection';
+  exception when others then
+    get stacked diagnostics v_message = message_text;
+    if v_message = 'expected_inactive_rejection' or v_message not like '%unavailable%' then raise; end if;
   end;
 end
 $assert$;
