@@ -68,7 +68,12 @@ export default function StudentFoundationGate() {
       )
     } catch (caught) {
       setNeedsOnboarding(false)
-      setError(caught instanceof Error ? caught.message : 'Unable to prepare your ACE account. Please try again.')
+      const detail = caught instanceof Error
+        ? caught.message
+        : typeof caught === 'object' && caught !== null && 'message' in caught && typeof caught.message === 'string'
+          ? caught.message
+          : 'Unable to prepare your ACE account. Please try again.'
+      setError(detail)
     } finally {
       setChecking(false)
     }
