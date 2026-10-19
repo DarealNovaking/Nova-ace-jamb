@@ -20,21 +20,30 @@ export default function StudentOnboarding({ onComplete }: { onComplete: () => vo
 
   useEffect(() => {
     let active = true
+    const optionalRecord = async <T,>(request: Promise<T>): Promise<T | null> => {
+      try {
+        return await request
+      } catch (error) {
+        // A first-time student may not have a profile/preferences row yet.
+        if ((error as { code?: string })?.code === 'PGRST116') return null
+        throw error
+      }
+    }
     Promise.all([
       ace.from('subjects').select('id,name,code').eq('active', true).order('sort_order'),
-      getStudentProfile(),
-      getStudentPreferences(),
+      optionalRecord(getStudentProfile()),
+      optionalRecord(getStudentPreferences()),
     ]).then(([subjectResult, profile, preferences]) => {
       if (!active) return
       if (subjectResult.error) throw subjectResult.error
       const activeSubjects = (subjectResult.data ?? []) as Subject[]
       setSubjects(activeSubjects)
       const english = activeSubjects.find((subject) => subject.code.toUpperCase() === 'ENG')
-      setName(profile.display_name ?? '')
-      setTarget(String(profile.target_score ?? 300))
-      setDailyMinutes(String(Math.max(1, preferences.daily_minutes ?? 60)))
-      setInstitutionGoal(profile.institution ?? '')
-      setCourseGoal(profile.course ?? '')
+      setName(profile?.display_name ?? '')
+      setTarget(String(profile?.target_score ?? 300))
+      setDailyMinutes(String(Math.max(1, preferences?.daily_minutes ?? 60)))
+      setInstitutionGoal(profile?.institution ?? '')
+      setCourseGoal(profile?.course ?? '')
       // Keep an existing valid subject selection if it is still in the active subject list.
       return getStudentSubjects().then((rows) => {
         if (active) {
