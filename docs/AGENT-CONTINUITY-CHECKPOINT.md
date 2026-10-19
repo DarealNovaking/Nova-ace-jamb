@@ -445,3 +445,15 @@
 
 ### Exact next action
 Fetch the latest Verify and ACE JAMB E2E workflow results, then inspect `src/lib/deviceService.ts`, the `is_admin`/preparation RPC definitions, and recent relevant Supabase logs. Establish the actual failure before editing application code. No user action is currently required.
+
+
+## Follow-up implementation — first-time profile save (2026-10-20)
+
+- Commit `6f738122d631bf50943640a7ddc6f1ef4250217b`: `StudentFoundationGate.tsx` now extracts `message` from Supabase/PostgREST error objects as well as native Error instances, reducing generic error masking.
+- Commit `622e35df07e2a18f02dc5f3f86df67dba782bf89`: added migration `supabase/migrations/20261020000100_first_time_preparation_profile.sql`.
+- Applied the migration to live Supabase project `uokiqlgmzprqfbzmedaz`. Read-only verification confirmed the live `ace.save_student_preparation_foundation` definition includes a profile insert and checks `auth.uid()`. This migration is non-destructive and only creates the row for the authenticated user's own UUID if absent.
+- Not verified: full CI/build; live authenticated save/reload; Learning/CBT navigation; exact source of the previously reported “Unable to prepare your ACE account” screen. The gate's improved error extraction should help identify the failing request on retest, but must not be represented as proof that the initialization error is fixed.
+- No production deployment was run from this action; the database function migration was applied directly through Supabase migration tooling.
+
+### Next action
+Re-run Verify/E2E CI for the latest main commits, then reproduce sign-in with the affected account and record the now-visible error safely. If onboarding opens, complete setup and confirm persisted profile, preferences, four subject rows, and Learning/CBT navigation. Batch 2 remains OPEN.
