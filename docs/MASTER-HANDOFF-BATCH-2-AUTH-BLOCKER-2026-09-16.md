@@ -99,3 +99,21 @@ The current active blocker is the student account initialization/onboarding jour
 A further code-level blocker was identified: `save_student_preparation_foundation` required a profile row to already exist, even though the first-time onboarding flow explicitly handles users without one. Added migration `20261020000100_first_time_preparation_profile.sql` to create the authenticated user's own profile row when missing before saving preferences and subjects. It was applied to Supabase project `uokiqlgmzprqfbzmedaz`; live function-definition verification confirms the deployed function includes the insert and `auth.uid()` check. This fixes the missing-profile save path, but does not by itself prove the reported account-initialization error is resolved.
 
 Also improved `StudentFoundationGate.tsx` to extract the message from PostgREST error objects rather than masking them with a generic fallback. Latest CI and real authenticated persistence/navigation remain unverified. Next: check CI, reproduce with the affected account, then verify save/reload and Learning/CBT navigation. Batch 2 remains OPEN.
+
+
+---
+
+## Final status — Batch 2 CLOSED (2026-10-20)
+
+The project owner has now confirmed that the student account journey works end to end in their own session:
+
+1. Student login succeeds.
+2. Preparation setup completes and saves.
+3. Saved information remains after refresh.
+4. Learning/CBT navigation works.
+
+On that direct user verification, **Batch 2 is CLOSED for the active preparation-first student journey**. The historical IBASS/catalogue discovery and import notes above are retained for audit history only; catalogue population is not a prerequisite for this product path.
+
+The agent has not independently observed the live browser session. CI/build status and automated authenticated persistence/navigation coverage remain unverified follow-up QA, not claimed as passed. The live save RPC migration and read-only function-definition verification are documented above. No frontend deployment was performed as part of this closure.
+
+**Next action:** continue with the next milestone in the canonical master handoff, while keeping CI/build and automated journey coverage in the QA queue. Reopen Batch 2 only if a reproducible regression is reported.
