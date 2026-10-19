@@ -46,6 +46,13 @@ begin
     raise exception 'One or more selected preparation subjects are unavailable.' using errcode = '22023';
   end if;
 
+  if not exists (
+    select 1 from ace.subjects s
+    where s.id = any(p_subject_ids) and s.code = 'ENG' and s.active = true
+  ) then
+    raise exception 'English must be included with your three additional preparation subjects.' using errcode = '22023';
+  end if;
+
   select * into v_existing from ace.profiles where id = v_user_id for update;
   if not found then
     raise exception 'Student profile not found.' using errcode = 'P0002';
