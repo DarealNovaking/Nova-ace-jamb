@@ -457,3 +457,13 @@ Fetch the latest Verify and ACE JAMB E2E workflow results, then inspect `src/lib
 
 ### Next action
 Re-run Verify/E2E CI for the latest main commits, then reproduce sign-in with the affected account and record the now-visible error safely. If onboarding opens, complete setup and confirm persisted profile, preferences, four subject rows, and Learning/CBT navigation. Batch 2 remains OPEN.
+
+
+## Batch 2 status update — CLOSED (2026-10-20)
+
+- Project owner confirms student login works, preparation profile can be completed and saved, data persists after refresh, and Learning/CBT navigation works.
+- **Batch 2 is CLOSED for the active preparation-first student journey**, based on this user-run verification. Catalogue population remains out of scope for this journey.
+- Live Supabase migration `20261020000100_first_time_preparation_profile.sql` is applied; read-only verification confirmed the deployed save RPC creates a missing profile and checks `auth.uid()`.
+- Verification distinction: the live user journey is reported as working by the project owner; the agent has not independently run a browser session. CI/build and automated authenticated persistence/navigation tests remain unverified and should be completed as follow-up QA. Do not misrepresent them as passing.
+- No frontend deployment was performed in this closure step.
+- **Exact next action:** resume the next milestone in the master handoff; schedule CI/build and strengthen automated authenticated journey coverage as QA follow-up. Reopen Batch 2 only if a reproducible regression appears.
