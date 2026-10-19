@@ -356,3 +356,11 @@
 - **Implementation:** `AdminFoundationGate` now imports and renders `AdminIbassStage` after existing review/import panels. Existing auth gate and component's session/admin checks remain in force. No production data was changed and no stage request/deployment was made.
 - **Verification status:** code path inspected; commit CI is pending. Runtime admin flow and live staging are unverified because no authenticated admin browser session is available through connected tools.
 - **Next concrete action:** check the implementation commit's CI results. If passing, perform a small controlled stage via the authenticated app, inspect staged programme/rule batches and unresolved items, and only then plan the review/approval path. Batch 3 remains locked.
+
+
+## Verification follow-up — 2026-10-19
+- GitHub Actions verified the admin-route change and its documentation commits: Verify run `39210980334` and E2E run `39210980315` both completed successfully on HEAD `90baf9e5e30f5a8ebaa78dde369096d4ec47430a`. Earlier code commit and docs commit workflows also passed.
+- Read-only Supabase counts: institutions 791; programs 0; program UTME rules 0; subjects 25; import batches 5; import rows 793. No production writes were made. Do not interpret these counts as a reason to reopen the settled catalogue decision.
+- Deployed `ibass-catalog-stage` is active v4 with JWT verification. It validates the user and catalog manager role, accepts 1–25 institution IDs, discovers IBASS programme/requirement data and stages through `catalog-import`; no approval/publication is invoked by this function.
+- **Blocked only at live authenticated execution:** no signed-in admin browser session is exposed by connected tools. UI reachability and CI are verified, but real staging and batch inspection are not.
+- Next: authenticated administrator visits `/admin`, selects exam season and small agreed institution subset, invokes staging once, and reports/inspects batch IDs and unresolved rows before any approval/publication. Batch 3 locked; 25-subject baseline fixed.
