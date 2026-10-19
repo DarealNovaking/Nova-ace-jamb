@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { ace, supabase } from '../lib/supabase'
 import { getCurrentUser } from '../lib/authService'
 import AdminCatalogueImport from './AdminCatalogueImport'
+import AdminIbassStage from './AdminIbassStage'
 import AdminReviewOnlyStage from './AdminReviewOnlyStage'
 
 export default function AdminFoundationGate() {
@@ -89,6 +90,7 @@ export default function AdminFoundationGate() {
 
         <AdminReviewOnlyStage />
         <AdminCatalogueImport />
+        <AdminIbassStage />
       </div>
     </main>
   )
