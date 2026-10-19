@@ -310,6 +310,8 @@ end
 $assert$;
 
 
+select set_config('request.jwt.claim.sub', 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', false);
+
 -- Missing English must be rejected by the server even when four other subjects are active.
 do $assert$
 declare v_message text;
