@@ -467,3 +467,15 @@ Re-run Verify/E2E CI for the latest main commits, then reproduce sign-in with th
 - Verification distinction: the live user journey is reported as working by the project owner; the agent has not independently run a browser session. CI/build and automated authenticated persistence/navigation tests remain unverified and should be completed as follow-up QA. Do not misrepresent them as passing.
 - No frontend deployment was performed in this closure step.
 - **Exact next action:** resume the next milestone in the master handoff; schedule CI/build and strengthen automated authenticated journey coverage as QA follow-up. Reopen Batch 2 only if a reproducible regression appears.
+
+
+## Active milestone — Batch 3 Academic Structure kickoff (2026-10-20)
+
+- Repo `DarealNovaking/Nova-ace-jamb`, branch `main`; observed HEAD before this checkpoint write: `20c0910ccc551e06468bdd5b339b985fc67be764`. Master handoff updated in commit `3b938ef8b6abd4b8e891229e6b5373314fd1646c` with the detailed audit.
+- Batch 2 remains closed for the student preparation journey. Batch 3 here means the next academic-structure milestone in the canonical roadmap, not catalogue ingestion as a prerequisite.
+- Source audit confirms the syllabus/season schema migration and existing tables for subjects, topics, subtopics, syllabus versions, exam seasons/configs, questions, and learning progress. RLS is enabled on the listed academic tables. Do not duplicate existing schema or seed guessed official JAMB data.
+- Supabase table-list tool returned approximate zero row counts for the core academic tables, but this conflicts with the owner's verified live onboarding journey and the tool did not establish exact SQL counts. Treat counts as unverified pending a supported read-only check.
+- Important architecture warning: `src/App.tsx` appears to use `@appdeploy/client`, while the preparation-first onboarding implementation is in Supabase-backed components/libs. Must trace `src/main.tsx`, HTML entrypoint, Vite config and routes before changing UI, to avoid implementing against a dormant prototype.
+- CI wrapper returned no workflow runs/statuses for current HEAD; latest typecheck/build/E2E are not verified. No application code, DB data, migration, or deployment changed during this audit.
+- **Exact next action:** trace active build/route entrypoint; obtain exact read-only counts for subjects/topics/subtopics/seasons/configs/syllabus versions/questions; inspect existing academic services/admin controls; implement the smallest verified gap with RLS and review/publish safeguards; run typecheck/build/Playwright and update both handoff files.
+- **Status: Batch 3 IN PROGRESS (audit only; implementation not yet started).**
