@@ -2340,3 +2340,12 @@ The authoritative direction is now `docs/CATALOGUE-REPLACEMENT-INVESTIGATION-202
 - No production data, migration, deployment, catalogue import, or content publication changed.
 - Remaining frontend limitation: Learn/Practice/Revision/Flashcards and analytics still need reviewed lesson/question content or real saved attempts before their substantive learning/assessment behavior can be completed. Do not invent official JAMB content or sample performance.
 - Exact next action: inspect the latest-main Verify and E2E outcomes, fix any typecheck/build/Playwright failure, and update both handoffs with the final run IDs. Then continue frontend work against existing verified data and services.
+
+
+## Frontend completion batch — 2026-10-21
+- User authorized batching all remaining frontend work into one coordinated workstream rather than splitting it into repeated small frontend tasks.
+- Added `docs/FRONTEND-COMPLETION-BATCH-2026-10-21.md` (commit `0a1cc22685d443ade2c9aec8165cd70b365008a4`) defining scope, acceptance criteria, verification gates, and the exact next action. This is a work definition, not a claim that frontend implementation is complete.
+- Verified current app entry in `src/main.tsx`: `/admin-academic` routes to `AcademicFoundationGate`; `/admin` and `/admin-import` route to `AdminFoundationGate`; CBT query state routes to `ProtectedCBT`; default route routes to `StudentFoundationGate`.
+- Confirmed existing components include `StudentAuth`, `StudentOnboarding`, `StudentDashboard`, `StudentStudyPlan`, `StudentStudyWorkspace`, `ProtectedCBT`, and `PersistentCBT`. Package scripts include `typecheck`, `build`, and `e2e`.
+- No application source was changed in this task. No typecheck/build/Playwright run, live Supabase query, or deployment was performed. Do not represent these as passed.
+- Next action: inspect the full source of the existing student journey, study workspace/plan, CBT components, service modules and tests; implement evidence-backed gaps, then run typecheck/build and Playwright and update this handoff/checkpoint with actual results.
