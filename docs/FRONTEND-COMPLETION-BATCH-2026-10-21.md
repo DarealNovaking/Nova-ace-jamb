@@ -206,3 +206,11 @@ Poll Verify and ACE JAMB E2E for the latest source/test commits, fix any failing
 
 ### Current exact next action
 Check Verify and ACE JAMB E2E on the latest main commit after `cba0c14` and this documentation update. Fix any remaining typecheck or Playwright failure before advancing Phase 1. Then continue batch 1 auth/onboarding E2E, batch 3 published-syllabus fixtures, and batch 5 CBT expiry/submit/recovery acceptance. Phase 1 is still in progress.
+
+
+## Phase 1 continuation — onboarding save regression (2026-10-21)
+- Added a Playwright E2E case in `tests/e2e/smoke.spec.ts` that intercepts all Supabase traffic and verifies the onboarding save RPC receives the display name, target score, optional admission goals, daily study time, and exactly four distinct subject IDs: compulsory English plus the three selected subjects.
+- The test uses mocked responses only; it performs no production database writes.
+- Commit: `b8881491720d74832f7a18401b905b7967368567`.
+- Verification at commit time: GitHub Verify workflow for the previous checkpoint SHA `a8c44efc5b5438d8b69c06fad8ca3f2f5b00911d` passed typecheck/build; the Playwright workflow was still running. The new test's CI result is pending and must be checked before calling it passed.
+- Next: inspect the new CI runs, fix any test failure, then add targeted regression coverage for CBT expiry and completed-attempt recovery. Live question content remains absent in the last verified audit; do not fabricate it.
