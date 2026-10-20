@@ -64,6 +64,7 @@ export default function StudentFoundationGate() {
         profile = await getStudentProfile()
         if (sequence !== refreshSequence.current) return
       } catch (profileError) {
+        if (sequence !== refreshSequence.current) return
         const code = (profileError as { code?: string })?.code
         if (code === 'PGRST116') {
           setNeedsOnboarding(true)
