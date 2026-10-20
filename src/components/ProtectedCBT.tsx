@@ -25,7 +25,7 @@ export default function ProtectedCBT() {
     setBusy(true)
     try {
       const data = await signInWithPassword(email, password)
-      setStorageKey(data.user ? `ace-cbt-active-attempt:${data.user.id}` : null)
+      setStorageKey(data.user ? `ace-${mode}-active-attempt:${data.user.id}` : null)
       setSignedIn(Boolean(data.user))
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Could not sign in. Check your email and password.')
