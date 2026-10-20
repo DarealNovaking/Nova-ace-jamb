@@ -95,3 +95,23 @@ The Channel Gate belongs **after onboarding and before the main dashboard in the
 
 Next: inspect the complete current service/migration/test contracts and latest CI for community gate, notifications, payments, referrals, AI, audio, feature flags and admin operations; produce an evidence-backed status matrix; then implement the smallest high-impact gaps in the order above. Do not assume Supabase is blocked, invent content or group mappings, or mark mocked/provider-dependent behavior as live verification.
 
+
+
+## Evidence-backed live contract audit — 2026-10-21
+
+### Supabase connection and live schema
+- Connected Supabase project `nova-ace-jamb` (`uokiqlgmzprqfbzmedaz`) was queried read-only. Project status reported `ACTIVE_HEALTHY`; Supabase is accessible and not blocked.
+- Live `ace` schema includes tables for notifications and notification preferences; products, payments, payment events, payment providers and entitlements; referral codes/referrals/campaigns/rewards; AI providers/requests/usage; knowledge sources/chunks; flashcards/reviews; learning progress; study plans/items; devices; feature flags; audit events and product events.
+- Read-only counts at audit time: subjects 25; topics 0; subtopics 0; questions 0; flashcards 0; learning_progress 0; attempts 0; study_plans 0; notifications 0; notification_preferences 4; products 1; payments 0; entitlements 0; referral_codes 4; referrals 0; referral_campaigns 0; referral_rewards 0; knowledge_sources 0; knowledge_chunks 0; ai_providers 2; ai_requests 0; devices 7. Counts can change and are not a substitute for provider/feature verification.
+- Live Edge Functions listed: `catalog-import` and `ibass-catalog-stage` only. No dedicated channel-membership verification, payment webhook, referral qualification, AI request, or notification delivery Edge Function appeared in that list.
+- No dedicated community/channel/group mapping or channel-membership table appeared in the inspected live `ace` table inventory. Therefore institution-group routing and independently verified WhatsApp membership do not currently have an evidenced live schema/service contract. Do not fabricate one in the frontend.
+
+### Frontend source status
+- Current `src/lib` modules are auth, CBT, data adapter, device, season/syllabus, student and Supabase. There are no dedicated frontend service modules for channel verification, notifications, payments/entitlements, referrals, AI/knowledge or audio in the current source tree.
+- Current UI routes remain student default, CBT query mode, `/admin`/`/admin-import`, and `/admin-academic`. The current frontend does not yet expose the full product domains listed above.
+- Source/DB evidence confirms the next implementation cannot safely pretend that a database table alone means a feature is operational. For notifications, payments, referrals and AI, inspect RLS/RPC/provider configuration and define/reuse secure service boundaries before wiring UI. For channel verification, the platform capability/verification decision remains a specific blocker to mandatory enforcement; a CTA/gate design can be built without falsely claiming verification.
+
+### CI state at audit time
+- Verify and ACE JAMB E2E both passed on previous docs-only baseline commit `bce60df163ee855ada622276d45488a53bc4ea6f` (runs `39514640639` and `39514640651`).
+- Runs for the newer scope/handoff commits were still in progress when queried: Verify `39515107606` on `ce737e1c2876cac9a18c0e8e1d74a5bd39ea1fa6`; ACE JAMB E2E `39515107387` on the same SHA. Recheck the newest `main` runs before relying on CI status.
+- No app source was changed and no build or Playwright command was run directly in this audit. Live Supabase checks were read-only.
