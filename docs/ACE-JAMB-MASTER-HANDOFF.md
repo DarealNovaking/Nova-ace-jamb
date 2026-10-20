@@ -2407,3 +2407,44 @@ The first Phase 1 implementation slice is committed; Phase 1 is **in progress**,
 
 ### CI feedback and correction — 2026-10-21
 GitHub Actions exposed a TypeScript parse error at `src/components/StudentDashboard.tsx(128,200)` (`TS1005: '}' expected`) in the workspace navigation click handler. The missing JSX expression brace was fixed in `23735a150ba0d142f29ec0919df69c33236a4f2f`. This is a correction commit, not yet a verified pass; inspect the latest Verify and ACE JAMB E2E runs for this commit before proceeding or claiming tests pass.
+
+
+## Canonical frontend execution batches (16-batch plan)
+
+This is the single frontend batch plan for the project. The detailed scope and acceptance checklist live in [docs/FRONTEND-COMPLETION-BATCH-2026-10-21.md](FRONTEND-COMPLETION-BATCH-2026-10-21.md). These are execution groups, not claims of completion. Existing working features must be hardened rather than rebuilt; no batch is complete until its acceptance checks pass.
+
+| Phase | Batch | Scope and acceptance target |
+|---|---:|---|
+| 1 — Core student experience | 1 | Authentication, sessions, account recovery, onboarding/profile, English auto-included + exactly three other subjects, route protection. |
+| 1 — Core student experience | 2 | Dashboard, student navigation, account entry points, responsive states, URL/history restoration, recoverable errors. |
+| 1 — Core student experience | 3 | Published syllabus tree, subjects/topics/subtopics, lesson view and honest unpublished-content states. |
+| 1 — Core student experience | 4 | Practice, reviewed question data, answer/explanation flow, mistakes review and saved progress; never invent official questions. |
+| 1 — Core student experience | 5 | CBT/mock setup, timer, navigation, answer persistence/recovery, submission and server-authoritative scoring/results. |
+| 2 — Learning & intelligence | 6 | Quick revision and verified flashcard decks/reviews. |
+| 2 — Learning & intelligence | 7 | Study-plan creation/schedule, saved learning stats and readiness derived from real activity. |
+| 2 — Learning & intelligence | 8 | Audio lessons, accessible playback controls, progress persistence and unavailable/error states. |
+| 2 — Learning & intelligence | 9 | Grounded AI tutor with provenance, usage limits and server-side provider boundary. |
+| 3 — Community & student services | 10 | Community/channel entry and gate, real membership-status contract, institution-group mapping, return flow and anti-bypass tests. Mandatory verification stays off until provider/server verification and approved mappings exist. |
+| 3 — Community & student services | 11 | Student notification inbox, read state/preferences, announcements and push only if delivery infrastructure exists. |
+| 3 — Community & student services | 12 | ACE Pass purchase/status, payment provider verification, entitlements and referrals/rewards backed by server-side qualification. |
+| 4 — Admin & production readiness | 13 | Admin command center for students, content, questions, audio, flashcards, notifications, payments, referrals, AI knowledge, moderation, analytics and audit. |
+| 4 — Admin & production readiness | 14 | Academic administration, syllabus/content publication review, permissions and review-only safeguards. |
+| 4 — Admin & production readiness | 15 | Shared design system, mobile responsiveness, accessibility, PWA/offline and safe caching. |
+| 4 — Admin & production readiness | 16 | Full route/role regression, Playwright, typecheck/build, integration/security checks, performance and release readiness. |
+
+**Execution order:** finish Phase 1 batches 1–5 first; do not skip ahead to disconnected features. Within each batch: inspect current implementation → smallest safe implementation/hardening → test → update this plan and both canonical handoffs. Independent tasks may run in parallel only when they do not conflict on source files or acceptance dependencies.
+
+
+## Phase 1 execution status — 2026-10-21
+
+| Batch | Current evidence-based state | Next acceptance work |
+|---:|---|---|
+| 1 — Authentication & onboarding | Hardened: missing first-use preferences now routes to onboarding; auth refresh sequence guards and initial-session handling added; onboarding errors sanitized. | Verify sign-up/sign-in/password recovery/session races and subject choice through Playwright. |
+| 2 — Dashboard & navigation | Workspace state uses `?view=`; reload/back/forward E2E assertions added; CBT URL expectation tightened. | Await current GitHub Verify/E2E runs; test dashboard retry and relevant query-parameter combinations. |
+| 3 — Syllabus workspace | Approved topic/subtopic records are passed to the workspace; empty/unpublished states remain honest. | Test with approved/published syllabus fixtures and empty/rights-filtered records. |
+| 4 — Practice & questions | UI currently provides a clear placeholder; last live database audit found zero questions. No fake question bank added. | Inspect current question schema/RPC contracts and verified data. Implement only when question records and server contracts permit. |
+| 5 — CBT & mock exams | Existing RPC-backed CBT has resume/load/save/submit/timer flow; added active-attempt guards, duplicate-submit guard and sanitized errors. | Verify RPC contracts, expiry/retry/recovery/answer persistence and score output through tests. |
+
+Recent implementation commits: `23735a150ba0d142f29ec0919df69c33236a4f2f` (JSX correction after CI exposed syntax failure), `77c907b1fb548df3f0ca87204f1272137d41f85e` (workspace reload/history E2E coverage), `f886ad493d617e460fc1a34f92b5cd28edf81160` (CBT duplicate submission/error hardening), `3fd59568f9d5e965b78bc90d698afdaee1c6fc9d` (onboarding error hardening).
+
+CI for commit `23735a1` and subsequent docs-only commit `13865f1` passed both Verify and ACE JAMB E2E. New runs for the added workspace test and CBT/onboarding changes are queued/in progress at time of this update; do not treat those latest changes as verified until their runs finish. No deployment or database writes were made.
