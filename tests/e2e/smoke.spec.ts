@@ -179,3 +179,37 @@ test.describe('ACE JAMB academic editor access', () => {
     await expect(page.getByText('Create a draft syllabus version')).toHaveCount(0)
   })
 })
+
+
+test.describe('ACE JAMB preparation workspaces', () => {
+  test('student tools navigate and show honest empty states without inventing content', async ({ page }) => {
+    await mockPreparedStudent(page)
+    await page.goto('/')
+
+    await page.getByRole('button', { name: /Learn Approved syllabus topics/ }).click()
+    await expect(page.getByRole('heading', { name: 'Learn', exact: true })).toBeVisible()
+    await expect(page.getByText('No approved topics available yet')).toBeVisible()
+
+    await page.getByRole('button', { name: 'Practice', exact: true }).click()
+    await expect(page.getByRole('heading', { name: 'Practice', exact: true })).toBeVisible()
+    await expect(page.getByText('Practice sessions require reviewed questions with verified answers.')).toBeVisible()
+
+    await page.getByRole('button', { name: 'Quick revision', exact: true }).click()
+    await expect(page.getByRole('heading', { name: 'Quick revision', exact: true })).toBeVisible()
+    await expect(page.getByText('Revision materials are not published yet')).toBeVisible()
+
+    await page.getByRole('button', { name: 'Flashcards', exact: true }).click()
+    await expect(page.getByText('No verified flashcard deck yet')).toBeVisible()
+
+    await page.getByRole('button', { name: 'Progress', exact: true }).click()
+    await expect(page.getByText('Verified performance')).toBeVisible()
+    await expect(page.getByText('Not available yet')).toBeVisible()
+
+    await page.getByRole('button', { name: 'Study plan', exact: true }).click()
+    await expect(page.getByRole('heading', { name: 'Study plan', exact: true })).toBeVisible()
+    await expect(page.getByText('Learn one approved topic')).toBeVisible()
+
+    await page.getByRole('button', { name: 'Dashboard', exact: true }).click()
+    await expect(page.getByRole('heading', { name: 'Welcome back, Test Futarian.' })).toBeVisible()
+  })
+})
