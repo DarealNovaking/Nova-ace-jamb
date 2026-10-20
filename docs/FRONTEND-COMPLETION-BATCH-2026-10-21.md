@@ -1,7 +1,7 @@
-# Frontend Completion Batch — 2026-10-21
+# Full Product Frontend Completion Batch — 2026-10-21
 
 ## Objective
-Complete the existing student-facing frontend as one coordinated milestone, reusing current React/Supabase architecture and preserving the resolved admin/student route behaviour. This document defines scope and acceptance gates; it does not claim the listed work is already implemented or tested.
+Complete the frontend for the whole ÑØVÃ ACE JAMB product defined by the master handoff and final architecture—not only student preparation screens. This document defines scope and acceptance gates; it does not claim the listed work is already implemented or tested.
 
 ## Verified repository starting point
 - Branch: main. Repository tree was retrieved from GitHub during this task; tree SHA: f14af8ea403854e264fb532cd5734f8723c7df9d.
@@ -61,8 +61,37 @@ Complete the existing student-facing frontend as one coordinated milestone, reus
 4. No production schema/data mutation or deployment as part of frontend work without separate review/authorization.
 5. After meaningful changes, update this batch record, docs/ACE-JAMB-MASTER-HANDOFF.md and docs/AGENT-CONTINUITY-CHECKPOINT.md.
 
-## Current status
-**BATCH DEFINED — IMPLEMENTATION NOT YET VERIFIED.** Repository inventory confirms existing component entry points, but a full component-by-component audit, code changes and automated test runs remain outstanding.
+## Scope correction — whole-product frontend and channel integration (2026-10-21)
 
-## Exact next action
-Fetch and inspect the full source of StudentDashboard.tsx, StudentStudyWorkspace.tsx, StudentStudyPlan.tsx, StudentOnboarding.tsx, StudentFoundationGate.tsx, StudentAuth.tsx, PersistentCBT.tsx, ProtectedCBT.tsx, related service modules and existing tests. Then implement the highest-impact gaps found by source evidence, starting with the core student journey.
+The earlier workstream list was too narrow. The canonical product vision in `docs/ACE-JAMB-MASTER-HANDOFF.md` and `docs/FINAL-ARCHITECTURE.md` also requires the following frontend surfaces; these are now part of this same coordinated batch:
+
+- **Community/channel gate:** intended student flow is sign-up/sign-in → preparation onboarding/profile save → Community/Channel Gate → main dashboard. Show the configured official Ñøvã WhatsApp Channel CTA. Route students to institution-specific groups only through explicit, reviewed mappings; if institution is optional/unmapped, use a documented general-community fallback or optional institution choice. Never invent destination URLs.
+- **Verification rule:** master handoff section 23 says WhatsApp membership verification is currently UNDECIDED. A client-side “I joined” button, URL click, local storage flag or route is not verification. Audit supported platform/server capabilities and existing contracts before enforcing a mandatory gate. The UI may show honest pending/unsupported states, but do not claim a gate is secure/unbypassable without server-verifiable membership. No automatic WhatsApp posting or channel management is in scope.
+- **Notifications and announcements:** in-app inbox/read state, admin announcements, targeted/scheduled notifications, user preferences, important system notices and push opt-in/device state only where the current service/provider exists. FCM was the prior direction but requires an integration audit.
+- **ACE Pass and referrals:** checkout/payment status, transaction history, server-verified seasonal entitlement, referral code and qualified-referral progress. Master handoff currently records ₦899 seasonal ACE Pass and five qualified real-user referrals; never trust client-side success claims.
+- **Grounded AI and knowledge UI:** tutor, explanation, diagnosis, revision and source/provenance surfaces only where the grounded AI/provider/quota/retrieval service is real; show quota/provider failure and fallback states; never present generated material as official JAMB content.
+- **Audio learning:** player, playback state, transcript/accessibility alternatives and low-bandwidth/offline/error handling when authorized audio content/service exists.
+- **Admin command center:** expand beyond the existing catalogue import/review surfaces toward student/account operations, content/question review, provenance/rights/takedown, flashcards/audio, payments/entitlements, referral activity, notifications, AI knowledge sources, moderation, analytics and security/audit visibility. Respect admin/editor least privilege and keep review-only staging separate from approval/publication.
+- **Account/settings and PWA:** profile/preferences, notification settings, session controls, install/offline shell and safe cache behavior; never let caching corrupt live CBT state.
+- **Whole-product UX/QA:** consistent royal-purple/metallic-gold/white/black design, mobile/low-end Android and low-bandwidth behavior, accessibility, empty/loading/error/retry/success states, typecheck, production build, Playwright and integration regression tests.
+
+### Where channel integration belongs
+The Channel Gate belongs **after onboarding and before the main dashboard in the intended student journey**. In the canonical implementation sequence, community/channel integration remains Batch 13 (Notifications + Community), after ACE Pass and Referral Growth dependencies. UI placement and implementation sequencing are different: document and design the flow now, but mandatory enforcement must wait until a genuine server-side verification contract is available. Core preparation must not be blocked by pretending a client click proves membership.
+
+### Updated integrated work order
+1. Audit all current routes/components/services/migrations/tests and latest CI; classify complete/verified, implemented-unverified, partial, missing, or contract-dependent.
+2. Preserve and verify identity, onboarding, profile, dashboard and route/auth behavior.
+3. Complete learning, question practice, mistake/adaptive flows and CBT against verified content/service contracts.
+4. Complete revision, flashcards, audio, study plans, analytics and recommendations.
+5. Add grounded AI UI only where the provider/retrieval contracts are ready.
+6. Implement the Channel Gate and institution/group routing with the verification caveat above.
+7. Implement notifications/preferences/announcements/push where supported.
+8. Implement ACE Pass/payment/referral surfaces against server-authoritative contracts.
+9. Expand admin/academic operations surfaces with least-privilege controls.
+10. Finish PWA, mobile, accessibility, performance and whole-product Playwright regression.
+
+### Current status and next action
+**SCOPE EXPANDED; WHOLE-PRODUCT IMPLEMENTATION/VERIFICATION IS NOT COMPLETE.** Existing student screens visibly contain placeholder states for lesson delivery, question practice, flashcards and verified performance. The current source inventory does not show dedicated UI routes/components for channel verification, notifications, payments/referrals, grounded AI, audio or the full admin command center. This is an initial source-tree observation, not proof that no backend contracts exist.
+
+Next: inspect the complete current service/migration/test contracts and latest CI for community gate, notifications, payments, referrals, AI, audio, feature flags and admin operations; produce an evidence-backed status matrix; then implement the smallest high-impact gaps in the order above. Do not assume Supabase is blocked, invent content or group mappings, or mark mocked/provider-dependent behavior as live verification.
+
