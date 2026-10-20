@@ -158,6 +158,60 @@ test.describe('ACE JAMB prepared student dashboard', () => {
   })
 })
 
+test.describe('ACE JAMB persistent CBT', () => {
+  test('saves an answer and renders the server-submitted result', async ({ page }) => {
+    await mockPreparedStudent(page)
+    const questionId = '30000000-0000-4000-8000-000000000001'
+    const attemptId = '40000000-0000-4000-8000-000000000001'
+    const startedAt = new Date().toISOString()
+
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/start_attempt'), async (route) => {
+      await route.fulfill({ json: {
+        attempt_id: attemptId, status: 'active', started_at: startedAt,
+        duration_seconds: 1800, random_seed: 1, question_order: [questionId],
+        option_order: { [questionId]: ['B', 'A'] }, question_count: 1,
+      } })
+    })
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/resume_attempt'), async (route) => {
+      await route.fulfill({ json: {
+        attempt_id: attemptId, status: 'active', mode: 'cbt', subject_id: null,
+        started_at: startedAt, completed_at: null, duration_seconds: 1800,
+        remaining_seconds: 1800, random_seed: 1, question_order: [questionId],
+        option_order: { [questionId]: ['B', 'A'] }, answers: [], score: null,
+        correct_count: 0, answered_count: 0,
+      } })
+    })
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/questions'), async (route) => {
+      await route.fulfill({ json: [{
+        id: questionId, question_text: 'Which option is correct?',
+        options: [{ key: 'A', text: 'First answer' }, { key: 'B', text: 'Second answer' }],
+        subject_id: null, topic_id: null, difficulty: 'easy',
+      }] })
+    })
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/save_attempt_answer'), async (route) => {
+      await route.fulfill({ json: {
+        attempt_id: attemptId, question_id: questionId, selected_option_key: 'A',
+        is_correct: true, answered_at: new Date().toISOString(), answered_count: 1,
+      } })
+    })
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/submit_attempt'), async (route) => {
+      await route.fulfill({ json: {
+        attempt_id: attemptId, status: 'completed', score: 100, correct_count: 1,
+        answered_count: 1, total_questions: 1, completed_at: new Date().toISOString(),
+      } })
+    })
+
+    await page.goto('/')
+    await expect(page.getByRole('heading', { name: 'Welcome back, Test Futarian.' })).toBeVisible()
+    await page.getByRole('button', { name: /CBT Practice/ }).click()
+    await expect(page.getByRole('heading', { name: 'JAMB simulation' })).toBeVisible()
+    await page.getByRole('button', { name: 'A. First answer' }).click()
+    await page.getByRole('button', { name: 'Submit CBT' }).click()
+    await expect(page.getByText('100%', { exact: true })).toBeVisible()
+    await expect(page.getByText('1/1 correct')).toBeVisible()
+  })
+})
+
 test.describe('ACE JAMB academic editor access', () => {
   test('authorized content editor reaches the separate academic workspace', async ({ page }) => {
     await mockFirstTimeStudent(page)
