@@ -629,3 +629,12 @@ Re-run Verify/E2E CI for the latest main commits, then reproduce sign-in with th
 2. If any run fails, inspect job steps/logs and fix the smallest cause; rerun CI.
 3. Update both handoff documents with the final run IDs/results.
 4. Once green, continue frontend work dependent on actual lesson/question/attempt data only when those verified records exist; do not invent official JAMB material.
+
+
+### Frontend E2E follow-up — strict locator fixed (2026-10-20)
+
+- E2E `39512296132` failed on commit `c18baf86e1482076aabea9cbb15f281fa348dc1c`; TypeScript and build passed, 12 browser tests passed, and the workspace test failed on a duplicate heading match.
+- The log showed Quick Revision had both a page `h1` and section `h2` with the same accessible name. Fixed Quick Revision and Study Plan test locators to require `level: 1`.
+- Fix commit: `f096ffdbe3079fb933794a5ce158dc03135b9141`.
+- Reruns for the fix and latest admin/frontend commits are pending. The frontend batch remains **not fully verified** until latest-main Verify and E2E pass.
+- Exact next action: poll latest runs for commit `f096ffdbe3079fb933794a5ce158dc03135b9141` and the subsequent handoff commits; fix any further failure and then record final CI results in both docs.
