@@ -20,13 +20,17 @@ $roles$;
 
 create function ace.is_admin_or_editor()
 returns boolean language sql stable
-as $$ select coalesce(current_setting('test.is_editor', true), 'false') = 'true' $$;
+as $ select coalesce(current_setting('test.is_editor', true), 'false') = 'true' $;
 
 create table ace.syllabus_versions (
   id uuid primary key,
   status text not null,
   rights_status text not null
 );
+create or replace function ace.is_syllabus_version_public(p_syllabus_version_id uuid)
+returns boolean language sql stable security definer set search_path = pg_catalog, ace
+as $ select exists (select 1 from ace.syllabus_versions sv where sv.id = p_syllabus_version_id and sv.status = 'active' and sv.rights_status = 'approved') $;
+
 create table ace.topics (
   id uuid primary key,
   syllabus_version_id uuid references ace.syllabus_versions(id),
@@ -49,6 +53,7 @@ alter table ace.subtopics enable row level security;
 grant usage on schema ace to anon, authenticated;
 grant select on ace.syllabus_versions, ace.topics, ace.subtopics to anon, authenticated;
 grant execute on function ace.is_admin_or_editor() to anon, authenticated;
+grant execute on function ace.is_syllabus_version_public(uuid) to anon, authenticated;
 
 insert into ace.syllabus_versions(id,status,rights_status) values
  ('10000000-0000-4000-8000-000000000001','active','approved'),
