@@ -222,6 +222,36 @@ test.describe('ACE JAMB persistent CBT', () => {
     expect(startCalls).toBe(1)
   })
 
+  test('restores a completed attempt result without requiring question content', async ({ page }) => {
+    await mockPreparedStudent(page)
+    const attemptId = '40000000-0000-4000-8000-000000000003'
+    let questionFetches = 0
+    await page.addInitScript(({ id }) => {
+      localStorage.setItem(`ace-cbt-active-attempt:aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa`, id)
+    }, { id: attemptId })
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/resume_attempt'), async (route) => {
+      await route.fulfill({ json: {
+        attempt_id: attemptId, status: 'completed', mode: 'cbt', subject_id: null,
+        started_at: '2026-10-20T10:00:00.000Z', completed_at: '2026-10-20T10:20:00.000Z',
+        duration_seconds: 1200, remaining_seconds: 0, random_seed: 3,
+        question_order: ['30000000-0000-4000-8000-000000000003'],
+        option_order: {}, answers: [], score: 80, correct_count: 4, answered_count: 5,
+      } })
+    })
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/questions'), async (route) => {
+      questionFetches += 1
+      await route.fulfill({ json: [] })
+    })
+
+    await page.goto('/?cbt=1')
+    await expect(page.getByRole('heading', { name: 'Welcome back, Test Futarian.' })).toBeVisible()
+    await page.getByRole('button', { name: /CBT Practice/ }).click()
+    await expect(page.getByRole('heading', { name: 'JAMB simulation' })).toBeVisible()
+    await expect(page.getByText('80%', { exact: true })).toBeVisible()
+    await expect(page.getByText('4/1 correct')).toHaveCount(0)
+    expect(questionFetches).toBe(0)
+  })
+
   test('saves an answer and renders the server-submitted result', async ({ page }) => {
     await mockPreparedStudent(page)
     const questionId = '30000000-0000-4000-8000-000000000001'
