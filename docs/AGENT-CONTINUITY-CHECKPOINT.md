@@ -693,3 +693,13 @@ Re-run Verify/E2E CI for the latest main commits, then reproduce sign-in with th
 - AI providers and knowledge sources/chunks are admin-only; AI requests are self-readable and AI usage is self/admin-readable. No dedicated AI request Edge Function was listed, and no student INSERT policy for AI requests appeared. Do not call provider secrets from the browser or build a fake tutor; establish a server-side request boundary first.
 - Feature flags are readable by authenticated users and writable only by admins. Audit events are readable to actor/admin and inserts are constrained to self/null actor. Admin UI must respect these RLS boundaries.
 - These findings are schema/policy observations only; no row was changed. See live schema/counts above. No channel verification/group mapping contract was found.
+
+
+## Current continuation checkpoint — Phase 1 frontend (2026-10-21)
+
+- **Current objective:** execute Phase 1 batches 1–5 (authentication/onboarding, dashboard/navigation, syllabus workspace, practice/questions, CBT).
+- **Source changes committed:** `src/components/StudentFoundationGate.tsx` handles a missing first-use preferences row as onboarding and suppresses raw database/provider error details; `src/components/StudentDashboard.tsx` persists workspace state in `?view=`, restores on reload, and syncs back/forward; `src/main.tsx` no longer intercepts clicks by matching visible button text and preserves URL parameters when leaving CBT.
+- **Commits:** `79d99942491507b0e8e7fc3d1a8f9d4862f7f9ea`, `66b0f606ec33f1061ae97f34c937a5b531c0e3ea`, `4e522f91ee686635dc725149bbac038ff02c9020`.
+- **Tests:** not run in this slice. The combined-status API returned an empty status list, which is not evidence of passing CI. No typecheck, build, Playwright, authenticated browser run, database write, or deployment has been verified.
+- **Important known state:** learning/practice/flashcard/progress screens currently contain explicit honest empty/placeholder states; live audit previously found no topic/question/flashcard/learning-progress rows. Do not fabricate content to make these screens look populated. CBT uses server RPCs in `src/lib/cbtService.ts`; keep attempts, timing and scoring server-authoritative.
+- **Exact next action:** inspect current auth E2E test inventory and auth/session lifecycle; fix first-use/profile/preferences race and onboarding recovery, add/adjust Playwright coverage for auth/onboarding and dashboard URL history, then run typecheck/build/E2E. Continue with syllabus and CBT checks after these tests. Update this checkpoint and the master handoff after each meaningful slice.
