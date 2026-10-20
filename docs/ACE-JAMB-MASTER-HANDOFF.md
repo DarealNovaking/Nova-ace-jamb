@@ -2383,3 +2383,15 @@ The authoritative direction is now `docs/CATALOGUE-REPLACEMENT-INVESTIGATION-202
 - AI providers and knowledge sources/chunks are admin-only; AI requests are self-readable and AI usage is self/admin-readable. No dedicated AI request Edge Function was listed, and no student INSERT policy for AI requests appeared. Do not call provider secrets from the browser or build a fake tutor; establish a server-side request boundary first.
 - Feature flags are readable by authenticated users and writable only by admins. Audit events are readable to actor/admin and inserts are constrained to self/null actor. Admin UI must respect these RLS boundaries.
 - These findings are schema/policy observations only; no row was changed. See live schema/counts above. No channel verification/group mapping contract was found.
+
+
+## Phase 1 frontend execution update — 2026-10-21
+
+The first Phase 1 implementation slice is committed; Phase 1 is **in progress**, not complete.
+
+- Student foundation gate now treats a missing first-use preferences row (`PGRST116`) as an onboarding condition, while non-missing-row failures still show a recoverable error. Student UI no longer prints raw database/provider exception text.
+- Student workspace navigation now persists valid workspace selection in the `view` query parameter, restores it after reload, and synchronizes with browser history. CBT navigation removes only its own query parameter.
+- Removed document-wide button-label interception from `src/main.tsx`; CBT back navigation preserves unrelated query state.
+- Source commits: `79d99942491507b0e8e7fc3d1a8f9d4862f7f9ea`, `66b0f606ec33f1061ae97f34c937a5b531c0e3ea`, `4e522f91ee686635dc725149bbac038ff02c9020`.
+- Verification status: source was read before modification. GitHub combined status returned no status entries; that is not a CI pass. Typecheck/build/Playwright and authenticated browser verification remain unrun. No database writes or deployment.
+- Next action: continue Phase 1 by hardening auth/session transitions and onboarding recovery, then test/harden dashboard routes, learning workspace and CBT. Keep practice tied to verified question records and server-authoritative attempt RPCs. Update the batch tracker and continuity checkpoint after each meaningful slice.
