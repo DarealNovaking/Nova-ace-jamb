@@ -808,3 +808,9 @@ Check Verify and ACE JAMB E2E on the latest main commit after `cba0c14` and this
 - Found and fixed a fresh-sign-in inconsistency in `src/components/ProtectedCBT.tsx`: after sign-in, Practice was assigned the CBT local recovery key. Commit: `04ad0edae2bfa936997a0edfeb1d6138a87d03f7`. Recovery key now uses the validated route mode, keeping practice and CBT attempt pointers isolated.
 - Verification: preceding Verify workflow passed typecheck/build at SHA `38a948349c6c732f5b8ae144051dff3650b089c7`; corresponding E2E and several older E2E runs were still in progress at last inspection. No E2E pass is claimed for this fix yet. No database writes, migrations, or deployment.
 - Exact next action: poll Verify/E2E on the new fix SHA; add/verify a regression for signing into Practice and preserving its mode-specific key; then test CBT expiry, completed-attempt recovery and syllabus published/unpublished states. Phase 1 is still in progress.
+
+
+### Latest Phase 1 test addition — completed CBT recovery (2026-10-21)
+- Added mocked E2E coverage for restoring a completed attempt's server-authoritative score without fetching question rows. Test iterations: `4e8fc1c5c6c8493c20635d1651b19d0968ca03bf`, `ef6ec1e5478612d0cb1fa5bd6866c39ef330b6a9`, `bc616ee623ec88cefb524e4c5762901a0ef5e77f`.
+- CI status: Verify previously passed at SHA `38a948349c6c732f5b8ae144051dff3650b089c7`; current source/test commit's E2E outcome is unverified because the observed workflow runs were queued/in progress at runner setup. Do not mark the new test passed.
+- No production DB writes, migrations, or deployment. Exact next action: poll latest main runs; fix E2E failures, add practice sign-in recovery-key coverage, then verify CBT expiry/retry and syllabus published/unpublished states. Phase 1 remains in progress.
