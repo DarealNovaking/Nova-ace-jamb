@@ -2281,3 +2281,15 @@ The authoritative direction is now `docs/CATALOGUE-REPLACEMENT-INVESTIGATION-202
 - Updated the disposable visibility SQL test to apply the grant migration. CI for the latest commits must confirm the combined test passes.
 - **Production status:** this new privileges migration is source-only and has NOT been applied to live Supabase. The earlier authorization covered the syllabus visibility migration specifically, not this additional table-privilege change. No production grant was changed by this audit.
 - Next: verify CI for the source migration/test, then request explicit authorization to apply the topic/subtopic API privilege migration. After approval, apply it and read-only verify grants, RLS policies, and the live editor workflow. Anonymous schema access remains intentionally ungranted; the product currently exposes the ACE schema to authenticated users only.
+
+
+## Academic topic/subtopic API privilege migration — applied and verified (2026-10-20)
+
+- Project owner replied “proceed” to the explicit request to apply the separate topic/subtopic API privilege migration after CI passed; treated as authorization for this migration only.
+- Confirmed main HEAD before this documentation update was 6178069dfa5bc13ddd28cf396d5c73b2353c8ec8.
+- Current-HEAD CI passed before applying the migration: Verify run 39510386608 and ACE JAMB E2E run 39510386522, both on 6178069dfa5bc13ddd28cf396d5c73b2353c8ec8.
+- Applied source migration supabase/migrations/20261020230000_academic_topic_editor_api_privileges.sql to live Supabase project uokiqlgmzprqfbzmedaz using migration name academic_topic_editor_api_privileges. Live migration history now records version 20261020224807.
+- Read-only verification confirms both ace.topics and ace.subtopics grant authenticated SELECT, INSERT and UPDATE; DELETE remains false; RLS is enabled on both tables.
+- Read-only policy verification confirms topics_editor_manage and subtopics_editor_manage still require ace.is_admin_or_editor() for writes. Publication SELECT policies remain in place, including active/right-approved syllabus-version checks and the active matching parent-topic check for subtopics. No anonymous schema usage was granted.
+- No syllabus/topic/subtopic content was inserted, edited, or activated. No frontend deployment was performed. Database grants and policy definitions were verified; a real authenticated editor browser/API create-and-read smoke test is still pending.
+- Next action: run a safe live editor workflow smoke test with an authorized editor session (draft-only; no activation of unverified content), confirm topic/subtopic reads and draft writes, then update both handoff files with the observed result. Keep anonymous schema access unchanged.
