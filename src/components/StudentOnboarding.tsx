@@ -52,7 +52,7 @@ export default function StudentOnboarding({ onComplete }: { onComplete: () => vo
           setSelectedSubjects(english ? [english.id, ...otherThree] : otherThree)
         }
       })
-    }).catch((error) => setMessage(error instanceof Error ? error.message : 'Could not load your preparation setup.'))
+    }).catch(() => setMessage('Could not load your preparation setup. Check your connection and try again.'))
       .finally(() => active && setBusy(false))
     return () => { active = false }
   }, [])
@@ -77,8 +77,8 @@ export default function StudentOnboarding({ onComplete }: { onComplete: () => vo
         subject_ids: selectedSubjects,
       })
       onComplete()
-    } catch (error) {
-      setMessage(error instanceof Error ? error.message : 'Could not save your profile.')
+    } catch {
+      setMessage('Could not save your preparation profile. Check your connection and try again.')
     } finally {
       setSaving(false)
     }
