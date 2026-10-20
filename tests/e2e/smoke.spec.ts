@@ -159,6 +159,24 @@ test.describe('ACE JAMB prepared student dashboard', () => {
 })
 
 test.describe('ACE JAMB persistent CBT', () => {
+  test('practice workspace starts a practice-mode attempt and reports an empty question bank honestly', async ({ page }) => {
+    await mockPreparedStudent(page)
+    let requestedMode = ''
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/start_attempt'), async (route) => {
+      requestedMode = route.request().postDataJSON().p_mode
+      await route.fulfill({ status: 400, json: { code: 'P0001', message: 'No published questions available for this attempt' } })
+    })
+
+    await page.goto('/')
+    await expect(page.getByRole('heading', { name: 'Welcome back, Test Futarian.' })).toBeVisible()
+    await page.getByRole('button', { name: /Practice Verified question sets/ }).click()
+    await expect(page.getByRole('heading', { name: 'Practice', exact: true })).toBeVisible()
+    await page.getByRole('button', { name: 'Start a practice session' }).click()
+    await expect(page).toHaveURL(/[?&]mode=practice(?:&|$)/)
+    await expect(page.getByText(/No reviewed questions are published for this session yet/)).toBeVisible()
+    expect(requestedMode).toBe('practice')
+  })
+
   test('restores the same active attempt after reload instead of starting another', async ({ page }) => {
     await mockPreparedStudent(page)
     const questionId = '30000000-0000-4000-8000-000000000002'
