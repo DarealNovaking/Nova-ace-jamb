@@ -14,7 +14,12 @@ export default function StudentDashboard() {
   const [topics, setTopics] = useState<TopicRow[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [activeView, setActiveView] = useState<StudentWorkspaceMode | 'home'>('home')
+  const [activeView, setActiveView] = useState<StudentWorkspaceMode | 'home'>(() => {
+    const requested = new URLSearchParams(window.location.search).get('view')
+    return ['learn', 'practice', 'revision', 'flashcards', 'progress', 'plan'].includes(requested ?? '')
+      ? requested as StudentWorkspaceMode
+      : 'home'
+  })
 
   async function loadDashboard() {
     setLoading(true)
@@ -65,24 +70,39 @@ export default function StudentDashboard() {
   useEffect(() => { void loadDashboard() }, [])
 
   useEffect(() => {
+    const validModes: StudentWorkspaceMode[] = ['learn', 'practice', 'revision', 'flashcards', 'progress', 'plan']
+    const syncFromUrl = () => {
+      const requested = new URLSearchParams(window.location.search).get('view')
+      setActiveView(validModes.includes(requested as StudentWorkspaceMode) ? requested as StudentWorkspaceMode : 'home')
+    }
     const navigate = (event: Event) => {
       const mode = (event as CustomEvent<StudentWorkspaceMode>).detail
-      if (['learn', 'practice', 'revision', 'flashcards', 'progress', 'plan'].includes(mode)) setActiveView(mode)
+      if (!validModes.includes(mode)) return
+      const url = new URL(window.location.href)
+      url.searchParams.set('view', mode)
+      url.searchParams.delete('cbt')
+      window.history.pushState({}, '', url)
+      setActiveView(mode)
     }
     window.addEventListener('ace-workspace-navigate', navigate)
-    return () => window.removeEventListener('ace-workspace-navigate', navigate)
+    window.addEventListener('popstate', syncFromUrl)
+    return () => {
+      window.removeEventListener('ace-workspace-navigate', navigate)
+      window.removeEventListener('popstate', syncFromUrl)
+    }
   }, [])
 
   const startCbt = () => {
     const url = new URL(window.location.href)
     url.searchParams.set('cbt', '1')
+    url.searchParams.delete('view')
     window.history.pushState({}, '', url)
     window.dispatchEvent(new PopStateEvent('popstate'))
   }
 
   if (loading) return <main className="grid min-h-[70vh] place-items-center text-white"><div className="text-center"><Loader2 className="mx-auto animate-spin" /><p className="mt-3 text-sm text-white/50">Loading your preparation dashboard…</p></div></main>
 
-  if (activeView !== 'home') return <StudentStudyWorkspace mode={activeView} subjects={subjects} topics={topics} onBack={() => setActiveView('home')} onStartCbt={startCbt} />
+  if (activeView !== 'home') return <StudentStudyWorkspace mode={activeView} subjects={subjects} topics={topics} onBack={() => { const url = new URL(window.location.href); url.searchParams.delete('view'); window.history.pushState({}, '', url); setActiveView('home') }} onStartCbt={startCbt} />
 
   return (
     <main className="min-h-screen bg-[#07050d] px-5 py-8 text-white sm:py-12">
@@ -105,7 +125,7 @@ export default function StudentDashboard() {
             { id: 'flashcards' as const, label: 'Flashcards', detail: 'Recall and review', icon: Layers3 },
             { id: 'progress' as const, label: 'My progress', detail: 'Saved attempt results', icon: Trophy },
             { id: 'plan' as const, label: 'Study plan', detail: 'A repeatable routine', icon: CalendarDays },
-          ].map((item) => { const ItemIcon = item.icon; return <button key={item.id} type="button" onClick={() => setActiveView(item.id)} className="glass-card rounded-2xl p-4 text-left transition hover:border-purple-300/30"><ItemIcon size={19} className="text-purple-200"/><span className="mt-3 block text-sm font-bold">{item.label}</span><span className="mt-1 block text-xs leading-5 text-white/40">{item.detail}</span></button> })}
+          ].map((item) => { const ItemIcon = item.icon; return <button key={item.id} type="button" onClick={() => window.dispatchEvent(new CustomEvent('ace-workspace-navigate', { detail: item.id })) className="glass-card rounded-2xl p-4 text-left transition hover:border-purple-300/30"><ItemIcon size={19} className="text-purple-200"/><span className="mt-3 block text-sm font-bold">{item.label}</span><span className="mt-1 block text-xs leading-5 text-white/40">{item.detail}</span></button> })}
         </nav>
         {error && <section role="alert" className="mb-6 rounded-2xl border border-red-400/20 bg-red-500/10 p-4 text-sm text-red-100"><p>{error}</p><button type="button" onClick={() => void loadDashboard()} className="mt-3 underline">Try again</button></section>}
 
