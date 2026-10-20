@@ -92,10 +92,12 @@ export default function StudentDashboard() {
     }
   }, [])
 
-  const startCbt = () => {
+  const startCbt = (mode: 'cbt' | 'practice' = 'cbt') => {
     const url = new URL(window.location.href)
     url.searchParams.set('cbt', '1')
     url.searchParams.delete('view')
+    if (mode === 'practice') url.searchParams.set('mode', 'practice')
+    else url.searchParams.delete('mode')
     window.history.pushState({}, '', url)
     window.dispatchEvent(new PopStateEvent('popstate'))
   }
