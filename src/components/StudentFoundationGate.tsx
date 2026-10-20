@@ -10,7 +10,7 @@ import {
 } from '../lib/studentService'
 import { ace } from '../lib/supabase'
 import { registerCurrentDevice } from '../lib/deviceService'
-import App from '../App'
+import StudentDashboard from './StudentDashboard'
 
 function hasRecoverySession() {
   return window.location.hash.includes('type=recovery')
@@ -103,5 +103,5 @@ export default function StudentFoundationGate() {
   if (recovery) return <StudentAuth recovery />
   if (!user) return <StudentAuth />
   if (needsOnboarding) return <StudentOnboarding onComplete={() => void refresh(user)} />
-  return <App />
+  return <StudentDashboard />
 }
