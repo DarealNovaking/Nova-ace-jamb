@@ -16,6 +16,7 @@ type Props = {
   questionCount?: number
   durationSeconds?: number
   onComplete?: (result: Awaited<ReturnType<typeof submitCbt>>) => void
+  storageKey?: string | null
 }
 
 function formatTime(seconds: number) {
@@ -26,7 +27,7 @@ function formatTime(seconds: number) {
   return [h, m, s].map((v) => String(v).padStart(2, '0')).join(':')
 }
 
-export default function PersistentCBT({ attemptId = null, questionCount = 20, durationSeconds = 1800, onComplete }: Props) {
+export default function PersistentCBT({ attemptId = null, questionCount = 20, durationSeconds = 1800, onComplete, storageKey = null }: Props) {
   const [attempt, setAttempt] = useState<CbtAttemptState | null>(null)
   const [questions, setQuestions] = useState<CbtQuestion[]>([])
   const [current, setCurrent] = useState(0)
@@ -53,12 +54,24 @@ export default function PersistentCBT({ attemptId = null, questionCount = 20, du
     setResult(null)
     try {
       let state: CbtAttemptState
-      if (attemptToResume) {
-        state = await resumeCbt(attemptToResume)
+      const storedAttemptId = attemptToResume ?? (storageKey ? window.localStorage.getItem(storageKey) : null)
+      if (storedAttemptId) {
+        try {
+          state = await resumeCbt(storedAttemptId)
+        } catch (resumeError) {
+          // An explicit attempt ID must fail visibly; a stale local recovery pointer may be replaced.
+          if (attemptToResume || !storageKey) throw resumeError
+          window.localStorage.removeItem(storageKey)
+          const started = await startCbt({ mode: 'cbt', questionCount, durationSeconds })
+          window.localStorage.setItem(storageKey, started.attempt_id)
+          state = await resumeCbt(started.attempt_id)
+        }
       } else {
         const started = await startCbt({ mode: 'cbt', questionCount, durationSeconds })
+        if (storageKey) window.localStorage.setItem(storageKey, started.attempt_id)
         state = await resumeCbt(started.attempt_id)
       }
+      if (state.status === 'completed' && storageKey) window.localStorage.removeItem(storageKey)
       const loadedQuestions = await loadCbtQuestions(state.question_order)
       setAttempt(state)
       setQuestions(loadedQuestions)
@@ -130,6 +143,7 @@ export default function PersistentCBT({ attemptId = null, questionCount = 20, du
       // Older idempotent submit responses may omit total_questions; the saved attempt order is authoritative.
       const completed = { ...submitted, total_questions: submitted.total_questions ?? attempt.question_order.length }
       setResult(completed)
+      if (storageKey) window.localStorage.removeItem(storageKey)
       setAttempt((currentAttempt) => currentAttempt ? { ...currentAttempt, status: 'completed', score: completed.score, correct_count: completed.correct_count, answered_count: completed.answered_count, completed_at: completed.completed_at, remaining_seconds: 0 } : currentAttempt)
       onComplete?.(completed)
     } catch (e: any) {
