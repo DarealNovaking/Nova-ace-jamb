@@ -72,7 +72,7 @@ export default function PersistentCBT({ attemptId = null, questionCount = 20, du
         state = await resumeCbt(started.attempt_id)
       }
       if (state.status === 'completed' && storageKey) window.localStorage.removeItem(storageKey)
-      const loadedQuestions = await loadCbtQuestions(state.question_order)
+      const loadedQuestions = state.status === 'completed' ? [] : await loadCbtQuestions(state.question_order)
       setAttempt(state)
       setQuestions(loadedQuestions)
       setRemaining(state.remaining_seconds ?? getRemainingSeconds(state.started_at, state.duration_seconds))
