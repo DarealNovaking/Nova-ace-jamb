@@ -555,3 +555,13 @@ Re-run Verify/E2E CI for the latest main commits, then reproduce sign-in with th
 - E2E run `39507436232` passed on that code commit: Playwright reports 10 passed (8.2s), including academic editor access/denial coverage.
 - Docs commits `844424c0` and `e3920954` followed; their workflows were still in progress at the last poll. Recheck latest HEAD CI before declaring current HEAD fully green.
 - The new migration is committed but has not been applied to the live database. Next: check latest HEAD workflows, then request explicit authorization before applying the reviewed migration. No production data changes or deployment occurred.
+
+
+## Production migration closeout — 2026-10-20
+
+- User authorized the syllabus visibility migration. Applied `syllabus_publication_visibility` to Supabase project `uokiqlgmzprqfbzmedaz`; recorded migration version: `20261020222636`.
+- Read-only verification: current topic/subtopic SELECT policies match the reviewed migration; public reads require active rows tied to active + rights-approved syllabus versions, with subtopics additionally requiring an active matching parent topic. Admin/editor draft-review access remains in policy.
+- Read-only verification: `ace.is_syllabus_version_public(uuid)` is SECURITY DEFINER with fixed `search_path=pg_catalog, ace`; EXECUTE granted to `anon` and `authenticated`, not PUBLIC.
+- Latest current-HEAD workflows both passed: Verify `39507661501`, E2E `39507661518` for `e1f15d4bb99810b5fb04781c9095520aab41a33b`. Prior code commit E2E `39507436232` reported 10 Playwright tests passed.
+- No syllabus rows were inserted or activated; no frontend deployment was run.
+- Remaining verification: live anonymous API behavior and editor draft visibility have not yet been exercised through HTTP/authenticated UI. Next action: perform safe read-only API/UI smoke tests, then proceed with source-backed syllabus authoring and rights review.
