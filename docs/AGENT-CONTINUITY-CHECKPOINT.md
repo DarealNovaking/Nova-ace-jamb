@@ -802,3 +802,9 @@ Check Verify and ACE JAMB E2E on the latest main commit after `cba0c14` and this
 - Added E2E test `onboarding save contract` in `tests/e2e/smoke.spec.ts`; it verifies the mocked server RPC receives English + exactly three additional subject IDs and expected profile fields. Commit: `b8881491720d74832f7a18401b905b7967368567`.
 - No production data writes, migrations, or deployment. Verify workflow for prior checkpoint SHA `a8c44efc5b5438d8b69c06fad8ca3f2f5b00911d` passed typecheck/build; E2E was still running and the new commit's checks remain to be inspected.
 - Exact next action: inspect Actions for HEAD `b8881491720d74832f7a18401b905b7967368567`, resolve any failing E2E assertions, then add CBT expiry/completed-attempt recovery regression coverage. Keep empty/unpublished question states honest.
+
+
+### Phase 1 continuation — mode-specific CBT recovery fix (2026-10-21)
+- Found and fixed a fresh-sign-in inconsistency in `src/components/ProtectedCBT.tsx`: after sign-in, Practice was assigned the CBT local recovery key. Commit: `04ad0edae2bfa936997a0edfeb1d6138a87d03f7`. Recovery key now uses the validated route mode, keeping practice and CBT attempt pointers isolated.
+- Verification: preceding Verify workflow passed typecheck/build at SHA `38a948349c6c732f5b8ae144051dff3650b089c7`; corresponding E2E and several older E2E runs were still in progress at last inspection. No E2E pass is claimed for this fix yet. No database writes, migrations, or deployment.
+- Exact next action: poll Verify/E2E on the new fix SHA; add/verify a regression for signing into Practice and preserving its mode-specific key; then test CBT expiry, completed-attempt recovery and syllabus published/unpublished states. Phase 1 is still in progress.
