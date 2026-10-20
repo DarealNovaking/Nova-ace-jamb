@@ -77,7 +77,7 @@ export default function PersistentCBT({ attemptId = null, questionCount = 20, du
           state = await resumeCbt(started.attempt_id)
         }
       } else {
-        const started = await startCbt({ mode: 'cbt', questionCount, durationSeconds })
+        const started = await startCbt({ mode, questionCount, durationSeconds })
         if (storageKey) window.localStorage.setItem(storageKey, started.attempt_id)
         state = await resumeCbt(started.attempt_id)
       }
