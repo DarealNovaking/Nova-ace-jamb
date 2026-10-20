@@ -638,3 +638,14 @@ Re-run Verify/E2E CI for the latest main commits, then reproduce sign-in with th
 - Fix commit: `f096ffdbe3079fb933794a5ce158dc03135b9141`.
 - Reruns for the fix and latest admin/frontend commits are pending. The frontend batch remains **not fully verified** until latest-main Verify and E2E pass.
 - Exact next action: poll latest runs for commit `f096ffdbe3079fb933794a5ce158dc03135b9141` and the subsequent handoff commits; fix any further failure and then record final CI results in both docs.
+
+
+## Current continuation — saved student study routine + CI follow-up (2026-10-21)
+
+- Actual repository: `DarealNovaking/Nova-ace-jamb`, branch `main`. The previous frontend workspace batch is now CI-verified on commit `f74ab7e1f80e5a7859f66a5f68b15c953df753c9`: Verify `39512540188` and ACE JAMB E2E `39512540266` both passed.
+- New code commits: `541cef132ce99222981e9632b7c4f7912f995ee5` adds `StudentStudyPlan.tsx`; `ba1b2445d90c86709cb9af607427f9c3bbb3cf6d` connects it to `StudentStudyWorkspace.tsx`; `d2aff7f9cedc6a16b14ef31febcf972d9bf1aeba` tests save behavior in `tests/e2e/smoke.spec.ts`.
+- The study plan now lets an authenticated student edit daily study minutes and preferred study days, and saves through the existing student-preferences service. No migration/schema change was added. The page describes saved preferences, not a generated lesson timetable. Playwright Supabase traffic is mocked.
+- Both handoff files are being kept current. No production data, migration, deployment, content publication or catalogue import was changed.
+- New feature CI is pending: Verify `39513774609` and ACE JAMB E2E `39513774499` are queued on the study-plan test commit; earlier runs `39513749185`, `39513749121`, `39513734298` relate to preceding commits. Latest-main runs must be checked after the docs commits as well.
+- Remaining: full lesson delivery, real question practice, flashcards and performance analytics depend on verified published learning content and/or real saved attempts. The last verified database audit found no active rights-approved syllabus versions/topics and no active questions; confirm live state before assuming it changed.
+- **Exact next action:** poll Verify/E2E for current `main`, inspect logs for failures, fix the smallest cause, and update both handoffs with green results. Then continue the next frontend flow only where verified content and service contracts exist. Do not invent JAMB material, fake scores, or generated-schedule completion.
