@@ -2490,3 +2490,10 @@ Check Verify and ACE JAMB E2E on the latest main commit after `cba0c14` and this
 - Source/test commit: `b8881491720d74832f7a18401b905b7967368567`. No production DB writes, migrations, or deployment.
 - Verification: Verify workflow for prior checkpoint SHA `a8c44efc5b5438d8b69c06fad8ca3f2f5b00911d` passed. E2E was still in progress at the time of the last check; the run triggered by the new test must be inspected before marking the test verified.
 - Continue frontend Phase 1 by checking latest CI, then add CBT expiry/completed-attempt regression coverage. Do not generate or invent official question content while the live question bank remains empty in the last recorded audit.
+
+
+## Phase 1 continuation — CBT recovery-key correction (2026-10-21)
+- Current source inspection found that `ProtectedCBT.tsx` selected a mode-specific recovery key for existing sessions but hard-coded the CBT key after a fresh sign-in. Practice users signing in from `mode=practice` could therefore get the wrong local attempt pointer.
+- Fixed in commit `04ad0edae2bfa936997a0edfeb1d6138a87d03f7`: sign-in now uses the route's validated `mode` for the authenticated user's recovery key. No database writes, migrations, or deployment.
+- Latest Verify run checked before this fix passed at `38a948349c6c732f5b8ae144051dff3650b089c7`; its corresponding E2E workflow remained in progress, as did several earlier E2E runs. Do not treat browser acceptance as passed based on typecheck/build alone.
+- Phase 1 remains incomplete. Exact next action: inspect CI for `04ad0ed`, add/verify sign-in-to-practice recovery coverage, then complete CBT expiry/completed-result recovery and published/unpublished syllabus fixture checks. No official question content may be invented.
