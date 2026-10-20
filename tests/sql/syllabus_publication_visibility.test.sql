@@ -73,6 +73,7 @@ insert into ace.subtopics(id,topic_id,syllabus_version_id,active) values
  ('30000000-0000-4000-8000-000000000004','20000000-0000-4000-8000-000000000004','10000000-0000-4000-8000-000000000001',true);
 
 \i supabase/migrations/20261020120000_syllabus_publication_visibility.sql
+\i supabase/migrations/20261020230000_academic_topic_editor_api_privileges.sql
 
 set role anon;
 do $assert$
