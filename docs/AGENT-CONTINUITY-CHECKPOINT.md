@@ -548,3 +548,10 @@ Re-run Verify/E2E CI for the latest main commits, then reproduce sign-in with th
 2. Fix any failures; ensure all latest Verify, build, disposable SQL, and Playwright checks pass.
 3. Only after reviewing current live grants/policies and receiving explicit deployment/migration authorization, apply the visibility migration to production and verify its deployed policy definitions read-only.
 4. Continue with source-verified syllabus content; never invent JAMB syllabus data or activate unverified season/configuration rows.
+
+
+## Verification closeout (2026-10-20)
+- Code commit `566673fb72311d730686d31d126a66ed0acee255` passed Verify run `39507436241`, including typecheck/build and both disposable PostgreSQL SQL suites. The syllabus visibility test passed.
+- E2E run `39507436232` passed on that code commit: Playwright reports 10 passed (8.2s), including academic editor access/denial coverage.
+- Docs commits `844424c0` and `e3920954` followed; their workflows were still in progress at the last poll. Recheck latest HEAD CI before declaring current HEAD fully green.
+- The new migration is committed but has not been applied to the live database. Next: check latest HEAD workflows, then request explicit authorization before applying the reviewed migration. No production data changes or deployment occurred.
