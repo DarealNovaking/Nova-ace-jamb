@@ -2328,3 +2328,15 @@ The authoritative direction is now `docs/CATALOGUE-REPLACEMENT-INVESTIGATION-202
 - Fixed the Quick Revision and Study Plan assertions to target the page-level heading (`level: 1`) in `tests/e2e/smoke.spec.ts`. Fix commit: `f096ffdbe3079fb933794a5ce158dc03135b9141`.
 - CI reruns for the locator fix and the latest admin/dashboard changes are pending. Do not mark the whole batch verified until the latest-main Verify and E2E runs pass.
 - Next: poll workflows for `f096ffdbe3079fb933794a5ce158dc03135b9141` and subsequent documentation commits; inspect logs and correct any further failures, then update both handoffs with final green run IDs.
+
+
+## Frontend continuation — saved student study routine (2026-10-21)
+
+- Refreshed actual `main`: frontend batch locator fix was verified green on HEAD `f74ab7e1f80e5a7859f66a5f68b15c953df753c9`: Verify run `39512540188` and ACE JAMB E2E run `39512540266` both completed successfully. This closes the previous frontend batch's CI follow-up.
+- Added `src/components/StudentStudyPlan.tsx`: students can edit daily study minutes and preferred weekdays, see their saved preparation subjects, and save preferences to their authenticated account using existing `getStudentPreferences` / `updateStudentPreferences` service functions and `student_preferences` table. No migration or new backend schema was added. The UI explicitly says it stores preferences and does not claim to generate a personalized lesson schedule.
+- Connected the component to `src/components/StudentStudyWorkspace.tsx`; expanded `tests/e2e/smoke.spec.ts` to edit the daily minutes, select a study day and assert the saved-status message. Supabase calls remain intercepted in Playwright; this test does not modify production data.
+- Commits: `541cef132ce99222981e9632b7c4f7912f995ee5` (new study-plan component), `ba1b2445d90c86709cb9af607427f9c3bbb3cf6d` (workspace connection), `d2aff7f9cedc6a16b14ef31febcf972d9bf1aeba` (Playwright coverage).
+- Current verification for the new feature is **pending**: Verify run `39513774609` and ACE JAMB E2E run `39513774499` on `d2aff7f9cedc6a16b14ef31febcf972d9bf1aeba` are queued; preceding runs `39513749185`, `39513749121`, and `39513734298` are/were running on earlier commits. Do not claim this feature is verified until latest-main runs finish green.
+- No production data, migration, deployment, catalogue import, or content publication changed.
+- Remaining frontend limitation: Learn/Practice/Revision/Flashcards and analytics still need reviewed lesson/question content or real saved attempts before their substantive learning/assessment behavior can be completed. Do not invent official JAMB content or sample performance.
+- Exact next action: inspect the latest-main Verify and E2E outcomes, fix any typecheck/build/Playwright failure, and update both handoffs with the final run IDs. Then continue frontend work against existing verified data and services.
