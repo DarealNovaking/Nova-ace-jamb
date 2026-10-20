@@ -2304,3 +2304,18 @@ The authoritative direction is now `docs/CATALOGUE-REPLACEMENT-INVESTIGATION-202
 - Verification status for implementation commit `5893127760a7fac88871cc934544fb6cd77f61a6`: Verify run `39511826720` and ACE JAMB E2E run `39511826534` were queued immediately after the test commit. Do not claim the new test passed until those runs complete.
 - Current frontend gap remains: the student dashboard exposes approved syllabus topics when available, but there is no distinct lesson/content-reading flow yet; live syllabus versions/topics remain unpublished/empty according to the last verified database audit. Keep the empty state honest and do not fabricate official content.
 - Next action: fetch both workflow results for `5893127760a7fac88871cc934544fb6cd77f61a6`; fix any test/typecheck/build failures. Then continue frontend-first by tracing existing Learning/Practice/CBT components and implement the next usable student-facing flow against available verified data, while keeping Supabase/RLS integration boundaries intact. Update this handoff and the continuity checkpoint after each meaningful change.
+
+
+## Frontend batch — student preparation workspaces + admin milestone alignment (2026-10-20)
+
+- Scope delivered on `main` after the previous prepared-dashboard regression test:
+  - `06b5b78672ee31db7e69dcc0f16ca73431685232` adds `src/components/StudentStudyWorkspace.tsx`, with dedicated Learn, Practice, Quick Revision, Flashcards, Progress and Study Plan views.
+  - `1f7253c02325d6003bd1f3c395b0a236d69ebe43` connects the student dashboard to those views and adds responsive navigation.
+  - `c18baf86e1482076aabea9cbb15f281fa348dc1c` adds Playwright coverage for workspace navigation and honest empty states.
+  - `a02516bf0e308958c4564ea6960ee4fbeed4485b` aligns the administrator dashboard with the current Batch 3 academic-structure milestone and adds a direct Academic Structure link.
+- The student UI now exposes the preparation areas together. The views use only saved subjects and active/approved topic data passed from the dashboard. Empty states explicitly distinguish unpublished lesson, question, flashcard and performance data; no fake official JAMB topics, questions, scores or completed schedules are generated.
+- Practice links to the existing protected CBT route to check availability; the existing persistent CBT engine remains the session implementation. Full lesson content, question authoring/review, flashcard facts and real analytics still depend on reviewed content and/or actual saved attempt data.
+- Admin dashboard copy no longer presents Batch 2 as the current milestone. Existing secure catalogue import/review surfaces were preserved; no catalogue records, student records, Supabase schema, production data or deployment were changed.
+- Automated coverage added in `tests/e2e/smoke.spec.ts`. Verify run `39512223624` passed for the workspace component commit `06b5b78672ee31db7e69dcc0f16ca73431685232`. E2E and subsequent Verify/E2E runs for dashboard navigation, new Playwright test, and admin alignment were still running/queued at the time of this handoff update: `39512223597`, `39512272979`, `39512273077`, `39512296427`, `39512296132`, `39512374477`, `39512374470`. Do not call the full frontend batch CI-verified until the latest-main runs complete successfully.
+- No deployment performed. No production database changes performed.
+- Next action: poll the newest Verify and ACE JAMB E2E runs on `a02516bf0e308958c4564ea6960ee4fbeed4485b`; inspect and fix any typecheck/build/Playwright failure, then update this handoff and the continuity checkpoint with final results. After green CI, continue the remaining real-data-dependent frontend work only against verified published content and actual saved attempt data.
