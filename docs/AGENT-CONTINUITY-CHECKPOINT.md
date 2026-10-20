@@ -795,3 +795,10 @@ Poll Verify and ACE JAMB E2E for the latest source/test commits, fix any failing
 
 ### Current exact next action
 Check Verify and ACE JAMB E2E on the latest main commit after `cba0c14` and this documentation update. Fix any remaining typecheck or Playwright failure before advancing Phase 1. Then continue batch 1 auth/onboarding E2E, batch 3 published-syllabus fixtures, and batch 5 CBT expiry/submit/recovery acceptance. Phase 1 is still in progress.
+
+
+## Frontend Phase 1 continuation — 2026-10-21
+- Current task: finish the coordinated frontend batches, starting with auth/onboarding/dashboard/syllabus/practice/CBT.
+- Added E2E test `onboarding save contract` in `tests/e2e/smoke.spec.ts`; it verifies the mocked server RPC receives English + exactly three additional subject IDs and expected profile fields. Commit: `b8881491720d74832f7a18401b905b7967368567`.
+- No production data writes, migrations, or deployment. Verify workflow for prior checkpoint SHA `a8c44efc5b5438d8b69c06fad8ca3f2f5b00911d` passed typecheck/build; E2E was still running and the new commit's checks remain to be inspected.
+- Exact next action: inspect Actions for HEAD `b8881491720d74832f7a18401b905b7967368567`, resolve any failing E2E assertions, then add CBT expiry/completed-attempt recovery regression coverage. Keep empty/unpublished question states honest.
