@@ -132,7 +132,7 @@ export default function StudentDashboard() {
         {error && <section role="alert" className="mb-6 rounded-2xl border border-red-400/20 bg-red-500/10 p-4 text-sm text-red-100"><p>{error}</p><button type="button" onClick={() => void loadDashboard()} className="mt-3 underline">Try again</button></section>}
 
         <section className="grid gap-4 md:grid-cols-2">
-          <button type="button" onClick={startCbt} className="glass-card group rounded-3xl p-6 text-left transition hover:border-purple-300/30 hover:bg-white/[.06] sm:p-8">
+          <button type="button" onClick={() => startCbt('cbt')} className="glass-card group rounded-3xl p-6 text-left transition hover:border-purple-300/30 hover:bg-white/[.06] sm:p-8">
             <span className="grid h-12 w-12 place-items-center rounded-2xl bg-purple-500/15 text-purple-200"><Brain size={24}/></span>
             <h2 className="mt-5 text-2xl font-black">CBT Practice</h2>
             <p className="mt-2 text-sm leading-6 text-white/50">Start a secure, timed session. Your answers and progress are saved to your account.</p>
