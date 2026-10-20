@@ -162,3 +162,12 @@ Next: inspect the complete current service/migration/test contracts and latest C
 - The first pushed verification runs failed at TypeScript parsing: `src/components/StudentDashboard.tsx(128,200): TS1005 '}' expected`. The failure was caused by a missing JSX expression closing brace in the new workspace-navigation click handler.
 - Fixed in commit `23735a150ba0d142f29ec0919df69c33236a4f2f`.
 - The failure was identified from actual GitHub Actions logs, not inferred. A post-fix run for the corrected commit has not yet been observed; the correction is **not verified until the new Verify and E2E runs finish**.
+
+
+## Phase 1 continuation log — 2026-10-21
+
+- Added Playwright assertions for workspace route state: clicking Learn sets `?view=learn`, reload restores Learn, browser back returns to dashboard, and forward restores Learn. CBT URL assertion now checks an actual query delimiter. Commit: `77c907b1fb548df3f0ca87204f1272137d41f85e`.
+- `src/components/PersistentCBT.tsx`: answer selection now requires an active attempt; submission is guarded against duplicate concurrent calls; load/save/submit failures use student-safe messages while preserving retry affordances and server-authoritative RPCs. Commit: `f886ad493d617e460fc1a34f92b5cd28edf81160`.
+- `src/components/StudentOnboarding.tsx`: load/save exceptions no longer surface raw backend/provider details to students; messages advise retrying. Commit: `3fd59568f9d5e965b78bc90d698afdaee1c6fc9d`.
+- Canonical 16-batch plan and current Phase 1 status are now embedded in both master handoff and continuity checkpoint, as well as maintained in this batch tracker.
+- Verification: Verify and ACE JAMB E2E passed for `23735a1` and documentation successor `13865f1`. New workflow runs for the test and source hardening commits are pending/running; wait for results. No database writes or deployment.
