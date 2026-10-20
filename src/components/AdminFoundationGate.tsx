@@ -77,15 +77,15 @@ export default function AdminFoundationGate() {
           <div>
             <p className="text-xs uppercase tracking-[.2em] text-purple-300/70">ÑØVÃ ACE JAMB · Administration</p>
             <h1 className="mt-2 text-4xl font-black">Admin Dashboard</h1>
-            <p className="mt-2 text-white/50">Secure Batch 2 catalogue operations.</p>
+            <p className="mt-2 text-white/50">Manage secure imports, source review, and academic content.</p>
           </div>
-          <button type="button" onClick={signOut} className="w-fit rounded-xl border border-white/10 px-4 py-2 text-sm font-semibold hover:bg-white/5">Sign out</button>
+          <div className="flex flex-wrap gap-2"><a href="/admin-academic" className="w-fit rounded-xl border border-purple-300/25 bg-purple-500/10 px-4 py-2 text-sm font-semibold text-purple-100 hover:bg-purple-500/20">Academic Structure</a><button type="button" onClick={signOut} className="w-fit rounded-xl border border-white/10 px-4 py-2 text-sm font-semibold hover:bg-white/5">Sign out</button></div>
         </header>
 
         <div className="mb-6 grid gap-4 sm:grid-cols-3">
           <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-5"><p className="text-xs uppercase tracking-wider text-white/35">Role</p><p className="mt-2 text-xl font-black">Administrator</p></div>
-          <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-5"><p className="text-xs uppercase tracking-wider text-white/35">Batch</p><p className="mt-2 text-xl font-black">Batch 2</p></div>
-          <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-5"><p className="text-xs uppercase tracking-wider text-white/35">Kill</p><p className="mt-2 text-xl font-black">Kill 1 · Institutions</p></div>
+          <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-5"><p className="text-xs uppercase tracking-wider text-white/35">Current milestone</p><p className="mt-2 text-xl font-black">Batch 3 · Academic structure</p></div>
+          <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-5"><p className="text-xs uppercase tracking-wider text-white/35">Publication gate</p><p className="mt-2 text-xl font-black">Source + rights review</p></div>
         </div>
 
         <AdminReviewOnlyStage />
