@@ -511,3 +511,14 @@ Re-run Verify/E2E CI for the latest main commits, then reproduce sign-in with th
 2. Confirm the legacy-provider residual scan and add/adjust Playwright coverage for the post-onboarding dashboard and CBT navigation where feasible.
 3. Continue Batch 3 with read-only inspection of academic table counts/records, subject/syllabus services, and admin/editor review/publish controls. Do not invent JAMB data, seed production rows, deploy, or re-open catalogue ingestion as an onboarding gate.
 4. Update this checkpoint and master handoff with actual CI outcomes and the next verified gap.
+
+
+## Batch 3 read-only data audit — 2026-10-20
+
+- Live Supabase read-only SQL query succeeded after correcting one column-name assumption (`questions.active`, not `is_active`). Exact counts: `ace.subjects=25`, active subjects=25, topics=0, subtopics=0, seasons=2, exam configs=1, active configs=0, syllabus versions=50, active syllabus versions=0, questions=0, active questions=0.
+- Season state: JAMB 2026 is closed; JAMB 2027 is draft. Sole config “2026 UTME official structure” is inactive (180 questions, 7200 seconds). All 50 syllabus versions are draft / rights pending. No official content should be invented or activated to make the UI look populated.
+- Existing database controls found: activation/validation functions `activate_exam_config`, `activate_exam_season`, `activate_syllabus_version`, `validate_exam_config`; RLS policies allow editor/admin management for academic rows and constrain ordinary reads. Function bodies/grants still need a focused review before relying on them for the UI.
+- Current component inventory contains catalogue staging/import admin panels but no academic-structure editor. The admin route checks `is_admin()`, so content-editor route access must be designed explicitly and must not confer full admin privileges.
+- Verify run `39506340527` for commit `7c1c124e` **passed** all jobs, including typecheck/build and disposable SQL migration test. ACE JAMB E2E run `39506340498` was still in progress at the last poll. Search for `appdeploy` returned zero matches.
+- The initial audit query failed because of the guessed `is_active` question column; corrected to `active`, after which the query succeeded. This was read-only and made no data changes.
+- **Exact next action:** fetch final E2E outcome for `39506340498` and the latest `main` runs; then inspect the activation/validation RPC bodies and EXECUTE grants, design a separate least-privilege editor path, and implement the smallest draft academic authoring/review surface. Do not create guessed JAMB content, activate unverified seasons, deploy, or mutate production data without explicit authorization.
