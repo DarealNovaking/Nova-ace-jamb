@@ -343,3 +343,34 @@ test.describe('ACE JAMB preparation workspaces', () => {
     await expect(page.getByRole('heading', { name: 'Welcome back, Test Futarian.' })).toBeVisible()
   })
 })
+
+
+test.describe('ACE JAMB onboarding save contract', () => {
+  test('saves English plus exactly three selected subjects through the server RPC', async ({ page }) => {
+    await mockFirstTimeStudent(page)
+    let savedPayload: Record<string, unknown> | null = null
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/save_student_preparation_foundation'), async (route) => {
+      savedPayload = route.request().postDataJSON()
+      await route.fulfill({ status: 204, body: '' })
+    })
+
+    await page.goto('/')
+    await expect(page.getByRole('heading', { name: 'Build your preparation profile.' })).toBeVisible()
+    await page.getByLabel('Display name').fill('Test Futarian')
+    await page.getByLabel(/Mathematics/).check()
+    await page.getByLabel(/Physics/).check()
+    await page.getByLabel(/Chemistry/).check()
+    await page.getByRole('button', { name: 'Continue to ACE' }).click()
+
+    await expect.poll(() => savedPayload).not.toBeNull()
+    expect(savedPayload).toMatchObject({
+      p_display_name: 'Test Futarian',
+      p_target_score: 300,
+      p_institution_goal: '',
+      p_course_goal: '',
+      p_daily_minutes: 60,
+    })
+    expect(savedPayload?.p_subject_ids).toEqual(subjects.slice(0, 4).map((subject) => subject.id))
+    await expect(page.getByRole('alert')).toHaveCount(0)
+  })
+})
