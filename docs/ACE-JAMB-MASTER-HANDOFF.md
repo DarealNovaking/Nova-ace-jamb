@@ -2255,3 +2255,14 @@ The authoritative direction is now `docs/CATALOGUE-REPLACEMENT-INVESTIGATION-202
 - E2E run `39507436232` passed on that same code commit; Playwright reports 10 passed (8.2s), including authorized-editor and student-denial coverage.
 - Documentation commits followed the verified code commit; the workflows for the newest docs-only HEAD were still running at the last poll. Check latest HEAD before claiming every workflow is green.
 - The migration is committed but unapplied to production. Next: verify latest HEAD workflows, then request explicit authorization before applying the migration and checking live policies. No production data changes or deployment occurred.
+
+
+## Production migration applied — syllabus publication visibility (2026-10-20)
+
+- Project owner explicitly authorized applying the reviewed syllabus visibility migration.
+- Applied migration `syllabus_publication_visibility` to live Supabase project `uokiqlgmzprqfbzmedaz`; Supabase migration history records version `20261020222636`.
+- Read-only post-apply verification confirms the `topics_public_read` policy requires active topics plus an active, rights-approved syllabus version; `subtopics_public_read` additionally requires an active parent topic with matching topic/version IDs. Both retain the existing `ace.is_admin_or_editor()` review path.
+- Read-only function/grant verification confirms `ace.is_syllabus_version_public(uuid)` is SECURITY DEFINER with fixed `search_path=pg_catalog, ace`; EXECUTE is true for `anon` and `authenticated`, false for `PUBLIC`.
+- No syllabus content was inserted/activated, and no frontend deployment was performed.
+- Current main HEAD `e1f15d4bb99810b5fb04781c9095520aab41a33b` has successful Verify run `39507661501` and ACE JAMB E2E run `39507661518`. Earlier code commit `566673fb` also passed Verify and 10 Playwright tests.
+- Next: smoke-test public topic/subtopic reads against the live API with anonymous access and editor draft access (without modifying content), then continue source-verified syllabus authoring/review. Do not activate unverified official JAMB content.
