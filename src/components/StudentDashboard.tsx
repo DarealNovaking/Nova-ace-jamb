@@ -32,7 +32,7 @@ export default function StudentDashboard() {
         .from('subjects')
         .select('id,name,code')
         .in('id', ids)
-        .eq('is_active', true)
+        .eq('active', true)
       if (subjectError) throw subjectError
 
       const orderedSubjects = (subjectRows ?? []) as Subject[]
