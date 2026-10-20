@@ -660,3 +660,15 @@ Re-run Verify/E2E CI for the latest main commits, then reproduce sign-in with th
 - Verification status: repository tree and selected docs/entry point/package scripts inspected. No application source changes, build, typecheck, Playwright, live DB query, or deployment performed in this batch setup step.
 - Blockers: none identified for repository inspection at this point. Implementation status for individual features is not yet classified because component/service/test source review remains outstanding. Supabase is not being declared blocked.
 - Exact next action: inspect full source for student auth/onboarding/dashboard/workspace/study plan/CBT, related service modules and tests; implement the highest-impact evidence-backed gaps; then run typecheck, build and Playwright and record outcomes.
+
+
+## Whole-product frontend + channel integration scope correction — 2026-10-21
+
+- Owner direction: all frontend work must reflect the complete product in the canonical handoff, and the channel integration must be explicitly included.
+- Batch document updated in commit `adfd7e0dd7e8439b6e04abf5c4106a008635edee`: `docs/FRONTEND-COMPLETION-BATCH-2026-10-21.md`.
+- Expanded scope: student identity/onboarding/dashboard; learning/practice/mistake/adaptive; CBT/mocks; revision/flashcards/audio; study plans/analytics/readiness; grounded AI/knowledge; channel/community gate; notifications/announcements/push; ACE Pass/payment/entitlement; referrals; admin command center; PWA/offline; accessibility/performance/security and full Playwright/CI verification.
+- Channel flow placement: after onboarding/profile setup and before main dashboard. Group routing must use explicit reviewed institution mappings and a defined fallback for optional/unmapped institutions. Never invent group URLs.
+- Critical canonical constraint: master handoff section 23 marks WhatsApp membership verification UNDECIDED. A client-side “I joined”, URL click, localStorage flag or route cannot prove membership. The UI may be prepared, but mandatory gate enforcement requires an independently verifiable server-side integration. No automatic WhatsApp posting/management.
+- Existing frontend entry in `src/main.tsx` has only academic editor, admin/import, CBT query mode and default student gate. No dedicated UI component/route was found in the repository tree for channel verification, notifications, payment/referral, grounded AI, audio or the full command center. Existing student workspace shows explicit not-yet-published/empty states for lesson content, questions, flashcards and verified performance.
+- No application code or production data changed in this scope correction. No build/typecheck/Playwright/live DB query/deployment was performed.
+- Exact next action: inspect actual service/migration/test contracts and latest CI for community, notifications, payments/entitlements, referrals, AI/knowledge, audio, feature flags and admin operations; classify each UI domain against real contracts; implement evidence-backed gaps and run typecheck/build/Playwright. Supabase is connected and must not be described as blocked.
