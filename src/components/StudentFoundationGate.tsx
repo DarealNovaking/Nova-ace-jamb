@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { AuthChangeEvent, User } from '@supabase/supabase-js'
 import StudentAuth from './StudentAuth'
 import StudentOnboarding from './StudentOnboarding'
@@ -22,8 +22,10 @@ export default function StudentFoundationGate() {
   const [needsOnboarding, setNeedsOnboarding] = useState(false)
   const [recovery, setRecovery] = useState(hasRecoverySession)
   const [error, setError] = useState<string | null>(null)
+  const refreshSequence = useRef(0)
 
   const refresh = async (nextUser: User | null, authEvent?: AuthChangeEvent) => {
+    const sequence = ++refreshSequence.current
     setUser(nextUser)
     setError(null)
     if (authEvent === 'PASSWORD_RECOVERY') setRecovery(true)
@@ -36,6 +38,7 @@ export default function StudentFoundationGate() {
     setChecking(true)
     try {
       const { data: isAdmin, error: roleError } = await ace.rpc('is_admin')
+      if (sequence !== refreshSequence.current) return
       if (roleError) throw roleError
       if (isAdmin) {
         window.location.assign('/admin')
@@ -45,6 +48,7 @@ export default function StudentFoundationGate() {
       // Content editors use the separate academic workspace, not full admin tools.
       try {
         const { data: isEditor, error: editorRoleError } = await ace.rpc('is_admin_or_editor')
+        if (sequence !== refreshSequence.current) return
         if (!editorRoleError && isEditor) {
           window.location.assign('/admin-academic')
           return
@@ -54,9 +58,11 @@ export default function StudentFoundationGate() {
       }
 
       await registerCurrentDevice()
+      if (sequence !== refreshSequence.current) return
       let profile
       try {
         profile = await getStudentProfile()
+        if (sequence !== refreshSequence.current) return
       } catch (profileError) {
         const code = (profileError as { code?: string })?.code
         if (code === 'PGRST116') {
@@ -74,6 +80,7 @@ export default function StudentFoundationGate() {
         }),
         getStudentSubjects(),
       ])
+      if (sequence !== refreshSequence.current) return
 
       setNeedsOnboarding(
         !profile.display_name ||
@@ -82,11 +89,12 @@ export default function StudentFoundationGate() {
         subjects.length !== 4,
       )
     } catch (caught) {
+      if (sequence !== refreshSequence.current) return
       setNeedsOnboarding(false)
       // Keep internal database/provider details out of the student-facing UI.
       setError('We could not load your saved preparation profile. Check your connection and try again.')
     } finally {
-      setChecking(false)
+      if (sequence === refreshSequence.current) setChecking(false)
     }
   }
 
@@ -102,8 +110,9 @@ export default function StudentFoundationGate() {
     })
     const { data } = onAuthStateChange((nextUser, _session, event) => {
       if (!active) return
-      if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'PASSWORD_RECOVERY') {
-        void refresh(nextUser, event)
+      if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'PASSWORD_RECOVERY') {
+        // Defer Supabase requests until its auth-state callback releases the internal lock.
+        window.setTimeout(() => { if (active) void refresh(nextUser, event) }, 0)
       }
     })
     return () => { active = false; data.subscription.unsubscribe() }
