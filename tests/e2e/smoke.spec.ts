@@ -207,7 +207,11 @@ test.describe('ACE JAMB preparation workspaces', () => {
 
     await page.getByRole('button', { name: 'Study plan', exact: true }).click()
     await expect(page.getByRole('heading', { level: 1, name: 'Study plan', exact: true })).toBeVisible()
-    await expect(page.getByText('Learn one approved topic')).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Build your study routine' })).toBeVisible()
+    await page.getByLabel('Daily study time').fill('90')
+    await page.getByLabel('Tue', { exact: true }).check()
+    await page.getByRole('button', { name: 'Save study preferences' }).click()
+    await expect(page.getByRole('status')).toContainText('saved to your account')
 
     await page.getByRole('button', { name: 'Dashboard', exact: true }).click()
     await expect(page.getByRole('heading', { name: 'Welcome back, Test Futarian.' })).toBeVisible()
