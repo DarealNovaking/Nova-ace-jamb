@@ -159,6 +159,51 @@ test.describe('ACE JAMB prepared student dashboard', () => {
 })
 
 test.describe('ACE JAMB persistent CBT', () => {
+  test('restores the same active attempt after reload instead of starting another', async ({ page }) => {
+    await mockPreparedStudent(page)
+    const questionId = '30000000-0000-4000-8000-000000000002'
+    const attemptId = '40000000-0000-4000-8000-000000000002'
+    const startedAt = new Date().toISOString()
+    let startCalls = 0
+    let resumeCalls = 0
+
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/start_attempt'), async (route) => {
+      startCalls += 1
+      await route.fulfill({ json: {
+        attempt_id: attemptId, status: 'active', started_at: startedAt,
+        duration_seconds: 1800, random_seed: 2, question_order: [questionId],
+        option_order: { [questionId]: ['A'] }, question_count: 1,
+      } })
+    })
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/resume_attempt'), async (route) => {
+      resumeCalls += 1
+      await route.fulfill({ json: {
+        attempt_id: attemptId, status: 'active', mode: 'cbt', subject_id: null,
+        started_at: startedAt, completed_at: null, duration_seconds: 1800,
+        remaining_seconds: 1790, random_seed: 2, question_order: [questionId],
+        option_order: { [questionId]: ['A'] }, answers: [], score: null,
+        correct_count: 0, answered_count: 0,
+      } })
+    })
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/questions'), async (route) => {
+      await route.fulfill({ json: [{
+        id: questionId, question_text: 'Recovery test question',
+        options: [{ key: 'A', text: 'Answer A' }],
+        subject_id: null, topic_id: null, difficulty: 'easy',
+      }] })
+    })
+
+    await page.goto('/')
+    await expect(page.getByRole('heading', { name: 'Welcome back, Test Futarian.' })).toBeVisible()
+    await page.getByRole('button', { name: /CBT Practice/ }).click()
+    await expect(page.getByRole('heading', { name: 'JAMB simulation' })).toBeVisible()
+    await expect.poll(() => startCalls).toBe(1)
+    await page.reload()
+    await expect(page.getByRole('heading', { name: 'JAMB simulation' })).toBeVisible()
+    await expect.poll(() => resumeCalls).toBe(2)
+    expect(startCalls).toBe(1)
+  })
+
   test('saves an answer and renders the server-submitted result', async ({ page }) => {
     await mockPreparedStudent(page)
     const questionId = '30000000-0000-4000-8000-000000000001'
