@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import StudentStudyPlan from './StudentStudyPlan'
 import { ArrowLeft, BookOpen, Brain, CalendarDays, CheckCircle2, Clock3, Layers3, ListChecks, Sparkles, Target, Trophy } from 'lucide-react'
 
 type Subject = { id: string; name: string; code: string }
@@ -72,7 +73,8 @@ export default function StudentStudyWorkspace({ mode, subjects, topics, onBack, 
 
         {mode === 'progress' && <section className="glass-card rounded-3xl p-6 sm:p-8"><div className="flex items-center gap-3"><Trophy className="text-purple-200"/><h2 className="text-2xl font-black">Your progress</h2></div><p className="mt-3 text-sm leading-6 text-white/50">Progress should be calculated from your real saved answers and completed attempts—not sample numbers.</p><div className="mt-6 grid gap-3 sm:grid-cols-3">{[{label:'Saved subjects',value:String(subjects.length)},{label:'Approved topics',value:String(topics.length)},{label:'Verified performance',value:'Not available yet'}].map((item) => <div key={item.label} className="rounded-2xl border border-white/10 bg-white/[.025] p-5"><p className="text-sm text-white/45">{item.label}</p><p className="mt-3 text-xl font-black">{item.value}</p></div>)}</div><p className="mt-5 text-sm leading-6 text-white/45">Attempt scores and mastery trends will appear when saved attempt data is available to the student analytics view.</p></section>}
 
-        {mode === 'plan' && <section className="glass-card rounded-3xl p-6 sm:p-8"><div className="flex items-center gap-3"><CalendarDays className="text-purple-200"/><h2 className="text-2xl font-black">Study plan</h2></div><p className="mt-3 text-sm leading-6 text-white/50">A simple repeatable preparation routine based on your saved subjects. This is guidance, not a claim that a personalized schedule has already been generated or saved.</p><div className="mt-6 space-y-3">{[{n:'01',title:'Learn one approved topic',body:'Start with a topic that has reviewed lesson content.'},{n:'02',title:'Practise with verified questions',body:'Answer a short set and read the explanation for every response.'},{n:'03',title:'Review mistakes',body:'Return to missed questions after the explanation is understood.'},{n:'04',title:'Check your progress',body:'Use completed attempts to decide what to revise next.'}].map((step) => <article key={step.n} className="flex gap-4 rounded-2xl border border-white/10 p-4"><span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-purple-500/15 text-sm font-black text-purple-100">{step.n}</span><div><h3 className="font-bold">{step.title}</h3><p className="mt-1 text-sm leading-6 text-white/45">{step.body}</p></div></article>)}</div><p className="mt-5 flex items-center gap-2 text-xs text-white/35"><CheckCircle2 size={14}/> Your saved subjects: {subjects.map((subject) => subject.name).join(', ') || 'none yet'}.</p></section>}
+        {mode === 'plan' && <StudentStudyPlan subjects={subjects} />}
+
       </div>
     </main>
   )
