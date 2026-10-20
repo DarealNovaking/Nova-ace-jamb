@@ -20,7 +20,7 @@ $roles$;
 
 create function ace.is_admin_or_editor()
 returns boolean language sql stable
-as $ select coalesce(current_setting('test.is_editor', true), 'false') = 'true' $;
+as $fn$ select coalesce(current_setting('test.is_editor', true), 'false') = 'true' $fn$;
 
 create table ace.syllabus_versions (
   id uuid primary key,
@@ -29,7 +29,7 @@ create table ace.syllabus_versions (
 );
 create or replace function ace.is_syllabus_version_public(p_syllabus_version_id uuid)
 returns boolean language sql stable security definer set search_path = pg_catalog, ace
-as $ select exists (select 1 from ace.syllabus_versions sv where sv.id = p_syllabus_version_id and sv.status = 'active' and sv.rights_status = 'approved') $;
+as $fn$ select exists (select 1 from ace.syllabus_versions sv where sv.id = p_syllabus_version_id and sv.status = 'active' and sv.rights_status = 'approved') $fn$;
 
 create table ace.topics (
   id uuid primary key,
