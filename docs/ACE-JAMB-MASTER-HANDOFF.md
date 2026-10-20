@@ -2248,3 +2248,10 @@ The authoritative direction is now `docs/CATALOGUE-REPLACEMENT-INVESTIGATION-202
 - Added Playwright coverage for authorized editor access and student denial in `tests/e2e/smoke.spec.ts`. The latest E2E run `39507436232` for commit `566673fb` was still running at the last poll; fetch final result before claiming complete.
 - All work is committed to `main`; latest observed commit at this update is `566673fb72311d730686d31d126a66ed0acee255`. No production migration was applied, no live database data was changed, and no deployment was initiated.
 - **Next action:** fetch final Verify and E2E results for latest `main`; inspect/fix any failures. If green, review the migration once more against live policy grants, then obtain explicit authorization before applying it to production. After application, re-run read-only policy checks and continue academic authoring with source-verified syllabus material only.
+
+
+## Verification closeout — academic editor (2026-10-20)
+- Verify run `39507436241` passed on code commit `566673fb72311d730686d31d126a66ed0acee255`, including TypeScript, production build, Deno checks and both disposable PostgreSQL test scripts. The syllabus visibility regression test passed.
+- E2E run `39507436232` passed on that same code commit; Playwright reports 10 passed (8.2s), including authorized-editor and student-denial coverage.
+- Documentation commits followed the verified code commit; the workflows for the newest docs-only HEAD were still running at the last poll. Check latest HEAD before claiming every workflow is green.
+- The migration is committed but unapplied to production. Next: verify latest HEAD workflows, then request explicit authorization before applying the migration and checking live policies. No production data changes or deployment occurred.
