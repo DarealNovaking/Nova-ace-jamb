@@ -115,3 +115,13 @@ Next: inspect the complete current service/migration/test contracts and latest C
 - Verify and ACE JAMB E2E both passed on previous docs-only baseline commit `bce60df163ee855ada622276d45488a53bc4ea6f` (runs `39514640639` and `39514640651`).
 - Runs for the newer scope/handoff commits were still in progress when queried: Verify `39515107606` on `ce737e1c2876cac9a18c0e8e1d74a5bd39ea1fa6`; ACE JAMB E2E `39515107387` on the same SHA. Recheck the newest `main` runs before relying on CI status.
 - No app source was changed and no build or Playwright command was run directly in this audit. Live Supabase checks were read-only.
+
+
+## RLS/service-boundary findings from live read-only audit — 2026-10-21
+- Notifications: authenticated students can SELECT their own notifications and UPDATE their own rows for read state; admin has ALL. Notification preferences have a self-only ALL policy. This suggests an inbox/preferences UI can use these existing boundaries, but a delivery/scheduling service still needs verification.
+- Products: active products are publicly readable. Payments are self-readable and admin-manageable; entitlements are self-readable and admin-manageable. Student payment creation/verification must use a server/provider flow, not direct client writes.
+- Referral codes are self-readable; referrals are readable only to participants; referral rewards are self-readable. No student-write policy for qualification/reward was found, so a frontend must not calculate/award qualification client-side.
+- Flashcard review and learning progress are self-scoped; study plans/items are owner-scoped; devices are self-scoped. Their corresponding tables were empty for content/activity in the audit (flashcards 0, learning progress 0, study plans 0), so screens need correct empty states until valid records exist.
+- AI providers and knowledge sources/chunks are admin-only; AI requests are self-readable and AI usage is self/admin-readable. No dedicated AI request Edge Function was listed, and no student INSERT policy for AI requests appeared. Do not call provider secrets from the browser or build a fake tutor; establish a server-side request boundary first.
+- Feature flags are readable by authenticated users and writable only by admins. Audit events are readable to actor/admin and inserts are constrained to self/null actor. Admin UI must respect these RLS boundaries.
+- These findings are schema/policy observations only; no row was changed. See live schema/counts above. No channel verification/group mapping contract was found.
