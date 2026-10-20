@@ -15,7 +15,7 @@ export default function ProtectedCBT() {
   useEffect(() => {
     getCurrentUser().then((user) => {
       setSignedIn(Boolean(user))
-      setStorageKey(user ? `ace-cbt-active-attempt:${user.id}` : null)
+      setStorageKey(user ? `ace-${mode}-active-attempt:${user.id}` : null)
     }).catch(() => setSignedIn(false)).finally(() => setChecking(false))
   }, [])
 
