@@ -2403,3 +2403,7 @@ The first Phase 1 implementation slice is committed; Phase 1 is **in progress**,
 - The learning workspace now renders approved subtopics attached to their actual parent topics.
 - Commits: `a757f602f7d045d16ed53b511c2a5369a310a689`, `49c8949fdc9771876cc6e6150f96cb9fcc70cd6b`, `fc2b70c7733671d0e13a88265c9da7a95bef91a3`, `95cb90c4bf3f8f4f3f53e043aa95ae3496f459f1`.
 - No typecheck/build/Playwright results are claimed. GitHub combined status returned an empty list and commit-associated workflow lookup returned no runs. Continue with Phase 1 batch acceptance tests and CBT hardening.
+
+
+### CI feedback and correction — 2026-10-21
+GitHub Actions exposed a TypeScript parse error at `src/components/StudentDashboard.tsx(128,200)` (`TS1005: '}' expected`) in the workspace navigation click handler. The missing JSX expression brace was fixed in `23735a150ba0d142f29ec0919df69c33236a4f2f`. This is a correction commit, not yet a verified pass; inspect the latest Verify and ACE JAMB E2E runs for this commit before proceeding or claiming tests pass.
