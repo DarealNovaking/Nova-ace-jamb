@@ -125,3 +125,27 @@ Next: inspect the complete current service/migration/test contracts and latest C
 - AI providers and knowledge sources/chunks are admin-only; AI requests are self-readable and AI usage is self/admin-readable. No dedicated AI request Edge Function was listed, and no student INSERT policy for AI requests appeared. Do not call provider secrets from the browser or build a fake tutor; establish a server-side request boundary first.
 - Feature flags are readable by authenticated users and writable only by admins. Audit events are readable to actor/admin and inserts are constrained to self/null actor. Admin UI must respect these RLS boundaries.
 - These findings are schema/policy observations only; no row was changed. See live schema/counts above. No channel verification/group mapping contract was found.
+
+
+## Phase 1 implementation log — 2026-10-21
+
+### Completed source changes (not a claim that all Phase 1 batches are complete)
+- `src/components/StudentFoundationGate.tsx`: a newly created student account whose `student_preferences` row is not present (`PGRST116`) now proceeds to onboarding instead of falling into the generic account-load error screen. Other errors still fail closed into a recoverable error state. Raw database/provider error messages are no longer shown to students.
+- `src/components/StudentDashboard.tsx`: selected workspace mode is now represented in the URL as `?view=<mode>`; valid modes restore after reload, workspace changes enter browser history, browser back/forward syncs the active workspace, and opening CBT removes the workspace query without discarding unrelated URL parameters.
+- `src/main.tsx`: removed fragile document-wide button-text interception for CBT routing. CBT back navigation now removes only the `cbt` query parameter and preserves other URL state.
+- Commits: `79d99942491507b0e8e7fc3d1a8f9d4862f7f9ea`, `66b0f606ec33f1061ae97f34c937a5b531c0e3ea`, `4e522f91ee686635dc725149bbac038ff02c9020`.
+
+### Verification
+- Read the current `main` source for the affected components before editing.
+- GitHub combined commit-status endpoint returned an empty `statuses` array for these commits; this does **not** establish that CI passed.
+- Typecheck, production build, Playwright, and live authenticated browser flows have **not yet been run** in this implementation slice.
+- No database writes, migrations, or deployment were performed.
+
+### Phase 1 remaining
+- Batch 1: harden auth/session race and recovery/sign-up states; add/verify auth and onboarding E2E coverage.
+- Batch 2: test URL/history navigation and student dashboard error/empty states.
+- Batch 3: verify syllabus tree and learning workspace states against published records.
+- Batch 4: implement practice only against verified question/answer data and available server contracts; never synthesize official questions.
+- Batch 5: finish CBT recovery, timer, answer persistence, submission and results regression checks.
+- Run `npm run typecheck`, `npm run build`, and `npm run e2e` after the phase's source slices; report each result separately.
+- Continue to update this file and both canonical handoffs after each meaningful slice.
