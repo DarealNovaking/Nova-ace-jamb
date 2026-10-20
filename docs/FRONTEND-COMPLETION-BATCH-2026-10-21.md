@@ -221,3 +221,10 @@ Check Verify and ACE JAMB E2E on the latest main commit after `cba0c14` and this
 - Fixed in commit `04ad0edae2bfa936997a0edfeb1d6138a87d03f7`: sign-in now builds the recovery key from the route's validated `mode` (`cbt` or `practice`). No data schema or production data changed.
 - GitHub Verify passed on the previous checkpoint SHA `38a948349c6c732f5b8ae144051dff3650b089c7`. The E2E run for that SHA was still marked in progress when checked; several older E2E runs were also still in progress with no final conclusion, so browser acceptance is not verified. No claim of Phase 1 completion.
 - Next: poll CI for the new fix commit, add/verify a sign-in-to-practice recovery-key regression test, inspect CBT expiry and completed-attempt recovery paths, and finish syllabus published/unpublished fixture coverage. Keep question-bank empty states honest.
+
+
+### Completed-attempt recovery regression coverage — 2026-10-21
+- Added a mocked Playwright test proving a saved completed attempt can restore its server-returned result after entering CBT without fetching question content. This covers the recovery path when the published question rows may no longer be available; all Supabase calls are intercepted.
+- Test change commits: `4e8fc1c5c6c8493c20635d1651b19d0968ca03bf`, `ef6ec1e5478612d0cb1fa5bd6866c39ef330b6a9`, `bc616ee623ec88cefb524e4c5762901a0ef5e77f` (test adjustments after source review). The test has not yet been verified by a completed E2E run.
+- The fresh-sign-in practice recovery-key fix is in `04ad0edae2bfa936997a0edfeb1d6138a87d03f7`. Verify/E2E runs for that fix and later documentation/test commits are currently queued or in progress; no final browser pass is claimed.
+- Next: inspect the newest E2E result, fix any failing assertion, add the practice sign-in key regression if feasible, then complete CBT expiry/retry and published/unpublished syllabus acceptance. Phase 1 remains open.
