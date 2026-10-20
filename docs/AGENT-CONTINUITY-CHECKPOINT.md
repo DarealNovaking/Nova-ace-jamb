@@ -531,3 +531,20 @@ Re-run Verify/E2E CI for the latest main commits, then reproduce sign-in with th
 - Security issue to fix before authoring UI: current public SELECT policies on `topics` and `subtopics` only check row `active`, not whether the linked syllabus version is active and rights-approved. Since syllabus activation requires active topics, draft topics could be exposed while the parent syllabus is still draft. No policy change was made in this audit.
 - No live data/schema changes or deployments were performed. Search for `appdeploy` returns no matches. Dashboard code has successful Verify + E2E on commit `7c1c124e`.
 - **Exact next action:** finish latest main E2E check; implement a migration to make public topic/subtopic reads require an active, rights-approved parent syllabus version, add disposable SQL regression coverage to CI, then build a separate least-privilege `/admin-academic` route for draft version/topic/subtopic authoring and provenance/rights review. Do not seed invented content or apply a production migration without a reviewed, verified change.
+
+
+## Current continuation checkpoint — Batch 3 security + authoring (2026-10-20)
+
+- Repo `DarealNovaking/Nova-ace-jamb`, branch `main`; last observed HEAD before this checkpoint commit: `566673fb72311d730686d31d126a66ed0acee255`.
+- Implemented source-only migration `20261020120000_syllabus_publication_visibility.sql`: public topic/subtopic reads require active rows tied to active + rights-approved syllabus versions; subtopics additionally require an active matching parent topic. SECURITY DEFINER helper exposes only a boolean and uses fixed search path. Existing editor/admin review access is retained.
+- Added SQL regression test `tests/sql/syllabus_publication_visibility.test.sql` and Verify workflow step. The disposable PostgreSQL test reported “syllabus publication visibility tests passed” in the latest observed Verify run for commit `566673fb`; TypeScript validation also passed. Verify production build and Playwright were still running at last poll, so overall latest HEAD is not yet fully verified.
+- Added `AdminAcademicWorkspace.tsx`, `AcademicFoundationGate.tsx`, route `/admin-academic`, and student-session redirect for content editors. The workspace creates source-attributed draft versions, leaves rights pending by default, lets editors draft topics/subtopics inactive, supports rights review, and calls only the existing guarded activation RPC. No official content is seeded or invented.
+- Added Playwright cases for authorized editor access and denial for a student. Latest E2E run `39507436232` remained in progress at last poll.
+- Earlier CI failure on commit `94203c9f` was due to malformed SQL dollar delimiters in the test harness. Fixed with named `$fn$` delimiters; the subsequent Verify run `39507338409` passed. The current test job subsequently showed the SQL regression test passing.
+- No production schema migration, database write, or deployment was performed. The migration is committed but unapplied to production.
+
+### Exact next action
+1. Fetch completion status and job logs for Verify `39507436241` and E2E `39507436232` (or newest runs on current HEAD after this documentation commit).
+2. Fix any failures; ensure all latest Verify, build, disposable SQL, and Playwright checks pass.
+3. Only after reviewing current live grants/policies and receiving explicit deployment/migration authorization, apply the visibility migration to production and verify its deployed policy definitions read-only.
+4. Continue with source-verified syllabus content; never invent JAMB syllabus data or activate unverified season/configuration rows.
