@@ -5,13 +5,17 @@ import { getCurrentUser, signInWithPassword } from '../lib/authService'
 export default function ProtectedCBT() {
   const [checking, setChecking] = useState(true)
   const [signedIn, setSignedIn] = useState(false)
+  const [storageKey, setStorageKey] = useState<string | null>(null)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [message, setMessage] = useState('')
   const [busy, setBusy] = useState(false)
 
   useEffect(() => {
-    getCurrentUser().then((user) => setSignedIn(Boolean(user))).catch(() => setSignedIn(false)).finally(() => setChecking(false))
+    getCurrentUser().then((user) => {
+      setSignedIn(Boolean(user))
+      setStorageKey(user ? `ace-cbt-active-attempt:${user.id}` : null)
+    }).catch(() => setSignedIn(false)).finally(() => setChecking(false))
   }, [])
 
   const signIn = async (event: FormEvent) => {
@@ -19,8 +23,9 @@ export default function ProtectedCBT() {
     setMessage('')
     setBusy(true)
     try {
-      await signInWithPassword(email, password)
-      setSignedIn(true)
+      const data = await signInWithPassword(email, password)
+      setStorageKey(data.user ? `ace-cbt-active-attempt:${data.user.id}` : null)
+      setSignedIn(Boolean(data.user))
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Could not sign in. Check your email and password.')
     } finally {
@@ -40,5 +45,5 @@ export default function ProtectedCBT() {
       <button type="submit" disabled={busy} className="w-full rounded-xl bg-white py-3 font-bold text-black disabled:opacity-50">{busy ? 'Signing in…' : 'Sign in'}</button>
     </form>
   </section>
-  return <PersistentCBT />
+  return <PersistentCBT storageKey={storageKey} />
 }
