@@ -487,3 +487,27 @@ Re-run Verify/E2E CI for the latest main commits, then reproduce sign-in with th
 - Actual entrypoint confirmed as `src/main.tsx`, using Supabase-backed student/admin gates and CBT component. No production DB or deployment changes.
 - Code commits: `35fc382fd8ace91464c743973da332eadf196c21`, `216dc14e1d0859abb0d43e4651a8b48e6806b613`, `4c03678ed0dc9fd051c20f1d01b8bd9d5166e2e8`, `f3740d5712033263a651905d7cf94591b1fbca52`, `f253e249370e170f97eb0151422015513c2636a5`.
 - Build/typecheck/E2E remain unverified after changes. Next: residual-reference scan, run typecheck/build and Playwright, resolve errors, then continue Batch 3.
+
+
+## Active continuity checkpoint — post-legacy-removal CI regression (2026-10-20)
+
+### Repository and evidence
+- Repo: `DarealNovaking/Nova-ace-jamb`, branch `main`.
+- Latest relevant commits: `9c585a6213b2943573abdb5601a3e5c2a2f1b19f`, `69404fe1fff598429b45ec8169162ffedbf7a6be`, `7c1c124e459b7a64816c4277dac59c750f9364eb`.
+- The last completed workflows before the fix were Verify run `39339534465` and ACE JAMB E2E run `39339534495` on `84d36fbe87ad7b1c690a28187c0fe7be6967b3a2`; both failed at TypeScript check because `StudentFoundationGate.tsx` imported the deleted `../App`. Build and browser tests were skipped. The disposable PostgreSQL migration test and the static/Deno checks preceding typecheck passed.
+- Corrected the active route to use new `src/components/StudentDashboard.tsx`; this avoids restoring the removed AppDeploy-based demo. Dashboard reads saved student profile/subjects from Supabase, loads only active subject rows, and displays topics only from active rights-approved syllabus versions. No invented syllabus content is shown.
+- Corrected subject filtering to use the actual `subjects.active` column, matching `StudentOnboarding.tsx`.
+- AppDeploy legacy-reference search returned no results before this route regression was fixed; source inspection then found the dangling `../App` import. The active student gate now points at the new dashboard. Re-run a residual-reference scan after current CI.
+- No live database writes, migrations, deployments, or catalogue imports were performed.
+
+### Current verification state
+- CI runs triggered by the fix were queued at the last poll: Verify `39506323322` and ACE JAMB E2E `39506323321` (commit `69404fe1`), plus Verify `39506318882` and ACE JAMB E2E `39506318829` (commit `9c585a62`). A later code commit `7c1c124e` should have its own runs; fetch the latest runs rather than relying on queued historical entries.
+- Dashboard build/typecheck/browser behavior remains **unverified** until the latest CI results finish. No Playwright browser test passed on the pre-fix commit because typecheck failed first.
+- Batch 2 remains closed based on the owner's direct confirmation of student login, preparation save/persistence and Learning/CBT navigation. Automated follow-up QA is still required.
+- Active milestone remains **Batch 3 — Academic Structure**.
+
+### Exact next action
+1. Fetch Verify and ACE JAMB E2E workflow outcomes for the latest `main` HEAD; inspect failed job logs if needed. Resolve any errors and wait for the rerun to finish.
+2. Confirm the legacy-provider residual scan and add/adjust Playwright coverage for the post-onboarding dashboard and CBT navigation where feasible.
+3. Continue Batch 3 with read-only inspection of academic table counts/records, subject/syllabus services, and admin/editor review/publish controls. Do not invent JAMB data, seed production rows, deploy, or re-open catalogue ingestion as an onboarding gate.
+4. Update this checkpoint and master handoff with actual CI outcomes and the next verified gap.
