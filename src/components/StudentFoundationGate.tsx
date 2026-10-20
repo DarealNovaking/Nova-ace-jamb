@@ -67,24 +67,24 @@ export default function StudentFoundationGate() {
       }
 
       const [preferences, subjects] = await Promise.all([
-        getStudentPreferences(),
+        getStudentPreferences().catch((preferenceError: unknown) => {
+          // A new account may not have a preferences row until onboarding saves it.
+          if (typeof preferenceError === 'object' && preferenceError !== null && 'code' in preferenceError && preferenceError.code === 'PGRST116') return null
+          throw preferenceError
+        }),
         getStudentSubjects(),
       ])
 
       setNeedsOnboarding(
         !profile.display_name ||
         profile.target_score === null ||
-        !preferences.daily_minutes ||
+        !preferences?.daily_minutes ||
         subjects.length !== 4,
       )
     } catch (caught) {
       setNeedsOnboarding(false)
-      const detail = caught instanceof Error
-        ? caught.message
-        : typeof caught === 'object' && caught !== null && 'message' in caught && typeof caught.message === 'string'
-          ? caught.message
-          : 'Unable to prepare your ACE account. Please try again.'
-      setError(detail)
+      // Keep internal database/provider details out of the student-facing UI.
+      setError('We could not load your saved preparation profile. Check your connection and try again.')
     } finally {
       setChecking(false)
     }
