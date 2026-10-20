@@ -603,3 +603,29 @@ Re-run Verify/E2E CI for the latest main commits, then reproduce sign-in with th
 - No UI implementation, production database, migration, deployment, or catalogue data changed in this step.
 - Important remaining gap: the dashboard is a landing/overview, not a full lesson experience. Active rights-approved syllabus versions/topics were last audited as empty/unpublished; never manufacture JAMB content to fill the screen.
 - Exact next action: poll both listed CI runs, inspect job logs and fix any failure. Once green, build the next student-facing frontend flow only after checking existing components/routes and actual available data; preserve the current Supabase authorization/RLS boundaries. Update both continuity documents after that change.
+
+
+## Frontend batch checkpoint — preparation workspaces + admin milestone alignment (2026-10-20)
+
+### Implemented on main
+- `06b5b78672ee31db7e69dcc0f16ca73431685232`: new `src/components/StudentStudyWorkspace.tsx` with Learn, Practice, Quick Revision, Flashcards, Progress and Study Plan views.
+- `1f7253c02325d6003bd1f3c395b0a236d69ebe43`: dashboard navigation and workspace state in `src/components/StudentDashboard.tsx`.
+- `c18baf86e1482076aabea9cbb15f281fa348dc1c`: Playwright journey covering all six student tools and their empty states.
+- `a02516bf0e308958c4564ea6960ee4fbeed4485b`: admin dashboard now reflects Batch 3 / Academic Structure and links directly to `/admin-academic`.
+
+### Correctness boundary
+- Workspaces show only saved subjects and verified active/rights-approved topics passed from the existing dashboard service.
+- Lesson text, questions, flashcard facts and performance metrics are not fabricated. The latest live audit found no active questions and no active rights-approved syllabus versions/topics; confirm current live state before assuming this has changed.
+- Practice opens the existing protected CBT implementation. No new backend schema or data path was added.
+- No live data, migrations, production grants or deployment changed in this frontend batch. Existing catalogue import/review UI was retained.
+
+### Verification state at checkpoint
+- Verify run `39512223624` passed for component commit `06b5b78672ee31db7e69dcc0f16ca73431685232`.
+- Remaining/newest runs were still running or queued: E2E `39512223597`; Verify `39512272979`; E2E `39512273077`; Verify `39512296427`; E2E `39512296132`; Verify `39512374477`; E2E `39512374470`. Latest code HEAD before this checkpoint documentation commit: `a02516bf0e308958c4564ea6960ee4fbeed4485b`. Full batch is not yet CI-verified.
+- No deployment was performed.
+
+### Exact next action
+1. Poll Verify and ACE JAMB E2E for the latest frontend/admin code and documentation commits.
+2. If any run fails, inspect job steps/logs and fix the smallest cause; rerun CI.
+3. Update both handoff documents with the final run IDs/results.
+4. Once green, continue frontend work dependent on actual lesson/question/attempt data only when those verified records exist; do not invent official JAMB material.
