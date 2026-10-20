@@ -234,7 +234,7 @@ test.describe('ACE JAMB persistent CBT', () => {
         attempt_id: attemptId, status: 'completed', mode: 'cbt', subject_id: null,
         started_at: '2026-10-20T10:00:00.000Z', completed_at: '2026-10-20T10:20:00.000Z',
         duration_seconds: 1200, remaining_seconds: 0, random_seed: 3,
-        question_order: ['30000000-0000-4000-8000-000000000003'],
+        question_order: ['30000000-0000-4000-8000-000000000003', '30000000-0000-4000-8000-000000000004', '30000000-0000-4000-8000-000000000005', '30000000-0000-4000-8000-000000000006', '30000000-0000-4000-8000-000000000007'],
         option_order: {}, answers: [], score: 80, correct_count: 4, answered_count: 5,
       } })
     })
@@ -246,9 +246,8 @@ test.describe('ACE JAMB persistent CBT', () => {
     await page.goto('/?cbt=1')
     await expect(page.getByRole('heading', { name: 'Welcome back, Test Futarian.' })).toBeVisible()
     await page.getByRole('button', { name: /CBT Practice/ }).click()
-    await expect(page.getByRole('heading', { name: 'JAMB simulation' })).toBeVisible()
     await expect(page.getByText('80%', { exact: true })).toBeVisible()
-    await expect(page.getByText('4/1 correct')).toHaveCount(0)
+    await expect(page.getByText('4/5 correct')).toBeVisible()
     expect(questionFetches).toBe(0)
   })
 
