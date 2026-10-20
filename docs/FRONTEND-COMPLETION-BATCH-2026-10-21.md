@@ -149,3 +149,10 @@ Next: inspect the complete current service/migration/test contracts and latest C
 - Batch 5: finish CBT recovery, timer, answer persistence, submission and results regression checks.
 - Run `npm run typecheck`, `npm run build`, and `npm run e2e` after the phase's source slices; report each result separately.
 - Continue to update this file and both canonical handoffs after each meaningful slice.
+
+
+### Additional Phase 1 hardening slice — 2026-10-21
+- `src/components/StudentFoundationGate.tsx`: auth refreshes now ignore stale async results, include the initial auth-session event, and defer auth-dependent Supabase requests until after the auth callback returns to avoid auth-lock races. Stale profile lookup errors are ignored rather than changing the current user's UI state.
+- `src/components/StudentDashboard.tsx` + `src/components/StudentStudyWorkspace.tsx`: approved syllabus subtopics returned by the existing syllabus service are now passed through and displayed under their parent topic. This uses actual published records only.
+- Commits: `a757f602f7d045d16ed53b511c2a5369a310a689`, `49c8949fdc9771876cc6e6150f96cb9fcc70cd6b`, `fc2b70c7733671d0e13a88265c9da7a95bef91a3`, `95cb90c4bf3f8f4f3f53e043aa95ae3496f459f1`.
+- Verification remains outstanding: no local runtime is attached to this GitHub-only editing path. GitHub combined status returned no status entries, and commit-associated workflow lookup returned no runs. Typecheck/build/Playwright are **not verified**. Do not describe this as passed.
