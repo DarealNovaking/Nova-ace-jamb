@@ -42,6 +42,17 @@ export default function StudentFoundationGate() {
         return
       }
 
+      // Content editors use the separate academic workspace, not full admin tools.
+      try {
+        const { data: isEditor, error: editorRoleError } = await ace.rpc('is_admin_or_editor')
+        if (!editorRoleError && isEditor) {
+          window.location.assign('/admin-academic')
+          return
+        }
+      } catch {
+        // Role lookup failure must not block the ordinary student journey.
+      }
+
       await registerCurrentDevice()
       let profile
       try {
