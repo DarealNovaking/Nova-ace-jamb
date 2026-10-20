@@ -153,7 +153,7 @@ test.describe('ACE JAMB prepared student dashboard', () => {
     await page.reload()
     await expect(page.getByRole('heading', { name: 'Welcome back, Test Futarian.' })).toBeVisible()
     await page.getByRole('button', { name: /CBT Practice/ }).click()
-    await expect(page).toHaveURL(/\\?cbt=1$/)
+    await expect(page).toHaveURL(/[?&]cbt=1(?:&|$)/)
     await expect(page.getByRole('button', { name: /Back to ACE JAMB/ })).toBeVisible()
   })
 })
@@ -187,8 +187,17 @@ test.describe('ACE JAMB preparation workspaces', () => {
     await page.goto('/')
 
     await page.getByRole('button', { name: /Learn Approved syllabus topics/ }).click()
+    await expect(page).toHaveURL(/[?&]view=learn(?:&|$)/)
     await expect(page.getByRole('heading', { name: 'Learn', exact: true })).toBeVisible()
     await expect(page.getByText('No approved topics available yet')).toBeVisible()
+
+    // Workspace selection is route state: reload and browser history must restore it.
+    await page.reload()
+    await expect(page.getByRole('heading', { name: 'Learn', exact: true })).toBeVisible()
+    await page.goBack()
+    await expect(page.getByRole('heading', { name: 'Welcome back, Test Futarian.' })).toBeVisible()
+    await page.goForward()
+    await expect(page.getByRole('heading', { name: 'Learn', exact: true })).toBeVisible()
 
     await page.getByRole('button', { name: 'Practice', exact: true }).click()
     await expect(page.getByRole('heading', { name: 'Practice', exact: true })).toBeVisible()
