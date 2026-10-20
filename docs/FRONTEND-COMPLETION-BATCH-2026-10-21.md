@@ -214,3 +214,10 @@ Check Verify and ACE JAMB E2E on the latest main commit after `cba0c14` and this
 - Commit: `b8881491720d74832f7a18401b905b7967368567`.
 - Verification at commit time: GitHub Verify workflow for the previous checkpoint SHA `a8c44efc5b5438d8b69c06fad8ca3f2f5b00911d` passed typecheck/build; the Playwright workflow was still running. The new test's CI result is pending and must be checked before calling it passed.
 - Next: inspect the new CI runs, fix any test failure, then add targeted regression coverage for CBT expiry and completed-attempt recovery. Live question content remains absent in the last verified audit; do not fabricate it.
+
+
+### CBT recovery-key correction — 2026-10-21
+- Inspection of the current `ProtectedCBT.tsx` found a mode-isolation defect: a student signing in from the Practice route was assigned the CBT recovery-storage key, although an already-authenticated student correctly used the selected mode. This could cause Practice and CBT to share or miss the intended recovery pointer after sign-in.
+- Fixed in commit `04ad0edae2bfa936997a0edfeb1d6138a87d03f7`: sign-in now builds the recovery key from the route's validated `mode` (`cbt` or `practice`). No data schema or production data changed.
+- GitHub Verify passed on the previous checkpoint SHA `38a948349c6c732f5b8ae144051dff3650b089c7`. The E2E run for that SHA was still marked in progress when checked; several older E2E runs were also still in progress with no final conclusion, so browser acceptance is not verified. No claim of Phase 1 completion.
+- Next: poll CI for the new fix commit, add/verify a sign-in-to-practice recovery-key regression test, inspect CBT expiry and completed-attempt recovery paths, and finish syllabus published/unpublished fixture coverage. Keep question-bank empty states honest.
