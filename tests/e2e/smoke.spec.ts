@@ -243,7 +243,7 @@ test.describe('ACE JAMB persistent CBT', () => {
       await route.fulfill({ json: [] })
     })
 
-    await page.goto('/?cbt=1')
+    await page.goto('/')
     await expect(page.getByRole('heading', { name: 'Welcome back, Test Futarian.' })).toBeVisible()
     await page.getByRole('button', { name: /CBT Practice/ }).click()
     await expect(page.getByText('80%', { exact: true })).toBeVisible()
