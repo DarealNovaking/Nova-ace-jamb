@@ -2293,3 +2293,14 @@ The authoritative direction is now `docs/CATALOGUE-REPLACEMENT-INVESTIGATION-202
 - Read-only policy verification confirms topics_editor_manage and subtopics_editor_manage still require ace.is_admin_or_editor() for writes. Publication SELECT policies remain in place, including active/right-approved syllabus-version checks and the active matching parent-topic check for subtopics. No anonymous schema usage was granted.
 - No syllabus/topic/subtopic content was inserted, edited, or activated. No frontend deployment was performed. Database grants and policy definitions were verified; a real authenticated editor browser/API create-and-read smoke test is still pending.
 - Next action: run a safe live editor workflow smoke test with an authorized editor session (draft-only; no activation of unverified content), confirm topic/subtopic reads and draft writes, then update both handoff files with the observed result. Keep anonymous schema access unchanged.
+
+
+## Frontend-first continuation — prepared student journey coverage (2026-10-20)
+
+- Repository: `main`; implementation commit `5893127760a7fac88871cc934544fb6cd77f61a6`.
+- Confirmed latest pre-change HEAD `5047974f35ebbdffe712c9f663420f10506ed847`; latest Verify and ACE JAMB E2E runs on that HEAD both passed (`39510772594`, `39510772622`). The prior documentation commits' Verify/E2E runs also passed.
+- Added a fully mocked Playwright journey in `tests/e2e/smoke.spec.ts` for an already-prepared student: dashboard renders the persisted profile/subjects, explicitly reports the unpublished syllabus state without inventing topics, survives a reload, and enters CBT route (`?cbt=1`) with a back-to-dashboard control. Supabase HTTP calls are intercepted, so this test does not read or write production data.
+- No application UI logic, live database data, migration, deployment, or catalogue import was changed in this step.
+- Verification status for implementation commit `5893127760a7fac88871cc934544fb6cd77f61a6`: Verify run `39511826720` and ACE JAMB E2E run `39511826534` were queued immediately after the test commit. Do not claim the new test passed until those runs complete.
+- Current frontend gap remains: the student dashboard exposes approved syllabus topics when available, but there is no distinct lesson/content-reading flow yet; live syllabus versions/topics remain unpublished/empty according to the last verified database audit. Keep the empty state honest and do not fabricate official content.
+- Next action: fetch both workflow results for `5893127760a7fac88871cc934544fb6cd77f61a6`; fix any test/typecheck/build failures. Then continue frontend-first by tracing existing Learning/Practice/CBT components and implement the next usable student-facing flow against available verified data, while keeping Supabase/RLS integration boundaries intact. Update this handoff and the continuity checkpoint after each meaningful change.
