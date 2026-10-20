@@ -2272,3 +2272,12 @@ The authoritative direction is now `docs/CATALOGUE-REPLACEMENT-INVESTIGATION-202
 - Read-only role privilege check found `anon` lacks `USAGE` on schema `ace`, while `authenticated` has it. A read-only `SET LOCAL ROLE anon` query failed at schema resolution before table RLS; no data changed.
 - The migration's table policies are installed and verified, but anonymous HTTP/schema-level access is **not yet proven**. Do not grant schema-wide anonymous access without reviewing other ACE object grants and intended public API scope.
 - Next: inspect the original schema-exposure migration and object privileges; determine whether anonymous syllabus reads are required. If not, validate visibility with a non-editor authenticated role; if yes, apply the narrowest safe grant and regression test.
+
+
+## Academic editor API privilege gap — 2026-10-20
+
+- Read-only live grant audit found authenticated has table privileges on `ace.syllabus_versions` but no SELECT/INSERT/UPDATE grants on `ace.topics` or `ace.subtopics`. The existing editor component calls those tables through the authenticated Supabase Data API, so the workspace's topic/subtopic loading and authoring would fail despite RLS policies being correct.
+- Added source migration `20261020230000_academic_topic_editor_api_privileges.sql` granting SELECT/INSERT/UPDATE on topics and subtopics to `authenticated`. These grants do not bypass RLS: the existing `topics_editor_manage` and `subtopics_editor_manage` policies still require `ace.is_admin_or_editor()` for writes; SELECT remains constrained by publication/editor policies. No DELETE grant was added because the current workspace does not delete rows.
+- Updated the disposable visibility SQL test to apply the grant migration. CI for the latest commits must confirm the combined test passes.
+- **Production status:** this new privileges migration is source-only and has NOT been applied to live Supabase. The earlier authorization covered the syllabus visibility migration specifically, not this additional table-privilege change. No production grant was changed by this audit.
+- Next: verify CI for the source migration/test, then request explicit authorization to apply the topic/subtopic API privilege migration. After approval, apply it and read-only verify grants, RLS policies, and the live editor workflow. Anonymous schema access remains intentionally ungranted; the product currently exposes the ACE schema to authenticated users only.
