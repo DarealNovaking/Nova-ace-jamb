@@ -195,7 +195,7 @@ test.describe('ACE JAMB preparation workspaces', () => {
     await expect(page.getByText('Practice sessions require reviewed questions with verified answers.')).toBeVisible()
 
     await page.getByRole('button', { name: 'Quick revision', exact: true }).click()
-    await expect(page.getByRole('heading', { name: 'Quick revision', exact: true })).toBeVisible()
+    await expect(page.getByRole('heading', { level: 1, name: 'Quick revision', exact: true })).toBeVisible()
     await expect(page.getByText('Revision materials are not published yet')).toBeVisible()
 
     await page.getByRole('button', { name: 'Flashcards', exact: true }).click()
@@ -206,7 +206,7 @@ test.describe('ACE JAMB preparation workspaces', () => {
     await expect(page.getByText('Not available yet')).toBeVisible()
 
     await page.getByRole('button', { name: 'Study plan', exact: true }).click()
-    await expect(page.getByRole('heading', { name: 'Study plan', exact: true })).toBeVisible()
+    await expect(page.getByRole('heading', { level: 1, name: 'Study plan', exact: true })).toBeVisible()
     await expect(page.getByText('Learn one approved topic')).toBeVisible()
 
     await page.getByRole('button', { name: 'Dashboard', exact: true }).click()
