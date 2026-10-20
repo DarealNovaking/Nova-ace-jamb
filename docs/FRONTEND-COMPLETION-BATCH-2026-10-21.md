@@ -156,3 +156,9 @@ Next: inspect the complete current service/migration/test contracts and latest C
 - `src/components/StudentDashboard.tsx` + `src/components/StudentStudyWorkspace.tsx`: approved syllabus subtopics returned by the existing syllabus service are now passed through and displayed under their parent topic. This uses actual published records only.
 - Commits: `a757f602f7d045d16ed53b511c2a5369a310a689`, `49c8949fdc9771876cc6e6150f96cb9fcc70cd6b`, `fc2b70c7733671d0e13a88265c9da7a95bef91a3`, `95cb90c4bf3f8f4f3f53e043aa95ae3496f459f1`.
 - Verification remains outstanding: no local runtime is attached to this GitHub-only editing path. GitHub combined status returned no status entries, and commit-associated workflow lookup returned no runs. Typecheck/build/Playwright are **not verified**. Do not describe this as passed.
+
+
+### CI-driven correction — 2026-10-21
+- The first pushed verification runs failed at TypeScript parsing: `src/components/StudentDashboard.tsx(128,200): TS1005 '}' expected`. The failure was caused by a missing JSX expression closing brace in the new workspace-navigation click handler.
+- Fixed in commit `23735a150ba0d142f29ec0919df69c33236a4f2f`.
+- The failure was identified from actual GitHub Actions logs, not inferred. A post-fix run for the corrected commit has not yet been observed; the correction is **not verified until the new Verify and E2E runs finish**.
