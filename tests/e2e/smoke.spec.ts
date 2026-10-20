@@ -86,6 +86,78 @@ test.describe('ACE JAMB student entry and preparation onboarding', () => {
   })
 })
 
+
+async function mockPreparedStudent(page: import('@playwright/test').Page) {
+  // Fully mocked Supabase responses keep this authenticated journey isolated from production.
+  await page.route(`${projectUrl}/**`, async (route) => {
+    const path = new URL(route.request().url()).pathname
+    if (path === '/auth/v1/user') {
+      await route.fulfill({ json: { id: userId, aud: 'authenticated', role: 'authenticated', email: 'student@example.test', app_metadata: { provider: 'email', providers: ['email'] }, user_metadata: {}, created_at: '2026-01-01T00:00:00.000Z' } })
+      return
+    }
+    if (path.includes('/rest/v1/rpc/is_admin') || path.includes('/rest/v1/rpc/is_admin_or_editor')) {
+      await route.fulfill({ json: false })
+      return
+    }
+    if (path.includes('/rest/v1/rpc/get_active_exam_blueprint')) {
+      await route.fulfill({ json: null })
+      return
+    }
+    if (path.includes('/rest/v1/devices')) {
+      await route.fulfill({ status: 201, json: { id: '20000000-0000-4000-8000-000000000001', user_id: userId, device_hash: 'test-device-hash', platform: 'Playwright', app_version: null, last_seen_at: '2026-01-01T00:00:00.000Z' } })
+      return
+    }
+    if (path.endsWith('/rest/v1/profiles')) {
+      await route.fulfill({ json: { id: userId, email: 'student@example.test', display_name: 'Test Futarian', target_score: 300, institution: null, course: null, institution_id: null, program_id: null, prep_time_minutes: null, exam_season: null, created_at: '2026-01-01T00:00:00.000Z', updated_at: '2026-01-01T00:00:00.000Z' } })
+      return
+    }
+    if (path.endsWith('/rest/v1/student_preferences')) {
+      await route.fulfill({ json: { user_id: userId, learning_style: null, daily_minutes: 60, preferred_study_days: [], timezone: null, preferences: {}, updated_at: '2026-01-01T00:00:00.000Z' } })
+      return
+    }
+    if (path.endsWith('/rest/v1/student_subjects')) {
+      await route.fulfill({ json: subjects.slice(0, 4).map((subject, index) => ({ subject_id: subject.id, is_primary: index === 0, sort_order: index })) })
+      return
+    }
+    if (path.endsWith('/rest/v1/subjects')) {
+      await route.fulfill({ json: subjects.slice(0, 4) })
+      return
+    }
+    await route.fulfill({ status: 200, json: [] })
+  })
+
+  await page.addInitScript(({ uid }) => {
+    const projectRef = 'uokiqlgmzprqfbzmedaz'
+    localStorage.setItem(`sb-${projectRef}-auth-token`, JSON.stringify({
+      access_token: 'test-access-token',
+      refresh_token: 'test-refresh-token',
+      token_type: 'bearer',
+      expires_in: 3600,
+      expires_at: Math.floor(Date.now() / 1000) + 3600,
+      user: { id: uid, aud: 'authenticated', role: 'authenticated', email: 'student@example.test', app_metadata: { provider: 'email', providers: ['email'] }, user_metadata: {} },
+    }))
+  }, { uid: userId })
+}
+
+
+test.describe('ACE JAMB prepared student dashboard', () => {
+  test('saved preparation profile survives reload and dashboard offers CBT navigation', async ({ page }) => {
+    await mockPreparedStudent(page)
+    await page.goto('/')
+
+    await expect(page.getByRole('heading', { name: 'Welcome back, Test Futarian.' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'My subjects' })).toBeVisible()
+    await expect(page.getByText('Use of English')).toBeVisible()
+    await expect(page.getByText(/Verified learning content is not published yet/)).toBeVisible()
+
+    await page.reload()
+    await expect(page.getByRole('heading', { name: 'Welcome back, Test Futarian.' })).toBeVisible()
+    await page.getByRole('button', { name: /CBT Practice/ }).click()
+    await expect(page).toHaveURL(/\\?cbt=1$/)
+    await expect(page.getByRole('button', { name: /Back to ACE JAMB/ })).toBeVisible()
+  })
+})
+
 test.describe('ACE JAMB academic editor access', () => {
   test('authorized content editor reaches the separate academic workspace', async ({ page }) => {
     await mockFirstTimeStudent(page)
