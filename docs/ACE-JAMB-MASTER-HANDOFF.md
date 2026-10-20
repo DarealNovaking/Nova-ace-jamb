@@ -2319,3 +2319,12 @@ The authoritative direction is now `docs/CATALOGUE-REPLACEMENT-INVESTIGATION-202
 - Automated coverage added in `tests/e2e/smoke.spec.ts`. Verify run `39512223624` passed for the workspace component commit `06b5b78672ee31db7e69dcc0f16ca73431685232`. E2E and subsequent Verify/E2E runs for dashboard navigation, new Playwright test, and admin alignment were still running/queued at the time of this handoff update: `39512223597`, `39512272979`, `39512273077`, `39512296427`, `39512296132`, `39512374477`, `39512374470`. Do not call the full frontend batch CI-verified until the latest-main runs complete successfully.
 - No deployment performed. No production database changes performed.
 - Next action: poll the newest Verify and ACE JAMB E2E runs on `a02516bf0e308958c4564ea6960ee4fbeed4485b`; inspect and fix any typecheck/build/Playwright failure, then update this handoff and the continuity checkpoint with final results. After green CI, continue the remaining real-data-dependent frontend work only against verified published content and actual saved attempt data.
+
+
+### Frontend batch QA follow-up — Playwright locator failure corrected (2026-10-20)
+
+- E2E run `39512296132` on test commit `c18baf86e1482076aabea9cbb15f281fa348dc1c` failed in the new workspace journey test; typecheck and build passed and 12 other browser tests passed.
+- Failure cause from the job log: the exact-name heading locator for Quick revision matched both the page-level `h1` and section `h2`, triggering Playwright strict-mode ambiguity. This was a test locator defect, not a UI navigation or build failure.
+- Fixed the Quick Revision and Study Plan assertions to target the page-level heading (`level: 1`) in `tests/e2e/smoke.spec.ts`. Fix commit: `f096ffdbe3079fb933794a5ce158dc03135b9141`.
+- CI reruns for the locator fix and the latest admin/dashboard changes are pending. Do not mark the whole batch verified until the latest-main Verify and E2E runs pass.
+- Next: poll workflows for `f096ffdbe3079fb933794a5ce158dc03135b9141` and subsequent documentation commits; inspect logs and correct any further failures, then update both handoffs with final green run IDs.
