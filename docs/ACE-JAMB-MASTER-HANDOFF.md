@@ -2497,3 +2497,10 @@ Check Verify and ACE JAMB E2E on the latest main commit after `cba0c14` and this
 - Fixed in commit `04ad0edae2bfa936997a0edfeb1d6138a87d03f7`: sign-in now uses the route's validated `mode` for the authenticated user's recovery key. No database writes, migrations, or deployment.
 - Latest Verify run checked before this fix passed at `38a948349c6c732f5b8ae144051dff3650b089c7`; its corresponding E2E workflow remained in progress, as did several earlier E2E runs. Do not treat browser acceptance as passed based on typecheck/build alone.
 - Phase 1 remains incomplete. Exact next action: inspect CI for `04ad0ed`, add/verify sign-in-to-practice recovery coverage, then complete CBT expiry/completed-result recovery and published/unpublished syllabus fixture checks. No official question content may be invented.
+
+
+## Phase 1 continuation — completed-attempt recovery test (2026-10-21)
+- Added a mocked Playwright regression in `tests/e2e/smoke.spec.ts` for restoring a completed CBT result from the ownership-checked `resume_attempt` response without fetching question rows. All Supabase traffic is mocked; no production data is written.
+- Test iterations: `4e8fc1c5c6c8493c20635d1651b19d0968ca03bf`, `ef6ec1e5478612d0cb1fa5bd6866c39ef330b6a9`, `bc616ee623ec88cefb524e4c5762901a0ef5e77f`. These are not yet verified by a completed E2E run.
+- The fresh-sign-in practice recovery-key defect was fixed in `04ad0edae2bfa936997a0edfeb1d6138a87d03f7`. Latest observed workflow runs were queued/in progress around runner setup, so the browser regression outcome remains unverified. No deployment or DB changes.
+- Exact next action: poll the newest E2E/Verify runs; repair actual test failures, then finish CBT expiry/retry and syllabus published/unpublished tests. Phase 1 is not complete until those checks pass.
