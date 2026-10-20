@@ -50,6 +50,7 @@ export default function PersistentCBT({ attemptId = null, questionCount = 20, du
   async function load(attemptToResume?: string) {
     setLoading(true)
     setError('')
+    setResult(null)
     try {
       let state: CbtAttemptState
       if (attemptToResume) {
@@ -62,6 +63,17 @@ export default function PersistentCBT({ attemptId = null, questionCount = 20, du
       setAttempt(state)
       setQuestions(loadedQuestions)
       setRemaining(state.remaining_seconds ?? getRemainingSeconds(state.started_at, state.duration_seconds))
+      if (state.status === 'completed' && state.score !== null && state.completed_at) {
+        setResult({
+          attempt_id: state.attempt_id,
+          status: 'completed',
+          score: state.score,
+          correct_count: state.correct_count,
+          answered_count: state.answered_count,
+          total_questions: state.question_order.length,
+          completed_at: state.completed_at,
+        })
+      }
       const firstUnanswered = state.question_order.findIndex((id) => !state.answers.some((a) => a.question_id === id && a.selected_option_key !== null))
       setCurrent(firstUnanswered >= 0 ? firstUnanswered : 0)
     } catch (e: any) {
@@ -115,9 +127,11 @@ export default function PersistentCBT({ attemptId = null, questionCount = 20, du
     setError('')
     try {
       const submitted = await submitCbt(attempt.attempt_id)
-      setResult(submitted)
-      setAttempt((currentAttempt) => currentAttempt ? { ...currentAttempt, status: 'completed', score: submitted.score, correct_count: submitted.correct_count, answered_count: submitted.answered_count, completed_at: submitted.completed_at, remaining_seconds: 0 } : currentAttempt)
-      onComplete?.(submitted)
+      // Older idempotent submit responses may omit total_questions; the saved attempt order is authoritative.
+      const completed = { ...submitted, total_questions: submitted.total_questions ?? attempt.question_order.length }
+      setResult(completed)
+      setAttempt((currentAttempt) => currentAttempt ? { ...currentAttempt, status: 'completed', score: completed.score, correct_count: completed.correct_count, answered_count: completed.answered_count, completed_at: completed.completed_at, remaining_seconds: 0 } : currentAttempt)
+      onComplete?.(completed)
     } catch (e: any) {
       setError('We could not submit this CBT session. Your saved answers have been kept; please retry.')
     } finally {
@@ -129,6 +143,7 @@ export default function PersistentCBT({ attemptId = null, questionCount = 20, du
   if (loading) return <div className="glass-card rounded-3xl p-8 text-center"><Loader2 className="mx-auto animate-spin"/><p className="mt-3 text-sm text-white/50">Restoring CBT session…</p></div>
   if (error && !attempt) return <div className="glass-card rounded-3xl p-6"><p className="font-semibold">CBT unavailable</p><p className="mt-2 text-sm text-white/50">{error}</p><button className="mt-5 rounded-xl bg-white px-4 py-3 font-bold text-black" onClick={() => void load(attemptId ?? undefined)}>Retry</button></div>
   if (result) return <div className="glass-card mx-auto max-w-md rounded-3xl p-8 text-center"><Trophy className="mx-auto"/><p className="mt-4 text-5xl font-black">{result.score}%</p><p className="mt-2 text-white/50">{result.correct_count}/{result.total_questions} correct</p><p className="mt-4 text-xs text-white/30">Saved server-side as attempt {result.attempt_id}</p></div>
+  if (attempt && attempt.status !== 'active') return <div className="glass-card rounded-3xl p-6"><p className="font-semibold">This CBT attempt is no longer active.</p><p className="mt-2 text-sm text-white/50">Your saved result remains attached to your account when the attempt is completed. You can start a new attempt when published questions are available.</p><button type="button" onClick={() => void load()} className="mt-5 rounded-xl bg-white px-4 py-3 font-bold text-black">Start a new CBT</button></div>
   if (!attempt || !question) return <div className="glass-card rounded-3xl p-6">No CBT questions are currently available.</div>
 
   const optionKeys = attempt.option_order[question.id] ?? question.options.map((o) => o.key)
