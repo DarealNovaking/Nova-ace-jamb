@@ -703,3 +703,12 @@ Re-run Verify/E2E CI for the latest main commits, then reproduce sign-in with th
 - **Tests:** not run in this slice. The combined-status API returned an empty status list, which is not evidence of passing CI. No typecheck, build, Playwright, authenticated browser run, database write, or deployment has been verified.
 - **Important known state:** learning/practice/flashcard/progress screens currently contain explicit honest empty/placeholder states; live audit previously found no topic/question/flashcard/learning-progress rows. Do not fabricate content to make these screens look populated. CBT uses server RPCs in `src/lib/cbtService.ts`; keep attempts, timing and scoring server-authoritative.
 - **Exact next action:** inspect current auth E2E test inventory and auth/session lifecycle; fix first-use/profile/preferences race and onboarding recovery, add/adjust Playwright coverage for auth/onboarding and dashboard URL history, then run typecheck/build/E2E. Continue with syllabus and CBT checks after these tests. Update this checkpoint and the master handoff after each meaningful slice.
+
+
+### Phase 1 latest verified code slice — 2026-10-21
+- Added first-use missing-preferences recovery, safe student-facing errors, auth callback deferral, initial-session handling, and sequence guards against stale role/profile lookups in `StudentFoundationGate`.
+- Workspace route is query-backed and browser history-aware; CBT navigation preserves unrelated query state and no longer relies on global button-label interception.
+- Syllabus subtopics are now passed from `seasonService` and rendered under the selected parent topic.
+- Commits: `79d99942491507b0e8e7fc3d1a8f9d4862f7f9ea`, `66b0f606ec33f1061ae97f34c937a5b531c0e3ea`, `4e522f91ee686635dc725149bbac038ff02c9020`, `fc2b70c7733671d0e13a88265c9da7a95bef91a3`, `95cb90c4bf3f8f4f3f53e043aa95ae3496f459f1`, `a757f602f7d045d16ed53b511c2a5369a310a689`, `49c8949fdc9771876cc6e6150f96cb9fcc70cd6b`.
+- **Verification:** not run. Combined commit status returned no status entries; associated workflow lookup returned no runs. No typecheck, build, Playwright, authenticated browser verification, DB writes, or deployment.
+- **Next action:** inspect current auth and CBT test inventory via a runtime or GitHub Actions result path; run typecheck/build/E2E, fix discovered issues, then finish Phase 1 batches 3–5 against real content/server contracts. Do not mark Phase 1 complete yet.
