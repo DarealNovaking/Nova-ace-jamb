@@ -712,3 +712,10 @@ Re-run Verify/E2E CI for the latest main commits, then reproduce sign-in with th
 - Commits: `79d99942491507b0e8e7fc3d1a8f9d4862f7f9ea`, `66b0f606ec33f1061ae97f34c937a5b531c0e3ea`, `4e522f91ee686635dc725149bbac038ff02c9020`, `fc2b70c7733671d0e13a88265c9da7a95bef91a3`, `95cb90c4bf3f8f4f3f53e043aa95ae3496f459f1`, `a757f602f7d045d16ed53b511c2a5369a310a689`, `49c8949fdc9771876cc6e6150f96cb9fcc70cd6b`.
 - **Verification:** not run. Combined commit status returned no status entries; associated workflow lookup returned no runs. No typecheck, build, Playwright, authenticated browser verification, DB writes, or deployment.
 - **Next action:** inspect current auth and CBT test inventory via a runtime or GitHub Actions result path; run typecheck/build/E2E, fix discovered issues, then finish Phase 1 batches 3–5 against real content/server contracts. Do not mark Phase 1 complete yet.
+
+
+### CI failure and correction — 2026-10-21
+- GitHub Actions Verify and E2E both failed at typecheck with `src/components/StudentDashboard.tsx(128,200): TS1005 '}' expected`.
+- Root cause: missing closing brace for the JSX `onClick` expression introduced in the workspace URL/history change.
+- Fix commit: `23735a150ba0d142f29ec0919df69c33236a4f2f`.
+- Latest post-fix CI status: not yet confirmed. Next action: poll `/actions/runs`, inspect Verify and ACE JAMB E2E runs whose `head_sha` is the fix commit or newer, then fix any remaining failures before continuing Phase 1.
