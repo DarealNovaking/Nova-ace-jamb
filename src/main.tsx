@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import ProtectedCBT from './components/ProtectedCBT';
 import StudentFoundationGate from './components/StudentFoundationGate';
 import AdminFoundationGate from './components/AdminFoundationGate';
+import AcademicFoundationGate from './components/AcademicFoundationGate';
 import './index.css';
 
 function AppShell() {
@@ -27,6 +28,10 @@ function AppShell() {
       document.removeEventListener('click', onNavigate, true);
     };
   }, []);
+
+  if (window.location.pathname === '/admin-academic') {
+    return <AcademicFoundationGate />;
+  }
 
   if (window.location.pathname === '/admin' || window.location.pathname === '/admin-import') {
     return <AdminFoundationGate />;
