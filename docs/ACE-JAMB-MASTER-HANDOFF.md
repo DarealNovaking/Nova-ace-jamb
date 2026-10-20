@@ -2395,3 +2395,11 @@ The first Phase 1 implementation slice is committed; Phase 1 is **in progress**,
 - Source commits: `79d99942491507b0e8e7fc3d1a8f9d4862f7f9ea`, `66b0f606ec33f1061ae97f34c937a5b531c0e3ea`, `4e522f91ee686635dc725149bbac038ff02c9020`.
 - Verification status: source was read before modification. GitHub combined status returned no status entries; that is not a CI pass. Typecheck/build/Playwright and authenticated browser verification remain unrun. No database writes or deployment.
 - Next action: continue Phase 1 by hardening auth/session transitions and onboarding recovery, then test/harden dashboard routes, learning workspace and CBT. Keep practice tied to verified question records and server-authoritative attempt RPCs. Update the batch tracker and continuity checkpoint after each meaningful slice.
+
+
+### Phase 1 continuation — auth lifecycle and syllabus tree hardening (2026-10-21)
+- Student auth/session gate now recognizes initial session events, defers Supabase requests outside the auth callback, and uses a refresh sequence to prevent stale asynchronous profile/role requests from overwriting newer session state. Missing first-use preferences rows lead to onboarding; raw backend errors are not displayed to students.
+- Dashboard workspace state is query-backed and browser-history aware. CBT routing no longer depends on global button text matching and preserves unrelated URL parameters.
+- The learning workspace now renders approved subtopics attached to their actual parent topics.
+- Commits: `a757f602f7d045d16ed53b511c2a5369a310a689`, `49c8949fdc9771876cc6e6150f96cb9fcc70cd6b`, `fc2b70c7733671d0e13a88265c9da7a95bef91a3`, `95cb90c4bf3f8f4f3f53e043aa95ae3496f459f1`.
+- No typecheck/build/Playwright results are claimed. GitHub combined status returned an empty list and commit-associated workflow lookup returned no runs. Continue with Phase 1 batch acceptance tests and CBT hardening.
