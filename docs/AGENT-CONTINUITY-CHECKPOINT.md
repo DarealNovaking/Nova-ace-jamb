@@ -565,3 +565,9 @@ Re-run Verify/E2E CI for the latest main commits, then reproduce sign-in with th
 - Latest current-HEAD workflows both passed: Verify `39507661501`, E2E `39507661518` for `e1f15d4bb99810b5fb04781c9095520aab41a33b`. Prior code commit E2E `39507436232` reported 10 Playwright tests passed.
 - No syllabus rows were inserted or activated; no frontend deployment was run.
 - Remaining verification: live anonymous API behavior and editor draft visibility have not yet been exercised through HTTP/authenticated UI. Next action: perform safe read-only API/UI smoke tests, then proceed with source-backed syllabus authoring and rights review.
+
+
+### Follow-up smoke-test finding — anonymous schema access (2026-10-20)
+- A read-only privilege check found `has_schema_privilege('anon','ace','USAGE') = false` while `authenticated` is true. Attempting a read-only query after `SET LOCAL ROLE anon` therefore failed at schema permission resolution before table RLS could be exercised; no data changed.
+- Do not add `USAGE` for anon automatically: that expands API reachability for the entire `ace` schema, not just syllabus topics/subtopics. Review existing object/table/function grants and intended anonymous product requirements first. Authenticated access is not blocked by this schema privilege.
+- Exact next action: inspect the existing schema-exposure migration and current anon grants on ACE objects; decide whether anonymous syllabus reads are actually required. If yes, make the smallest narrowly reviewed grant/policy adjustment and add a regression check; otherwise test the publication boundary under an authenticated non-editor role.
