@@ -125,7 +125,7 @@ export default function StudentDashboard() {
             { id: 'flashcards' as const, label: 'Flashcards', detail: 'Recall and review', icon: Layers3 },
             { id: 'progress' as const, label: 'My progress', detail: 'Saved attempt results', icon: Trophy },
             { id: 'plan' as const, label: 'Study plan', detail: 'A repeatable routine', icon: CalendarDays },
-          ].map((item) => { const ItemIcon = item.icon; return <button key={item.id} type="button" onClick={() => window.dispatchEvent(new CustomEvent('ace-workspace-navigate', { detail: item.id })) className="glass-card rounded-2xl p-4 text-left transition hover:border-purple-300/30"><ItemIcon size={19} className="text-purple-200"/><span className="mt-3 block text-sm font-bold">{item.label}</span><span className="mt-1 block text-xs leading-5 text-white/40">{item.detail}</span></button> })}
+          ].map((item) => { const ItemIcon = item.icon; return <button key={item.id} type="button" onClick={() => window.dispatchEvent(new CustomEvent('ace-workspace-navigate', { detail: item.id }))} className="glass-card rounded-2xl p-4 text-left transition hover:border-purple-300/30"><ItemIcon size={19} className="text-purple-200"/><span className="mt-3 block text-sm font-bold">{item.label}</span><span className="mt-1 block text-xs leading-5 text-white/40">{item.detail}</span></button> })}
         </nav>
         {error && <section role="alert" className="mb-6 rounded-2xl border border-red-400/20 bg-red-500/10 p-4 text-sm text-red-100"><p>{error}</p><button type="button" onClick={() => void loadDashboard()} className="mt-3 underline">Try again</button></section>}
 
