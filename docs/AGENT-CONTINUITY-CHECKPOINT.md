@@ -592,3 +592,14 @@ Re-run Verify/E2E CI for the latest main commits, then reproduce sign-in with th
 - Read-only policy verification confirms topics_editor_manage and subtopics_editor_manage still require ace.is_admin_or_editor() for writes. Publication SELECT policies remain in place, including active/right-approved syllabus-version checks and the active matching parent-topic check for subtopics. No anonymous schema usage was granted.
 - No syllabus/topic/subtopic content was inserted, edited, or activated. No frontend deployment was performed. Database grants and policy definitions were verified; a real authenticated editor browser/API create-and-read smoke test is still pending.
 - Next action: run a safe live editor workflow smoke test with an authorized editor session (draft-only; no activation of unverified content), confirm topic/subtopic reads and draft writes, then update both handoff files with the observed result. Keep anonymous schema access unchanged.
+
+
+## Current continuation — frontend-first student journey QA (2026-10-20)
+
+- Actual repository: `DarealNovaking/Nova-ace-jamb`, branch `main`; code/test commit `5893127760a7fac88871cc934544fb6cd77f61a6`.
+- Inspected the current student entry gate, dashboard, student service, syllabus service, E2E smoke tests, package scripts, and latest CI. Main HEAD before the test change was `5047974f35ebbdffe712c9f663420f10506ed847`; its Verify run `39510772594` and E2E run `39510772622` both passed.
+- Added a mocked Playwright regression test for a prepared student dashboard: profile/subjects render, unpublished syllabus content is not invented, reload retains the authenticated dashboard state, and the CBT CTA navigates to `?cbt=1`. All Supabase requests in this test are intercepted; no production records are touched.
+- New CI is pending: Verify `39511826720`, ACE JAMB E2E `39511826534`, both on `5893127760a7fac88871cc934544fb6cd77f61a6`. New test is not yet verified.
+- No UI implementation, production database, migration, deployment, or catalogue data changed in this step.
+- Important remaining gap: the dashboard is a landing/overview, not a full lesson experience. Active rights-approved syllabus versions/topics were last audited as empty/unpublished; never manufacture JAMB content to fill the screen.
+- Exact next action: poll both listed CI runs, inspect job logs and fix any failure. Once green, build the next student-facing frontend flow only after checking existing components/routes and actual available data; preserve the current Supabase authorization/RLS boundaries. Update both continuity documents after that change.
