@@ -85,3 +85,25 @@ test.describe('ACE JAMB student entry and preparation onboarding', () => {
     await expect(page.getByLabel(/Biology/)).toBeDisabled()
   })
 })
+
+test.describe('ACE JAMB academic editor access', () => {
+  test('authorized content editor reaches the separate academic workspace', async ({ page }) => {
+    await mockFirstTimeStudent(page)
+    await page.route(`${projectUrl}/rest/v1/rpc/is_admin_or_editor`, async (route) => {
+      await route.fulfill({ json: true })
+    })
+    await page.goto('/admin-academic')
+    await expect(page.getByRole('heading', { name: 'Academic Structure' })).toBeVisible()
+    await expect(page.getByText('No syllabus versions found')).toBeVisible()
+  })
+
+  test('student without editor permission cannot see academic authoring tools', async ({ page }) => {
+    await mockFirstTimeStudent(page)
+    await page.route(`${projectUrl}/rest/v1/rpc/is_admin_or_editor`, async (route) => {
+      await route.fulfill({ json: false })
+    })
+    await page.goto('/admin-academic')
+    await expect(page.getByRole('heading', { name: 'Academic editor access required' })).toBeVisible()
+    await expect(page.getByText('Create a draft syllabus version')).toHaveCount(0)
+  })
+})
