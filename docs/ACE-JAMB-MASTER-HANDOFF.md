@@ -2266,3 +2266,9 @@ The authoritative direction is now `docs/CATALOGUE-REPLACEMENT-INVESTIGATION-202
 - No syllabus content was inserted/activated, and no frontend deployment was performed.
 - Current main HEAD `e1f15d4bb99810b5fb04781c9095520aab41a33b` has successful Verify run `39507661501` and ACE JAMB E2E run `39507661518`. Earlier code commit `566673fb` also passed Verify and 10 Playwright tests.
 - Next: smoke-test public topic/subtopic reads against the live API with anonymous access and editor draft access (without modifying content), then continue source-verified syllabus authoring/review. Do not activate unverified official JAMB content.
+
+
+### Follow-up security note — anonymous API visibility check (2026-10-20)
+- Read-only role privilege check found `anon` lacks `USAGE` on schema `ace`, while `authenticated` has it. A read-only `SET LOCAL ROLE anon` query failed at schema resolution before table RLS; no data changed.
+- The migration's table policies are installed and verified, but anonymous HTTP/schema-level access is **not yet proven**. Do not grant schema-wide anonymous access without reviewing other ACE object grants and intended public API scope.
+- Next: inspect the original schema-exposure migration and object privileges; determine whether anonymous syllabus reads are required. If not, validate visibility with a non-editor authenticated role; if yes, apply the narrowest safe grant and regression test.
