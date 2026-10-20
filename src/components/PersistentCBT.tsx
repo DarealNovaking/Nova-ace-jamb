@@ -8,6 +8,7 @@ import {
   startCbt,
   submitCbt,
   type CbtAttemptState,
+  type CbtMode,
   type CbtQuestion,
 } from '../lib/cbtService'
 
@@ -17,6 +18,15 @@ type Props = {
   durationSeconds?: number
   onComplete?: (result: Awaited<ReturnType<typeof submitCbt>>) => void
   storageKey?: string | null
+  mode?: CbtMode
+}
+
+function safeCbtMessage(error: unknown, fallback: string) {
+  const message = error instanceof Error ? error.message.toLowerCase() : ''
+  if (message.includes('no published questions') || message.includes('no questions available')) {
+    return 'No reviewed questions are published for this session yet. Please try again after the academic team publishes approved questions.'
+  }
+  return fallback
 }
 
 function formatTime(seconds: number) {
@@ -27,7 +37,7 @@ function formatTime(seconds: number) {
   return [h, m, s].map((v) => String(v).padStart(2, '0')).join(':')
 }
 
-export default function PersistentCBT({ attemptId = null, questionCount = 20, durationSeconds = 1800, onComplete, storageKey = null }: Props) {
+export default function PersistentCBT({ attemptId = null, questionCount = 20, durationSeconds = 1800, onComplete, storageKey = null, mode = 'cbt' }: Props) {
   const [attempt, setAttempt] = useState<CbtAttemptState | null>(null)
   const [questions, setQuestions] = useState<CbtQuestion[]>([])
   const [current, setCurrent] = useState(0)
@@ -62,7 +72,7 @@ export default function PersistentCBT({ attemptId = null, questionCount = 20, du
           // An explicit attempt ID must fail visibly; a stale local recovery pointer may be replaced.
           if (attemptToResume || !storageKey) throw resumeError
           window.localStorage.removeItem(storageKey)
-          const started = await startCbt({ mode: 'cbt', questionCount, durationSeconds })
+          const started = await startCbt({ mode, questionCount, durationSeconds })
           window.localStorage.setItem(storageKey, started.attempt_id)
           state = await resumeCbt(started.attempt_id)
         }
@@ -90,7 +100,7 @@ export default function PersistentCBT({ attemptId = null, questionCount = 20, du
       const firstUnanswered = state.question_order.findIndex((id) => !state.answers.some((a) => a.question_id === id && a.selected_option_key !== null))
       setCurrent(firstUnanswered >= 0 ? firstUnanswered : 0)
     } catch (e: any) {
-      setError('We could not load this CBT session. Check your connection and try again.')
+      setError(safeCbtMessage(e, 'We could not load this CBT session. Check your connection and try again.'))
     } finally {
       setLoading(false)
     }
@@ -127,7 +137,7 @@ export default function PersistentCBT({ attemptId = null, questionCount = 20, du
         answered_count: saved.answered_count,
       } : currentAttempt)
     } catch (e: any) {
-      setError('Your answer could not be saved. Please retry before moving on.')
+      setError(safeCbtMessage(e, 'Your answer could not be saved. Please retry before moving on.'))
     } finally {
       setSaving(false)
     }
@@ -147,7 +157,7 @@ export default function PersistentCBT({ attemptId = null, questionCount = 20, du
       setAttempt((currentAttempt) => currentAttempt ? { ...currentAttempt, status: 'completed', score: completed.score, correct_count: completed.correct_count, answered_count: completed.answered_count, completed_at: completed.completed_at, remaining_seconds: 0 } : currentAttempt)
       onComplete?.(completed)
     } catch (e: any) {
-      setError('We could not submit this CBT session. Your saved answers have been kept; please retry.')
+      setError(safeCbtMessage(e, 'We could not submit this CBT session. Your saved answers have been kept; please retry.'))
     } finally {
       finishing.current = false
       setSubmitting(false)
