@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Clock3, Loader2, Trophy } from 'lucide-react'
 import {
   getRemainingSeconds,
@@ -36,6 +36,7 @@ export default function PersistentCBT({ attemptId = null, questionCount = 20, du
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
   const [result, setResult] = useState<Awaited<ReturnType<typeof submitCbt>> | null>(null)
+  const finishing = useRef(false)
 
   const answers = useMemo(() => {
     const map: Record<string, string | null> = {}
@@ -64,7 +65,7 @@ export default function PersistentCBT({ attemptId = null, questionCount = 20, du
       const firstUnanswered = state.question_order.findIndex((id) => !state.answers.some((a) => a.question_id === id && a.selected_option_key !== null))
       setCurrent(firstUnanswered >= 0 ? firstUnanswered : 0)
     } catch (e: any) {
-      setError(e?.message ?? 'Unable to load CBT session.')
+      setError('We could not load this CBT session. Check your connection and try again.')
     } finally {
       setLoading(false)
     }
@@ -86,7 +87,7 @@ export default function PersistentCBT({ attemptId = null, questionCount = 20, du
   }, [attempt?.attempt_id, attempt?.status, attempt?.started_at, attempt?.duration_seconds])
 
   async function choose(optionKey: string) {
-    if (!attempt || !question || saving || submitting || remaining <= 0) return
+    if (!attempt || attempt.status !== 'active' || !question || saving || submitting || remaining <= 0) return
     setSaving(true)
     setError('')
     try {
@@ -101,14 +102,15 @@ export default function PersistentCBT({ attemptId = null, questionCount = 20, du
         answered_count: saved.answered_count,
       } : currentAttempt)
     } catch (e: any) {
-      setError(e?.message ?? 'Answer could not be saved.')
+      setError('Your answer could not be saved. Please retry before moving on.')
     } finally {
       setSaving(false)
     }
   }
 
   async function finish() {
-    if (!attempt || submitting) return
+    if (!attempt || attempt.status !== 'active' || submitting || finishing.current) return
+    finishing.current = true
     setSubmitting(true)
     setError('')
     try {
@@ -117,8 +119,9 @@ export default function PersistentCBT({ attemptId = null, questionCount = 20, du
       setAttempt((currentAttempt) => currentAttempt ? { ...currentAttempt, status: 'completed', score: submitted.score, correct_count: submitted.correct_count, answered_count: submitted.answered_count, completed_at: submitted.completed_at, remaining_seconds: 0 } : currentAttempt)
       onComplete?.(submitted)
     } catch (e: any) {
-      setError(e?.message ?? 'CBT submission failed.')
+      setError('We could not submit this CBT session. Your saved answers have been kept; please retry.')
     } finally {
+      finishing.current = false
       setSubmitting(false)
     }
   }
