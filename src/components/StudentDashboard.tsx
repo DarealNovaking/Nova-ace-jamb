@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { BookOpen, Brain, ChevronRight, Clock3, GraduationCap, Loader2, RefreshCw, CalendarDays, Layers3, Trophy } from 'lucide-react'
 import StudentStudyWorkspace, { type StudentWorkspaceMode } from './StudentStudyWorkspace'
 import StudentNotifications from './StudentNotifications'
+import StudentAccountAccess from './StudentAccountAccess'
 import { getStudentProfile, getStudentSubjects } from '../lib/studentService'
 import { ace } from '../lib/supabase'
 import { getActiveExamBlueprint, getSyllabusTree, listActiveSyllabusVersions, type SyllabusSubtopic, type SyllabusTopic } from '../lib/seasonService'
@@ -168,6 +169,7 @@ export default function StudentDashboard() {
         </section>
 
         <StudentNotifications />
+        <StudentAccountAccess />
       </div>
     </main>
   )
