@@ -877,3 +877,9 @@ Check Verify and ACE JAMB E2E on the latest main commit after `cba0c14` and this
 - **Not applied to live Supabase.** This is source + disposable verification only; no live schema/data changes or app deployment. The live question table is currently empty, but the rights gate should be applied before question content is published. Production application requires explicit approval under the project's migration rules.
 - Live exact counts: 25 subjects; 2 seasons; 0 active approved syllabus versions; 0 topics; 0 subtopics; 0 questions; 0 flashcards; 0 attempts. Phase 1 remains open because content-dependent Batch 3–4 work cannot be verified with real approved content.
 - **Next action:** request/obtain explicit approval to apply migration 20261021100000_question_rights_publication_gate.sql to live Supabase; after approval, apply once and verify live policy/function definitions and test safe read paths. Continue independent auth/session and dashboard acceptance tests while no content is fabricated and no app deployment is performed.
+
+## Content-source discovery checkpoint — 2026-10-21
+
+- Candidate official syllabus provenance source found: https://ibass.jamb.gov.ng/e-syllabus (the official JAMB homepage links to IBASS). Its reuse/licensing terms are not yet verified. Do not publish imported syllabus content or set rights_status to approved until rights review is recorded.
+- No verified official reusable question bank was found in this investigation. No questions were invented or inserted. Continue to keep the student empty state honest until lawful reviewed content is available.
+- Latest code migration/test status remains: question rights gate migration exists in repo and passes disposable SQL CI, but has not been applied to live Supabase. Explicit production migration authorization remains required.
