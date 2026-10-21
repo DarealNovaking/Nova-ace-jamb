@@ -490,3 +490,10 @@ Check Verify and ACE JAMB E2E on the latest main commit after `cba0c14` and this
 - Verification: GitHub write succeeded; no typecheck/build/Playwright execution was available in this step. Regression test and runtime verification are still required. This does not close Phase 2.
 - No live database mutation, schema change, deployment, or service activation was performed.
 - Next: add a Playwright regression for missing preferences, then run typecheck/build/E2E when a runner or local environment is available.
+
+## Phase 2 continuation — missing-preferences regression coverage added (2026-10-21)
+
+- Added a mocked Playwright regression in `tests/e2e/smoke.spec.ts` that exercises a prepared student's Account Settings when the `student_preferences` GET returns PostgREST's no-row response, then attempts to save daily study time through the existing preferences upsert path.
+- All Supabase API traffic in this test is intercepted; it does not access production rows or credentials.
+- Source and test writes were accepted by GitHub. The test has NOT been executed, and its behavior is not yet verified by Playwright. Typecheck/build/E2E remain unverified while runner-backed Actions execution is unavailable.
+- Next action: run the targeted test and the full typecheck/build/E2E suite in a local checkout or when Actions runner capacity is restored; fix any real failures before closing Phase 2.
