@@ -153,28 +153,20 @@ test.describe('ACE JAMB student entry and preparation onboarding', () => {
     await expect(page.locator('body')).not.toHaveCSS('overflow-x', 'scroll')
   })
 
-  test('a newer auth-state session wins over a delayed stale session probe', async ({ page }) => {
+  test('initial student session comes from persisted auth state without a stale user probe', async ({ page }) => {
     await mockPreparedStudent(page)
-
-    // Simulate getUser returning a stale unauthenticated result after the auth
-    // listener has already received the persisted session. All other requests
-    // fall through to the fully mocked student fixture.
+    let userProbeRequests = 0
     await page.route((url) => new URL(url).pathname === '/auth/v1/user', async (route) => {
-      if (route.request().method() !== 'GET') {
-        await route.fallback()
-        return
-      }
-      await page.waitForTimeout(500)
-      await route.fulfill({
-        status: 401,
-        contentType: 'application/json',
-        json: { code: 'session_not_found', message: 'Auth session missing!' },
-      })
+      userProbeRequests += 1
+      await route.fallback()
     })
 
     await page.goto('/')
     await expect(page.getByRole('heading', { name: 'Welcome back, Test Futarian.' })).toBeVisible()
     await expect(page.getByRole('heading', { name: 'Welcome back.' })).not.toBeVisible()
+    // Initial UI state should use Supabase's persisted session callback rather
+    // than a competing network getUser() request that can invalidate that session.
+    expect(userProbeRequests).toBe(0)
   })
 
   test('first-time student can load preparation setup without catalogue rows', async ({ page }) => {
@@ -657,7 +649,7 @@ test.describe('ACE JAMB preparation workspaces', () => {
     await expect(page.getByText('Verified performance')).toBeVisible()
     await expect(page.getByText('Not available yet')).toBeVisible()
 
-    await page.getByRole('button', { name: 'Study plan', exact: true }).click()
+    await page.getByRole('button', { name: /Study plan/ }).click()
     await expect(page.getByRole('heading', { level: 1, name: 'Study plan', exact: true })).toBeVisible()
     await expect(page.getByRole('heading', { name: 'Build your study routine' })).toBeVisible()
     await page.getByLabel('Daily study time').fill('90')
