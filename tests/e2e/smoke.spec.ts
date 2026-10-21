@@ -964,7 +964,7 @@ test.describe('ACE JAMB account settings first-use regression', () => {
       await route.fallback()
     })
 
-    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/profiles') && ['PATCH', 'PUT'].includes(url.searchParams.get('select') ? 'PATCH' : 'GET'), async (route) => {
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/profiles'), async (route) => {
       if (route.request().method() === 'PATCH' || route.request().method() === 'PUT') {
         await route.fulfill({
           status: 200,
