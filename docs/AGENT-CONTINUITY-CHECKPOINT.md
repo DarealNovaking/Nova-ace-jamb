@@ -985,3 +985,12 @@ Check Verify and ACE JAMB E2E on the latest main commit after `cba0c14` and this
 - GitHub read-back confirms the test exists on `main`. This is source-level verification only; the new test has NOT yet run in Playwright/CI. Do not mark it passing until a run against commit `7a9d91515f86ed474fd905ab1c89fbac7746ec5a` completes successfully.
 - Scope stayed frontend-only: no backend/database changes, migrations, production writes, or deployment. Phase 1 remains OPEN.
 - Exact next action: retrieve the push-triggered Verify and ACE JAMB E2E runs for this commit, fix any failing assertion/fixture, then continue the remaining dashboard query-state, workspace, and CBT recovery acceptance coverage.
+
+
+## Current-main verification — 2026-10-21 (auth race test)
+
+- Repository HEAD observed: `869a00d8d21243a978a5cb7b580e85c54992e6e1` on `main`. GitHub Actions push-triggered run discovery is working through the Actions runs collection; do not use the older commit-associated workflow wrapper for this check.
+- Verify run `39610640949` on this exact SHA completed with conclusion `success`. Confirmed steps passed: parser/contract tests, Deno checks for both catalog functions, `npm run typecheck`, `npm run build`, and disposable PostgreSQL migration/policy tests.
+- ACE JAMB E2E run `39610640807` targets the same exact SHA. Typecheck and build passed in its job; Playwright browser tests were still running at the last poll. E2E is therefore **PENDING**, not passed or failed yet. Continue polling the run and inspect test output if it fails.
+- Auth-session race regression test exists in `tests/e2e/smoke.spec.ts`; the exact latest-main Playwright result is the remaining immediate verification gate. Scope remains frontend-only; no production DB writes, schema changes, or deployment.
+- Next action: poll run `39610640807` to conclusion. If green, proceed to the remaining frontend acceptance gaps (especially recovery callback coverage and explicit CBT resume/results recovery if not already covered), run current-main E2E after each source change, and keep Phase 1 open until the acceptance matrix is satisfied.
