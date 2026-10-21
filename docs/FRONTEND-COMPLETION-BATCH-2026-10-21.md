@@ -285,3 +285,11 @@ Check Verify and ACE JAMB E2E on the latest main commit after `cba0c14` and this
 - Further source inspection showed syllabus-version lookup is skipped when the active exam blueprint is absent in the standard fixture. The retry test now fails the dashboard-only `rpc/get_active_exam_blueprint` request once and then falls back to the prepared student's mocked `null` response, so the failure is guaranteed to occur in dashboard loading without breaking authentication.
 - Latest test fixture commit: `1c7709664b961c3f0019b1fd9d2cb8769b51601c`. Prior CI runs do not include this exact test target yet; await CI on current HEAD before declaring the test green.
 - Scope unchanged: frontend-only, no production data writes, no schema/RPC/policy edits, no deployment. Phase 1 remains open pending CI and auth/session-race acceptance plus real reviewed/published content.
+
+
+## Active frontend-only status refresh — 2026-10-21
+
+- This file's older notes that make real published content/backend readiness a prerequisite for frontend completion are superseded. The user's current milestone is to **finish the entire frontend Phase 1 first**. Do not perform backend changes, production writes, migrations, or deployment. Mocked fixtures are valid for frontend acceptance; content empty states must remain truthful.
+- Latest source HEAD: `c119e0e6af1a52da1811e6fa66d102cf1d2fdced`. The previous E2E had 38 passed and 4 failed due to two route-matcher mistakes in test fixtures. Both were corrected in `tests/e2e/smoke.spec.ts`.
+- Verify run `39607769410` and E2E run `39607769274` were pending at update time. Poll before declaring the fix verified.
+- Phase 1 remains OPEN. Immediate next step: validate CI on the exact HEAD, then finish the remaining auth/session, dashboard, workspace, and CBT frontend acceptance checks.
