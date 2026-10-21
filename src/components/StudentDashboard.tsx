@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { BookOpen, Brain, ChevronRight, Clock3, GraduationCap, Loader2, RefreshCw, CalendarDays, Layers3, Trophy } from 'lucide-react'
 import StudentStudyWorkspace, { type StudentWorkspaceMode } from './StudentStudyWorkspace'
+import StudentNotifications from './StudentNotifications'
 import { getStudentProfile, getStudentSubjects } from '../lib/studentService'
 import { ace } from '../lib/supabase'
 import { getActiveExamBlueprint, getSyllabusTree, listActiveSyllabusVersions, type SyllabusSubtopic, type SyllabusTopic } from '../lib/seasonService'
@@ -165,6 +166,8 @@ export default function StudentDashboard() {
             {topics.length ? <ul className="mt-5 grid gap-3 sm:grid-cols-2">{topics.map((topic) => <li key={topic.id} className="rounded-xl border border-white/5 bg-white/[.03] p-4"><p className="text-xs text-purple-200/70">{topic.subjectName}</p><p className="mt-2 font-semibold">{topic.name}</p>{topic.description && <p className="mt-2 text-sm leading-5 text-white/45">{topic.description}</p>}</li>)}</ul> : <div className="mt-4 rounded-2xl border border-white/5 bg-white/[.025] p-5"><p className="font-semibold">Verified learning content is not published yet.</p><p className="mt-2 text-sm leading-6 text-white/45">Your account and preparation profile remain available. Topics will appear here when an active season and approved syllabus content are published. No syllabus topics are invented for this screen.</p></div>}
           </div>
         </section>
+
+        <StudentNotifications />
       </div>
     </main>
   )
