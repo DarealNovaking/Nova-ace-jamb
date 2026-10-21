@@ -240,7 +240,7 @@ async function mockSyllabusPublicationState(page: import('@playwright/test').Pag
       subjects: [],
     } })
   })
-  await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/get_active_exam_blueprint'), async (route) => {
+  await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/syllabus_versions'), async (route) => {
     await route.fulfill({ json: [{
       id: versionId, season_id: seasonId, subject_id: subjects[0].id, version: 1,
       title: 'Use of English syllabus', source_url: 'https://example.test/syllabus',
@@ -682,7 +682,7 @@ test.describe('ACE JAMB dashboard recovery states', () => {
   test('hides provider details and retries a failed dashboard query', async ({ page }) => {
     await mockPreparedStudent(page)
     let syllabusRequests = 0
-    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/syllabus_versions'), async (route) => {
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/get_active_exam_blueprint'), async (route) => {
       syllabusRequests += 1
       // Fail the dashboard's active-exam lookup once, then allow the mocked contract on retry.
       if (syllabusRequests === 1) {
