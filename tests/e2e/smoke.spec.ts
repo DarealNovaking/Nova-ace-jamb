@@ -655,11 +655,29 @@ test.describe('ACE JAMB preparation workspaces', () => {
 
 
 test.describe('ACE JAMB onboarding save contract', () => {
-  test('saves English plus exactly three selected subjects through the server RPC', async ({ page }) => {
+  test('saves English plus exactly three selected subjects and can continue past the optional community welcome', async ({ page }) => {
     await mockFirstTimeStudent(page)
     let savedPayload: Record<string, unknown> | null = null
+    let foundationSaved = false
+    await page.route(`${projectUrl}/**`, async (route) => {
+      const path = new URL(route.request().url()).pathname
+      if (foundationSaved && path.endsWith('/rest/v1/profiles')) {
+        await route.fulfill({ json: { id: userId, email: 'student@example.test', display_name: 'Test Futarian', target_score: 300, institution: null, course: null, institution_id: null, program_id: null, prep_time_minutes: null, exam_season: null, created_at: '2026-01-01T00:00:00.000Z', updated_at: '2026-01-01T00:00:00.000Z' } })
+        return
+      }
+      if (foundationSaved && path.endsWith('/rest/v1/student_preferences')) {
+        await route.fulfill({ json: { user_id: userId, daily_minutes: 60, learning_style: null, preferred_study_days: [], timezone: null, preferences: {}, updated_at: '2026-01-01T00:00:00.000Z' } })
+        return
+      }
+      if (foundationSaved && path.endsWith('/rest/v1/student_subjects')) {
+        await route.fulfill({ json: subjects.slice(0, 4).map((subject) => ({ subject_id: subject.id })) })
+        return
+      }
+      await route.fallback()
+    })
     await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/save_student_preparation_foundation'), async (route) => {
       savedPayload = route.request().postDataJSON()
+      foundationSaved = true
       await route.fulfill({ status: 204, body: '' })
     })
 
