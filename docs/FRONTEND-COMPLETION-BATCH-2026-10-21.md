@@ -507,3 +507,16 @@ Check Verify and ACE JAMB E2E on the latest main commit after `cba0c14` and this
 - No production database/schema changes, live data writes, or deployment.
 - Phase 2 remains OPEN. Backend-dependent delivery/payment/referral/AI/audio features are not implemented by UI status cards and must stay unavailable until real server-side contracts exist.
 - Exact next action: when a local checkout or runner capacity is available, run `npm run typecheck`, `npm run build`, and `npm run e2e`; fix failures on the exact current `main` SHA, then complete the remaining frontend acceptance matrix before closure.
+
+
+## Phase 2 continuation — live catalogue state reconciled (2026-10-21)
+
+- Read-only inspection confirmed current GitHub `main` HEAD at start of this investigation: `709c1b6fde957f631c9ca8420c2ece7727ecdda5`. No application source or production data was changed in this investigation.
+- Supabase connector access is working for project `nova-ace-jamb` (`uokiqlgmzprqfbzmedaz`). This corrects older checkpoint notes that described the database as inaccessible; those notes reflect a prior failed access attempt and should not be treated as current status.
+- Live read-only SQL counts: `ace.institutions` = 791; `ace.programs` = 0; `ace.program_utme_rules` = 0; `ace.subjects` = 25; `ace.topics` = 0; `ace.questions` = 0; `ace.exam_seasons` = 2; `ace.catalog_sources` = 13; `ace.catalog_import_batches` = 5; `ace.catalog_import_rows` = 793.
+- Import-batch status query: institution batches include 3 published batches totaling 791 rows, 1 rejected batch totaling 791 rows, and 1 staged batch with 1 row. Therefore, the 791-institution catalogue is already published; do not ask the user to re-upload the workbook without new evidence.
+- The verified next catalogue gap is institution → programme → UTME-rule ingestion: live `ace.programs` and `ace.program_utme_rules` are both empty. The existing `ibass-catalog-stage` function is ACTIVE version 4 and `catalog-import` is ACTIVE version 7 with `verify_jwt=true`. Repository and deployed function implementations must be compared before any deployment; do not blindly redeploy repository copies.
+- The admin UI already exposes IBASS staging for 1–25 institutions and a selected exam season. Executing it requires a real authenticated administrator session; no session token was available to this investigation. No import was started and no production rows were modified.
+- User instruction: defer the full typecheck/build/Playwright/deployed acceptance suite until the end of Phase 2. This investigation used read-only database queries only; no tests were run.
+- Phase 2 is still OPEN. Backend-dependent notification delivery/scheduling, payments, referral qualification/rewards, grounded AI retrieval, audio delivery, and PWA/browser acceptance are not proven complete by their status UI.
+- Exact next action: continue implementation without re-uploading the institution workbook; reconcile the deployed IBASS/catalog-import contracts and use the authenticated admin staging flow to ingest official programme and UTME-rule data, preserving unresolved/alternative subject requirements. Record batch IDs/statuses and verify only through read-only counts. Perform the agreed full test matrix at the end.
