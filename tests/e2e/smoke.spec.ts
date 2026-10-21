@@ -676,3 +676,34 @@ test.describe('ACE JAMB onboarding save contract', () => {
     await expect(page.getByRole('alert')).toHaveCount(0)
   })
 })
+
+
+test.describe('ACE JAMB dashboard recovery states', () => {
+  test('hides provider details and retries a failed dashboard query', async ({ page }) => {
+    await mockPreparedStudent(page)
+    let profileRequests = 0
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/profiles'), async (route) => {
+      profileRequests += 1
+      // The foundation gate performs the first profile request. Fail the dashboard's
+      // initial request once, then let the original mocked contract handle the retry.
+      if (profileRequests === 2) {
+        await route.fulfill({
+          status: 500,
+          contentType: 'application/json',
+          json: { code: 'internal_database_error', message: 'private database host and query details' },
+        })
+        return
+      }
+      await route.fallback()
+    })
+
+    await page.goto('/')
+    await expect(page.getByRole('heading', { name: 'Welcome back, Test Futarian.' })).toBeVisible()
+    await expect(page.getByRole('alert')).toContainText('We could not load your preparation dashboard')
+    await expect(page.getByRole('alert')).not.toContainText('private database host')
+    await page.getByRole('button', { name: 'Try again' }).click()
+    await expect(page.getByRole('alert')).toHaveCount(0)
+    await expect(page.getByText('Verified learning content is not published yet.')).toBeVisible()
+    expect(profileRequests).toBeGreaterThanOrEqual(3)
+  })
+})
