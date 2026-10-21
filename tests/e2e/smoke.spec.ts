@@ -162,9 +162,13 @@ test.describe('ACE JAMB persistent CBT', () => {
   test('practice workspace starts a practice-mode attempt and reports an empty question bank honestly', async ({ page }) => {
     await mockPreparedStudent(page)
     let requestedMode = ''
-    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/start_attempt'), async (route) => {
+    await page.route(`${projectUrl}/rest/v1/rpc/start_attempt`, async (route) => {
       requestedMode = route.request().postDataJSON().p_mode
-      await route.fulfill({ status: 400, json: { code: 'P0001', message: 'No published questions available for this attempt' } })
+      await route.fulfill({
+        status: 400,
+        contentType: 'application/json',
+        body: JSON.stringify({ code: 'P0001', message: 'No published questions available for this attempt', details: '', hint: '' }),
+      })
     })
 
     await page.goto('/')
@@ -173,8 +177,8 @@ test.describe('ACE JAMB persistent CBT', () => {
     await expect(page.getByRole('heading', { name: 'Practice', exact: true })).toBeVisible()
     await page.getByRole('button', { name: 'Start a practice session' }).click()
     await expect(page).toHaveURL(/[?&]mode=practice(?:&|$)/)
+    await expect.poll(() => requestedMode).toBe('practice')
     await expect(page.getByText(/No reviewed questions are published for this session yet/)).toBeVisible()
-    expect(requestedMode).toBe('practice')
   })
 
   test('restores the same active attempt after reload instead of starting another', async ({ page }) => {
@@ -297,7 +301,8 @@ test.describe('ACE JAMB persistent CBT', () => {
     await expect(page.getByRole('heading', { name: 'Welcome back, Test Futarian.' })).toBeVisible()
     await page.getByRole('button', { name: /CBT Practice/ }).click()
     await expect(page.getByRole('heading', { name: 'JAMB simulation' })).toBeVisible()
-    await page.getByRole('button', { name: 'A. First answer' }).click()
+    // The server-provided option order is B, A, so canonical option A is displayed second.
+    await page.getByRole('button', { name: 'B. First answer' }).click()
     await page.getByRole('button', { name: 'Submit CBT' }).click()
     await expect(page.getByText('100%', { exact: true })).toBeVisible()
     await expect(page.getByText('1/1 correct')).toBeVisible()
