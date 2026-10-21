@@ -89,7 +89,6 @@ export default function StudentNotifications() {
       const { error: updateError } = await ace.from('notifications')
         .update({ read_at: readAt })
         .eq('id', item.id)
-        .eq('user_id', item.user_id ?? '')
       if (updateError) throw updateError
       setItems((current) => current.map((row) => row.id === item.id ? { ...row, read_at: readAt } : row))
     } catch {
