@@ -1,48 +1,51 @@
 # ÑØVÃ ACE JAMB
 
-Scalable, mobile-first JAMB preparation platform.
+A scalable, mobile-first JAMB preparation platform.
 
-## Source of truth
-GitHub is the canonical version-controlled source. The current AppDeploy application is the deployment/prototype environment, not the only copy of the project.
+## Canonical source
 
-### Current baseline
-- AppDeploy project: ÑØVÃ ACE JAMB Prototype
-- App ID: `n-va-ace-jamb-prototype-y0u6ww`
-- Captured baseline: Phase 2.1 authentication/profile foundation
-- Authentication: Google, Apple and X via AppDeploy auth
-- Backend: AppDeploy API/database routes
-- Admin: subjects, topics and questions CMS
+The GitHub repository is the source of truth. The current frontend uses React, TypeScript, Vite and Supabase Auth/PostgreSQL. The database's `ace` schema is the authoritative source for student profiles, syllabus versions, questions, attempts, answers and progress.
 
-## Product pillars
-- JAMB syllabus engine
-- Learning Mode
-- Past-question engine
-- Practice and CBT
-- Flashcards and audio learning
-- Quick Revision
-- Performance/mastery engine
-- Grounded AI Tutor
-- Textbook/reference knowledge system
-- Internet-source retrieval
-- Seasonal ACE Pass
-- Referral path
-- WhatsApp Channel integration
-- Notifications and admin command center
-- Security and anti-abuse
-- Progressive 3D interface
-- PWA and low-end-device performance
+## Student experience
 
-## Architecture rule
-UI must not directly depend on a specific infrastructure provider. Database, auth, storage, payments, AI and notifications should sit behind service boundaries/adapters so hosting can be changed without rebuilding ACE.
+- Email sign-up, sign-in and account recovery
+- Preparation onboarding and saved profile/preferences
+- Student dashboard and preparation navigation
+- Syllabus workspace with publication and rights checks
+- Practice and CBT attempts with server-authoritative answer saving/scoring
+- Active-attempt recovery, timer expiry, submission retry and completed-result restoration
+- Honest empty states when approved content is unavailable
 
-## Question-system requirements
-- Shuffle presentation without changing canonical question/answer data.
-- Preserve enough session state to recover an active CBT.
-- Support diagrams, images, tables, formulas and media metadata.
-- Track source/rights metadata and accessibility information.
+## Administration
 
-## Phase tracking
-- Phase 0 — infrastructure proof: documented
-- Phase 1 — content/database foundation: validated in prototype
-- Phase 2.1 — student authentication/profile: deployed for testing
-- Phase 2.2 — persistent CBT attempts, answers, scores and progress: next
+- `/admin` — administrator-only workspace for source/catalogue review
+- `/admin-academic` — academic structure and syllabus version/topic authoring
+- Draft content must remain unpublished until its source, rights and review status are approved.
+
+## Current milestone status
+
+**Phase 1 is still open.** The automated student journey suite currently passes, but the live database has no active approved syllabus versions, topics, subtopics, questions, flashcards or attempts. Do not fabricate official JAMB questions or present mock fixtures as production content. The question-rights publication migration is in the repository and covered by disposable PostgreSQL tests; the live database policy still requires an approved, controlled migration step.
+
+## Local development
+
+Requirements: Node.js 20+ and npm.
+
+1. Copy `.env.example` to `.env.local`.
+2. Set `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` to the intended Supabase project values.
+3. Install dependencies: `npm install`.
+4. Start the local development server: `npm run dev`.
+
+## Verification
+
+- `npm run typecheck`
+- `npm run build`
+- `npm run e2e`
+
+GitHub Actions also runs parser/contract tests and SQL policy/migration tests against disposable PostgreSQL. Playwright tests use mocked service contracts; they do not prove that production content exists.
+
+## Security and content integrity
+
+- Never place service-role keys or provider secrets in frontend environment variables.
+- Keep authorization and scoring decisions server-authoritative.
+- Publish only reviewed content with an approved rights status.
+- Do not invent official syllabus records, UTME combinations, questions or answer explanations.
