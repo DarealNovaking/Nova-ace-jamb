@@ -56,6 +56,32 @@ async function mockFirstTimeStudent(page: import('@playwright/test').Page) {
   }, { uid: userId })
 }
 
+test.describe('ACE JAMB account recovery', () => {
+  test('forgot-password flow requests a reset email with a same-origin redirect', async ({ page }) => {
+    let resetRedirect = ''
+    await page.route(`${projectUrl}/**`, async (route) => {
+      const url = new URL(route.request().url())
+      if (url.pathname === '/auth/v1/user') {
+        await route.fulfill({ status: 401, contentType: 'application/json', json: { code: 'session_not_found', message: 'Auth session missing!' } })
+      } else if (url.pathname === '/auth/v1/recover') {
+        resetRedirect = url.searchParams.get('redirect_to') ?? ''
+        await route.fulfill({ status: 200, contentType: 'application/json', json: {} })
+      } else {
+        await route.fulfill({ status: 200, contentType: 'application/json', json: [] })
+      }
+    })
+
+    await page.goto('/')
+    await expect(page.getByRole('heading', { name: 'Welcome back.' })).toBeVisible()
+    await page.getByRole('button', { name: 'Forgot password?' }).click()
+    await expect(page.getByRole('heading', { name: 'Reset your password.' })).toBeVisible()
+    await page.getByLabel('Email address').fill('student@example.test')
+    await page.getByRole('button', { name: 'Send reset email' }).click()
+    await expect(page.getByRole('status')).toContainText('If an account exists for that email')
+    await expect.poll(() => resetRedirect).toBe('http://127.0.0.1:4173')
+  })
+})
+
 test.describe('ACE JAMB student entry and preparation onboarding', () => {
   test('student entry surface renders', async ({ page }) => {
     await page.goto('/')
