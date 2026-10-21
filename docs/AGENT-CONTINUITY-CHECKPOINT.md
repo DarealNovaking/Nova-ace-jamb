@@ -1142,3 +1142,10 @@ Check Verify and ACE JAMB E2E on the latest main commit after `cba0c14` and this
 - Verification: GitHub source write returned a commit SHA. Typecheck/build/Playwright have NOT been run for this change because GitHub Actions minutes are exhausted and no local checkout/test environment is available in this tool session. The fix needs runner-backed or local test verification before Phase 2 can close.
 - Remaining Phase 2 blockers remain: runner-backed typecheck/build/E2E, missing-preferences regression coverage, and backend-dependent services that must remain honestly unavailable until real contracts exist.
 - Exact next action: add/execute a Playwright regression for opening and saving settings when `student_preferences` returns no row; when Actions usage resets or a local environment is available, run `npm run typecheck`, `npm run build`, and targeted/full `npm run e2e`, then continue the acceptance matrix.
+
+## Phase 2 continuation — missing-preferences regression coverage added (2026-10-21)
+
+- Added a mocked Playwright regression in `tests/e2e/smoke.spec.ts` that exercises a prepared student's Account Settings when the `student_preferences` GET returns PostgREST's no-row response, then attempts to save daily study time through the existing preferences upsert path.
+- All Supabase API traffic in this test is intercepted; it does not access production rows or credentials.
+- Source and test writes were accepted by GitHub. The test has NOT been executed, and its behavior is not yet verified by Playwright. Typecheck/build/E2E remain unverified while runner-backed Actions execution is unavailable.
+- Next action: run the targeted test and the full typecheck/build/E2E suite in a local checkout or when Actions runner capacity is restored; fix any real failures before closing Phase 2.
