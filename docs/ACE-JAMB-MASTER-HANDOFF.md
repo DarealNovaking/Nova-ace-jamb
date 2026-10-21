@@ -2504,3 +2504,13 @@ Check Verify and ACE JAMB E2E on the latest main commit after `cba0c14` and this
 - Test iterations: `4e8fc1c5c6c8493c20635d1651b19d0968ca03bf`, `ef6ec1e5478612d0cb1fa5bd6866c39ef330b6a9`, `bc616ee623ec88cefb524e4c5762901a0ef5e77f`. These are not yet verified by a completed E2E run.
 - The fresh-sign-in practice recovery-key defect was fixed in `04ad0edae2bfa936997a0edfeb1d6138a87d03f7`. Latest observed workflow runs were queued/in progress around runner setup, so the browser regression outcome remains unverified. No deployment or DB changes.
 - Exact next action: poll the newest E2E/Verify runs; repair actual test failures, then finish CBT expiry/retry and syllabus published/unpublished tests. Phase 1 is not complete until those checks pass.
+
+
+## Verified continuity update — 2026-10-21
+
+Current repository inspection supersedes older milestone notes where they conflict:
+- Repository is private `DarealNovaking/Nova-ace-jamb`, default branch `main`; current latest observed commit before this documentation update was `b0a31f07e90b001771880854162451ce64d55d2f`.
+- Current work is Phase 1 core student journey, batches 1–5, not a restart of the earlier catalogue investigation. The latest checkpoint documents auth/onboarding, dashboard/navigation, syllabus workspace, practice/questions, and CBT/mock exams as the current ordered acceptance work.
+- Latest source work includes practice-vs-CBT mode-specific attempt recovery, user-and-mode-specific local recovery pointers, completed-attempt result restoration without question refetch, and mocked E2E coverage for workspace URL/history, onboarding payload, empty question bank, active recovery and completed recovery.
+- Latest source/test workflow outcome is not verified in this inspection: the GitHub combined-status endpoint returned no status contexts for latest main commit `b0a31f07e90b001771880854162451ce64d55d2f`. Empty status contexts must not be treated as a CI pass. No application code, database write, migration, or deployment was performed during this inspection.
+- Next action: inspect the actual Verify and ACE JAMB E2E workflow runs for latest source/test commits, fix failures, add practice sign-in recovery-key regression coverage, then verify CBT expiry/retry and published/unpublished syllabus states. Keep Phase 1 open until evidence supports closure.
