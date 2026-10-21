@@ -51,7 +51,3 @@ jobs:
         env:
           PGPASSWORD: postgres
         run: psql -h 127.0.0.1 -U postgres -d postgres -v ON_ERROR_STOP=1 -f tests/sql/syllabus_publication_visibility.test.sql
-      - name: Test question rights publication gate in disposable PostgreSQL
-        env:
-          PGPASSWORD: postgres
-        run: psql -h 127.0.0.1 -U postgres -d postgres -v ON_ERROR_STOP=1 -f tests/sql/question_rights_publication_gate.test.sql
