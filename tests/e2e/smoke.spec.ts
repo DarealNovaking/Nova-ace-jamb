@@ -153,6 +153,30 @@ test.describe('ACE JAMB student entry and preparation onboarding', () => {
     await expect(page.locator('body')).not.toHaveCSS('overflow-x', 'scroll')
   })
 
+  test('a newer auth-state session wins over a delayed stale session probe', async ({ page }) => {
+    await mockPreparedStudent(page)
+
+    // Simulate getUser returning a stale unauthenticated result after the auth
+    // listener has already received the persisted session. All other requests
+    // fall through to the fully mocked student fixture.
+    await page.route((url) => new URL(url).pathname === '/auth/v1/user', async (route) => {
+      if (route.request().method() !== 'GET') {
+        await route.fallback()
+        return
+      }
+      await page.waitForTimeout(500)
+      await route.fulfill({
+        status: 401,
+        contentType: 'application/json',
+        json: { code: 'session_not_found', message: 'Auth session missing!' },
+      })
+    })
+
+    await page.goto('/')
+    await expect(page.getByRole('heading', { name: 'Welcome back, Test Futarian.' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Welcome back.' })).not.toBeVisible()
+  })
+
   test('first-time student can load preparation setup without catalogue rows', async ({ page }) => {
     await mockFirstTimeStudent(page)
     await page.goto('/')
