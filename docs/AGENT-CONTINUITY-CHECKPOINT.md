@@ -1171,3 +1171,13 @@ Check Verify and ACE JAMB E2E on the latest main commit after `cba0c14` and this
 - User instruction: defer the full typecheck/build/Playwright/deployed acceptance suite until the end of Phase 2. This investigation used read-only database queries only; no tests were run.
 - Phase 2 is still OPEN. Backend-dependent notification delivery/scheduling, payments, referral qualification/rewards, grounded AI retrieval, audio delivery, and PWA/browser acceptance are not proven complete by their status UI.
 - Exact next action: continue implementation without re-uploading the institution workbook; reconcile the deployed IBASS/catalog-import contracts and use the authenticated admin staging flow to ingest official programme and UTME-rule data, preserving unresolved/alternative subject requirements. Record batch IDs/statuses and verify only through read-only counts. Perform the agreed full test matrix at the end.
+
+
+## Frontend Phase 2 continuation — design-system hardening (2026-10-21)
+
+- User instruction: finish Frontend Phase 2 on the existing ACE JAMB repository; do not restart the project or revisit the resolved institution/catalogue discussion. GitHub Actions included minutes are exhausted per the user's billing screenshot, so avoid unnecessary workflow triggers.
+- Read-only source inspection covered the main router, global CSS, student auth/onboarding/dashboard/study workspace, protected CBT entry, account settings, notifications, community-channel welcome and admin operations overview.
+- Updated `src/index.css` in commit `6959ea4e055ece0cb7b768704556a399307a5bf4`: removed duplicate rules, consolidated design tokens (including purple/gold), improved keyboard focus visibility, reduced-motion support, form target sizing, disabled-button affordance and responsive decorative orbs. Existing class selectors were preserved.
+- GitHub accepted the source update. Typecheck/build/Playwright/browser visual checks are NOT run; no local checkout is available in this session and Actions capacity is exhausted. No deployment or production DB changes were made.
+- Status: Phase 2 remains OPEN. This is one foundation improvement, not the full frontend closeout. Backend-dependent payments, referral qualification, AI retrieval, audio delivery and notification scheduling/delivery remain unverified until real server contracts and end-to-end evidence exist.
+- Exact next action: continue the current-source frontend audit and scoped implementation, then execute typecheck, production build and full Playwright suite when local execution or Actions capacity is available. Record all actual results before closing Phase 2.
