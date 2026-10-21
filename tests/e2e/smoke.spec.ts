@@ -657,6 +657,47 @@ test.describe('ACE JAMB preparation workspaces', () => {
 
 
 
+
+test.describe('ACE JAMB account settings', () => {
+  test('loads and saves preparation profile fields through existing account services', async ({ page }) => {
+    await mockPreparedStudent(page)
+    let profilePayload: Record<string, unknown> | null = null
+    let preferencesPayload: Record<string, unknown> | null = null
+    await page.route((url) => {
+      const path = new URL(url).pathname
+      return path.endsWith('/rest/v1/profiles') || path.endsWith('/rest/v1/student_preferences')
+    }, async (route) => {
+      const path = new URL(route.request().url()).pathname
+      if (path.endsWith('/rest/v1/profiles') && route.request().method() === 'PATCH') {
+        profilePayload = route.request().postDataJSON()
+        await route.fulfill({ status: 200, contentType: 'application/json', json: { id: userId, email: 'student@example.test', display_name: 'Updated Futarian', target_score: 320, institution: 'Test University', course: 'Computer Science', institution_id: null, program_id: null, prep_time_minutes: null, exam_season: null, created_at: '2026-01-01T00:00:00.000Z', updated_at: '2026-01-02T00:00:00.000Z' } })
+        return
+      }
+      if (path.endsWith('/rest/v1/student_preferences') && route.request().method() === 'POST') {
+        preferencesPayload = route.request().postDataJSON()
+        await route.fulfill({ status: 204, body: '' })
+        return
+      }
+      await route.fallback()
+    })
+
+    await page.goto('/')
+    await expect(page.getByRole('heading', { name: 'Welcome back, Test Futarian.' })).toBeVisible()
+    await page.getByRole('button', { name: 'Edit settings' }).click()
+    await expect(page.getByLabel('Display name')).toHaveValue('Test Futarian')
+    await page.getByLabel('Display name').fill('Updated Futarian')
+    await page.getByLabel('Target JAMB score').fill('320')
+    await page.getByLabel('Intended institution (optional)').fill('Test University')
+    await page.getByLabel('Intended course (optional)').fill('Computer Science')
+    await page.getByLabel('Daily study time (minutes)').fill('90')
+    await page.getByRole('button', { name: 'Save account settings' }).click()
+    await expect(page.getByRole('status')).toContainText('Your account settings were saved.')
+    expect(profilePayload).toMatchObject({ display_name: 'Updated Futarian', target_score: 320, institution: 'Test University', course: 'Computer Science' })
+    expect(preferencesPayload).toMatchObject({ user_id: userId, daily_minutes: 90 })
+  })
+})
+
+
 test.describe('ACE JAMB learning support availability', () => {
   test('does not expose an ungrounded tutor or unpublished audio as usable features', async ({ page }) => {
     await mockPreparedStudent(page)
