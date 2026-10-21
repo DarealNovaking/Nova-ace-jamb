@@ -27,7 +27,7 @@ const emptyMetrics: Metrics = {
   registeredDevices: null,
 }
 
-async function countRows(query: PromiseLike<{ count: number | null; error: unknown }>): Promise<Metric> {
+async function countRows<T extends { count: number | null; error: unknown }>(query: PromiseLike<T>): Promise<Metric> {
   try {
     const result = await query
     return result.error ? null : result.count
