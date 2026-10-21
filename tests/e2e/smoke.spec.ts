@@ -675,7 +675,7 @@ test.describe('ACE JAMB account settings', () => {
       }
       if (path.endsWith('/rest/v1/student_preferences') && route.request().method() === 'POST') {
         preferencesPayload = route.request().postDataJSON()
-        await route.fulfill({ status: 204, body: '' })
+        await route.fulfill({ status: 200, contentType: 'application/json', json: { user_id: userId, learning_style: null, daily_minutes: 90, preferred_study_days: [], timezone: null, preferences: {}, updated_at: '2026-01-02T00:00:00.000Z' } })
         return
       }
       await route.fallback()
