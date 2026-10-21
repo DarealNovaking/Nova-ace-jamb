@@ -87,7 +87,7 @@ test.describe('ACE JAMB account recovery', () => {
     let updatedPassword = ''
 
     await page.route((url) => new URL(url).pathname === '/auth/v1/user' && url.toString().startsWith('http'), async (route) => {
-      if (route.request().method() !== 'PATCH') {
+      if (route.request().method() === 'GET') {
         await route.fallback()
         return
       }
