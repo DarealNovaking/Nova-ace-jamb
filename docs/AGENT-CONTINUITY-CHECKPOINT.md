@@ -935,3 +935,12 @@ Check Verify and ACE JAMB E2E on the latest main commit after `cba0c14` and this
 **Verification pending:** Verify `39607769410`; E2E `39607769274`. Both were in progress at checkpoint write time. Poll them; no green claim until final conclusions are successful.
 
 **Exact next action:** inspect both run conclusions for `c119e0e6af1a52da1811e6fa66d102cf1d2fdced`. Fix test or source failures before adding scope. After green CI, continue frontend acceptance for auth/session race and recovery callback, dashboard retry/query-state, learning/practice/revision/flashcards/progress/study-plan, and CBT expiry/submit/resume/completed-result recovery. Update this checkpoint and master handoff after meaningful work. Phase 1 remains OPEN until all frontend acceptance items are verified.
+
+
+## Frontend Phase 1 continuation update — 2026-10-21
+
+- Current scope: **finish frontend Phase 1 only**. Backend readiness and live academic content are not frontend completion gates. Use mocked contracts and truthful empty states. No production writes, backend/schema/RPC/policy changes, migrations, or app deployment.
+- Test-fixture correction in `tests/e2e/smoke.spec.ts`: syllabus fixture now routes `syllabus_versions` to its own endpoint (not `get_active_exam_blueprint`); dashboard retry now fails `rpc/get_active_exam_blueprint`, the actual request used by dashboard loading. Source commit: `c119e0e6af1a52da1811e6fa66d102cf1d2fdced`.
+- Frontend error handling improvement: study-plan load/save now shows generic recovery messages rather than raw provider/database error text. Added a mocked E2E test asserting save failure does not expose internal provider details. Source commits: `4d6d341ad52d906fe63e1c1aabf76c2cda87ee75`, `593cbd446ecb1e24df05629c5cb4659e0645fafb`.
+- CI on the route correction and prior docs commits was still running at the time of this update; the latest source commits need their own final Verify and E2E results. Do not claim the changes passed until completed workflows confirm it.
+- Phase 1 remains **OPEN**. Next: poll CI on current main HEAD; fix any failures; then complete remaining frontend acceptance for auth/session race and recovery callback, dashboard retry/query states, workspace states, and CBT expiry/submit/resume/result recovery. No live-content dependency.
