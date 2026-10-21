@@ -654,6 +654,40 @@ test.describe('ACE JAMB preparation workspaces', () => {
 })
 
 
+
+test.describe('ACE JAMB notification inbox', () => {
+  test('shows an honest empty inbox and saves account-scoped preferences', async ({ page }) => {
+    await mockPreparedStudent(page)
+    let savedPreferences: Record<string, unknown> | null = null
+    await page.route((url) => {
+      const path = new URL(url).pathname
+      return path.endsWith('/rest/v1/notifications') || path.endsWith('/rest/v1/notification_preferences')
+    }, async (route) => {
+      const path = new URL(route.request().url()).pathname
+      if (path.endsWith('/rest/v1/notification_preferences') && route.request().method() === 'POST') {
+        savedPreferences = route.request().postDataJSON()
+        await route.fulfill({ status: 204, body: '' })
+        return
+      }
+      await route.fulfill({ status: 200, contentType: 'application/json', json: [] })
+    })
+
+    await page.goto('/')
+    await expect(page.getByRole('heading', { name: 'Welcome back, Test Futarian.' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Notifications', exact: true })).toBeVisible()
+    await expect(page.getByText('No sent notifications are available for your account yet.')).toBeVisible()
+    await page.getByRole('button', { name: 'Preferences' }).click()
+    await expect(page.getByRole('heading', { name: 'Notification preferences' })).toBeVisible()
+    await expect(page.getByRole('checkbox', { name: 'Push notifications unavailable' })).toBeDisabled()
+    await page.getByRole('checkbox', { name: /Product announcements/ }).check()
+    await page.getByRole('button', { name: 'Save preferences' }).click()
+    await expect(page.getByRole('status')).toContainText('Your notification preferences were saved.')
+    await expect.poll(() => savedPreferences).not.toBeNull()
+    expect(savedPreferences).toMatchObject({ user_id: userId, marketing: true, in_app: true, email: true })
+  })
+})
+
+
 test.describe('ACE JAMB onboarding save contract', () => {
   test('saves English plus exactly three selected subjects and can continue past the optional community welcome', async ({ page }) => {
     await mockFirstTimeStudent(page)
