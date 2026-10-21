@@ -706,3 +706,28 @@ test.describe('ACE JAMB dashboard recovery states', () => {
     expect(syllabusRequests).toBeGreaterThanOrEqual(2)
   })
 })
+
+test.describe('ACE JAMB study-plan recovery', () => {
+  test('does not expose provider details when saving study preferences fails', async ({ page }) => {
+    await mockPreparedStudent(page)
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/student_preferences'), async (route) => {
+      if (route.request().method() === 'POST') {
+        await route.fulfill({
+          status: 500,
+          contentType: 'application/json',
+          json: { code: 'internal_database_error', message: 'private database host and query details' },
+        })
+        return
+      }
+      await route.fallback()
+    })
+
+    await page.goto('/')
+    await expect(page.getByRole('heading', { name: 'Welcome back, Test Futarian.' })).toBeVisible()
+    await page.getByRole('button', { name: 'Study plan', exact: true }).click()
+    await expect(page.getByRole('heading', { level: 1, name: 'Study plan', exact: true })).toBeVisible()
+    await page.getByRole('button', { name: 'Save study preferences' }).click()
+    await expect(page.getByRole('alert')).toContainText('We could not save your study preferences')
+    await expect(page.getByRole('alert')).not.toContainText('private database host')
+  })
+})
