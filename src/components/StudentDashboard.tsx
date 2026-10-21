@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { BookOpen, Brain, ChevronRight, Clock3, GraduationCap, Loader2, RefreshCw, CalendarDays, Layers3, Trophy } from 'lucide-react'
 import StudentStudyWorkspace, { type StudentWorkspaceMode } from './StudentStudyWorkspace'
 import { getStudentProfile, getStudentSubjects } from '../lib/studentService'
@@ -14,6 +14,7 @@ export default function StudentDashboard() {
   const [topics, setTopics] = useState<TopicRow[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const loadSequence = useRef(0)
   const [activeView, setActiveView] = useState<StudentWorkspaceMode | 'home'>(() => {
     const requested = new URLSearchParams(window.location.search).get('view')
     return ['learn', 'practice', 'revision', 'flashcards', 'progress', 'plan'].includes(requested ?? '')
@@ -22,14 +23,17 @@ export default function StudentDashboard() {
   })
 
   async function loadDashboard() {
+    const sequence = ++loadSequence.current
     setLoading(true)
     setError('')
     try {
       const [profile, selected] = await Promise.all([getStudentProfile(), getStudentSubjects()])
+      if (sequence !== loadSequence.current) return
       setName(profile.display_name?.trim() || 'Student')
 
       const ids = selected.map((item) => item.subject_id)
       if (!ids.length) {
+        if (sequence !== loadSequence.current) return
         setSubjects([])
         setTopics([])
         return
@@ -43,11 +47,13 @@ export default function StudentDashboard() {
       if (subjectError) throw subjectError
 
       const orderedSubjects = (subjectRows ?? []) as Subject[]
+      if (sequence !== loadSequence.current) return
       setSubjects(orderedSubjects)
 
       const blueprint = await getActiveExamBlueprint()
       const seasonId = blueprint?.season?.id
       if (!seasonId) {
+        if (sequence !== loadSequence.current) return
         setTopics([])
         return
       }
@@ -59,11 +65,14 @@ export default function StudentDashboard() {
         const subjectName = orderedSubjects.find((subject) => subject.id === version.subject_id)?.name ?? 'Subject'
         return tree.topics.map((topic) => ({ ...topic, subjectName, subtopics: tree.subtopics.filter((subtopic) => subtopic.topic_id === topic.id) }))
       }))
+      if (sequence !== loadSequence.current) return
       setTopics(trees.flat())
-    } catch (caught) {
-      setError(caught instanceof Error ? caught.message : 'Unable to load your preparation dashboard.')
+    } catch {
+      if (sequence !== loadSequence.current) return
+      // Keep provider/database details out of student-facing errors.
+      setError('We could not load your preparation dashboard. Check your connection and try again.')
     } finally {
-      setLoading(false)
+      if (sequence === loadSequence.current) setLoading(false)
     }
   }
 
