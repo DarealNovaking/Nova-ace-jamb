@@ -1190,3 +1190,12 @@ Check Verify and ACE JAMB E2E on the latest main commit after `cba0c14` and this
 - Commit: `5db968b85207444f83415ac53e7db825e2a3d1c8`. GitHub accepted the update; no DB/deployment changes made.
 - Tests were inspected but NOT executed. TypeScript, production build, browser/mobile rendering, and Playwright remain unverified because no local checkout/runtime is available in this session and Actions minutes are exhausted.
 - Phase 2 remains OPEN. Next: continue targeted source review for stale claims/navigation regressions, then run typecheck/build and existing desktop + mobile Playwright suite in a local execution environment. Do not fabricate official question-bank content or call placeholder backend-dependent services complete.
+
+
+## Final Phase 2 frontend review — 2026-10-21
+
+- Final source review checked route/navigation synchronization, student workspace empty states, mobile semantics, E2E inventory and workflow config. Dashboard/workspace custom-event navigation and URL `popstate` synchronization are present. Existing Playwright tests cover mobile entry, dashboard CBT navigation and workspace navigation/empty states. Tests were inspected, NOT executed.
+- Both workflow-referenced functions exist on current `main`: `supabase/functions/ibass-catalog-stage/index.ts` and `supabase/functions/catalog-import/index.ts`. Older checkpoint claims that the first is missing are stale.
+- Latest inspected Actions run `39648461718` (`0b7e0bf6e35da56b70bd20862f4da1260252efc1`) shows both jobs failed without step summaries. Log retrieval returned 404 BlobNotFound, so root cause remains unknown. User screenshot confirms included Actions minutes exhausted (2,000/2,000). No new workflow triggered.
+- No new source edit warranted from this read-only review. Phase 2 implementation review is substantially complete, but closure is BLOCKED pending actual `npm run typecheck`, `npm run build`, and `npm run e2e` results; none run in this session because no local checkout/runtime is available and Actions minutes are exhausted.
+- Exact next action: run `npm install`, typecheck, build and E2E in a local execution environment or after Actions minutes reset; fix reproducible failures, record evidence, and then close Phase 2. Do not revisit settled catalogue/institution decisions.
