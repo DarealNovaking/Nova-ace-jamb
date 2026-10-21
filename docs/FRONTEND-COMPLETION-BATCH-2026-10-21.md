@@ -497,3 +497,13 @@ Check Verify and ACE JAMB E2E on the latest main commit after `cba0c14` and this
 - All Supabase API traffic in this test is intercepted; it does not access production rows or credentials.
 - Source and test writes were accepted by GitHub. The test has NOT been executed, and its behavior is not yet verified by Playwright. Typecheck/build/E2E remain unverified while runner-backed Actions execution is unavailable.
 - Next action: run the targeted test and the full typecheck/build/E2E suite in a local checkout or when Actions runner capacity is restored; fix any real failures before closing Phase 2.
+
+## Phase 2 continuation — admin authorization error sanitization (2026-10-21)
+
+- `src/components/AdminFoundationGate.tsx` now returns generic recovery copy when the admin role/RPC check fails instead of rendering raw provider/database exception messages.
+- Added a mocked Playwright regression in `tests/e2e/smoke.spec.ts` that makes `rpc/is_admin` return a private-looking database error and asserts that the admin access screen does not expose it.
+- Commits: `19f79805873f9e35218534a729bb536ceae08647` (source), `2e5947e85690c603cf9a0fc3024cd226f265480d` (test).
+- Verification status: GitHub write/read-back is the only verification available in this session. Typecheck, build, and Playwright were not run. GitHub Actions monthly usage was reported exhausted; do not spend/retry runner jobs until capacity is restored or a local checkout is available.
+- No production database/schema changes, live data writes, or deployment.
+- Phase 2 remains OPEN. Backend-dependent delivery/payment/referral/AI/audio features are not implemented by UI status cards and must stay unavailable until real server-side contracts exist.
+- Exact next action: when a local checkout or runner capacity is available, run `npm run typecheck`, `npm run build`, and `npm run e2e`; fix failures on the exact current `main` SHA, then complete the remaining frontend acceptance matrix before closure.
