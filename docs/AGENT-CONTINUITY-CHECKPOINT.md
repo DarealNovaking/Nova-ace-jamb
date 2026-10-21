@@ -883,3 +883,10 @@ Check Verify and ACE JAMB E2E on the latest main commit after `cba0c14` and this
 - Candidate official syllabus provenance source found: https://ibass.jamb.gov.ng/e-syllabus (the official JAMB homepage links to IBASS). Its reuse/licensing terms are not yet verified. Do not publish imported syllabus content or set rights_status to approved until rights review is recorded.
 - No verified official reusable question bank was found in this investigation. No questions were invented or inserted. Continue to keep the student empty state honest until lawful reviewed content is available.
 - Latest code migration/test status remains: question rights gate migration exists in repo and passes disposable SQL CI, but has not been applied to live Supabase. Explicit production migration authorization remains required.
+
+## Deployment-asset removal checkpoint — 2026-10-21
+
+- User requested removal of app-deploy-related assets. Deleted .github/workflows/deploy-production.yml, wrangler.jsonc and legacy backend/index.ts (which imported @appdeploy/sdk); rewrote README.md to remove the legacy provider and old deployment instructions.
+- Recursive main-tree scan returned no filenames matching AppDeploy, Wrangler, deploy or Cloudflare. package.json has no deploy script. Remaining workflows are Verify and ACE JAMB E2E only.
+- No app deployment was run. Historical Cloudflare/AppDeploy deployment notes earlier in the master handoff are archival only and must not be executed or used to recreate removed files without a new user instruction.
+- This removal does not change the current Phase 1 result: Verify/E2E are green on the previous verified code commit, the question-rights migration is source-only, and Phase 1 remains open due to no live approved syllabus/question content.
