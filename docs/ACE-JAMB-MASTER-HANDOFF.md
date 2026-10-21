@@ -2760,3 +2760,12 @@ A read-only browser inspection of the private repository's GitHub Actions page r
 - Fix commits: `5ee8fed95ac7a615add09496888827a471e33caa` (static badge semantics), `abea253c3afe4b8b35f37857fb49af3eb2a1b73c` (specific E2E locators). These fixes require a fresh CI run on the latest main HEAD; they are not yet verified by a completed run.
 - The same failed run's Verify workflow completed successfully on the prior docs HEAD `cd8243a49ae7977621c14a403d6ffd485c7a089d`; its E2E result remains failed for the test-fixture locator issue described above. No production data or schema was changed.
 - Exact next action: run/poll Verify and ACE JAMB E2E on the latest source/test HEAD and fix any remaining actual failures before continuing the Phase 2 matrix.
+
+
+## Phase 2 current-main verification — 2026-10-21
+
+- After correcting the locator/semantics failures, GitHub Verify run `39618718288` and ACE JAMB E2E run `39618718305` both completed successfully on exact current main HEAD `472f2fdbaf51d92fb21f83ab9c21dd5bdd861d76`.
+- Verify workflow passed, including typecheck and production build plus repository contract/Deno/disposable-PostgreSQL checks. Playwright E2E reported **54 passed (34.0s)** across desktop and mobile Chromium projects.
+- The previously failing six test cases were resolved by changing only test locators and static badge semantics. No remaining E2E failures are reported for this HEAD.
+- This is verification of the current mocked-contract frontend states, not proof of live notification delivery, payment checkout, referral rewards, AI responses, audio playback, production deployment, or whole-product frontend completion.
+- Phase 2 remains IN PROGRESS. Next workstream: inspect and extend the existing admin/academic frontend into a truthful operations command center without introducing unsupported broadcast/payment/AI actions; then review PWA/offline readiness and remaining frontend acceptance matrix.
