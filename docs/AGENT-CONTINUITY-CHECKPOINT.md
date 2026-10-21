@@ -890,3 +890,9 @@ Check Verify and ACE JAMB E2E on the latest main commit after `cba0c14` and this
 - Recursive main-tree scan returned no filenames matching AppDeploy, Wrangler, deploy or Cloudflare. package.json has no deploy script. Remaining workflows are Verify and ACE JAMB E2E only.
 - No app deployment was run. Historical Cloudflare/AppDeploy deployment notes earlier in the master handoff are archival only and must not be executed or used to recreate removed files without a new user instruction.
 - This removal does not change the current Phase 1 result: Verify/E2E are green on the previous verified code commit, the question-rights migration is source-only, and Phase 1 remains open due to no live approved syllabus/question content.
+
+## Scope correction — 2026-10-21
+
+- User reaffirmed the active task boundary: **frontend only**. Do not make Supabase schema/RPC/policy changes, apply production migrations, write production data, or pursue backend/security migration work as the next milestone. The previous question-rights migration and SQL regression test were removed because they were out of scope; the corresponding Verify workflow step was removed. No live Supabase change was made.
+- Treat any earlier paragraph in this handoff that recommends applying migration `20261021100000_question_rights_publication_gate.sql` as superseded/out-of-scope. Do not recreate it unless the user explicitly expands scope.
+- Current frontend-only next action: continue the Phase 1 acceptance work identified in the latest checkpoint: sign-up/auth session-race and recovery-link callback coverage, dashboard retry/query-state coverage, and front-end syllabus/practice/CBT states using mocked contracts only. Do not fabricate official content; keep empty states honest. No app deployment.
