@@ -2769,3 +2769,13 @@ A read-only browser inspection of the private repository's GitHub Actions page r
 - The previously failing six test cases were resolved by changing only test locators and static badge semantics. No remaining E2E failures are reported for this HEAD.
 - This is verification of the current mocked-contract frontend states, not proof of live notification delivery, payment checkout, referral rewards, AI responses, audio playback, production deployment, or whole-product frontend completion.
 - Phase 2 remains IN PROGRESS. Next workstream: inspect and extend the existing admin/academic frontend into a truthful operations command center without introducing unsupported broadcast/payment/AI actions; then review PWA/offline readiness and remaining frontend acceptance matrix.
+
+
+## Phase 2 — admin operations readiness overview — 2026-10-21
+
+- Added `src/components/AdminOperationsOverview.tsx` to the existing admin-only `AdminFoundationGate`. It displays read-only counts for active products, enabled payment providers, pending payments, notification records, active referral campaigns, rights-cleared knowledge sources, enabled AI providers, active flashcards, and registered devices, with explicit caveats that counts do not perform delivery/verification/qualification or enable AI. It contains no student PII and no write actions.
+- The overview uses existing admin-authorized `ace` table policies and only count/head queries; it does not mutate live rows. Existing catalogue review/import and academic workspace flows remain in place.
+- Added mocked Playwright admin-route coverage asserting the operations overview and honest unsupported-service indicators. No live administrator session or production row was used by the test.
+- Source/test commit: `ca4b025c94ff41629d9d59b4c284fa6ef0ba7c6c` (admin integration), `b6002c1d089658cf8cb99955957247d7dbf2c499` (E2E test). Verification is pending for the current source/test HEAD.
+- Phase 2 remains IN PROGRESS. This adds operational visibility only; it does not implement admin announcement delivery/scheduling, payment checkout/webhooks, referral qualification, secure AI requests, audio playback, or PWA/offline behavior.
+- Exact next action: run/poll Verify and ACE JAMB E2E on the latest main HEAD; fix any failures. Then assess PWA/offline readiness and the remaining admin/account acceptance gaps without adding unsupported write actions.
