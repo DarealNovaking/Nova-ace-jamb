@@ -1023,3 +1023,11 @@ Check Verify and ACE JAMB E2E on the latest main commit after `cba0c14` and this
 - Extended `tests/e2e/smoke.spec.ts` onboarding flow to assert the welcome page, unconfigured-link empty state, and continuation path. CI must confirm this exact test on the latest main commit before this slice is called verified.
 - No backend, Supabase schema/RPC/RLS, production data, or deployment changes. This is an optional community connection point, not secure membership enforcement; institution-specific group routing and verified membership remain out of scope until backed by approved mappings and a server-verifiable contract.
 - Exact next action: poll Verify and ACE JAMB E2E for commit `87147e8b90c5bd42167bf3c5305a7ddd73136707`; fix actual failures from logs. Once green, proceed through the existing whole-product frontend status matrix, prioritizing channel-link configuration/documentation and then notification/announcement UI only after checking existing contracts. Do not mark the whole frontend batch complete.
+
+
+## Frontend Phase 2 community welcome — CI verification result — 2026-10-21
+
+- Verified source/test HEAD before this documentation-only update: `b7867d0c329f787ca3e3913d736bfa301787aa0d`. Verify run `39614886069` passed. ACE JAMB E2E run `39614885727` passed on the exact same SHA; Playwright reported **46 passed (34.9s)** across the configured desktop/mobile projects.
+- The existing onboarding E2E now covers the community welcome screen, honest unconfigured-channel state, and continuing to the student dashboard after the saved foundation is loaded. This verifies the optional UI journey against mocked Supabase contracts, not a live WhatsApp destination or membership check.
+- Phase 2 is **IN PROGRESS**. The community welcome slice is implemented and CI-verified; no real channel URL has been supplied/configured. No backend, Supabase schema/RPC/RLS, production data, or deployment changes were made.
+- Next action: continue the integrated frontend Phase 2 matrix. Confirm the official WhatsApp channel URL/configuration from a trusted project source before configuring `VITE_NOVA_WHATSAPP_CHANNEL_URL`; then inspect existing notification/announcement contracts and implement only supported UI states. Do not invent institution group URLs or claim membership verification.
