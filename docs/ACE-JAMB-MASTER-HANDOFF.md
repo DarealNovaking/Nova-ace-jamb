@@ -2824,3 +2824,12 @@ A read-only browser inspection of the private repository's GitHub Actions page r
 - All Supabase API traffic in this test is intercepted; it does not access production rows or credentials.
 - Source and test writes were accepted by GitHub. The test has NOT been executed, and its behavior is not yet verified by Playwright. Typecheck/build/E2E remain unverified while runner-backed Actions execution is unavailable.
 - Next action: run the targeted test and the full typecheck/build/E2E suite in a local checkout or when Actions runner capacity is restored; fix any real failures before closing Phase 2.
+
+## Phase 2 continuation — admin authorization error sanitization (2026-10-21)
+
+- Hardened `src/components/AdminFoundationGate.tsx`: failed admin authorization/RPC checks now show `Unable to verify administrator access. Please try again.` instead of leaking raw auth/database exception messages.
+- Added a mocked Playwright regression to `tests/e2e/smoke.spec.ts` for an `is_admin` RPC error containing synthetic internal details; the UI must not expose those details.
+- Commits: source `19f79805873f9e35218534a729bb536ceae08647`; regression `2e5947e85690c603cf9a0fc3024cd226f265480d`.
+- Verification boundary: GitHub writes/read-back only. No typecheck/build/Playwright run is claimed because runner capacity is exhausted per user report and there is no local checkout in this session. No production data/schema change or deployment.
+- Phase 2 remains open. The frontend's honest unavailable states do not constitute operational payment, notification delivery, referral qualification, grounded AI, or audio capabilities; these require verified backend/provider contracts.
+- Next action: run `npm run typecheck`, `npm run build`, and `npm run e2e` on current `main` when a local checkout or Actions capacity is available, fix actual failures, then complete and reconcile the remaining Phase 2 acceptance matrix.
