@@ -584,6 +584,44 @@ test.describe('ACE JAMB syllabus publication states', () => {
   })
 })
 
+
+test.describe('ACE JAMB admin operations command center', () => {
+  test('admin sees read-only readiness counts without enabling unsupported operations', async ({ page }) => {
+    await page.route(`${projectUrl}/**`, async (route) => {
+      const url = new URL(route.request().url())
+      if (url.pathname === '/auth/v1/user') {
+        await route.fulfill({ json: { id: userId, aud: 'authenticated', role: 'authenticated', email: 'admin@example.test', app_metadata: { provider: 'email', providers: ['email'] }, user_metadata: {}, created_at: '2026-01-01T00:00:00.000Z' } })
+        return
+      }
+      if (url.pathname.endsWith('/rest/v1/rpc/is_admin')) {
+        await route.fulfill({ json: true })
+        return
+      }
+      if (route.request().method() === 'HEAD') {
+        await route.fulfill({ status: 200, headers: { 'content-range': '*/0' }, body: '' })
+        return
+      }
+      await route.fulfill({ status: 200, contentType: 'application/json', json: [] })
+    })
+    await page.addInitScript(({ uid }) => {
+      const projectRef = 'uokiqlgmzprqfbzmedaz'
+      localStorage.setItem(`sb-${projectRef}-auth-token`, JSON.stringify({
+        access_token: 'test-access-token', refresh_token: 'test-refresh-token', token_type: 'bearer',
+        expires_in: 3600, expires_at: Math.floor(Date.now() / 1000) + 3600,
+        user: { id: uid, aud: 'authenticated', role: 'authenticated', email: 'admin@example.test', app_metadata: { provider: 'email', providers: ['email'] }, user_metadata: {} },
+      }))
+    }, { uid: userId })
+
+    await page.goto('/admin')
+    await expect(page.getByRole('heading', { name: 'Admin Dashboard' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Operations command center' })).toBeVisible()
+    await expect(page.getByText('No delivery worker is currently listed')).toBeVisible()
+    await expect(page.getByText('Grounded student AI stays disabled')).toBeVisible()
+    await expect(page.getByText(/Audio content has no dedicated table or delivery service/)).toBeVisible()
+  })
+})
+
+
 test.describe('ACE JAMB academic editor access', () => {
   test('authorized content editor reaches the separate academic workspace', async ({ page }) => {
     await mockFirstTimeStudent(page)
