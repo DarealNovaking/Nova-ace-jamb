@@ -78,7 +78,6 @@ export default function StudentFoundationGate() {
 
       const [preferences, subjects] = await Promise.all([
         getStudentPreferences().catch((preferenceError: unknown) => {
-          // A new account may not have a preferences row until onboarding saves it.
           if (typeof preferenceError === 'object' && preferenceError !== null && 'code' in preferenceError && preferenceError.code === 'PGRST116') return null
           throw preferenceError
         }),
@@ -92,10 +91,9 @@ export default function StudentFoundationGate() {
         !preferences?.daily_minutes ||
         subjects.length !== 4,
       )
-    } catch (caught) {
+    } catch {
       if (sequence !== refreshSequence.current) return
       setNeedsOnboarding(false)
-      // Keep internal database/provider details out of the student-facing UI.
       setError('We could not load your saved preparation profile. Check your connection and try again.')
     } finally {
       if (sequence === refreshSequence.current) setChecking(false)
@@ -104,13 +102,11 @@ export default function StudentFoundationGate() {
 
   useEffect(() => {
     let active = true
-    // Subscribe before resolving initial UI state. Supabase emits INITIAL_SESSION
-    // from its persisted local session; a parallel getUser() network probe can
-    // race that callback and even clear a newer session after a stale 401.
+    // Use Supabase's persisted auth-state event instead of racing it with a second
+    // initial getUser() network probe.
     const { data } = onAuthStateChange((nextUser, _session, event) => {
       if (!active) return
       if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'PASSWORD_RECOVERY') {
-        // Defer Supabase requests until its auth-state callback releases the internal lock.
         window.setTimeout(() => { if (active) void refresh(nextUser, event) }, 0)
       }
     })
