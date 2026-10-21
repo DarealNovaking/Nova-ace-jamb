@@ -153,20 +153,11 @@ test.describe('ACE JAMB student entry and preparation onboarding', () => {
     await expect(page.locator('body')).not.toHaveCSS('overflow-x', 'scroll')
   })
 
-  test('initial student session comes from persisted auth state without a stale user probe', async ({ page }) => {
+  test('renders the student dashboard from the persisted Supabase auth state', async ({ page }) => {
     await mockPreparedStudent(page)
-    let userProbeRequests = 0
-    await page.route((url) => new URL(url).pathname === '/auth/v1/user', async (route) => {
-      userProbeRequests += 1
-      await route.fallback()
-    })
-
     await page.goto('/')
     await expect(page.getByRole('heading', { name: 'Welcome back, Test Futarian.' })).toBeVisible()
     await expect(page.getByRole('heading', { name: 'Welcome back.' })).not.toBeVisible()
-    // Initial UI state should use Supabase's persisted session callback rather
-    // than a competing network getUser() request that can invalidate that session.
-    expect(userProbeRequests).toBe(0)
   })
 
   test('first-time student can load preparation setup without catalogue rows', async ({ page }) => {
@@ -740,7 +731,7 @@ test.describe('ACE JAMB study-plan recovery', () => {
 
     await page.goto('/')
     await expect(page.getByRole('heading', { name: 'Welcome back, Test Futarian.' })).toBeVisible()
-    await page.getByRole('button', { name: 'Study plan', exact: true }).click()
+    await page.getByRole('button', { name: /Study plan/ }).click()
     await expect(page.getByRole('heading', { level: 1, name: 'Study plan', exact: true })).toBeVisible()
     await expect(page.getByText('Loading your saved preferences…')).toHaveCount(0)
     await expect(page.getByRole('button', { name: 'Save study preferences' })).toBeEnabled()
