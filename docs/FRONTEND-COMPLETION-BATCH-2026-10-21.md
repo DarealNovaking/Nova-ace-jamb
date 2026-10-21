@@ -327,3 +327,10 @@ Check Verify and ACE JAMB E2E on the latest main commit after `cba0c14` and this
 - Important SHA boundary: these run IDs correspond to the earlier `c119e0e6af1a52da1811e6fa66d102cf1d2fdced` fixture-correction checkpoint, not the later source change `aea5436978e43530a28a899da12ba4e1843de2c0` (study-preference test synchronization) or current docs HEAD `54ec1c62c95d3782c88890159bc64f2b58aebd5d`. Therefore they verify that earlier baseline only; they do not prove latest-main E2E is green.
 - Rechecked commit status and commit-associated workflow lookup for `aea5436` and current docs HEAD: combined statuses remain empty and the workflow lookup exposes only pull-request-triggered runs, with no matching runs. Current latest-main acceptance remains UNVERIFIED for the later source changes.
 - Next: continue the existing frontend Phase 1 acceptance list, then use a workflow-run listing path that includes push events to verify the exact latest source SHA. Do not restart completed baseline work. No production/backend changes or deployment.
+
+## Auth-session race acceptance test — 2026-10-21
+
+- Added a mocked Playwright regression test in `tests/e2e/smoke.spec.ts` (commit `7a9d91515f86ed474fd905ab1c89fbac7746ec5a`). It delays the initial `/auth/v1/user` probe, returns a stale unauthenticated response, and asserts that the newer persisted auth-state session still reaches the prepared student dashboard instead of falling back to sign-in. All other requests use the existing isolated mocked fixture.
+- GitHub read-back confirms the test exists on `main`. This is source-level verification only; the new test has NOT yet run in Playwright/CI. Do not mark it passing until a run against commit `7a9d91515f86ed474fd905ab1c89fbac7746ec5a` completes successfully.
+- Scope stayed frontend-only: no backend/database changes, migrations, production writes, or deployment. Phase 1 remains OPEN.
+- Exact next action: retrieve the push-triggered Verify and ACE JAMB E2E runs for this commit, fix any failing assertion/fixture, then continue the remaining dashboard query-state, workspace, and CBT recovery acceptance coverage.
