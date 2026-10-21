@@ -655,6 +655,21 @@ test.describe('ACE JAMB preparation workspaces', () => {
 
 
 
+
+test.describe('ACE JAMB account access surfaces', () => {
+  test('shows payment and referral empty states without implying checkout or rewards work', async ({ page }) => {
+    await mockPreparedStudent(page)
+    await page.goto('/')
+    await expect(page.getByRole('heading', { name: 'Welcome back, Test Futarian.' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'ACE Pass', exact: true })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Checkout unavailable' })).toBeDisabled()
+    await expect(page.getByText('No active ACE Pass entitlement found.')).toBeVisible()
+    await expect(page.getByText('A referral code has not been issued to your account yet.')).toBeVisible()
+    await expect(page.getByText(/No active referral campaign is configured/)).toBeVisible()
+  })
+})
+
+
 test.describe('ACE JAMB notification inbox', () => {
   test('shows an honest empty inbox and saves account-scoped preferences', async ({ page }) => {
     await mockPreparedStudent(page)
