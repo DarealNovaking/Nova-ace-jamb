@@ -2661,3 +2661,12 @@ A read-only browser inspection of the private repository's GitHub Actions page r
 - GitHub read-back confirms the test exists on `main`. This is source-level verification only; the new test has NOT yet run in Playwright/CI. Do not mark it passing until a run against commit `7a9d91515f86ed474fd905ab1c89fbac7746ec5a` completes successfully.
 - Scope stayed frontend-only: no backend/database changes, migrations, production writes, or deployment. Phase 1 remains OPEN.
 - Exact next action: retrieve the push-triggered Verify and ACE JAMB E2E runs for this commit, fix any failing assertion/fixture, then continue the remaining dashboard query-state, workspace, and CBT recovery acceptance coverage.
+
+
+## Current-main verification — 2026-10-21 (auth race test)
+
+- Repository HEAD at inspection: `869a00d8d21243a978a5cb7b580e85c54992e6e1` on `main`.
+- Verify push run `39610640949` completed successfully on this exact SHA. Typecheck, production build, parser/contract tests, Deno checks, and disposable PostgreSQL migration/policy tests passed.
+- ACE JAMB E2E push run `39610640807` targets the same SHA. Its typecheck/build steps passed; Playwright browser tests were still running at the last poll. E2E must remain PENDING until the run's final conclusion is retrieved.
+- The added auth-session race test is present on main but has not yet been confirmed by a completed Playwright run. No production data, Supabase schema, or deployment changes.
+- Next: poll run `39610640807`; if successful, continue remaining frontend acceptance gaps including password-recovery callback and CBT resume/results recovery where not covered, with E2E after source changes. Phase 1 remains OPEN.
