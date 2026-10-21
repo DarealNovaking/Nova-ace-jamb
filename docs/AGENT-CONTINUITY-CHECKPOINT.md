@@ -922,3 +922,16 @@ Check Verify and ACE JAMB E2E on the latest main commit after `cba0c14` and this
 - Further source inspection showed syllabus-version lookup is skipped when the active exam blueprint is absent in the standard fixture. The retry test now fails the dashboard-only `rpc/get_active_exam_blueprint` request once and then falls back to the prepared student's mocked `null` response, so the failure is guaranteed to occur in dashboard loading without breaking authentication.
 - Latest test fixture commit: `1c7709664b961c3f0019b1fd9d2cb8769b51601c`. Prior CI runs do not include this exact test target yet; await CI on current HEAD before declaring the test green.
 - Scope unchanged: frontend-only, no production data writes, no schema/RPC/policy edits, no deployment. Phase 1 remains open pending CI and auth/session-race acceptance plus real reviewed/published content.
+
+
+## Current handoff — frontend Phase 1 only (2026-10-21)
+
+**Verified repo:** `DarealNovaking/Nova-ace-jamb`, branch `main`; HEAD `c119e0e6af1a52da1811e6fa66d102cf1d2fdced`.
+
+**Scope:** finish frontend Phase 1. Do not shift to backend, live content ingestion, production database work, migrations, or deployment. Missing published academic rows are not a frontend blocker; use test fixtures and honest empty states.
+
+**Last failed acceptance:** E2E run `39580697582` on `450b22d33ac6ebe321183b1606df571d2202636f` had 38 passing and 4 failing. Two unique test causes (each failed on desktop + mobile): syllabus fixture route mismatch and dashboard retry targeting the wrong endpoint. Corrected both in `tests/e2e/smoke.spec.ts`, commit `c119e0e6af1a52da1811e6fa66d102cf1d2fdced`.
+
+**Verification pending:** Verify `39607769410`; E2E `39607769274`. Both were in progress at checkpoint write time. Poll them; no green claim until final conclusions are successful.
+
+**Exact next action:** inspect both run conclusions for `c119e0e6af1a52da1811e6fa66d102cf1d2fdced`. Fix test or source failures before adding scope. After green CI, continue frontend acceptance for auth/session race and recovery callback, dashboard retry/query-state, learning/practice/revision/flashcards/progress/study-plan, and CBT expiry/submit/resume/completed-result recovery. Update this checkpoint and master handoff after meaningful work. Phase 1 remains OPEN until all frontend acceptance items are verified.
