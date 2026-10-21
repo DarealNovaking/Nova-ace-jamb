@@ -686,7 +686,7 @@ test.describe('ACE JAMB dashboard recovery states', () => {
       profileRequests += 1
       // The foundation gate performs the first profile request. Fail the dashboard's
       // initial request once, then let the original mocked contract handle the retry.
-      if (profileRequests === 2) {
+      if (profileRequests === 3) {
         await route.fulfill({
           status: 500,
           contentType: 'application/json',
