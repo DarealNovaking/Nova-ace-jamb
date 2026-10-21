@@ -681,6 +681,10 @@ test.describe('ACE JAMB onboarding save contract', () => {
     })
     expect(savedPayload?.p_subject_ids).toEqual(subjects.slice(0, 4).map((subject) => subject.id))
     await expect(page.getByRole('alert')).toHaveCount(0)
+    await expect(page.getByRole('heading', { name: 'You’re not preparing alone.' })).toBeVisible()
+    await expect(page.getByText('Community link coming soon')).toBeVisible()
+    await page.getByRole('button', { name: 'Continue to your dashboard' }).click()
+    await expect(page.getByRole('heading', { name: 'Welcome back, Test Futarian.' })).toBeVisible()
   })
 })
 
