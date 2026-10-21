@@ -936,3 +936,55 @@ test.describe('ACE JAMB installable shell', () => {
     await expect.poll(() => page.evaluate(async () => Boolean(await navigator.serviceWorker.getRegistration('/')))).toBe(true)
   })
 })
+
+test.describe('ACE JAMB account settings first-use regression', () => {
+  test('settings load and save when the student preferences row does not exist yet', async ({ page }) => {
+    await mockPreparedStudent(page)
+    let preferencesUpserted = false
+
+    // This student has a profile but no preferences row. All API calls stay mocked.
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/student_preferences'), async (route) => {
+      if (route.request().method() === 'GET') {
+        await route.fulfill({
+          status: 406,
+          contentType: 'application/json',
+          json: { code: 'PGRST116', message: 'JSON object requested, no rows returned', details: 'The result contains 0 rows', hint: null },
+        })
+        return
+      }
+      if (['POST', 'PATCH', 'PUT'].includes(route.request().method())) {
+        preferencesUpserted = true
+        await route.fulfill({
+          status: 201,
+          contentType: 'application/json',
+          json: { user_id: userId, learning_style: null, daily_minutes: 60, preferred_study_days: [], timezone: null, preferences: {}, updated_at: '2026-10-21T00:00:00.000Z' },
+        })
+        return
+      }
+      await route.fallback()
+    })
+
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/profiles') && ['PATCH', 'PUT'].includes(url.searchParams.get('select') ? 'PATCH' : 'GET'), async (route) => {
+      if (route.request().method() === 'PATCH' || route.request().method() === 'PUT') {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          json: { id: userId, email: 'student@example.test', display_name: 'Test Futarian', target_score: 300, institution: null, course: null, institution_id: null, program_id: null, prep_time_minutes: null, exam_season: null, created_at: '2026-01-01T00:00:00.000Z', updated_at: '2026-10-21T00:00:00.000Z' },
+        })
+        return
+      }
+      await route.fallback()
+    })
+
+    await page.goto('/')
+    await expect(page.getByRole('heading', { name: 'Welcome back, Test Futarian.' })).toBeVisible()
+    await page.getByRole('button', { name: 'Edit settings' }).click()
+    await expect(page.getByLabel('Display name')).toHaveValue('Test Futarian')
+    await expect(page.getByLabel('Daily study time (minutes)')).toHaveValue('')
+    await page.getByLabel('Daily study time (minutes)').fill('60')
+    await page.getByRole('button', { name: 'Save account settings' }).click()
+    await expect(page.getByRole('status')).toContainText('Your account settings were saved.')
+    expect(preferencesUpserted).toBe(true)
+  })
+})
+
