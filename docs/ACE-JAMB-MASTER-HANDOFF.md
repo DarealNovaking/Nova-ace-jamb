@@ -2817,3 +2817,10 @@ A read-only browser inspection of the private repository's GitHub Actions page r
 - Verification is limited to successful GitHub source write. Typecheck, production build, and Playwright are unverified in this environment. No live DB/data changes or deployment occurred.
 - Outstanding: add a Playwright regression for missing preferences; execute typecheck/build/E2E once a runner or local checkout is available; do not close Phase 2 until acceptance gates and backend-dependent limitations are reconciled.
 - Next concrete action: add the targeted Playwright regression, then verify the latest `main` SHA with real test execution.
+
+## Phase 2 continuation — missing-preferences regression coverage added (2026-10-21)
+
+- Added a mocked Playwright regression in `tests/e2e/smoke.spec.ts` that exercises a prepared student's Account Settings when the `student_preferences` GET returns PostgREST's no-row response, then attempts to save daily study time through the existing preferences upsert path.
+- All Supabase API traffic in this test is intercepted; it does not access production rows or credentials.
+- Source and test writes were accepted by GitHub. The test has NOT been executed, and its behavior is not yet verified by Playwright. Typecheck/build/E2E remain unverified while runner-backed Actions execution is unavailable.
+- Next action: run the targeted test and the full typecheck/build/E2E suite in a local checkout or when Actions runner capacity is restored; fix any real failures before closing Phase 2.
