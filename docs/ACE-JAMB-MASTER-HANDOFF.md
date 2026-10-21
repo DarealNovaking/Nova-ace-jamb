@@ -2670,3 +2670,12 @@ A read-only browser inspection of the private repository's GitHub Actions page r
 - ACE JAMB E2E push run `39610640807` targets the same SHA. Its typecheck/build steps passed; Playwright browser tests were still running at the last poll. E2E must remain PENDING until the run's final conclusion is retrieved.
 - The added auth-session race test is present on main but has not yet been confirmed by a completed Playwright run. No production data, Supabase schema, or deployment changes.
 - Next: poll run `39610640807`; if successful, continue remaining frontend acceptance gaps including password-recovery callback and CBT resume/results recovery where not covered, with E2E after source changes. Phase 1 remains OPEN.
+
+
+## Auth/session race and mobile E2E correction — 2026-10-21
+
+- Exact tested SHA `869a00d8d21243a978a5cb7b580e85c54992e6e1`: Verify run `39610640949` passed, including typecheck/build and repository contract checks. ACE JAMB E2E run `39610640807` failed: 42 passed, 4 failed (two distinct tests on desktop + mobile).
+- Failure 1: the new race test intercepted `/auth/v1/user` with a 401, which caused the Supabase client to lose its seeded session before the student dashboard rendered. Root cause: the gate was starting `getCurrentUser()` before subscribing to auth-state changes, so the network probe competed with persisted-session initialization. Source fix committed as `74fde7dd9944cc5e4ce387d0ef6bbde622904d7e`: removed the competing initial network probe and now initializes student UI from Supabase auth-state events (server-side RLS/RPC authorization remains authoritative).
+- Failure 2: the mobile study-plan test used exact accessible-name matching, but the dashboard button's accessible name also includes its descriptive text. Corrected the locator to match `/Study plan/`.
+- Test corrections committed as `6a50545b23a9d4ae77d5b12cb9f4ff5b3cb04ddc`. The race test now asserts that the persisted session renders the dashboard without issuing a competing `/auth/v1/user` probe. This is a deterministic regression assertion, not yet verified by CI.
+- Current next action: wait for Verify and ACE JAMB E2E on `6a50545b23a9d4ae77d5b12cb9f4ff5b3cb04ddc`; fix any remaining failures. Keep Phase 1 OPEN until current-main Playwright is green and acceptance coverage is reviewed. No backend/schema changes, production data writes, or deployment.
