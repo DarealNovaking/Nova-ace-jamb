@@ -1,8 +1,9 @@
 import { ArrowUpRight, MessageCircle, ShieldCheck } from 'lucide-react'
 
+const OFFICIAL_WHATSAPP_CHANNEL_URL = 'https://whatsapp.com/channel/0029VbCW3b1Gk1FtAtO7Qv1N'
+
 function getOfficialChannelUrl() {
-  const configured = import.meta.env.VITE_NOVA_WHATSAPP_CHANNEL_URL
-  if (!configured) return null
+  const configured = import.meta.env.VITE_NOVA_WHATSAPP_CHANNEL_URL || OFFICIAL_WHATSAPP_CHANNEL_URL
 
   try {
     const url = new URL(configured)
