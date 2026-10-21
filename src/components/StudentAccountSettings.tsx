@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import type { FormEvent } from 'react'
 import { Loader2, Settings2 } from 'lucide-react'
 import { getStudentPreferences, getStudentProfile, updateStudentPreferences, updateStudentProfile } from '../lib/studentService'
 
@@ -33,7 +34,7 @@ export default function StudentAccountSettings() {
 
   useEffect(() => { if (open) void load() }, [open])
 
-  async function save(event: React.FormEvent<HTMLFormElement>) {
+  async function save(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     setSaving(true)
     setError('')
