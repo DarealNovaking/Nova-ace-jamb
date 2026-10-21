@@ -726,6 +726,8 @@ test.describe('ACE JAMB study-plan recovery', () => {
     await expect(page.getByRole('heading', { name: 'Welcome back, Test Futarian.' })).toBeVisible()
     await page.getByRole('button', { name: 'Study plan', exact: true }).click()
     await expect(page.getByRole('heading', { level: 1, name: 'Study plan', exact: true })).toBeVisible()
+    await expect(page.getByText('Loading your saved preferences…')).toHaveCount(0)
+    await expect(page.getByRole('button', { name: 'Save study preferences' })).toBeEnabled()
     await page.getByRole('button', { name: 'Save study preferences' }).click()
     await expect(page.getByRole('alert')).toContainText('We could not save your study preferences')
     await expect(page.getByRole('alert')).not.toContainText('private database host')
