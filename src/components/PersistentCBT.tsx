@@ -22,7 +22,15 @@ type Props = {
 }
 
 function safeCbtMessage(error: unknown, fallback: string) {
-  const message = error instanceof Error ? error.message.toLowerCase() : ''
+  // Supabase/PostgREST errors may be plain structured objects rather than native Error instances.
+  const rawMessage = error instanceof Error
+    ? error.message
+    : typeof error === 'object' && error !== null && 'message' in error && typeof error.message === 'string'
+      ? error.message
+      : typeof error === 'string'
+        ? error
+        : ''
+  const message = rawMessage.toLowerCase()
   if (message.includes('no published questions') || message.includes('no questions available')) {
     return 'No reviewed questions are published for this session yet. Please try again after the academic team publishes approved questions.'
   }
