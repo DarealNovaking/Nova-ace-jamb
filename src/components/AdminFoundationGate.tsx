@@ -4,6 +4,7 @@ import { getCurrentUser } from '../lib/authService'
 import AdminCatalogueImport from './AdminCatalogueImport'
 import AdminIbassStage from './AdminIbassStage'
 import AdminReviewOnlyStage from './AdminReviewOnlyStage'
+import AdminOperationsOverview from './AdminOperationsOverview'
 
 export default function AdminFoundationGate() {
   const [checking, setChecking] = useState(true)
@@ -88,6 +89,7 @@ export default function AdminFoundationGate() {
           <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-5"><p className="text-xs uppercase tracking-wider text-white/35">Publication gate</p><p className="mt-2 text-xl font-black">Source + rights review</p></div>
         </div>
 
+        <AdminOperationsOverview />
         <AdminReviewOnlyStage />
         <AdminCatalogueImport />
         <AdminIbassStage />
