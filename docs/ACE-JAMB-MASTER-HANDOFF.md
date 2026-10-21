@@ -2565,3 +2565,9 @@ A read-only browser inspection of the private repository's GitHub Actions page r
 
 - Located the official JAMB IBASS E-syllabus portal at https://ibass.jamb.gov.ng/e-syllabus; the official JAMB homepage links to IBASS. This is a candidate provenance source for syllabus review, not permission to republish or set rights_status='approved'. The source's reuse/licensing terms remain unverified, so any imported syllabus must remain draft/pending until reviewed.
 - No official, reusable question-bank source was verified in this investigation. Do not seed example or generated questions as if they were official JAMB questions. The question-rights migration remains unapplied to production pending explicit authorization.
+
+## Legacy AppDeploy / app deployment removal — 2026-10-21
+
+- Following the user's instruction to remove app-deploy-related assets, deleted .github/workflows/deploy-production.yml, wrangler.jsonc, and the legacy AppDeploy SDK backend/index.ts. Rewrote README.md to remove AppDeploy-provider references and old deployment instructions. No deploy-related filenames remain in the recursive main tree scan, and package.json contains no deploy script.
+- No application deployment was initiated. The remaining GitHub Actions workflows are verification/E2E only. Older Cloudflare/AppDeploy deployment notes elsewhere in this master handoff are historical records only and are superseded; do not execute them or recreate deployment assets unless the user explicitly reverses this instruction.
+- The student-facing app remains sourced from the React/Vite frontend and Supabase services. The question-rights migration remains source-only and is not applied to live Supabase.
