@@ -65,9 +65,21 @@ export async function updateStudentProfile(input: Partial<Pick<StudentProfile, '
 
 export async function getStudentPreferences() {
   const user = await requireUser()
-  const { data, error } = await ace.from('student_preferences').select('*').eq('user_id', user.id).single()
+  const { data, error } = await ace.from('student_preferences').select('*').eq('user_id', user.id).maybeSingle()
   if (error) throw error
-  return data as StudentPreferences
+
+  // A new account may not have preferences until the student saves settings.
+  // Return safe defaults so the settings screen can load; its save path uses
+  // an authenticated upsert to create the row when needed.
+  return (data ?? {
+    user_id: user.id,
+    learning_style: null,
+    daily_minutes: null,
+    preferred_study_days: [],
+    timezone: null,
+    preferences: {},
+    updated_at: '',
+  }) as StudentPreferences
 }
 
 export async function updateStudentPreferences(input: Partial<Omit<StudentPreferences, 'user_id' | 'updated_at'>>) {
