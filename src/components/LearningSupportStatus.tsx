@@ -8,12 +8,12 @@ export default function LearningSupportStatus() {
         <article className="glass-card rounded-2xl border border-white/5 p-5 sm:p-6">
           <div className="flex items-center gap-3"><span className="grid size-10 place-items-center rounded-xl bg-purple-500/15 text-purple-200"><BrainCircuit size={20} aria-hidden="true" /></span><div><h3 className="font-bold">Grounded AI tutor</h3><p className="mt-1 text-xs text-white/35">Provider-backed explanations and revision</p></div></div>
           <p className="mt-4 text-sm leading-6 text-white/50">The tutor is not available yet. A provider being configured is not enough: ACE needs approved knowledge sources and a secure server-side request boundary before student questions can be sent.</p>
-          <div role="status" className="mt-4 inline-flex items-center gap-2 rounded-full border border-amber-200/10 bg-amber-200/5 px-3 py-1.5 text-xs text-amber-100/70"><ShieldCheck size={14} aria-hidden="true" /> Not enabled for students</div>
+          <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-amber-200/10 bg-amber-200/5 px-3 py-1.5 text-xs text-amber-100/70"><ShieldCheck size={14} aria-hidden="true" /> Not enabled for students</div>
         </article>
         <article className="glass-card rounded-2xl border border-white/5 p-5 sm:p-6">
           <div className="flex items-center gap-3"><span className="grid size-10 place-items-center rounded-xl bg-purple-500/15 text-purple-200"><AudioLines size={20} aria-hidden="true" /></span><div><h3 className="font-bold">Audio learning</h3><p className="mt-1 text-xs text-white/35">Listen and revise on the go</p></div></div>
           <p className="mt-4 text-sm leading-6 text-white/50">No approved audio lessons are published yet. Playback will appear when rights-cleared audio, transcripts and a content delivery path are available.</p>
-          <div role="status" className="mt-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[.03] px-3 py-1.5 text-xs text-white/50"><BookOpenCheck size={14} aria-hidden="true" /> No published audio lessons</div>
+          <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[.03] px-3 py-1.5 text-xs text-white/50"><BookOpenCheck size={14} aria-hidden="true" /> No published audio lessons</div>
         </article>
       </div>
     </section>
