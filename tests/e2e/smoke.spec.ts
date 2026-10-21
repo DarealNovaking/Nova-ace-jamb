@@ -681,12 +681,11 @@ test.describe('ACE JAMB onboarding save contract', () => {
 test.describe('ACE JAMB dashboard recovery states', () => {
   test('hides provider details and retries a failed dashboard query', async ({ page }) => {
     await mockPreparedStudent(page)
-    let profileRequests = 0
-    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/profiles'), async (route) => {
-      profileRequests += 1
-      // The foundation gate performs the first profile request. Fail the dashboard's
-      // initial request once, then let the original mocked contract handle the retry.
-      if (profileRequests === 3) {
+    let syllabusRequests = 0
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/syllabus_versions'), async (route) => {
+      syllabusRequests += 1
+      // Fail the first dashboard syllabus query, then allow the mocked contract on retry.
+      if (syllabusRequests === 1) {
         await route.fulfill({
           status: 500,
           contentType: 'application/json',
@@ -704,6 +703,6 @@ test.describe('ACE JAMB dashboard recovery states', () => {
     await page.getByRole('button', { name: 'Try again' }).click()
     await expect(page.getByRole('alert')).toHaveCount(0)
     await expect(page.getByText('Verified learning content is not published yet.')).toBeVisible()
-    expect(profileRequests).toBeGreaterThanOrEqual(3)
+    expect(syllabusRequests).toBeGreaterThanOrEqual(2)
   })
 })
