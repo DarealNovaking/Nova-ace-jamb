@@ -57,6 +57,37 @@ async function mockFirstTimeStudent(page: import('@playwright/test').Page) {
 }
 
 test.describe('ACE JAMB account recovery', () => {
+  test('sign-up normalizes the email and reports successful account creation', async ({ page }) => {
+    let signupPayload: Record<string, unknown> | null = null
+    await page.route(`${projectUrl}/**`, async (route) => {
+      const url = new URL(route.request().url())
+      if (url.pathname === '/auth/v1/user') {
+        await route.fulfill({ status: 401, contentType: 'application/json', json: { code: 'session_not_found', message: 'Auth session missing!' } })
+      } else if (url.pathname === '/auth/v1/signup') {
+        signupPayload = route.request().postDataJSON()
+        await route.fulfill({ status: 200, contentType: 'application/json', json: {
+          user: { id: userId, email: 'student@example.test', aud: 'authenticated', role: 'authenticated', app_metadata: { provider: 'email', providers: ['email'] }, user_metadata: {}, created_at: '2026-01-01T00:00:00.000Z' },
+          session: null,
+        } })
+      } else {
+        await route.fulfill({ status: 200, contentType: 'application/json', json: [] })
+      }
+    })
+
+    await page.goto('/')
+    await expect(page.getByRole('heading', { name: 'Welcome back.' })).toBeVisible()
+    await page.getByRole('button', { name: 'Create an account' }).click()
+    await expect(page.getByRole('heading', { name: 'Create your ACE account.' })).toBeVisible()
+    await page.getByLabel('Email address').fill('Student@Example.Test')
+    await page.getByLabel('New password').fill('valid-test-password')
+    await page.getByLabel('Confirm password').fill('valid-test-password')
+    await page.getByRole('button', { name: 'Create account' }).click()
+    await expect(page.getByRole('status')).toContainText('Account created')
+    await expect.poll(() => signupPayload).not.toBeNull()
+    expect(signupPayload?.email).toBe('student@example.test')
+    expect(signupPayload?.password).toBe('valid-test-password')
+  })
+
   test('forgot-password flow requests a reset email with a same-origin redirect', async ({ page }) => {
     let resetRedirect = ''
     await page.route(`${projectUrl}/**`, async (route) => {
@@ -230,6 +261,27 @@ async function mockSyllabusPublicationState(page: import('@playwright/test').Pag
   })
   return { topicFetches: () => topicFetches }
 }
+
+test.describe('ACE JAMB dashboard recovery', () => {
+  test('retries a transient profile-load failure without exposing backend details', async ({ page }) => {
+    await mockPreparedStudent(page)
+    let allowProfileSuccess = false
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/profiles') && url.toString().startsWith('http'), async (route) => {
+      if (!allowProfileSuccess && route.request().method() === 'GET') {
+        await route.fulfill({ status: 503, contentType: 'application/json', json: { code: 'temporary_outage', message: 'raw provider detail should not be shown' } })
+        return
+      }
+      await route.fallback()
+    })
+
+    await page.goto('/')
+    await expect(page.getByRole('heading', { name: 'We couldn’t prepare your account' })).toBeVisible()
+    await expect(page.getByText('raw provider detail should not be shown', { exact: true })).toHaveCount(0)
+    allowProfileSuccess = true
+    await page.getByRole('button', { name: 'Try again' }).click()
+    await expect(page.getByRole('heading', { name: 'Welcome back, Test Futarian.' })).toBeVisible()
+  })
+})
 
 test.describe('ACE JAMB prepared student dashboard', () => {
   test('saved preparation profile survives reload and dashboard offers CBT navigation', async ({ page }) => {
