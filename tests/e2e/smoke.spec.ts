@@ -263,11 +263,11 @@ async function mockSyllabusPublicationState(page: import('@playwright/test').Pag
 }
 
 test.describe('ACE JAMB dashboard recovery', () => {
-  test('retries a transient profile-load failure without exposing backend details', async ({ page }) => {
+  test('retries a transient device-registration failure without exposing backend details', async ({ page }) => {
     await mockPreparedStudent(page)
-    let allowProfileSuccess = false
-    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/profiles') && url.toString().startsWith('http'), async (route) => {
-      if (!allowProfileSuccess && route.request().method() === 'GET') {
+    let allowDeviceSuccess = false
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/devices') && url.toString().startsWith('http'), async (route) => {
+      if (!allowDeviceSuccess && route.request().method() !== 'GET') {
         await route.fulfill({ status: 503, contentType: 'application/json', json: { code: 'temporary_outage', message: 'raw provider detail should not be shown' } })
         return
       }
@@ -277,7 +277,7 @@ test.describe('ACE JAMB dashboard recovery', () => {
     await page.goto('/')
     await expect(page.getByRole('heading', { name: 'We couldn’t prepare your account' })).toBeVisible()
     await expect(page.getByText('raw provider detail should not be shown', { exact: true })).toHaveCount(0)
-    allowProfileSuccess = true
+    allowDeviceSuccess = true
     await page.getByRole('button', { name: 'Try again' }).click()
     await expect(page.getByRole('heading', { name: 'Welcome back, Test Futarian.' })).toBeVisible()
   })
