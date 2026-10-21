@@ -33,10 +33,11 @@ export default function AdminFoundationGate() {
         }
 
         if (active) setAllowed(true)
-      } catch (caught) {
+      } catch {
         if (active) {
           setAllowed(false)
-          setError(caught instanceof Error ? caught.message : 'Unable to verify administrator access.')
+          // Never expose raw auth/RPC/database errors in the administrator UI.
+          setError('Unable to verify administrator access. Please try again.')
         }
       } finally {
         if (active) setChecking(false)
