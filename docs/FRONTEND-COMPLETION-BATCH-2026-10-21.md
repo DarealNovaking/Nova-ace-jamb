@@ -243,3 +243,8 @@ Check Verify and ACE JAMB E2E on the latest main commit after `cba0c14` and this
 - Verified on commit f2d7e0ade4a2607fae8f05c1802dbce267a13e84: Verify 39533469598 PASS; ACE JAMB E2E 39533470537 PASS (40/40). The new SQL test confirms only owned/licensed/permitted published questions are public/attemptable, even when an editor invokes the RPC; editors retain direct review access.
 - Production migration has **not** been applied. The live DB has 0 questions, 0 topics, 0 subtopics, 0 active approved syllabus versions and 0 flashcards. Explicit production schema-change authorization is required before applying the migration.
 - Phase 1 remains open: real approved content and the full practice/explanation/mistake/progress flow are still absent. Continue safe auth/session and dashboard acceptance work while resolving lawful content sourcing. Do not invent official questions or deploy the app.
+
+## Content-source review note — 2026-10-21
+
+- Candidate official syllabus provenance source identified: https://ibass.jamb.gov.ng/e-syllabus, linked from the official JAMB homepage. Reuse terms remain unverified; keep any imported data draft/pending until rights review. No verified official reusable question bank was identified, and no questions were fabricated.
+- Question-rights migration source is committed and disposable SQL-tested but remains unapplied to live Supabase pending explicit authorization.
