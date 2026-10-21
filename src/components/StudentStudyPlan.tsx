@@ -38,7 +38,7 @@ export default function StudentStudyPlan({ subjects }: { subjects: Subject[] }) 
           setSelectedDays(validDays)
         }
       } catch (caught) {
-        if (!cancelled) setError(caught instanceof Error ? caught.message : 'Unable to load your saved study preferences.')
+        if (!cancelled) setError('We could not load your saved study preferences. Check your connection and try again.')
       } finally {
         if (!cancelled) setLoading(false)
       }
@@ -60,7 +60,7 @@ export default function StudentStudyPlan({ subjects }: { subjects: Subject[] }) 
       await updateStudentPreferences({ daily_minutes: dailyMinutes, preferred_study_days: selectedDays })
       setNotice('Your study preferences have been saved to your account.')
     } catch (caught) {
-      setError(caught instanceof Error ? caught.message : 'Unable to save your study preferences.')
+      setError('We could not save your study preferences. Check your connection and try again.')
     } finally {
       setSaving(false)
     }
