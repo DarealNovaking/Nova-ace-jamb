@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { AuthChangeEvent, User } from '@supabase/supabase-js'
 import StudentAuth from './StudentAuth'
 import StudentOnboarding from './StudentOnboarding'
-import { getCurrentUser, onAuthStateChange } from '../lib/authService'
+import { onAuthStateChange } from '../lib/authService'
 import {
   getStudentPreferences,
   getStudentProfile,
@@ -101,20 +101,12 @@ export default function StudentFoundationGate() {
 
   useEffect(() => {
     let active = true
-    let authStateObserved = false
-    getCurrentUser().then((currentUser) => {
-      // A newer auth-state callback wins over a slower initial session probe.
-      if (active && !authStateObserved) void refresh(currentUser)
-    }).catch(() => {
-      if (active && !authStateObserved) {
-        setError('We could not check your session. Check your connection and try again.')
-        setChecking(false)
-      }
-    })
+    // Subscribe before resolving initial UI state. Supabase emits INITIAL_SESSION
+    // from its persisted local session; a parallel getUser() network probe can
+    // race that callback and even clear a newer session after a stale 401.
     const { data } = onAuthStateChange((nextUser, _session, event) => {
       if (!active) return
       if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'PASSWORD_RECOVERY') {
-        authStateObserved = true
         // Defer Supabase requests until its auth-state callback releases the internal lock.
         window.setTimeout(() => { if (active) void refresh(nextUser, event) }, 0)
       }
