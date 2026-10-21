@@ -656,6 +656,20 @@ test.describe('ACE JAMB preparation workspaces', () => {
 
 
 
+
+test.describe('ACE JAMB learning support availability', () => {
+  test('does not expose an ungrounded tutor or unpublished audio as usable features', async ({ page }) => {
+    await mockPreparedStudent(page)
+    await page.goto('/')
+    await expect(page.getByRole('heading', { name: 'Learning support' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Grounded AI tutor' })).toBeVisible()
+    await expect(page.getByText('Not enabled for students')).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Audio learning' })).toBeVisible()
+    await expect(page.getByText('No published audio lessons')).toBeVisible()
+  })
+})
+
+
 test.describe('ACE JAMB account access surfaces', () => {
   test('shows payment and referral empty states without implying checkout or rewards work', async ({ page }) => {
     await mockPreparedStudent(page)
