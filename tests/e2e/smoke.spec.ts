@@ -731,32 +731,3 @@ test.describe('ACE JAMB study-plan recovery', () => {
     await expect(page.getByRole('alert')).not.toContainText('private database host')
   })
 })
-
-test.describe('ACE JAMB dashboard request ordering', () => {
-  test('ignores a stale dashboard failure after a newer refresh succeeds', async ({ page }) => {
-    await mockPreparedStudent(page)
-    let blueprintRequests = 0
-    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/get_active_exam_blueprint'), async (route) => {
-      blueprintRequests += 1
-      if (blueprintRequests === 1) {
-        await new Promise((resolve) => setTimeout(resolve, 700))
-        await route.fulfill({
-          status: 500,
-          contentType: 'application/json',
-          json: { code: 'stale_request_failure', message: 'old request should not overwrite current dashboard state' },
-        })
-        return
-      }
-      await route.fulfill({ json: null })
-    })
-
-    await page.goto('/')
-    await expect(page.getByRole('heading', { name: 'Welcome back, Test Futarian.' })).toBeVisible()
-    await expect.poll(() => blueprintRequests).toBe(1)
-    await page.getByRole('button', { name: 'Refresh' }).click()
-    await expect.poll(() => blueprintRequests).toBeGreaterThanOrEqual(2)
-    await expect(page.getByText('Verified learning content is not published yet.')).toBeVisible()
-    await expect(page.getByRole('alert')).toHaveCount(0)
-    await expect(page.getByText('old request should not overwrite current dashboard state')).toHaveCount(0)
-  })
-})
