@@ -1181,3 +1181,12 @@ Check Verify and ACE JAMB E2E on the latest main commit after `cba0c14` and this
 - GitHub accepted the source update. Typecheck/build/Playwright/browser visual checks are NOT run; no local checkout is available in this session and Actions capacity is exhausted. No deployment or production DB changes were made.
 - Status: Phase 2 remains OPEN. This is one foundation improvement, not the full frontend closeout. Backend-dependent payments, referral qualification, AI retrieval, audio delivery and notification scheduling/delivery remain unverified until real server contracts and end-to-end evidence exist.
 - Exact next action: continue the current-source frontend audit and scoped implementation, then execute typecheck, production build and full Playwright suite when local execution or Actions capacity is available. Record all actual results before closing Phase 2.
+
+
+## Phase 2 frontend audit continuation (2026-10-21, follow-up)
+
+- Inspected the current Playwright smoke test inventory. Existing tests cover account recovery, mobile student entry, onboarding, persisted dashboard, CBT attempt persistence/empty bank, approved syllabus/rights states, workspace navigation, settings, learning-support honest availability, payment/referral states, notifications, study plan, PWA shell, and admin access/readiness.
+- Fixed stale practice-workspace copy in `src/components/StudentStudyWorkspace.tsx`: it no longer asserts that the latest database audit has zero active questions. It now explains that question availability is checked when starting a session and that the app must not invent questions or fake attempts.
+- Commit: `5db968b85207444f83415ac53e7db825e2a3d1c8`. GitHub accepted the update; no DB/deployment changes made.
+- Tests were inspected but NOT executed. TypeScript, production build, browser/mobile rendering, and Playwright remain unverified because no local checkout/runtime is available in this session and Actions minutes are exhausted.
+- Phase 2 remains OPEN. Next: continue targeted source review for stale claims/navigation regressions, then run typecheck/build and existing desktop + mobile Playwright suite in a local execution environment. Do not fabricate official question-bank content or call placeholder backend-dependent services complete.
