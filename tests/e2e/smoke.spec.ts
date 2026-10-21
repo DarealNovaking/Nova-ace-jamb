@@ -988,3 +988,21 @@ test.describe('ACE JAMB account settings first-use regression', () => {
   })
 })
 
+test.describe('ACE JAMB admin authorization recovery', () => {
+  test('does not expose raw authorization or database errors when the admin check fails', async ({ page }) => {
+    await mockPreparedStudent(page)
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/is_admin'), async (route) => {
+      await route.fulfill({
+        status: 500,
+        contentType: 'application/json',
+        json: { code: 'internal_database_error', message: 'private database host and query details' },
+      })
+    })
+
+    await page.goto('/admin')
+    await expect(page.getByRole('heading', { name: 'Admin access required' })).toBeVisible()
+    await expect(page.getByText('Unable to verify administrator access. Please try again.')).toBeVisible()
+    await expect(page.getByText(/private database host/)).toHaveCount(0)
+  })
+})
+
