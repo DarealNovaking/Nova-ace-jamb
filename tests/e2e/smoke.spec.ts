@@ -80,6 +80,34 @@ test.describe('ACE JAMB account recovery', () => {
     await expect(page.getByRole('status')).toContainText('If an account exists for that email')
     await expect.poll(() => resetRedirect).toBe('http://127.0.0.1:4173')
   })
+
+  test('recovery session can update the account password', async ({ page }) => {
+    await mockPreparedStudent(page)
+    let updateCalls = 0
+    let updatedPassword = ''
+
+    await page.route((url) => new URL(url).pathname === '/auth/v1/user' && url.toString().startsWith('http'), async (route) => {
+      if (route.request().method() !== 'PATCH') {
+        await route.fallback()
+        return
+      }
+      updateCalls += 1
+      updatedPassword = route.request().postDataJSON().password
+      await route.fulfill({ status: 200, contentType: 'application/json', json: {
+        id: userId, aud: 'authenticated', role: 'authenticated', email: 'student@example.test',
+        app_metadata: { provider: 'email', providers: ['email'] }, user_metadata: {},
+      } })
+    })
+
+    await page.goto('/#access_token=recovery-test-access-token&refresh_token=recovery-test-refresh-token&type=recovery')
+    await expect(page.getByRole('heading', { name: 'Set a new password.' })).toBeVisible()
+    await page.getByLabel('New password').fill('new-test-password-123')
+    await page.getByLabel('Confirm password').fill('new-test-password-123')
+    await page.getByRole('button', { name: 'Update password' }).click()
+    await expect(page.getByRole('status')).toContainText('Password updated successfully')
+    expect(updateCalls).toBe(1)
+    expect(updatedPassword).toBe('new-test-password-123')
+  })
 })
 
 test.describe('ACE JAMB student entry and preparation onboarding', () => {
