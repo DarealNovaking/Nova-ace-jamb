@@ -101,17 +101,20 @@ export default function StudentFoundationGate() {
 
   useEffect(() => {
     let active = true
+    let authStateObserved = false
     getCurrentUser().then((currentUser) => {
-      if (active) void refresh(currentUser)
-    }).catch((caught) => {
-      if (active) {
-        setError(caught instanceof Error ? caught.message : 'Unable to check your session.')
+      // A newer auth-state callback wins over a slower initial session probe.
+      if (active && !authStateObserved) void refresh(currentUser)
+    }).catch(() => {
+      if (active && !authStateObserved) {
+        setError('We could not check your session. Check your connection and try again.')
         setChecking(false)
       }
     })
     const { data } = onAuthStateChange((nextUser, _session, event) => {
       if (!active) return
       if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'PASSWORD_RECOVERY') {
+        authStateObserved = true
         // Defer Supabase requests until its auth-state callback releases the internal lock.
         window.setTimeout(() => { if (active) void refresh(nextUser, event) }, 0)
       }
