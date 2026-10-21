@@ -1103,3 +1103,13 @@ Check Verify and ACE JAMB E2E on the latest main commit after `cba0c14` and this
 - Source/test commit: `ca4b025c94ff41629d9d59b4c284fa6ef0ba7c6c` (admin integration), `b6002c1d089658cf8cb99955957247d7dbf2c499` (E2E test). Verification is pending for the current source/test HEAD.
 - Phase 2 remains IN PROGRESS. This adds operational visibility only; it does not implement admin announcement delivery/scheduling, payment checkout/webhooks, referral qualification, secure AI requests, audio playback, or PWA/offline behavior.
 - Exact next action: run/poll Verify and ACE JAMB E2E on the latest main HEAD; fix any failures. Then assess PWA/offline readiness and the remaining admin/account acceptance gaps without adding unsupported write actions.
+
+
+
+## Phase 2 — safe PWA shell and offline boundary — 2026-10-21
+
+- Repository audit found no manifest or service worker. Added `public/manifest.webmanifest`, `public/nova-ace-icon.svg`, and `public/sw.js`; linked the manifest/theme/icon in `index.html` and registered the worker only in production from `src/main.tsx`. Installation failures are non-fatal.
+- The worker caches only the app shell and Vite content-hashed static assets. It is same-origin GET only, excludes `/rest/`, `/auth/`, `/functions/`, `/storage/`, `/realtime/`, `/api/` and `/sw.js`, and uses network-first navigation with the static root as offline fallback. It does not cache API/auth/payment/CBT response data or claim offline CBT operation.
+- Added Playwright coverage for manifest metadata, service-worker asset, explicit API/auth cache exclusions and registration. Verification remains pending; CI attempts on the admin-overview commits failed before any runner was assigned (runner ID 0, no steps/logs). A generic typing correction for count queries was committed as `fcb23495b4399451177e1e7f1f7eef0eb07e0e48`; do not claim admin/PWA verification until CI executes normally.
+- Current Phase 2 source/test scope includes community link, notification inbox/preferences, read-only ACE Pass/referral status, account settings, truthful AI/audio states, admin readiness counts, and the PWA shell. Delivery/payment/referral/AI/audio server capabilities remain absent or disabled and are not simulated.
+- Exact next action: obtain a real runner-backed Verify and Playwright E2E result for the latest main SHA; fix any source/test failures, then complete the remaining admin command-center review and close only after the acceptance matrix is satisfied.

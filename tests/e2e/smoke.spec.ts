@@ -908,3 +908,31 @@ test.describe('ACE JAMB study-plan recovery', () => {
     await expect(page.getByRole('alert')).not.toContainText('private database host')
   })
 })
+
+
+test.describe('ACE JAMB installable shell', () => {
+  test('serves its manifest and limits service-worker caching to the static shell', async ({ page }) => {
+    await mockPreparedStudent(page)
+    await page.goto('/')
+    await expect(page.locator('link[rel="manifest"]')).toHaveAttribute('href', '/manifest.webmanifest')
+
+    const manifestResponse = await page.evaluate(async () => {
+      const response = await fetch('/manifest.webmanifest')
+      return { ok: response.ok, manifest: await response.json() }
+    })
+    expect(manifestResponse.ok).toBeTruthy()
+    expect(manifestResponse.manifest.name).toBe('ÑØVÃ ACE JAMB')
+    expect(manifestResponse.manifest.display).toBe('standalone')
+    expect(manifestResponse.manifest.icons).toEqual(expect.arrayContaining([
+      expect.objectContaining({ src: '/nova-ace-icon.svg', type: 'image/svg+xml' }),
+    ]))
+
+    const workerText = await page.evaluate(async () => (await fetch('/sw.js')).text())
+    expect(workerText).toContain("url.origin !== self.location.origin")
+    expect(workerText).toContain("'/rest/'")
+    expect(workerText).toContain("'/auth/'")
+    expect(workerText).toContain("request.method !== 'GET'")
+    expect(workerText).toContain("request.mode === 'navigate'")
+    await expect.poll(() => page.evaluate(async () => Boolean(await navigator.serviceWorker.getRegistration('/')))).toBe(true)
+  })
+})

@@ -1,0 +1,18 @@
+{
+  "name": "ÑØVÃ ACE JAMB",
+  "short_name": "ACE JAMB",
+  "description": "Personalized JAMB preparation with ÑØVÃ ACE JAMB.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#07050d",
+  "theme_color": "#07050d",
+  "icons": [
+    {
+      "src": "/nova-ace-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

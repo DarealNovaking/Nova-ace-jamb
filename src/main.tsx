@@ -41,6 +41,14 @@ function AppShell() {
   return <StudentFoundationGate />;
 }
 
+if (import.meta.env.PROD && 'serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    void navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(() => {
+      // The app remains fully usable when service-worker installation is unavailable.
+    });
+  });
+}
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <AppShell />
