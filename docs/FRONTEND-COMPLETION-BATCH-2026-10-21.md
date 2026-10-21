@@ -482,3 +482,11 @@ Check Verify and ACE JAMB E2E on the latest main commit after `cba0c14` and this
 - No production deployment, database mutation, schema change, or student-data write was performed in this closeout attempt.
 - **Status: Phase 2 is NOT closed.** The batch still has unverified source/test changes and unfinished backend-dependent surfaces: admin announcement delivery/scheduling, payment checkout/provider verification, referral qualification/rewards, secure AI request/retrieval, audio content/playback, and meaningful offline/CBT acceptance. These must not be represented as implemented just because their UI reports status.
 - **Exact next action:** open the repository's GitHub Actions page and inspect why both jobs fail without steps/logs; restore a functioning GitHub-hosted runner or resolve the Actions service/runner/account restriction, then rerun Verify and ACE JAMB E2E on the latest main SHA. Fix any actual code failures from those runs, add a regression test for missing student preferences, and continue only the remaining acceptance gates supported by real service contracts. Do not call Phase 2 complete until the exact latest source/test SHA passes the required checks and remaining scope is either implemented and verified or explicitly removed from the phase's acceptance criteria by the project owner.
+
+## Phase 2 continuation — missing student-preferences row hardening (2026-10-21)
+
+- Fixed `getStudentPreferences()` in `src/lib/studentService.ts` to treat a missing preferences row as a valid first-use state (`maybeSingle()` plus safe defaults), instead of throwing and preventing the Account Settings form from loading.
+- Existing `updateStudentPreferences()` already uses an authenticated `upsert`, so saving can create the row without a schema migration.
+- Verification: GitHub write succeeded; no typecheck/build/Playwright execution was available in this step. Regression test and runtime verification are still required. This does not close Phase 2.
+- No live database mutation, schema change, deployment, or service activation was performed.
+- Next: add a Playwright regression for missing preferences, then run typecheck/build/E2E when a runner or local environment is available.
