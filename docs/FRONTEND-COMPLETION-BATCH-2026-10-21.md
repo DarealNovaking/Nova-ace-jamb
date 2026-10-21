@@ -248,3 +248,8 @@ Check Verify and ACE JAMB E2E on the latest main commit after `cba0c14` and this
 
 - Candidate official syllabus provenance source identified: https://ibass.jamb.gov.ng/e-syllabus, linked from the official JAMB homepage. Reuse terms remain unverified; keep any imported data draft/pending until rights review. No verified official reusable question bank was identified, and no questions were fabricated.
 - Question-rights migration source is committed and disposable SQL-tested but remains unapplied to live Supabase pending explicit authorization.
+
+## Legacy deployment asset removal — 2026-10-21
+
+- Deleted .github/workflows/deploy-production.yml, wrangler.jsonc and the legacy backend/index.ts AppDeploy SDK implementation; rewrote README.md to remove legacy provider and deployment instructions.
+- Recursive main tree contains no filenames matching AppDeploy, Wrangler, deploy or Cloudflare. No application deployment was performed. Existing historical deployment notes are archival only and must not be acted on unless the user explicitly reverses the removal instruction.
