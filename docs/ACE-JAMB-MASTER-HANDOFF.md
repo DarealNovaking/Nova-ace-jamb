@@ -2890,3 +2890,8 @@ A read-only browser inspection of the private repository's GitHub Actions page r
 - **RLS evidence:** `profiles` SELECT/UPDATE policies are scoped to `auth.uid()`; `student_preferences` and `student_subjects` ALL policies are scoped to the authenticated owner in both USING and WITH CHECK; `roles` has a self-select policy. Function signatures for `save_student_preparation_foundation`, `is_admin`, `is_admin_or_editor`, and `set_student_subjects` were read. Function bodies/grants were not audited in this pass.
 - **Phase 2 closeout remains separate:** `npm run typecheck`, `npm run build`, `npm run e2e`, and deployed-flow checks remain pending on current HEAD as recorded by the Phase 2 closure checkpoint. No tests were run in this audit.
 - **Next action:** Keep Phase 2 verification deferred as already agreed; reconcile the exact Phase 3 scope against the current owner-approved milestone plan before making implementation changes. Do not infer that the student foundation is the formal Phase 3 or start unrelated catalogue work.
+
+
+### Student-foundation RPC body follow-up — 2026-10-22
+- Read-only inspection of live `ace.save_student_preparation_foundation(text, smallint, text, text, integer, uuid[])` body confirmed `SECURITY DEFINER`, pinned `search_path = pg_catalog, ace, auth`, an explicit `auth.uid()` non-null check, validation of score/study-time/name, exactly four distinct active subjects, and compulsory active English. It creates/updates only the current user's profile/preferences/subject rows and preserves catalogue links only when names still match.
+- Function EXECUTE grants/privileges were not yet inspected; this is not a complete security sign-off. No function, schema, or data was changed.
