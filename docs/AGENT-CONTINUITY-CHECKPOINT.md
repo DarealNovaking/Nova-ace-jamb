@@ -1209,3 +1209,8 @@ Check Verify and ACE JAMB E2E on the latest main commit after `cba0c14` and this
 - Source contains existing auth/session gate, admin/editor routing, onboarding persistence, subject selection, and community-gate state. No app code, DB data, migrations, or deployment changed. No typecheck/build/E2E tests run.
 - **Scope/roadmap correction:** The master handoff does not define a canonical “Phase 3 — Student Foundation” milestone. Do not treat that label as established. User explicitly said current task is Phase 2 frontend closeout and not catalogue work; this audit did not start catalogue work.
 - **Next action:** Keep general Phase 2 checks deferred until GitHub Actions is available, then reconcile the exact next milestone against the owner-approved roadmap before implementation. Do not invent a Phase 3 scope.
+
+
+### Student-foundation RPC body follow-up — 2026-10-22
+- Read-only live inspection of `ace.save_student_preparation_foundation` confirmed a pinned search path, explicit `auth.uid()` check, input validation, exactly four distinct active subjects including English, and writes scoped to the current user's profile/preferences/subjects.
+- EXECUTE grants/privileges remain unverified; no security sign-off claimed. No DB mutation or source change.
