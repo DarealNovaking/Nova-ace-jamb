@@ -1199,3 +1199,13 @@ Check Verify and ACE JAMB E2E on the latest main commit after `cba0c14` and this
 - Latest inspected Actions run `39648461718` (`0b7e0bf6e35da56b70bd20862f4da1260252efc1`) shows both jobs failed without step summaries. Log retrieval returned 404 BlobNotFound, so root cause remains unknown. User screenshot confirms included Actions minutes exhausted (2,000/2,000). No new workflow triggered.
 - No new source edit warranted from this read-only review. Phase 2 implementation review is substantially complete, but closure is BLOCKED pending actual `npm run typecheck`, `npm run build`, and `npm run e2e` results; none run in this session because no local checkout/runtime is available and Actions minutes are exhausted.
 - Exact next action: run `npm install`, typecheck, build and E2E in a local execution environment or after Actions minutes reset; fix reproducible failures, record evidence, and then close Phase 2. Do not revisit settled catalogue/institution decisions.
+
+
+## Phase 3 readiness audit — 2026-10-22
+- Verified current `main` HEAD: `78af176d91d596e260d995c2ef53a6ae0a4080c7`.
+- Read-only audit inspected student auth/onboarding/profile/dashboard/workspace source and live Supabase schema/counts.
+- Live counts: profiles 4; student_preferences 4; student_subjects 8; subjects 25; exam_seasons 2; syllabus_versions 50; topics 0; subtopics 0; questions 0; attempts 0. These are point-in-time counts.
+- RLS policies observed: profiles self SELECT/UPDATE; student_preferences and student_subjects owner-scoped ALL with USING + WITH CHECK; roles self SELECT. RPC signatures inspected, but function bodies/grants not audited.
+- Source contains existing auth/session gate, admin/editor routing, onboarding persistence, subject selection, and community-gate state. No app code, DB data, migrations, or deployment changed. No typecheck/build/E2E tests run.
+- **Scope/roadmap correction:** The master handoff does not define a canonical “Phase 3 — Student Foundation” milestone. Do not treat that label as established. User explicitly said current task is Phase 2 frontend closeout and not catalogue work; this audit did not start catalogue work.
+- **Next action:** Keep general Phase 2 checks deferred until GitHub Actions is available, then reconcile the exact next milestone against the owner-approved roadmap before implementation. Do not invent a Phase 3 scope.
