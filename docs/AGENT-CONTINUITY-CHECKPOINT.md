@@ -1744,3 +1744,12 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - E2E #873 / run `40039116551` was still running Playwright when this update was written. Browser regression coverage for the new lazy boundary is **pending**, not passed. Current-main docs commits may queue newer E2E runs; inspect the latest run before closing the check.
 - No dependencies were added. No backend/database, catalogue UI, deployment, or production data changed. The opt-in module report remains disabled unless `ANALYZE_BUNDLE=1` is set; CI Verify explicitly enables it for the build step.
 - **Exact next action:** inspect E2E #873 and the latest-main E2E result; if green, record the Playwright count and close this specific optimization verification. If it fails, use the browser failure output to correct the regression only. Keep manual keyboard/screen-reader, low-end Android and real-device PWA/offline gates open.
+
+
+## Dashboard lazy-load browser verification result — 2026-10-24
+
+- ACE JAMB E2E #873 / run `40039116551` completed **PASS** on source commit `d6a00df63d85be2010c68bb8828f88df3f9175b0`; Playwright log confirms **76 passed (1.7m)**. Typecheck and build also passed in that E2E workflow.
+- Verify #940 / run `40039116617` **PASS** on the same source commit, including Node contract tests, Deno checks, TypeScript, build/module report, and both disposable PostgreSQL checks.
+- Bundle result confirmed: entry **466.57 kB minified / 133.68 kB gzip**, dashboard chunk **37.40 kB / 9.30 kB gzip**. Compared with the measured baseline, initial entry fell by 41.03 kB minified and 8.60 kB gzip and is now under Vite's 500 kB warning threshold.
+- The latest docs-only HEAD at this checkpoint is `9dc79e33b3b7341a9c60b50885c53ba6effec756`; Verify #946 and E2E #879 were queued on that docs HEAD. The application change itself has green CI/E2E on its source commit; do not claim those latest docs-HEAD runs completed until checked.
+- **Next action:** confirm the queued docs-HEAD Verify/E2E runs settle, then continue Phase 3's next bounded frontend accessibility audit. Manual keyboard-only, actual screen-reader, physical low-end Android, and real-device PWA/offline acceptance remain open.
