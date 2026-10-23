@@ -282,3 +282,12 @@ Proceed to the source-based keyboard/semantic audit of student workspace and CBT
 - This resolves the specific test-harness failure documented above: the mock now emulates the browser's same-origin `Response.type === 'basic'` contract. The test now covers install-time static shell caching, exclusion boundaries, same-origin build asset caching, and offline navigation fallback under mocked service-worker APIs.
 - E2E #830 on `a2f50cb5b5` was still running at the last check; E2E on the latest docs HEAD is also pending. Do not claim current docs HEAD E2E passed until the relevant run completes. Runtime service-worker tests are mocked and do not substitute for browser/device install and offline acceptance.
 - **Next action:** check the latest main HEAD's Verify/E2E status. If both are green, continue the bounded accessibility audit; leave real-device PWA/offline and manual screen-reader gates open.
+
+## Reduced-motion accessibility regression test — 2026-10-23
+
+- Added an E2E regression test in `tests/e2e/smoke.spec.ts` (commit `a389b2faaedc36c8a2b3510ab937eba5c4bdf069`) to emulate `prefers-reduced-motion: reduce` and verify non-smooth document scrolling plus near-zero animation/transition durations.
+- This checks existing CSS in `src/index.css`; production runtime code was unchanged. All Supabase requests are mocked by the existing E2E helper.
+- Verify #904 and ACE JAMB E2E #837 were queued at the source commit; browser verification is pending. Do not call this regression test passed until E2E completes green. Check current HEAD and newest workflow runs after this documentation update.
+- No backend/database, deployment, catalogue UI, dependency, or production-data changes.
+- Phase 3 remains IN PROGRESS. Manual keyboard-only, real screen-reader, physical low-end Android, and real-device PWA install/offline checks remain unverified.
+- **Next action:** inspect the latest E2E/Verify outcomes, fix any evidenced regression, and update the continuity docs with terminal evidence.
