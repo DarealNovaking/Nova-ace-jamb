@@ -113,7 +113,7 @@ export default function StudentFoundationGate() {
     return () => { active = false; data.subscription.unsubscribe() }
   }, [])
 
-  if (checking) return <div className="grid min-h-screen place-items-center bg-[#07050d] text-white"><p className="text-white/60">Preparing your ACE account…</p></div>
+  if (checking) return <main id="main-content" aria-busy="true" className="grid min-h-screen place-items-center bg-[#07050d] text-white"><p role="status" aria-live="polite" aria-atomic="true" className="text-white/60">Preparing your ACE account…</p></main>
   if (error) return <div className="grid min-h-screen place-items-center bg-[#07050d] px-6 text-white"><div className="max-w-md text-center"><h1 className="text-xl font-semibold">We couldn’t prepare your account</h1><p className="mt-2 text-sm text-white/60">{error}</p><button type="button" onClick={() => void refresh(user)} className="mt-5 rounded-xl bg-white px-5 py-3 text-sm font-semibold text-black">Try again</button></div></div>
   if (recovery) return <StudentAuth recovery />
   if (!user) return <StudentAuth />
