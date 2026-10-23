@@ -318,3 +318,10 @@ Proceed to the source-based keyboard/semantic audit of student workspace and CBT
 - ACE JAMB E2E #850 (`40001391449`) passed on commit `693a94fae956`; logs report **74 browser tests passed**. This run includes the CBT skip-link test and reduced-motion test.
 - Verify #917 passed on `693a94fae956`; Verify #918 passed on current HEAD `d751b9f1dc98ae2b58d34d4c985bc6aead7a7cf3`. E2E #851 for current HEAD remained in progress at the last poll.
 - **Next action:** check the current HEAD E2E outcome, then attribute the >500 kB Vite bundle warning to actual modules before making any code-splitting change. Keep real keyboard-only/screen-reader/device checks open and keep the project frontend-only.
+
+## Dashboard keyboard skip-link improvement — 2026-10-23
+
+- Added `Skip to dashboard content` in `src/components/StudentDashboard.tsx` and a focusable `#dashboard-content` target. Added Playwright keyboard activation/focus assertion in `tests/e2e/smoke.spec.ts`.
+- Earlier E2E #850 passed **74 tests** including CBT skip-link and reduced-motion checks. The dashboard skip-link is newer and still awaits browser verification.
+- Verify #918 build log shows the entry chunk at 507.45 kB minified / 142.27 kB gzip, while CBT/workspace/admin routes are separate chunks. The build log does not prove which dependency dominates; no speculative code splitting or dependency upgrade was made.
+- Dashboard source/test commits: `de955f6ada0bd127b4f95b131c31bdce95de6e09`, `1ce8b9c62e53269adb3b6087bc089bea5d316cbb`. **Next action:** inspect the current-main CI result for this test and fix only evidence-backed failures; then continue measured bundle attribution. Manual/device gates remain open; frontend-only scope preserved.
