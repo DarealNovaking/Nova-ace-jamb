@@ -35,7 +35,7 @@ function AppShell() {
           <button
             type="button"
             className="mb-5 rounded-xl border border-white/10 px-4 py-2 text-sm text-white/70 hover:bg-white/5"
-            onClick={() => { const url = new URL(window.location.href); url.searchParams.delete('cbt'); window.history.pushState({}, '', url); setCbt(false); }}
+            onClick={() => { const url = new URL(window.location.href); url.searchParams.delete('cbt'); window.history.pushState({ restoreDashboardFocus: true }, '', url); setCbt(false); }}
           >
             ← Back to ACE JAMB
           </button>
