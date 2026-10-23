@@ -3164,3 +3164,11 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - The lazy workspace fallback announces loading politely; existing workspace focus management remains in place. No backend/database/deployment/catalogue changes or dependency additions.
 - Additional E2E runs on later docs-only commits were still active when checked, but E2E #742 and Verify #809 cover the exact source commit. No need to wait on docs-only runs to claim the source/test commit passed.
 - **Next action:** stop speculative splitting for now; investigate actual large dependency contribution only if a source-based analysis can identify a safe win. Prioritize the remaining student/CBT UX and keyboard review. Manual screen-reader and physical-device checks remain unverified.
+
+
+## Frontend Phase 3 — CBT timer and question-map semantics (2026-10-23)
+
+- `PersistentCBT.tsx` commit `bc85cdc14928b1f9cec8fabffa3985fb665d1e75` names the countdown as a timer, hides the decorative clock icon, associates the answer group with its question heading, and labels question-map controls with question number and answered/unanswered state; current question is `aria-current=step`.
+- `smoke.spec.ts` commit `4ad0acef545eca041fd1d31fb6dc28a315569523` asserts these semantics. Source commit `bc85cdc` passed E2E #749 (66 tests) and Verify #816. Verify #817 passed on `4ad0ace`; E2E #750 was still installing Playwright browsers, so the new assertions remain unverified. [E2E #750](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/39979019310).
+- Main bundle remains 506.86 kB minified / 142.10 kB gzip, with Vite's >500 kB warning. No backend/database/deploy/catalogue changes. Manual keyboard-only/screen-reader review remains unverified.
+- Next action: inspect E2E #750, resolve only a reproducible failure, then continue frontend accessibility review.
