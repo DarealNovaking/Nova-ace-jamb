@@ -1214,3 +1214,13 @@ Check Verify and ACE JAMB E2E on the latest main commit after `cba0c14` and this
 ### Student-foundation RPC body follow-up — 2026-10-22
 - Read-only live inspection of `ace.save_student_preparation_foundation` confirmed a pinned search path, explicit `auth.uid()` check, input validation, exactly four distinct active subjects including English, and writes scoped to the current user's profile/preferences/subjects.
 - EXECUTE grants/privileges remain unverified; no security sign-off claimed. No DB mutation or source change.
+
+
+## Current Frontend Phase 2 checkpoint — 2026-10-23
+- Active scope is Frontend Phase 2 closeout, not catalogue ingestion or an inferred Phase 3 milestone.
+- HEAD at investigation start: `0cf9fe0aae55a5f7a907a09503dc239d63d89598`. Documentation follow-up commits now exist; refresh main HEAD before source changes.
+- Verify run `39810652243` passed; reported typecheck, build, Node/Deno and SQL checks passed.
+- E2E run `39810652048`, job `119935661138`, ended before any steps executed (`steps: []`, no runner assigned). This is not a Playwright assertion failure; exact start cause remains unconfirmed. Prior user report mentioned Actions billing/spending restriction—verify current status.
+- Phase 2 remains OPEN. Playwright desktop/mobile and deployed-flow acceptance are not verified. No app source, DB rows, migrations or deployment changed in this investigation.
+- Next: inspect E2E annotations, restore runner execution, run the existing E2E suite against current main, review desktop/mobile navigation, student settings, admin authorization and PWA, fix reproducible defects, and record evidence. Current concise handoff: `docs/FRONTEND-PHASE-2-CURRENT-HANDOFF-2026-10-23.md`. Frontend batch log also updated.
+- Anti-drift: do not re-upload the 791-institution workbook without new evidence, reopen resolved admin/student routing without evidence, or claim E2E passed.
