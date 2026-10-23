@@ -2,10 +2,10 @@
 
 > Refresh from verified repository/system state at the start and end of meaningful work. Historical entries below may be superseded by newer verification records.
 
-- **Updated:** 2026-10-23 (Phase 3 test correction recorded; rerun pending)
+- **Updated:** 2026-10-23 (Phase 3 accessibility slice verified)
 - **Repository:** `DarealNovaking/Nova-ace-jamb`, branch `main`.
 - **Latest main HEAD observed during Phase 3 handoff readback:** `b98f9899ad2048402d28e3a6024a6e023611f781` (new Phase 3 handoff document; source/test CI still pending).
-- **Latest fully verified baseline:** `85a4b5b1aed59b8d5bfb3e7c09de53d873cdb9af` (Verify and E2E passed). Phase 3 source commit `a50672679b4e70a307e52ed86f29c015e1f01574` passed E2E-only run #694; test commit `90459bc9eb64ad17f1f4df125cdc9449f48ded5b` failed E2E-only run #695 due to the test delaying a request required by the student gate. Corrected test commit `667085dea853f4c30ed9b639259ab593304305ed` awaits rerun.
+- **Latest verified source/test commit:** `667085dea853f4c30ed9b639259ab593304305ed`. ACE JAMB E2E run #703 PASS (66 Playwright tests / 42.4s); Verify workflow's `verify` and `utme-subject-choice-migration` jobs PASS. The E2E workflow includes typecheck/build steps. Earlier failed run #695 was caused by a test fixture delaying the student gate's profile request; the fixture was corrected to delay the dashboard-only RPC.
 - **User-approved scope:** Frontend only. Do not deploy the app or change backend/database state. The active product no longer uses the catalogue UI.
 - **Current milestone:** Frontend Phase 2 CLOSED for the authorized frontend-only scope; Frontend Phase 3 IN PROGRESS. Documented exceptions remain incomplete.
 - **Latest Verify:** #740 / run `39967022806` PASS (Node/Deno checks, typecheck/build, disposable PostgreSQL policy/migration tests).
@@ -13,7 +13,7 @@
 - **Current frontend change:** Removed catalogue UI from active admin, deleted stale `admin-import.html` and `src/admin-import.tsx`, retained `/admin-import` only as an authorized admin-dashboard compatibility alias, and added route/UI regression assertions.
 - **Deployment-removal audit:** current-main checks return 404 for `.github/workflows/deploy-production.yml`, `wrangler.jsonc`, `backend/index.ts`, and `src/App.tsx`; no deploy script or AppDeploy shim is present. Do not recreate deployment assets; historical docs are archival.
 - **Accepted exceptions carried forward:** content-driven learning/practice/flashcards/progress/study plans need verified published content and real activity; payment/referral/AI/audio/notification delivery need verified provider/service contracts; expanded admin operations, manual accessibility and real-device PWA/offline acceptance remain incomplete/unverified. Live deployed-browser acceptance is out of scope. Bundle-size warning and previous npm audit findings remain unresolved.
-- **Exact next action:** inspect E2E for corrected test commit `667085dea853f4c30ed9b639259ab593304305ed`; verify typecheck/build separately via existing Verify workflow if available, then audit student workspace/CBT keyboard and semantic accessibility. Do not deploy or touch backend/database state.
+- **Exact next action:** audit student workspace and CBT controls for keyboard/semantic accessibility; then measure bundle composition before any optimization. Keep manual screen-reader/device checks marked unverified. Do not deploy or touch backend/database state.
 - **Evidence correction:** an earlier claim that Playwright artifact trace/context files were inspected is unsupported; the artifact was retrieved but those contents were not verified. The successful runner summaries and E2E job logs were independently checked.
 
 ---
@@ -1404,3 +1404,14 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - Correction committed as `667085dea853f4c30ed9b639259ab593304305ed`: delay the dashboard-only `get_active_exam_blueprint` RPC instead, allowing the auth/onboarding gate to complete before asserting the dashboard's announced loading state. The delayed request still falls back to the existing mocked response; all Supabase traffic remains intercepted.
 - **Verification after correction: pending.** Do not claim the regression test passes until a new E2E run on commit `667085dea853f4c30ed9b639259ab593304305ed` completes. This E2E workflow does not include dedicated typecheck/build jobs.
 - Exact next action: inspect the new CI run, confirm the targeted test and both desktop/mobile projects pass, then run/confirm typecheck and build via the repository's Verify workflow if available. No backend/database/deployment changes.
+
+
+## Phase 3 accessibility slice — corrected test verified — 2026-10-23
+
+- Corrected source/test commit: `667085dea853f4c30ed9b639259ab593304305ed`.
+- **ACE JAMB E2E run #703: PASS**, 66 Playwright tests passed in 42.4 seconds. Run: https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/39973000000 (GitHub Actions run inspected as #703; use the canonical workflow run page when available).
+- The prior failing test commit `90459bc` failed because the test delayed the profile query needed by the student gate. The corrected test delays only `get_active_exam_blueprint`, a dashboard-only request, so the dashboard can mount and announce loading. The corrected full suite passed.
+- **Verify workflow: PASS** for the same source/test commit; both `verify` and `utme-subject-choice-migration` jobs succeeded. The E2E workflow also includes successful typecheck and build steps. Exact individual typecheck/build logs were not extracted from the visible summary, so their job presence and overall workflow success are verified, but no detailed compiler/build output is claimed.
+- Granular per-browser counts for the new test were not exposed in the inspected run summary. Overall Playwright run passed; do not claim a separate test-specific desktop/mobile breakdown.
+- No backend/database/deployment/catalogue changes. Source/test behavior is verified against mocked Supabase contracts only.
+- **Next action:** begin the source-based keyboard/semantic accessibility audit of student workspace and CBT controls; then inspect bundle composition before deciding on any optimization. Manual screen-reader, real-device PWA/offline and low-end Android acceptance remain unverified.
