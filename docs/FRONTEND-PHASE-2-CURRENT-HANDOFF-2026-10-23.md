@@ -72,3 +72,12 @@ Inspect the E2E job annotations/start reason at the job link above. When a runne
 - These are mocked-contract browser tests, not proof of production content availability or live payment/referral/AI/audio/notification services. No production deployment, database writes, schema changes, or migrations were performed. The earlier build chunk-size warning and npm audit findings remain unresolved.
 - **Phase 2 remains OPEN** pending the remaining documented acceptance review, including existing deployed student/admin/mobile navigation and PWA behavior. Do not claim whole-product frontend completion from this CI pass alone.
 - Exact next action: perform read-only acceptance of the existing frontend routes and PWA shell (student dashboard/navigation/settings, admin authorization and academic route, narrow mobile layout, service-worker cache exclusions) without deploying or changing backend state; fix only reproducible defects and update the acceptance matrix before deciding whether Phase 2 can close.
+
+
+## Read-only frontend acceptance review — 2026-10-23
+
+- Re-read `public/sw.js`: same-origin GET-only; excludes auth, REST, functions, storage, realtime, API and worker-script paths; network-first navigation falls back only to the static app shell; only Vite `/assets/` files are cached. No account/payment/CBT response data is cached.
+- `playwright.config.ts` confirms Desktop Chrome and Pixel 5/mobile Chromium. Verify #706 and ACE JAMB E2E #639 passed on source-fix commit `1763de8`.
+- Repository search did not find a configured Cloudflare Pages, Vercel or Netlify frontend URL. Because app deployment remains explicitly out of scope, deployed-browser acceptance is BLOCKED/UNVERIFIED until an already-existing approved URL is available; no deployment was attempted.
+- No new source defect established. Whole-product frontend completion remains open; live provider-dependent delivery/payment/referral/AI/audio/notification behavior and production content availability are not proven by mocked CI.
+- Next action: continue the remaining frontend acceptance matrix using source and CI evidence; perform live browser acceptance only if an existing approved URL is documented/provided. Do not deploy or change backend state.
