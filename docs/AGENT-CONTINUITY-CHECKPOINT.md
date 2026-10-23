@@ -1792,3 +1792,12 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - Verification for the new study-plan status change is pending; do not attribute the earlier passing CI results to this later commit. Connected GitHub tools do not provide a local checkout/test runner.
 - No auth, database, catalogue, dependency, or deployment changes. Manual keyboard-only, actual screen-reader, physical low-end Android, and real-device PWA/offline acceptance remain unverified.
 - **Next action:** inspect Verify and ACE JAMB E2E for `0599678b0010298d0228cb804b714aac2450b58e`; if green, continue the bounded audit of dynamic announcements and keyboard/focus behavior. Keep catalogue importer isolated until its separate auth integration blocker is resolved.
+
+
+## Phase 3 CI reconciliation — study-plan loading announcement — 2026-10-24
+
+- Source commit `0599678b0010298d0228cb804b714aac2450b58e`: Verify #958 PASS (https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40041648736); ACE JAMB E2E #891 PASS (https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40041648697). Verify's Node contract tests, Deno checks, typecheck, build/module report, and disposable PostgreSQL checks passed; E2E's typecheck, build, Playwright browser tests, and artifact uploads passed.
+- Docs HEAD `6a89c163a19ff6e603e76baa8b038fd37b890041`: Verify #960 PASS (https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40041675299). E2E #893 (https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40041675326) was still in progress at the last inspection; poll it before declaring docs HEAD fully green.
+- Source audit reconfirmed study workspace keyboard semantics: skip link/target, focusable mode heading on navigation, `aria-current="page"` for active mode, labeled subject filter, and `aria-pressed` on selected topic buttons. No further defect confirmed in this pass; no speculative source changes.
+- No production/backend/database/catalogue/dependency/deployment changes. Manual keyboard-only, real screen-reader, physical low-end Android, and real-device PWA/offline checks remain unverified.
+- **Exact next action:** poll E2E #893; then inspect asynchronous status/error announcements in student account/support surfaces and add a focused test only if a concrete semantic gap is confirmed. Keep the importer isolated behind the existing auth integration blocker.
