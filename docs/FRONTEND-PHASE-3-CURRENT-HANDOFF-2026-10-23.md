@@ -306,3 +306,9 @@ Proceed to the source-based keyboard/semantic audit of student workspace and CBT
 - CBT skip-link source/test commits: `7a2439232662ba9f6e084ae99148e0f8c1ce8404`, `a2305b077e44a7ac685b17d90a3c26c6d18debad`. Current HEAD CI must be checked; the new browser assertion remains pending until E2E passes on a containing commit.
 - Scope stayed frontend only; no backend/database, deployment, catalogue UI, dependencies, or production data changed. Phase 3 remains IN PROGRESS.
 - **Next action:** inspect current HEAD and workflow status; debug any E2E failure, then update the three handoffs with the terminal result.
+
+## CBT skip-link verification update — 2026-10-23
+
+- Verify #912 (`40001230846`) passed on source/test commit `a2305b077e44`.
+- E2E #845 (`40001230788`) remained in Playwright browser installation, so the new CBT skip-link focus assertion is still pending browser verification. Current-main E2E #848 (`40001308034`) and Verify #915 (`40001308239`) were queued.
+- **Next action:** poll the browser workflow for the CBT skip-link test and the latest-main workflow; investigate any actual failing assertion from CI output.
