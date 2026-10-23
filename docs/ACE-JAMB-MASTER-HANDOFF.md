@@ -3348,3 +3348,12 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - Verify #904 (`40000305709`) completed **PASS** on test commit `a389b2faaedc36c8a2b3510ab937eba5c4bdf069`. The full Verify job passed the Node test suite (including PWA contract/runtime tests), Deno checks, TypeScript typecheck, Vite build, and disposable PostgreSQL migration/policy checks.
 - ACE JAMB E2E #837 (`40000305699`) remained **in progress at Playwright browser installation** at the latest check; the reduced-motion browser assertion has not yet been executed/verified. Current-main docs descendants also have CI running; recheck latest Actions before making a final status claim.
 - **Next action:** poll E2E #837 and current-main E2E. If the new test fails, inspect the Playwright report and correct only the demonstrated issue.
+
+## CBT skip-link accessibility improvement — 2026-10-23
+
+- Added a visible-on-focus `Skip to CBT content` link to the CBT shell in `src/main.tsx`, targeting a `tabIndex={-1}` content wrapper so keyboard users can move past the persistent Back control.
+- Added a Playwright E2E test in `tests/e2e/smoke.spec.ts` that enters CBT, activates the skip link with Enter, and asserts focus lands on `#cbt-content`.
+- Existing reduced-motion browser test is now verified by ACE JAMB E2E #842 (`40000507926`) **PASS** on commit `37c42c68d0cb`; Verify #909 (`40000507942`) also **PASS** on that commit. This confirms the reduced-motion assertion, not the new CBT skip-link test.
+- CBT skip-link implementation/test commits: `7a2439232662ba9f6e084ae99148e0f8c1ce8404` and `a2305b077e44a7ac685b17d90a3c26c6d18debad`. Newest HEAD workflows are pending/in progress; do not call the CBT skip-link test passed until E2E on a commit containing it completes successfully.
+- No backend/database, deployment, catalogue UI, dependency, or production-data changes. Phase 3 remains IN PROGRESS.
+- **Next action:** check the current HEAD and E2E workflow; diagnose any failure from Playwright output, then update all continuity documents with terminal verification.
