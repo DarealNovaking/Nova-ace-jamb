@@ -3139,3 +3139,10 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - Build still emits Vite's >500 kB minified chunk warning. A completed build from the same source family previously showed the main JS at **563.22 kB minified / 153.84 kB gzip**; no bundle splitting or dependency changes have been made. Build time in #733 was 3.80 seconds.
 - **Accessibility slice status:** implementation and automated regression coverage PASS. Manual keyboard-only and screen-reader verification remains unperformed; this CI is not a substitute for manual assistive-technology review.
 - **Next action:** inspect the app's static route imports and the existing build output to identify a minimal code-splitting opportunity that reduces initial student download without changing behavior. Keep backend/database/deploy/catalogue out of scope; verify the change with typecheck/build/E2E and update this checkpoint again.
+
+
+## Frontend Phase 3 — route-level code splitting (2026-10-23)
+
+- `src/main.tsx` commit `9438d852bc2f8b52197c9b120abb354295945862` lazy-loads the protected CBT, admin and academic-editor routes and adds accessible loading feedback. Student entry remains eager. This aims to lower initial JS cost; it is not yet verified as a size reduction.
+- Baseline build from completed E2E: main JS `563.22 kB` minified / `153.84 kB` gzip; Vite warning over 500 kB. E2E #738 and Verify #805 were pending at the last check. Compare actual chunk output before deciding to keep/revert.
+- No deploy, backend/database, production-data or catalogue changes. Next: inspect #738/#805 and generated chunk sizes.
