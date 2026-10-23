@@ -1715,3 +1715,13 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - CI's npm install reported 4 vulnerabilities (3 moderate, 1 high). This differs from the older handoff audit; current full audit details remain unverified.
 - No source change or dependency was introduced. No deployment, backend/database/catalogue change, or production mutation.
 - **Next action:** obtain module-level size attribution with a reproducible non-production analysis method. Then make only an evidence-backed, narrow optimization and rerun typecheck/build/E2E. Do not add speculative manual chunk rules. Manual screen-reader/device/PWA acceptance remains open.
+
+
+## Opt-in bundle module attribution tooling — 2026-10-24
+
+- Added an opt-in Rollup/Vite build-report plugin in `vite.config.ts`. It is inactive by default and only logs the top 20 rendered modules per output chunk when `ANALYZE_BUNDLE=1`; it adds no package dependency and does not alter app runtime behavior.
+- Updated `.github/workflows/verify.yml` so its build step sets `ANALYZE_BUNDLE=1`, making module-level rendered-size evidence available in the Verify build log. This is diagnostic tooling only; no manual chunk rules or dependency upgrades were introduced.
+- Initial workflow edit accidentally encoded newlines literally and produced an invalid workflow run (#934, run `40038978894`, failure before jobs). Inspected the stored file, corrected the YAML step formatting in a follow-up commit, and re-read both files. Treat that failure as a workflow-edit error, not an app-code failure.
+- Current code/config head: `b64cf42a0518ef416934a1053a051183fce69070`. Verify #936 (run `40039021997`) and E2E #869 (run `40039022122`) were queued at the time of this update. Results are pending; do not claim the report compiled or tests passed until those runs complete.
+- No backend/database, catalogue UI, deployment, production data, or app runtime behavior was changed. Frontend Phase 3 remains in progress.
+- **Exact next action:** inspect Verify #936 logs for typecheck/build status and the `[Bundle module report]` output; confirm E2E #869. If typecheck fails due to Vite plugin typing or path normalization, fix only that evidenced issue, then rerun. Use the measured top contributors to decide whether a narrow optimization is justified.
