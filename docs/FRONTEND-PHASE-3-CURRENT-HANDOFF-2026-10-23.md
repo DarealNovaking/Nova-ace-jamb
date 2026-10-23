@@ -113,3 +113,11 @@ Proceed to the source-based keyboard/semantic audit of student workspace and CBT
 - The lazy workspace fallback announces loading politely; existing workspace focus management remains in place. No backend/database/deployment/catalogue changes or dependency additions.
 - Additional E2E runs on later docs-only commits were still active when checked, but E2E #742 and Verify #809 cover the exact source commit. No need to wait on docs-only runs to claim the source/test commit passed.
 - **Next action:** stop speculative splitting for now; investigate actual large dependency contribution only if a source-based analysis can identify a safe win. Prioritize the remaining student/CBT UX and keyboard review. Manual screen-reader and physical-device checks remain unverified.
+
+
+## CBT timer and question-map accessibility update — 2026-10-23
+
+- `PersistentCBT.tsx` commit `bc85cdc14928b1f9cec8fabffa3985fb665d1e75` exposes a named timer, associates answer choices with their question, and gives question-map buttons useful labels and `aria-current=step` for the active question.
+- `smoke.spec.ts` commit `4ad0acef545eca041fd1d31fb6dc28a315569523` covers these semantics. E2E #749 passed with 66 tests on the source commit; Verify #816 and #817 passed. E2E #750 for the new assertions remained at browser installation when checked. [E2E #750](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/39979019310).
+- Bundle after route/workspace splitting: main JS 506.86 kB / 142.10 kB gzip; >500 kB Vite warning remains. No deploy/backend/database/catalogue work.
+- Next: inspect E2E #750 terminal result; then continue keyboard and screen-reader source review.
