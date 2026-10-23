@@ -1594,3 +1594,14 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - **PWA source review:** `public/sw.js` uses a network-first navigation strategy with static app-shell fallback, caches same-origin hashed `/assets/` GET responses, and explicitly excludes auth/API/storage/realtime/function prefixes. Playwright mocks/static-shell coverage is not proof of install/offline behavior on a physical device. Manifest advertises standalone display and an SVG icon; device install acceptance remains unverified.
 - **Dependency audit signal:** Verify #865 npm install reported 4 vulnerabilities (3 moderate, 1 high). This differs from earlier reports and is a fresh install audit summary, not a remediation. No broad dependency upgrades were attempted.
 - **Exact next action:** get the final E2E #801 result for keyboard CBT selection. If it passes, continue with evidence-backed accessibility/performance work; leave screen-reader, physical low-end Android, and real-device PWA/offline acceptance gates open until performed. Frontend-only scope remains unchanged.
+
+
+## Current continuation update — 2026-10-23
+
+- **Latest verified repository HEAD at this update:** `c4e0abb1c201860c806c8940634adf81444db4ad` (`test(a11y): assert dashboard focus after CBT exit`). This commit adds an E2E assertion that exiting the CBT returns focus to the dashboard heading.
+- **Frontend change in progress:** `48c0564c` marks the CBT exit history entry for focus restoration; `a74da584` restores focus to the dashboard heading after the dashboard has finished loading and consumes the one-time history marker; `c4e0abb1` extends the existing mocked-browser test to assert focus. These commits are source/test changes only.
+- **Verification:** Verify #875/#876 and E2E #808/#809 were still in progress; Verify #877 and E2E #810 were queued at this snapshot. Therefore the focus-restoration change is **not yet verified**. Do not infer success from queued/running status. Recheck current Actions results at the next continuation.
+- **Previously confirmed:** E2E #801 passed on `e1adc838` (70 tests), and Verify #868 passed. This resolves the stale pending note in earlier entries.
+- **Open acceptance gates:** physical screen-reader test, full keyboard-only user journey on device, low-end Android usability, and install/offline behavior on a real device remain unverified. Main JS chunk warning (>500 kB minified) and install audit finding (4 vulnerabilities: 3 moderate, 1 high at Verify #865) remain unresolved; no broad dependency update or speculative chunking was attempted.
+- **Scope guard:** continue frontend-only. No backend, database, deployment, catalogue, or fabricated JAMB content changes.
+- **Exact next action:** inspect Verify #877 and E2E #810 (and latest runs for their descendant commits). Fix any reproducible failure, then update all three handoff documents with observed results. Keep manual device/screen-reader gates open until physically tested.
