@@ -3487,3 +3487,16 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - Continued source audit reconfirmed `StudentStudyWorkspace.tsx` has a focusable workspace target, heading focus on mode changes, `aria-current="page"` for the active mode, a labeled subject filter, and `aria-pressed` on topic selection. No further source issue was confirmed in this slice; avoid speculative changes.
 - No auth, database, catalogue, dependency, deployment, or production-data changes. Manual keyboard-only, actual screen-reader, physical low-end Android, and real-device PWA/offline acceptance remain unverified.
 - **Next action:** poll docs-head E2E #893 to terminal and record its result. Then continue a bounded review of asynchronous status/error announcements in the remaining student account/support surfaces, adding a focused regression only where a concrete gap is found. Keep the catalogue importer isolated behind its existing auth-integration blocker.
+
+
+## Phase 3 account-surface loading announcements — 2026-10-24
+
+- Bounded source audit found three student-facing account surfaces exposed loading only through an SVG spinner's `aria-label`, without a live status container. Updated:
+  - `src/components/StudentNotifications.tsx`: polite atomic status with visible “Loading notifications…” text; spinner is decorative.
+  - `src/components/StudentAccountAccess.tsx`: polite atomic status and visible loading text for ACE Pass and referrals; spinners are decorative.
+  - `src/components/StudentAccountSettings.tsx`: polite atomic status and visible loading text while settings are loaded; spinner is decorative.
+- Commits: `050a1fb7a46958b26f7f728f812c25e53689bb94`, `45ffe07290496e155f546df274e08a7f73f0f0c9`, `cd425a23ba57756fce170dad215e8422f4bd4809`.
+- This is semantic loading feedback only; data access, authorization, save behavior, and UI state transitions were not intentionally changed. Verification for these new commits is pending; do not claim typecheck/build/Playwright success until workflows finish.
+- The earlier study-plan source commit `0599678b0010298d0228cb804b714aac2450b58e` is verified: Verify #958 and E2E #891 both passed. Documentation-head E2E #893 was still running when last checked.
+- No backend/database, catalogue, dependency, deployment, or production-data changes. Manual keyboard-only, actual screen-reader, low-end Android, and real-device PWA/offline checks remain unverified.
+- **Next action:** inspect current-main Verify and ACE JAMB E2E for the account loading commits; if green, continue only if another concrete gap is found. Record all failures and outcomes; keep the importer isolated behind its separate auth integration blocker.
