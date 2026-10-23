@@ -660,3 +660,15 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - Updated `README.md` to reflect Phase 1's verified mocked-contract closure, the still-open integrated whole-product frontend batch, the retired importer route, and the explicit no-deploy boundary. README and handoff changes after `85a4b5b` are documentation-only; the tested application source did not change.
 - No backend, database, production data, migration, or deployment changes were made. Phase 2 remains OPEN: content-driven learning/practice/flashcards/progress, provider-dependent payment/referral/AI/audio/push delivery, full admin operations and live deployed acceptance are blocked or unverified under current scope. See the acceptance matrix above.
 - **Next action:** continue only with frontend improvements supported by existing verified content/contracts; otherwise record the exact backend/content dependency and leave the feature honestly unavailable. Do not deploy or touch backend/database state.
+
+
+## Frontend Phase 2 closeout — 2026-10-23
+
+- **Milestone:** CLOSED for the currently authorized frontend-only scope, at the project owner's explicit request. This does not mean the whole ACE JAMB product is production-complete.
+- **Tested source/test commit:** `85a4b5b1aed59b8d5bfb3e7c09de53d873cdb9af`.
+- **Verify:** #740 / run `39967022806` PASS.
+- **E2E:** #673 / run `39967023111` PASS; 64 Playwright tests passed, 0 failed in 44.4 seconds. These results cover mocked service contracts and are not live-provider or production-content proof.
+- **Accepted exceptions carried forward:** verified educational content and real student activity for content-driven learning/practice/CBT/flashcards/progress/study plans; service/provider contracts for payment/referrals/grounded AI/audio/notification delivery; expanded admin operations; manual accessibility and real-device PWA/offline/low-end Android acceptance; live deployed-browser acceptance. The latter live/deployment checks remain out of scope; frontend-auditable accessibility/performance/admin work may continue in Phase 3. Exceptions remain incomplete, not silently passed.
+- **Known debt:** previous npm audit reported 8 vulnerabilities (2 moderate, 6 high); build warns about an approximately 916 kB minified chunk. No dependency changes made during closeout.
+- **No backend/database/deployment changes.** Catalogue UI remains retired; `/admin-import` remains only a compatibility alias to the authorized admin dashboard.
+- **Next action:** begin Frontend Phase 3 from the master handoff, using the exception register above. Keep the no-deploy/frontend-only boundary and do not invent official JAMB content or provider outcomes.
