@@ -22,7 +22,7 @@ jobs:
       - run: deno check --no-check=remote supabase/functions/ibass-catalog-stage/index.ts
       - run: deno check --no-check=remote supabase/functions/catalog-import/index.ts
       - run: npm run typecheck
-      - run: npm run build
+      - name: Build and report bundle module attribution\n        env:\n          ANALYZE_BUNDLE: '1'\n        run: npm run build
 
   utme-subject-choice-migration:
     runs-on: ubuntu-latest
