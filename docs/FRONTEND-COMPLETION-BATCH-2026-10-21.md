@@ -559,3 +559,12 @@ Check Verify and ACE JAMB E2E on the latest main commit after `cba0c14` and this
 - ACE JAMB E2E #639 / run `39963740632`: PASS. Playwright passed on the current source-fix commit after correcting the admin count-query wait/headers and isolating the missing-preferences test to the Account Settings component rather than the onboarding gate.
 - No backend, database, migration, deployment or production data change. CI is mocked-contract coverage; provider-dependent payment, referral, AI, audio, notification delivery and production deployed acceptance remain unverified.
 - Phase 2 remains OPEN. Next: read-only acceptance of existing student/admin/mobile routes and PWA cache behavior, then reconcile the remaining acceptance matrix and report any genuine blockers.
+
+
+## Read-only frontend acceptance review — 2026-10-23
+
+- Re-read `public/sw.js`: same-origin GET-only; excludes auth, REST, functions, storage, realtime, API and worker-script paths; network-first navigation falls back only to the static app shell; only Vite `/assets/` files are cached. No account/payment/CBT response data is cached.
+- `playwright.config.ts` confirms Desktop Chrome and Pixel 5/mobile Chromium. Verify #706 and ACE JAMB E2E #639 passed on source-fix commit `1763de8`.
+- Repository search did not find a configured Cloudflare Pages, Vercel or Netlify frontend URL. Because app deployment remains explicitly out of scope, deployed-browser acceptance is BLOCKED/UNVERIFIED until an already-existing approved URL is available; no deployment was attempted.
+- No new source defect established. Whole-product frontend completion remains open; live provider-dependent delivery/payment/referral/AI/audio/notification behavior and production content availability are not proven by mocked CI.
+- Next action: continue the remaining frontend acceptance matrix using source and CI evidence; perform live browser acceptance only if an existing approved URL is documented/provided. Do not deploy or change backend state.
