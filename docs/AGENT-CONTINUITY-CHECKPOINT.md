@@ -4,15 +4,15 @@
 
 - **Updated:** 2026-10-23 (UTC; exact time not asserted)
 - **Repository:** `DarealNovaking/Nova-ace-jamb`, branch `main`.
-- **Latest source/test commits:** `0eb373ae1393bfab0dbae8edf856f9617a698e72` (remove retired catalogue UI from active admin dashboard), `6c3201ba83d90ab384dae53b6faf724d0d8da8ab` (E2E assertions for absence of retired catalogue workflows).
+- **Latest tested source/test commit:** `6c3201ba83d90ab384dae53b6faf724d0d8da8ab`; subsequent commits in this continuation are documentation-only.
 - **User-approved scope:** Frontend only. Do not deploy the app or change backend/database state. Do not resume catalogue work.
-- **Current milestone:** Frontend Phase 2 — prior CI baseline passed, but latest admin UI retirement change awaits CI verification; acceptance closeout remains OPEN.
-- **Last confirmed baseline:** Verify #719 / run `39964865822` PASS. ACE JAMB E2E #652 / run `39964865810` PASS: 64 Playwright tests, 0 failed on source/test commit `adaec568f7b678ca3c911cccf65ca1d4f02cf247`.
-- **Current change:** `AdminFoundationGate` no longer renders the legacy catalogue import, single-row staging, or IBASS staging workflows. Regression assertions were added. The underlying unused component files/functions were not deleted and no backend state was changed.
-- **Latest CI:** Verify #729 and ACE JAMB E2E #662 were in progress when last inspected. Wait for final conclusions before claiming the new change passes.
+- **Current milestone:** Frontend Phase 2 — latest code and E2E checks pass; acceptance closeout remains OPEN.
+- **Latest Verify:** #729 / run `39966265866` PASS, including typecheck, build, Node/Deno checks and disposable PostgreSQL migration/policy tests.
+- **Latest E2E:** #662 / run `39966266064` PASS, 64 Playwright tests passed, 0 failed; typecheck/build/browser installation passed too.
+- **Current frontend change:** `AdminFoundationGate` no longer renders legacy catalogue import, single-row staging, or IBASS staging. E2E assertions enforce their absence. The component source files and backend functions were not deleted; no backend/database changes occurred.
 - **Open limitations:** Live deployed-browser acceptance is blocked/unverified because no approved existing URL has been established and deployment is out of scope. Provider-dependent payment/referral/AI/audio/notification delivery and production content availability remain unverified. Vite bundle-size warning and prior npm audit findings remain unresolved.
-- **Exact next action:** Poll Verify #729 and E2E #662, resolve only reproducible failures, then reconcile the remaining source-based frontend acceptance matrix and update all handoffs. Do not deploy or touch backend/database state.
-- **Evidence correction:** the earlier claim that Playwright artifact trace/context files were inspected is unsupported by the tool record; the artifact was retrieved but those contents were not verified. The successful prior GitHub Actions summary was independently confirmed.
+- **Exact next action:** Reconcile the remaining source-based frontend acceptance matrix, marking each route/behavior covered, blocked, or unverified; fix only evidenced frontend defects and update all handoffs. Do not deploy or touch backend/database state.
+- **Evidence correction:** an earlier claim that Playwright artifact trace/context files were inspected is unsupported by the tool record; the artifact was retrieved but those contents were not verified. The successful GitHub Actions summaries and E2E job logs have been independently checked.
 
 ---
 
@@ -1297,5 +1297,15 @@ Check Verify and ACE JAMB E2E on the latest main commit after `cba0c14` and this
 - Added E2E assertions that the active admin dashboard does not render the retired “Admin Catalogue Import”, “Single-row review-only staging”, or “Stage programmes & UTME requirements” workflows.
 - Commits: `0eb373ae1393bfab0dbae8edf856f9617a698e72` (active admin UI) and `6c3201ba83d90ab384dae53b6faf724d0d8da8ab` (regression assertions).
 - This is a frontend-only visibility change. It does not delete backend functions, database objects, catalogue component source files, or data; no backend/DB/deployment changes were made. The legacy `/admin-import` path still resolves to the admin gate, but the retired catalogue workflows are no longer rendered there.
-- Latest GitHub Actions status when checked: Verify #729 and ACE JAMB E2E #662 were both **IN PROGRESS**. Do not treat the new change as verified until those workflows finish. Prior source/test commit `adaec568f7b678ca3c911cccf65ca1d4f02cf247` passed Verify #719 and E2E #652 (64 passed, 0 failed), but that does not verify this new change.
-- **Next action:** poll Verify #729 and E2E #662, fix only reproducible failures, then update this record with actual outcomes. Phase 2 remains OPEN pending remaining frontend acceptance-matrix reconciliation; deployment remains out of scope.
+- Latest GitHub Actions verification: Verify #729 / run `39966265866` **PASS** and ACE JAMB E2E #662 / run `39966266064` **PASS** (64 Playwright tests passed, 0 failed).
+- **Next action:** reconcile the remaining frontend acceptance matrix, recording each item as covered, blocked, or unverified. Phase 2 remains OPEN pending remaining frontend acceptance-matrix reconciliation; deployment remains out of scope.
+
+
+## Retired catalogue UI change — CI verified — 2026-10-23
+
+- Tested source/test commit: `6c3201ba83d90ab384dae53b6faf724d0d8da8ab` (active admin catalogue UI retirement and E2E assertions).
+- Verify #729 / run `39966265866`: **PASS**. Both `verify` and disposable PostgreSQL `utme-subject-choice-migration` jobs succeeded; Node tests, Deno checks, typecheck, build, and disposable policy/migration checks all passed.
+- ACE JAMB E2E #662 / run `39966266064`: **PASS**. The Playwright job completed successfully with **64 passed, 0 failed** in 40.5 seconds. Typecheck, build, browser installation, and browser tests all passed across the configured desktop and mobile projects.
+- The active admin dashboard no longer renders the retired catalogue import, single-row staging, or IBASS staging workflows. This is only a frontend visibility change; underlying legacy component files/backend functions/database objects were not deleted or changed.
+- No deployment or production/backend/database change was made. Build chunk-size warning and previous npm audit findings remain unresolved. Live deployed-browser acceptance and live provider integrations remain unverified because app deployment is out of scope.
+- **Next action:** continue reconciling the remaining frontend acceptance matrix from existing source and CI evidence; mark each item covered, blocked, or unverified. Phase 2 remains OPEN until the remaining acceptance criteria are reconciled; do not deploy or touch backend state.
