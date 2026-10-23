@@ -1647,3 +1647,12 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - This resolves the specific test-harness failure documented above: the mock now emulates the browser's same-origin `Response.type === 'basic'` contract. The test now covers install-time static shell caching, exclusion boundaries, same-origin build asset caching, and offline navigation fallback under mocked service-worker APIs.
 - E2E #830 on `a2f50cb5b5` was still running at the last check; E2E on the latest docs HEAD is also pending. Do not claim current docs HEAD E2E passed until the relevant run completes. Runtime service-worker tests are mocked and do not substitute for browser/device install and offline acceptance.
 - **Next action:** check the latest main HEAD's Verify/E2E status. If both are green, continue the bounded accessibility audit; leave real-device PWA/offline and manual screen-reader gates open.
+
+## Reduced-motion accessibility regression test — 2026-10-23
+
+- Source/test commit: `a389b2faaedc36c8a2b3510ab937eba5c4bdf069` adds a Playwright test to `tests/e2e/smoke.spec.ts`. It emulates OS reduced-motion preference and asserts smooth scrolling is disabled and CSS animation/transition durations are reduced to <= 0.1 ms.
+- The test exercises the existing `src/index.css` reduced-motion media query. No production runtime code was changed; Supabase calls remain mocked through the existing test helper.
+- At the time of source commit, Verify #904 (`40000305709`) and ACE JAMB E2E #837 (`40000305699`) were queued. **Do not treat the new E2E assertion as verified until E2E completes successfully.** Subsequent documentation commits may create newer CI runs; always check current `main` HEAD and its workflow results.
+- No backend/database, deployment, catalogue UI, dependency, or production-data changes. Phase 3 remains IN PROGRESS.
+- Manual gates still open: full keyboard-only acceptance, actual screen-reader test, low-end physical Android, and real-device PWA install/offline recovery.
+- **Exact next action:** poll the E2E and Verify runs for the test commit and current `main`; fix only evidence-backed failures and then update all three handoffs with terminal results.
