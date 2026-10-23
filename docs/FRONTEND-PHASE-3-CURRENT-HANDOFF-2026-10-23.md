@@ -336,3 +336,11 @@ Proceed to the source-based keyboard/semantic audit of student workspace and CBT
 - Bundle investigation status: `vite.config.ts` contains only `react()`; no bundle analyzer is configured. `package.json` exposes `build`, `typecheck`, and `e2e` scripts. The previously recorded 507.45 kB minified / 142.27 kB gzip entry chunk needs current-output remeasurement and module attribution before optimization. No analyzer dependency or speculative splitting has been introduced.
 - No application code changed during this verification; no backend/database/catalogue/deployment work was performed.
 - **Exact next action:** inspect current build output and determine the actual modules contributing to the entry chunk. Make no optimization until evidence identifies a meaningful target; preserve frontend-only scope and keep manual/device gates open.
+
+
+## Measured bundle investigation — 2026-10-24
+
+- Full build log from current-main E2E run #859 / job `120582364412` inspected. Vite v6.4.5 transformed 1,644 modules. Build output: entry JS `index-vLPN6Hah.js` 507.56 kB minified / 142.26 kB gzip; CSS 21.51 kB / 5.27 kB gzip; `AdminFoundationGate` 10.36 kB, `ProtectedCBT` 12.11 kB, `StudentStudyWorkspace` 17.91 kB and `AcademicFoundationGate` 19.71 kB (all minified) are already split into separate chunks. Build completed successfully in 3.69 s but emitted the >500 kB entry warning.
+- Typecheck and build passed; Playwright suite passed **76 tests** in 1.1 minutes. CI npm install reported 4 vulnerabilities (3 moderate, 1 high); investigate current audit details separately because prior audit counts differ.
+- This log provides chunk-level sizes only, not module-level attribution. The large entry chunk's dominant modules remain unknown. No code/dependency change or speculative chunking was made.
+- **Exact next action:** obtain module-level attribution using a reproducible analysis approach without deploying or altering backend/production data; only then decide whether an evidence-backed optimization is warranted. Re-run typecheck, build, and E2E for any resulting code change. Manual screen-reader, low-end Android, and real-device PWA/offline checks remain unverified.
