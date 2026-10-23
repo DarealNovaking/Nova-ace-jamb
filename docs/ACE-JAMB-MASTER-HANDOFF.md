@@ -2964,3 +2964,12 @@ A read-only browser inspection of the private repository's GitHub Actions page r
 - These are mocked-contract browser tests, not proof of production content availability or live payment/referral/AI/audio/notification services. No production deployment, database writes, schema changes, or migrations were performed. The earlier build chunk-size warning and npm audit findings remain unresolved.
 - **Phase 2 remains OPEN** pending the remaining documented acceptance review, including existing deployed student/admin/mobile navigation and PWA behavior. Do not claim whole-product frontend completion from this CI pass alone.
 - Exact next action: perform read-only acceptance of the existing frontend routes and PWA shell (student dashboard/navigation/settings, admin authorization and academic route, narrow mobile layout, service-worker cache exclusions) without deploying or changing backend state; fix only reproducible defects and update the acceptance matrix before deciding whether Phase 2 can close.
+
+
+## Read-only frontend acceptance review — 2026-10-23
+
+- Re-read `public/sw.js`: service worker is same-origin GET-only, excludes `/rest/`, `/auth/`, `/functions/`, `/storage/`, `/realtime/`, `/api/` and `/sw.js`; navigation is network-first with only the static app shell as fallback, and only `/assets/` files are cached. No account, payment or CBT response data is cached.
+- Re-read `playwright.config.ts`: E2E runs Desktop Chrome and Pixel 5/mobile Chromium projects. Passing run #639 exercised the current route/settings/admin/PWA tests on source-fix commit `1763de8`. Verify #706 also passed.
+- Searched repository references for a currently configured frontend deployment URL; no Cloudflare Pages, Vercel or Netlify frontend URL was found. The user instruction to remove app-deployment work remains in force. Therefore live deployed-browser acceptance is **BLOCKED/UNVERIFIED** without an already-existing approved URL; no deployment was attempted.
+- No new source defect was established in this read-only acceptance pass. This is not whole-product completion: provider-dependent payment/referral/AI/audio/notification delivery and production content availability remain unverified.
+- Next action: continue the remaining frontend acceptance matrix using existing source/CI coverage, and perform live browser acceptance only if an existing approved URL is documented/provided. Do not create a deployment or touch backend state.
