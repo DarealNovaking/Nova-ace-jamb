@@ -6,7 +6,7 @@
 ## Canonical project and scope
 - Repository: `DarealNovaking/Nova-ace-jamb`
 - Branch: `main`
-- Current latest documentation commit at handoff creation: `371d21fe76c0de786757050e4dbd98b1c0763daf`
+- Current source/test commit: `667085dea853f4c30ed9b639259ab593304305ed` (corrected E2E fixture; CI pending). Documentation commits continue after this source/test commit.
 - Phase 2 is closed for the authorized frontend-only scope; Phase 3 now owns the carried-forward frontend-auditable work.
 - User boundary: frontend only. Do not deploy, alter backend/database/production data, restore catalogue UI, or invent JAMB content/provider results.
 
@@ -18,8 +18,8 @@
 
 ## Verification
 - The last verified source/test snapshot before Phase 3 was `85a4b5b1aed59b8d5bfb3e7c09de53d873cdb9af`: Verify #740 PASS and E2E #673 PASS (64 Playwright tests, 0 failures).
-- The new Phase 3 commits are **not covered** by those old results.
-- Combined status lookup for `90459bc` returned no status records; no new runner result has been verified yet. Treat typecheck, build, and E2E for Phase 3 as **PENDING/UNVERIFIED**, not passed.
+- The new Phase 3 commits are **not covered** by those old results. E2E #694 passed for source commit `a506726`; E2E #695 failed for test commit `90459bc` because the test delayed `profiles` before the student gate mounted the dashboard. The test now delays dashboard-only RPC `get_active_exam_blueprint` in commit `667085d`.
+- E2E #694 passed but is E2E-only; E2E #695 failed due to the test fixture described above. The corrected commit `667085d` awaits E2E. Typecheck/build for the new Phase 3 slice remain **PENDING/UNVERIFIED** because these E2E workflow runs have no dedicated jobs for them.
 - Tests continue to use mocked Supabase contracts; they do not establish live content/provider behavior.
 
 ## Remaining Phase 3 priorities
@@ -36,4 +36,14 @@
 - No backend/database/deployment/catalogue changes made.
 
 ## Exact next action
-Inspect GitHub Actions for source/test HEAD `90459bc9eb64ad17f1f4df125cdc9449f48ded5b`. If no workflow was triggered, use the repository's existing authorized CI mechanism; do not deploy. Fix only reproducible failures, verify typecheck/build/E2E, then continue the keyboard/semantic audit of the student workspace and CBT.
+Inspect GitHub Actions for corrected test commit `667085dea853f4c30ed9b639259ab593304305ed`; verify the test on desktop and mobile, then confirm typecheck/build using the existing Verify workflow if available. Do not deploy. Continue the keyboard/semantic audit only after this test is green.
+
+
+## Phase 3 accessibility-test failure and fixture correction — 2026-10-23
+
+- E2E run [#694 / 39972910693](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/39972910693) for source commit `a50672679b4e70a307e52ed86f29c015e1f01574` **PASS**. This was an E2E-only workflow; it did not run separate typecheck/build jobs.
+- E2E run [#695 / 39972935144](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/39972935144) for test commit `90459bc9eb64ad17f1f4df125cdc9449f48ded5b` **FAIL**: 2 of 4 browser variants could not find the expected dashboard loading status.
+- Root cause in the new test fixture: it delayed the `profiles` request, which the student foundation gate itself needs before mounting the dashboard. Therefore the dashboard loading status could not appear. This was a test synchronization mistake, not evidence of a production dashboard defect.
+- Correction committed as `667085dea853f4c30ed9b639259ab593304305ed`: delay the dashboard-only `get_active_exam_blueprint` RPC instead, allowing the auth/onboarding gate to complete before asserting the dashboard's announced loading state. The delayed request still falls back to the existing mocked response; all Supabase traffic remains intercepted.
+- **Verification after correction: pending.** Do not claim the regression test passes until a new E2E run on commit `667085dea853f4c30ed9b639259ab593304305ed` completes. This E2E workflow does not include dedicated typecheck/build jobs.
+- Exact next action: inspect the new CI run, confirm the targeted test and both desktop/mobile projects pass, then run/confirm typecheck and build via the repository's Verify workflow if available. No backend/database/deployment changes.
