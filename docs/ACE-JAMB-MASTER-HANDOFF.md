@@ -3129,3 +3129,13 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - Latest E2E #729 for `a88473b` and Verify #796 were pending at the last check. Verify #790–#793 passed for docs; earlier E2E #727/#728 passed typecheck/build but remained at Playwright browser installation. Do not call the new focus test passed until #729 completes. [E2E #729](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/39977298929) · [Verify #796](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/39977298869).
 - Several push-triggered E2E runs remained active in browser installation; this is a CI bottleneck observed, not a proven code failure. No reruns/cancellations. No deployment/backend/database/catalogue changes. Manual screen-reader and device checks remain unverified.
 - Next action: inspect #729/#796 terminal results, fix any reproducible issue, continue CBT keyboard audit, then measure bundle composition before optimization.
+
+
+## Phase 3 accessibility and focus regression — CI verified — 2026-10-23
+
+- The latest source/test state is included in [ACE JAMB E2E #733](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/39977545982): **PASS, 66 Playwright tests, 0 failures, 42.3 seconds**. The run includes the CBT loading/error semantics, `aria-pressed` answer state, and workspace/dashboard focus assertions. Typecheck, build, Playwright browser installation and browser tests all passed on the run.
+- [Verify #800](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/39977546055): **PASS**, both `verify` and `utme-subject-choice-migration` jobs succeeded for the same documentation HEAD, which includes all source/test changes.
+- Older E2E #729 remained stalled at browser installation when checked; the later E2E #733 on the latest full source/test ancestry completed successfully. Treat #733 as the current successful evidence.
+- Build still emits Vite's >500 kB minified chunk warning. A completed build from the same source family previously showed the main JS at **563.22 kB minified / 153.84 kB gzip**; no bundle splitting or dependency changes have been made. Build time in #733 was 3.80 seconds.
+- **Accessibility slice status:** implementation and automated regression coverage PASS. Manual keyboard-only and screen-reader verification remains unperformed; this CI is not a substitute for manual assistive-technology review.
+- **Next action:** inspect the app's static route imports and the existing build output to identify a minimal code-splitting opportunity that reduces initial student download without changing behavior. Keep backend/database/deploy/catalogue out of scope; verify the change with typecheck/build/E2E and update this checkpoint again.
