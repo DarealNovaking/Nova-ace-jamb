@@ -321,6 +321,18 @@ test.describe('ACE JAMB prepared student dashboard', () => {
     await expect(page.getByRole('heading', { name: 'Welcome back, Test Futarian.' })).toBeVisible()
   })
 
+  test('dashboard skip link moves keyboard focus to the main preparation content', async ({ page }) => {
+    await mockPreparedStudent(page)
+    await page.goto('/')
+    await expect(page.getByRole('heading', { name: 'Welcome back, Test Futarian.' })).toBeVisible()
+
+    const skipLink = page.getByRole('link', { name: 'Skip to dashboard content' })
+    await expect(skipLink).toBeVisible()
+    await skipLink.focus()
+    await page.keyboard.press('Enter')
+    await expect(page.locator('#dashboard-content')).toBeFocused()
+  })
+
   test('saved preparation profile survives reload and dashboard offers CBT navigation', async ({ page }) => {
     await mockPreparedStudent(page)
     await page.goto('/')
