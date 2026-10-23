@@ -2,9 +2,9 @@
 
 > Refresh from verified repository/system state at the start and end of meaningful work. Historical entries below may be superseded by newer verification records.
 
-- **Updated:** 2026-10-23 (Phase 3 CBT accessibility slice; newest E2E/Verify runs pending)
+- **Updated:** 2026-10-23 (Phase 3 CBT semantics and workspace focus; latest E2E pending)
 - **Repository:** `DarealNovaking/Nova-ace-jamb`, branch `main`.
-- **Latest source/test HEAD observed:** `bbf7e88a52c3967201cdabf2571cc9f70e2c4fbe` (CBT selected-answer accessibility regression test; E2E #722 and Verify #789 were running at latest check).
+- **Latest source/test HEAD observed:** `a88473b4d14e29ca9f509470219fecaafb274435` (keyboard focus regression test; E2E #729 and Verify #796 pending at last inspection).
 - **Latest fully E2E-verified CBT source commit:** `4841974f0536a4de71cf2d0541931dc8f6ba7ac4` (E2E #719 PASS). Verify #787 passed on test commit `7755aafd46e078ad490c8f278263c715a2777a58`; E2E #720 typecheck/build passed but browser tests were pending. Newer answer-state source/test commits `21d971e0b4f0b538e2f1263b895d34a8019627ea` and `bbf7e88a52c3967201cdabf2571cc9f70e2c4fbe` await their E2E/Verify completions.
 - **User-approved scope:** Frontend only. Do not deploy the app or change backend/database state. The active product no longer uses the catalogue UI.
 - **Current milestone:** Frontend Phase 2 CLOSED for the authorized frontend-only scope; Frontend Phase 3 IN PROGRESS. Documented exceptions remain incomplete.
@@ -1427,3 +1427,15 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - Workflow links: [E2E #719](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/39976382748), [Verify #787](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/39976414932), [E2E #720](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/39976414954), [E2E #721](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/39976917277), [Verify #788](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/39976917227), [E2E #722](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/39976939750), [Verify #789](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/39976939744).
 - No deployment, backend/database changes, or catalogue work. This is frontend semantics over existing behavior; CI uses mocked Supabase responses and is not evidence of live JAMB content availability.
 - **Exact next action:** wait for E2E #722 and Verify #789 on latest test HEAD `bbf7e88a52c3967201cdabf2571cc9f70e2c4fbe`; fix only reproducible failures. Then continue keyboard/focus review of CBT navigation and student workspace. Bundle analysis is still pending; prior build warning was approximately 916 kB minified.
+
+
+## Phase 3 workspace focus update — 2026-10-23
+
+- `src/components/StudentStudyWorkspace.tsx` commit `58e52bad51ed4d166870f9f5504ad0f9fb1a0bd1` moves focus to the workspace heading when the selected mode mounts or changes.
+- `src/components/StudentDashboard.tsx` commit `ec0b879572fe247eb8dc6cd1bcb0b2d7beb55fc3` restores focus to the dashboard heading when returning from a workspace.
+- `tests/e2e/smoke.spec.ts` commit `a88473b4d14e29ca9f509470219fecaafb274435` asserts focus enters Learn and returns to the dashboard after navigation.
+- Verify #790–#793 passed for documentation commits. Verify #795 (`ec0b879`) and #796 (`a88473b`) were in progress at the last check. E2E #727/#728 passed typecheck/build but were still installing Playwright browsers; E2E #729 for `a88473b` had not reached typecheck/build/browser tests. E2E #719 passed on CBT error-announcement source commit `4841974`; later runs #720–#729 were still running, several paused at browser installation. Focus regression remains unverified until #729 completes.
+- [E2E #729](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/39977298929), [Verify #795](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/39977268232), [Verify #796](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/39977298869).
+- Multiple push-triggered E2E runs remained active in browser installation; this is observed CI state, not a confirmed code failure. No reruns or cancellations were issued.
+- No backend/database/deployment/catalogue work. Global `:focus-visible` and reduced-motion styles were retained. Manual screen-reader, keyboard-only and physical-device checks remain unverified.
+- Exact next action: inspect E2E #729 and Verify #796 until terminal; fix any reproducible failure, then continue CBT keyboard review and inspect bundle composition. No deployment.
