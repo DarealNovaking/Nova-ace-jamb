@@ -695,3 +695,14 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - Correction committed as `667085dea853f4c30ed9b639259ab593304305ed`: delay the dashboard-only `get_active_exam_blueprint` RPC instead, allowing the auth/onboarding gate to complete before asserting the dashboard's announced loading state. The delayed request still falls back to the existing mocked response; all Supabase traffic remains intercepted.
 - **Verification after correction: pending.** Do not claim the regression test passes until a new E2E run on commit `667085dea853f4c30ed9b639259ab593304305ed` completes. This E2E workflow does not include dedicated typecheck/build jobs.
 - Exact next action: inspect the new CI run, confirm the targeted test and both desktop/mobile projects pass, then run/confirm typecheck and build via the repository's Verify workflow if available. No backend/database/deployment changes.
+
+
+## Phase 3 accessibility slice — corrected test verified — 2026-10-23
+
+- Corrected source/test commit: `667085dea853f4c30ed9b639259ab593304305ed`.
+- **ACE JAMB E2E run #703: PASS**, 66 Playwright tests passed in 42.4 seconds. Run: https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/39973000000 (GitHub Actions run inspected as #703; use the canonical workflow run page when available).
+- The prior failing test commit `90459bc` failed because the test delayed the profile query needed by the student gate. The corrected test delays only `get_active_exam_blueprint`, a dashboard-only request, so the dashboard can mount and announce loading. The corrected full suite passed.
+- **Verify workflow: PASS** for the same source/test commit; both `verify` and `utme-subject-choice-migration` jobs succeeded. The E2E workflow also includes successful typecheck and build steps. Exact individual typecheck/build logs were not extracted from the visible summary, so their job presence and overall workflow success are verified, but no detailed compiler/build output is claimed.
+- Granular per-browser counts for the new test were not exposed in the inspected run summary. Overall Playwright run passed; do not claim a separate test-specific desktop/mobile breakdown.
+- No backend/database/deployment/catalogue changes. Source/test behavior is verified against mocked Supabase contracts only.
+- **Next action:** begin the source-based keyboard/semantic accessibility audit of student workspace and CBT controls; then inspect bundle composition before deciding on any optimization. Manual screen-reader, real-device PWA/offline and low-end Android acceptance remain unverified.
