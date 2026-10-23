@@ -2,13 +2,13 @@
 
 > Refresh from verified repository/system state at the start and end of meaningful work. Older historical entries below may be superseded by the latest verification record.
 
-- **Updated:** 2026-10-23 (PWA cache/privacy contract tests added; CI pending on latest HEAD `75b14bc1564456e7108a79bd1bca263359d1e723`).
+- **Updated:** 2026-10-23 (Verify #885 passed on PWA contract test commit `75b14bc`; E2E #818 still at browser installation).
 - **Repository:** `DarealNovaking/Nova-ace-jamb`, branch `main`.
 - **Latest HEAD:** `75b14bc1564456e7108a79bd1bca263359d1e723` (`test(pwa): run service worker contract checks in CI`). PWA contract test added at `9b426edc4381fabb673c7d0df251828dd927f074`; current Verify/E2E results are pending.
 - **User-approved scope:** frontend only. Do not deploy, change backend/database/production data, restore catalogue UI, or perform app deployment work. The active frontend no longer uses the catalogue UI.
 - **Current milestone:** Frontend Phase 2 CLOSED for the authorized scope; Frontend Phase 3 IN PROGRESS.
-- **Latest Verify:** new run for `75b14bc` is pending; previous Verify #874 on `9785f548` passed.
-- **Latest E2E:** new run for `75b14bc` is pending; previous E2E #805 on `6f5d18d1` passed. Do not treat current HEAD as E2E-verified until its run completes.
+- **Latest Verify:** #885 / run `39994246802` PASS on `75b14bc1564456e7108a79bd1bca263359d1e723`; includes the new PWA Node contract tests, typecheck/build, Deno checks and disposable PostgreSQL tests.
+- **Latest E2E:** #818 / run `39994246766` was IN PROGRESS at Playwright browser installation at last inspection. Do not claim current PWA test commit passed E2E yet.
 - **Accessibility source/test state:** workspace skip link and keyboard/fragment coverage; CBT keyboard answer selection; CBT exit restores focus to dashboard heading; async loading/saving status, timer, answer state and question-map semantics have source/E2E coverage. Real screen-reader behavior remains unverified.
 - **Open acceptance gates:** full manual keyboard-only navigation, real screen-reader testing, physical low-end Android usability, and real-device PWA/offline installation/recovery. These cannot be closed by mocked CI alone.
 - **Open engineering debt:** main bundle about 507 kB minified / 142 kB gzip (Vite >500 kB warning); latest install audit 4 vulnerabilities (3 moderate, 1 high), not remediated. Avoid speculative splitting or broad dependency upgrades.
@@ -1613,3 +1613,10 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - Commits: test `9b426edc4381fabb673c7d0df251828dd927f074`; CI wiring `75b14bc1564456e7108a79bd1bca263359d1e723`. CI verification is **PENDING** at this note; check Actions for the current `main` HEAD before claiming the new test passes.
 - No runtime application behavior, dependencies, backend/database state, catalogue UI, or deployment configuration was changed. Frontend-only scope remains in force.
 - **Exact next action:** inspect Verify and ACE JAMB E2E workflows triggered by `75b14bc`. If Verify fails, correct only a reproduced test/contract mismatch; if green, keep real-device PWA/offline and screen-reader acceptance unverified until hands-on checks occur.
+
+
+## PWA contract CI result — 2026-10-23
+
+- Verify #885, run `39994246802`, completed **PASS** on commit `75b14bc1564456e7108a79bd1bca263359d1e723`. Confirmed successful steps: the expanded Node test command including `tests/pwa-contract.test.mjs`, both Deno checks, TypeScript typecheck, Vite build, and both disposable PostgreSQL migration/policy tests. This verifies the static source-contract checks only, not live service-worker/browser/offline behavior.
+- ACE JAMB E2E #818, run `39994246766`, was still **in progress at Playwright browser installation** at the time of this update. Do not claim E2E passed for this change until the browser tests complete.
+- **Next action:** poll E2E #818 and the current-main E2E run; if a run fails, inspect the failed step and logs before changing code. Keep physical-device PWA/offline and screen-reader acceptance open.
