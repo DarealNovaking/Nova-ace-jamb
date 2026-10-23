@@ -95,3 +95,12 @@ Proceed to the source-based keyboard/semantic audit of student workspace and CBT
 - `src/main.tsx` commit `9438d852bc2f8b52197c9b120abb354295945862` uses lazy imports for protected CBT, admin and academic-editor routes, with accessible Suspense loading feedback. Student entry remains eager.
 - Previous verified build baseline: main JS `563.22 kB` minified / `153.84 kB` gzip. This change is intended to reduce initial download but has not yet been proven to do so. E2E #738 and Verify #805 were pending at the last check.
 - Next: check CI and compare emitted chunk sizes. Keep or revert based on measured results, not assumption. No deployment/backend/database/catalogue changes.
+
+
+## Phase 3 performance follow-up — lazy study workspace — 2026-10-23
+
+- Route-splitting experiment in `src/main.tsx` (`9438d852bc2f8b52197c9b120abb354295945862`) is verified: [E2E #738](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/39977992553) passed typecheck/build and **66 Playwright tests**; [Verify #805](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/39977992239) passed both jobs. Build chunks: main `index-H4-rXr1h.js` 524.11 kB minified / 145.58 kB gzip; admin 10.10 kB / 3.29 kB gzip; CBT 11.52 kB / 3.93 kB gzip; academic editor 19.37 kB / 5.52 kB gzip. The main chunk still triggers the >500 kB warning.
+- Follow-up source commit `d3b9cc07302f770195236b72c0be180cee199a0e` lazy-loads `StudentStudyWorkspace` from `StudentDashboard` and provides a polite status fallback while the workspace chunk loads. The default student dashboard stays eager; the learning workspace should be downloaded only when requested.
+- **Verification pending** for `d3b9cc0`: E2E #742 and Verify #809 were queued at the latest check. Do not claim a further bundle reduction until typecheck/build/E2E complete and emitted asset sizes are inspected.
+- No backend/database/deployment/catalogue changes and no new dependencies.
+- Exact next action: inspect [E2E #742](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/39978370853) and [Verify #809](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/39978370743); compare bundle output and retain/revert based on measured results.
