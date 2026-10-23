@@ -17,7 +17,7 @@ jobs:
           cache: npm
           cache-dependency-path: package.json
       - run: npm install
-      - run: node --test tests/catalog-parser.test.mjs tests/review-only-stage.test.mjs tests/catalog-import-contract.test.mjs
+      - run: node --test tests/catalog-parser.test.mjs tests/review-only-stage.test.mjs tests/catalog-import-contract.test.mjs tests/pwa-contract.test.mjs
       - uses: denoland/setup-deno@v2
       - run: deno check --no-check=remote supabase/functions/ibass-catalog-stage/index.ts
       - run: deno check --no-check=remote supabase/functions/catalog-import/index.ts
