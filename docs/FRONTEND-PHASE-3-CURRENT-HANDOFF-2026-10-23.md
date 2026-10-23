@@ -88,3 +88,10 @@ Proceed to the source-based keyboard/semantic audit of student workspace and CBT
 - Build still emits Vite's >500 kB minified chunk warning. A completed build from the same source family previously showed the main JS at **563.22 kB minified / 153.84 kB gzip**; no bundle splitting or dependency changes have been made. Build time in #733 was 3.80 seconds.
 - **Accessibility slice status:** implementation and automated regression coverage PASS. Manual keyboard-only and screen-reader verification remains unperformed; this CI is not a substitute for manual assistive-technology review.
 - **Next action:** inspect the app's static route imports and the existing build output to identify a minimal code-splitting opportunity that reduces initial student download without changing behavior. Keep backend/database/deploy/catalogue out of scope; verify the change with typecheck/build/E2E and update this checkpoint again.
+
+
+## Route-splitting experiment — 2026-10-23
+
+- `src/main.tsx` commit `9438d852bc2f8b52197c9b120abb354295945862` uses lazy imports for protected CBT, admin and academic-editor routes, with accessible Suspense loading feedback. Student entry remains eager.
+- Previous verified build baseline: main JS `563.22 kB` minified / `153.84 kB` gzip. This change is intended to reduce initial download but has not yet been proven to do so. E2E #738 and Verify #805 were pending at the last check.
+- Next: check CI and compare emitted chunk sizes. Keep or revert based on measured results, not assumption. No deployment/backend/database/catalogue changes.
