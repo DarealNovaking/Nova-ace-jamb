@@ -274,3 +274,11 @@ Proceed to the source-based keyboard/semantic audit of student workspace and CBT
 - **Verification of the correction is pending**: Verify #897 and E2E #830 were queued on `a2f50cb5b5` at last inspection. Do not call the new runtime test green until Verify finishes successfully.
 - Failed CI on intervening docs-only commits also contained the same harness assertion, because those commits retained the failing test. The relevant root cause was found from the job log, and the test mock—not the service worker's privacy guard—was corrected.
 - **Exact next action:** inspect Verify #897 logs/result. If green, record passing runtime tests and then check current HEAD workflows. If another failure occurs, use its exact output to correct only the failing assertion/harness. Continue to leave physical-device PWA/offline and manual accessibility acceptance open.
+
+
+## PWA runtime regression verification result — 2026-10-23
+
+- Verify #897, run `39999507889`, completed **PASS** on source/test commit `a2f50cb5b55ff46ccc5d0531d3d3856aa9275e62`. Both Verify jobs passed, including the expanded Node suite with `tests/pwa-runtime.test.mjs`, Deno/typecheck/build checks, and disposable PostgreSQL tests.
+- This resolves the specific test-harness failure documented above: the mock now emulates the browser's same-origin `Response.type === 'basic'` contract. The test now covers install-time static shell caching, exclusion boundaries, same-origin build asset caching, and offline navigation fallback under mocked service-worker APIs.
+- E2E #830 on `a2f50cb5b5` was still running at the last check; E2E on the latest docs HEAD is also pending. Do not claim current docs HEAD E2E passed until the relevant run completes. Runtime service-worker tests are mocked and do not substitute for browser/device install and offline acceptance.
+- **Next action:** check the latest main HEAD's Verify/E2E status. If both are green, continue the bounded accessibility audit; leave real-device PWA/offline and manual screen-reader gates open.
