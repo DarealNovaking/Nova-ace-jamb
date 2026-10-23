@@ -1,19 +1,19 @@
 # ACE JAMB — Current Agent Checkpoint
 
-> Refresh from verified repository/system state at the start and end of meaningful work. This checkpoint is the current navigation aid; historical entries below are retained as history and may contain superseded statuses.
+> Refresh from verified repository/system state at the start and end of meaningful work. Historical entries below may be superseded by newer verification records.
 
-- **Updated at (UTC):** 2026-10-23 (exact time not asserted)
-- **Repository:** `DarealNovaking/Nova-ace-jamb`
-- **Branch / latest verified source HEAD:** `main`; latest source/test commit `adaec568f7b678ca3c911cccf65ca1d4f02cf247`.
-- **Current user-approved scope:** Finish the frontend acceptance work only. Do not deploy the app or touch backend/database state. Catalogue ingestion and other backend tasks are out of scope for this continuation.
-- **Current milestone:** Frontend Phase 2 closeout; still OPEN.
-- **Verified baseline:** Verify #719 / run `39964865822` passed on the academic authorization error hardening commit. ACE JAMB E2E #652 / run `39964865810` had typecheck/build passed and browser installation in progress at the last status check; Playwright remains pending/unverified until refreshed.
-- **Latest frontend change:** `AcademicFoundationGate` now uses a generic authorization-verification error instead of exposing raw caught RPC/database error messages; a Playwright regression test covers that behavior. Commits: `178709e5059fe4fb31b79480315dac628228caeb`, `adaec568f7b678ca3c911cccf65ca1d4f02cf247`.
-- **Previously verified frontend checks:** Verify #706 / run `39963740781` and ACE JAMB E2E #639 / run `39963740632` passed on `1763de8ad72a2c486907a7643ea3865fdbd5a0ea`. These do not replace the pending run on latest main.
-- **Known unresolved:** Vite build warns about a ~916 kB minified chunk; npm audit previously reported 8 vulnerabilities (2 moderate, 6 high). No automatic dependency updates made. Live provider-dependent payment/referral/AI/audio/notification behavior and production content availability remain unverified. No approved existing deployed URL was found; do not deploy to close this gap.
-- **Next action:** Refresh E2E run `39964865810`; confirm the full Playwright suite result on latest main. Fix only reproducible frontend defects. Then update this checkpoint, master handoff and current frontend handoff with final evidence and decide whether remaining unverified production-only checks keep Phase 2 open.
-- **Safety constraints:** Do not deploy, change backend/database state, guess official JAMB data, or claim production behavior from mocked tests. Never store secrets or student PII.
+- **Updated:** 2026-10-23 (UTC; exact time not asserted)
+- **Repository:** `DarealNovaking/Nova-ace-jamb`, branch `main`.
+- **Latest tested source/test commit:** `adaec568f7b678ca3c911cccf65ca1d4f02cf247`. Newer commits are documentation-only.
+- **User-approved scope:** Frontend only. Do not deploy the app or change backend/database state. Do not resume catalogue or deployment tasks.
+- **Current milestone:** Frontend Phase 2 — CI verification passes, acceptance closeout remains OPEN.
+- **Latest verification:** Verify #719 / run `39964865822` PASS. ACE JAMB E2E #652 / run `39964865810` PASS: 64 Playwright tests passed, 0 failed, including desktop/mobile projects and academic authorization error privacy regression.
+- **Current frontend fix:** `AcademicFoundationGate` now presents a generic safe authorization-verification error; regression test added. Commits `178709e5059fe4fb31b79480315dac628228caeb` and `adaec568f7b678ca3c911cccf65ca1d4f02cf247`.
+- **Open limitations:** Live deployed-browser acceptance is blocked/unverified because no approved existing URL has been established and deployment is out of scope. Provider-dependent payment/referral/AI/audio/notification delivery and production content availability remain unverified. Vite bundle-size warning and prior npm audit findings remain unresolved.
+- **Exact next action:** Reconcile the remaining source-based frontend acceptance matrix: enumerate uncovered user-visible routes/behaviors and label each covered, blocked, or unverified. Fix only evidenced frontend defects, update all handoffs, and keep Phase 2 open until acceptance criteria are met. Do not deploy or touch backend/database state.
+- **Evidence correction:** the earlier claim that Playwright artifact trace/context files were inspected is unsupported by the tool record; the artifact was retrieved but those contents were not verified. The successful GitHub Actions run summary is independently confirmed.
 
+---
 
 ## Anti-drift prompt update — 2026-10-18
 - Added mandatory project-only scope and anti-drift rules to `docs/AGENT-PROMPTS.md`, including a dedicated Agent 9 prompt for the primary ChatGPT project partner.
@@ -1232,7 +1232,7 @@ Check Verify and ACE JAMB E2E on the latest main commit after `cba0c14` and this
 
 ## Frontend Phase 2 E2E defect fixes — 2026-10-23
 
-- Reconciled current main before edits: previous runner-backed Playwright run on source SHA `0cf9fe0aae55a5f7a907a09503dc239d63d89598` had 58 passed / 4 failed (the same two failures repeated on desktop and mobile). Downloaded and inspected the uploaded Playwright artifact's `error-context.md` files and trace network snapshots.
+- Reconciled current main before edits: previous runner-backed Playwright run on source SHA `0cf9fe0aae55a5f7a907a09503dc239d63d89598` had 58 passed / 4 failed (the same two failures repeated on desktop and mobile). Retrieved the uploaded Playwright artifact, but did not verify its `error-context.md` files or trace network snapshots; do not treat artifact-level diagnosis as confirmed.
 - Admin readiness failure: the test asserted a metric-dependent detail before asynchronous count queries settled; the mocked HEAD responses also did not expose `content-range`. Updated `tests/e2e/smoke.spec.ts` to expose the count headers and wait for the Refresh status button to become enabled before asserting the zero-count state.
 - First-use preferences regression failure: the test returned a synthetic PostgREST 406/PGRST116 for a `.maybeSingle()` GET, which did not accurately model the empty-row response for this mocked client contract. Updated the isolated fixture to return HTTP 200 with an empty JSON array for zero rows; all Supabase traffic remains intercepted and no production data is used.
 - Safety correction: `src/components/AdminOperationsOverview.tsx` now explicitly says student AI stays disabled when rights-cleared knowledge-source readiness is unavailable, rather than implying active approved sources when the metric is unknown.
@@ -1274,6 +1274,17 @@ Check Verify and ACE JAMB E2E on the latest main commit after `cba0c14` and this
 - Read-only review found `AcademicFoundationGate` rendered caught authorization/RPC errors using `caught.message`, unlike the admin gate's generic safe error. Changed it to show only “Unable to verify academic editor access. Please try again.”
 - Added a Playwright regression test that mocks a 500 response containing synthetic database details and asserts those details and the raw error code are not rendered. All Supabase calls remain intercepted; no production data is used.
 - Commits: `178709e5059fe4fb31b79480315dac628228caeb` (frontend fix), `adaec568f7b678ca3c911cccf65ca1d4f02cf247` (regression test).
-- Verification: Verify workflow #719 / run `39964865822` **PASS** (Node tests, Deno checks, typecheck, build, and disposable PostgreSQL policy/migration tests). ACE JAMB E2E #652 / run `39964865810` had typecheck and build pass; browser installation was still in progress at the last check, so Playwright outcome is **PENDING/UNVERIFIED**.
+- Verification: Verify workflow #719 / run `39964865822` **PASS** (Node tests, Deno checks, typecheck, build, and disposable PostgreSQL policy/migration tests). ACE JAMB E2E #652 / run `39964865810` **PASS**: 64 Playwright tests passed, 0 failed; typecheck, build and browser installation also passed.
 - No backend, database, migration, production data, workflow, or deployment changes. App deployment remains explicitly out of scope. Existing build chunk-size warning and npm audit findings remain unresolved.
-- Phase 2 remains **OPEN**. Exact next action: refresh run `39964865810`, inspect Playwright results for the new academic-authorization regression and the full desktop/mobile suite, fix only reproducible failures, then update the checkpoint and handoffs with the final run evidence.
+- Phase 2 remains **OPEN** pending reconciliation of remaining acceptance items; latest Verify/E2E evidence is recorded below. Exact next action: review the remaining source-based frontend acceptance matrix, mark items covered/blocked/unverified, and do not deploy or change backend state.
+
+
+## Latest academic authorization hardening verification — 2026-10-23
+
+- **Current tested source/test commit:** `adaec568f7b678ca3c911cccf65ca1d4f02cf247`. Later commits in the current history are documentation-only; no source/test change followed this tested SHA.
+- **Verify #719**, run `39964865822`: **PASS**. Node contract tests, Deno checks, typecheck, production build, and disposable PostgreSQL policy/migration checks completed successfully.
+- **ACE JAMB E2E #652**, run `39964865810`: **PASS**. GitHub Actions run page reports 64 Playwright tests passed in 37.0 seconds, 0 failed; job duration 7m57s. Typecheck, build and browser installation also passed. This suite runs Desktop Chrome and Pixel 5/mobile Chromium per `playwright.config.ts`.
+- The newly added academic authorization error privacy regression is included in this successful Playwright run. No backend/database, production data, migration, deployment, or workflow changes were made as part of this frontend work.
+- **Evidence correction:** an earlier historical entry in `FRONTEND-COMPLETION-BATCH-2026-10-21.md` says the Playwright artifact's `error-context.md` and trace network snapshots were inspected. That inspection is not supported by the actual tool record for that investigation; the artifact was retrieved but those contents were not verified. Do not rely on that specific claim. The runner's successful test summary above was independently checked on the GitHub Actions run page.
+- Remaining limitations: no existing approved deployed frontend URL has been established, so live deployed-browser acceptance is blocked/unverified while app deployment remains explicitly out of scope. Live provider-dependent payment/referral/AI/audio/notification behavior and production content availability are not proven by mocked CI. Build chunk-size warning and previously reported npm audit findings remain open.
+- **Milestone status:** frontend Phase 2 has clean runner-backed CI, but whole-product frontend acceptance remains **OPEN** until the documented acceptance matrix is reconciled. Next action: inspect the remaining source-based acceptance matrix for uncovered routes/behaviors, record each as covered, blocked, or unverified, and do not deploy or touch backend state.
