@@ -291,3 +291,9 @@ Proceed to the source-based keyboard/semantic audit of student workspace and CBT
 - No backend/database, deployment, catalogue UI, dependency, or production-data changes.
 - Phase 3 remains IN PROGRESS. Manual keyboard-only, real screen-reader, physical low-end Android, and real-device PWA install/offline checks remain unverified.
 - **Next action:** inspect the latest E2E/Verify outcomes, fix any evidenced regression, and update the continuity docs with terminal evidence.
+
+## Reduced-motion test CI status update — 2026-10-23
+
+- Verify #904 (`40000305709`) completed **PASS** on test commit `a389b2faaedc36c8a2b3510ab937eba5c4bdf069`, covering the Node suites, Deno checks, TypeScript typecheck, build, and disposable PostgreSQL migration/policy tests.
+- ACE JAMB E2E #837 (`40000305699`) remained **in progress during Playwright browser installation** at last inspection, so the new reduced-motion assertion is still pending browser verification. Newer documentation commits trigger separate runs; check the current HEAD's workflows before reporting overall green.
+- **Next action:** poll the E2E run and current-main E2E; investigate any reproduced failure and record final evidence.
