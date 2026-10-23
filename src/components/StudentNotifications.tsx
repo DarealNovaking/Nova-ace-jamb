@@ -165,7 +165,7 @@ export default function StudentNotifications() {
         <button type="button" onClick={() => void savePreferences()} disabled={saving} className="mt-4 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-purple-300 px-4 py-2 text-sm font-bold text-[#120b1c] disabled:opacity-50">{saving && <Loader2 size={15} className="animate-spin" />} Save preferences</button>
       </div>}
 
-      {loading ? <div className="grid min-h-24 place-items-center text-sm text-white/45"><Loader2 className="animate-spin" size={20} aria-label="Loading notifications" /></div>
+      {loading ? <div role="status" aria-live="polite" aria-atomic="true" className="grid min-h-24 place-items-center text-sm text-white/45"><Loader2 className="animate-spin" size={20} aria-hidden="true" /><span>Loading notifications…</span></div>
         : items.length ? <ul className="mt-5 space-y-3">{items.map((item) => <li key={item.id} className={`rounded-2xl border p-4 ${item.read_at ? 'border-white/5 bg-white/[.02]' : 'border-purple-300/20 bg-purple-500/[.06]'}`}>
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0"><div className="flex flex-wrap items-center gap-2"><h3 className="font-bold">{item.title}</h3>{!item.read_at && <span className="rounded-full bg-purple-300/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-purple-100">New</span>}</div><p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-white/60">{item.body}</p><p className="mt-2 text-xs text-white/35">{friendlyDate(item.sent_at ?? item.created_at)}</p></div>
