@@ -1677,3 +1677,9 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - Verify #912 (`40001230846`) passed on `a2305b077e44` for the CBT skip-link source/test revision. The automated verification workflow completed successfully.
 - E2E #845 (`40001230788`) was still installing Playwright browser, so the new focus assertion has not yet been exercised in a browser. Latest-main E2E #848 and Verify #915 were queued at last check.
 - **Next action:** poll E2E #845 and current-main E2E #848; if the CBT skip-link assertion fails, inspect the Playwright output and fix only the demonstrated issue.
+
+## CBT skip-link browser verification result — 2026-10-23
+
+- ACE JAMB E2E #850 (`40001391449`) **PASS** on commit `693a94fae956`; its job log explicitly reports **74 passed (1.1m)**. This verifies the CBT skip-link keyboard-focus assertion and the reduced-motion regression in the same browser suite.
+- Verify #917 (`40001391242`) passed on `693a94fae956`; Verify #918 passed on current HEAD `d751b9f1dc98ae2b58d34d4c985bc6aead7a7cf3`. E2E #851 (`40001413124`) on that HEAD remained in progress during latest inspection.
+- **Next action:** recheck E2E #851; then inspect Vite bundle composition/source map or build output before deciding whether a safe code-splitting change is warranted. Do not change dependencies or split chunks speculatively. Manual accessibility and physical-device PWA/offline checks remain unverified.
