@@ -137,7 +137,9 @@ export default function StudentDashboard() {
   if (activeView !== 'home') return <Suspense fallback={<div className="grid min-h-[50vh] place-items-center bg-[#07050d] px-5 text-white"><p role="status" aria-live="polite" aria-atomic="true">Loading your study workspace…</p></div>}><StudentStudyWorkspace mode={activeView} subjects={subjects} topics={topics} onBack={() => { const url = new URL(window.location.href); url.searchParams.delete('view'); window.history.pushState({}, '', url); setActiveView('home') }} onStartCbt={startCbt} /></Suspense>
 
   return (
-    <main id="main-content" className="min-h-screen bg-[#07050d] px-5 py-8 text-white sm:py-12">
+    <>
+      <a className="skip-link" href="#dashboard-content">Skip to dashboard content</a>
+      <main id="dashboard-content" tabIndex={-1} className="min-h-screen bg-[#07050d] px-5 py-8 text-white sm:py-12">
       <div className="mx-auto max-w-6xl">
         <header className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
@@ -192,6 +194,7 @@ export default function StudentDashboard() {
         <LearningSupportStatus />
         <StudentAccountSettings />
       </div>
-    </main>
+      </main>
+    </>
   )
 }
