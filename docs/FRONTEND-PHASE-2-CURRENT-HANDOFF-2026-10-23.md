@@ -62,3 +62,13 @@ Inspect the E2E job annotations/start reason at the job link above. When a runne
 - Fix commit: `1763de8ad72a2c486907a7643ea3865fdbd5a0ea` (`test: isolate missing preferences to account settings screen`).
 - Verification: the new Verify run `#706` and E2E run `#639` were still QUEUED when checked; the rerun is therefore not yet verified. The prior current-main run did verify typecheck/build but E2E remained failed on the now-corrected fixture. Do not mark Phase 2 complete.
 - Exact next action: poll Verify `#706` and ACE JAMB E2E `#639` for commit `1763de8`; inspect any new Playwright artifacts, fix only reproducible failures, and rerun on the latest source. Then complete deployed student/admin/mobile acceptance if supported. Phase 2 remains OPEN.
+
+
+## Frontend E2E fixes verified — 2026-10-23
+
+- Latest source-fix commit under test: `1763de8ad72a2c486907a7643ea3865fdbd5a0ea`. The admin readiness test waits for metric queries and exposes the mocked `content-range` header; unknown knowledge-source readiness explicitly keeps student AI disabled. The first-use settings regression keeps the onboarding gate's preferences complete, then simulates a missing row specifically when Account Settings loads.
+- GitHub Actions **Verify #706** (run `39963740781`) completed successfully on `1763de8`: Node contract tests, Deno checks for both catalogue functions, `npm run typecheck`, `npm run build`, and both disposable PostgreSQL migration/policy tests passed.
+- GitHub Actions **ACE JAMB E2E #639** (run `39963740632`) completed successfully on `1763de8`: typecheck, build, browser installation, and Playwright all passed; both prior repeated failures no longer reproduce. The job status and each step were re-read and confirmed successful.
+- These are mocked-contract browser tests, not proof of production content availability or live payment/referral/AI/audio/notification services. No production deployment, database writes, schema changes, or migrations were performed. The earlier build chunk-size warning and npm audit findings remain unresolved.
+- **Phase 2 remains OPEN** pending the remaining documented acceptance review, including existing deployed student/admin/mobile navigation and PWA behavior. Do not claim whole-product frontend completion from this CI pass alone.
+- Exact next action: perform read-only acceptance of the existing frontend routes and PWA shell (student dashboard/navigation/settings, admin authorization and academic route, narrow mobile layout, service-worker cache exclusions) without deploying or changing backend state; fix only reproducible defects and update the acceptance matrix before deciding whether Phase 2 can close.
