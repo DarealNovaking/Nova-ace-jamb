@@ -3342,3 +3342,9 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - Scope remained frontend tests only: no backend/database, deployment, catalogue UI, dependencies, or production data changes.
 - Open acceptance gates remain: full manual keyboard-only journey, real screen-reader behavior, physical low-end Android usability, and real-device PWA installation/offline recovery.
 - **Next action:** inspect E2E #837 and Verify #904 plus the latest runs on `main`; diagnose any reproduced failure, then record final CI results in all continuity documents.
+
+## Reduced-motion test CI status update — 2026-10-23
+
+- Verify #904 (`40000305709`) completed **PASS** on test commit `a389b2faaedc36c8a2b3510ab937eba5c4bdf069`. The full Verify job passed the Node test suite (including PWA contract/runtime tests), Deno checks, TypeScript typecheck, Vite build, and disposable PostgreSQL migration/policy checks.
+- ACE JAMB E2E #837 (`40000305699`) remained **in progress at Playwright browser installation** at the latest check; the reduced-motion browser assertion has not yet been executed/verified. Current-main docs descendants also have CI running; recheck latest Actions before making a final status claim.
+- **Next action:** poll E2E #837 and current-main E2E. If the new test fails, inspect the Playwright report and correct only the demonstrated issue.
