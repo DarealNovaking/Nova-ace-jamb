@@ -351,6 +351,19 @@ test.describe('ACE JAMB prepared student dashboard', () => {
 })
 
 test.describe('ACE JAMB persistent CBT', () => {
+  test('skip link moves keyboard focus past the CBT shell controls', async ({ page }) => {
+    await mockPreparedStudent(page)
+    await page.goto('/')
+    await expect(page.getByRole('heading', { name: 'Welcome back, Test Futarian.' })).toBeVisible()
+    await page.getByRole('button', { name: /CBT Practice/ }).click()
+
+    const skipLink = page.getByRole('link', { name: 'Skip to CBT content' })
+    await expect(skipLink).toBeVisible()
+    await skipLink.focus()
+    await page.keyboard.press('Enter')
+    await expect(page.locator('#cbt-content')).toBeFocused()
+  })
+
   test('practice workspace starts a practice-mode attempt and reports an empty question bank honestly', async ({ page }) => {
     await mockPreparedStudent(page)
     let requestedMode = ''
