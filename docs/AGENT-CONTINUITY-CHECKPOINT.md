@@ -2,9 +2,9 @@
 
 > Refresh from verified repository/system state at the start and end of meaningful work. Historical entries below may be superseded by newer verification records.
 
-- **Updated:** 2026-10-23 (second performance split committed; CI pending)
+- **Updated:** 2026-10-23 (Phase 3 route splitting and lazy workspace verified)
 - **Repository:** `DarealNovaking/Nova-ace-jamb`, branch `main`.
-- **Latest source commit:** `d3b9cc07302f770195236b72c0be180cee199a0e` (lazy study workspace; E2E #742 and Verify #809 pending). Route split in `9438d852bc2f8b52197c9b120abb354295945862` passed E2E #738 (66 tests) and Verify #805; see performance follow-up below.
+- **Latest source commit:** `d3b9cc07302f770195236b72c0be180cee199a0e` (lazy study workspace). E2E #742 PASS (typecheck/build + 66 Playwright tests, 59.1s); Verify #809 PASS. Latest docs HEAD Verify #812 PASS.
 - **Latest fully E2E-verified CBT source commit:** `4841974f0536a4de71cf2d0541931dc8f6ba7ac4` (E2E #719 PASS). Verify #787 passed on test commit `7755aafd46e078ad490c8f278263c715a2777a58`; E2E #720 typecheck/build passed but browser tests were pending. Newer answer-state source/test commits `21d971e0b4f0b538e2f1263b895d34a8019627ea` and `bbf7e88a52c3967201cdabf2571cc9f70e2c4fbe` await their E2E/Verify completions.
 - **User-approved scope:** Frontend only. Do not deploy the app or change backend/database state. The active product no longer uses the catalogue UI.
 - **Current milestone:** Frontend Phase 2 CLOSED for the authorized frontend-only scope; Frontend Phase 3 IN PROGRESS. Documented exceptions remain incomplete.
@@ -1466,3 +1466,12 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - **Verification pending** for `d3b9cc0`: E2E #742 and Verify #809 were queued at the latest check. Do not claim a further bundle reduction until typecheck/build/E2E complete and emitted asset sizes are inspected.
 - No backend/database/deployment/catalogue changes and no new dependencies.
 - Exact next action: inspect [E2E #742](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/39978370853) and [Verify #809](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/39978370743); compare bundle output and retain/revert based on measured results.
+
+
+## Phase 3 performance follow-up — lazy workspace verified — 2026-10-23
+
+- Source commit `d3b9cc07302f770195236b72c0be180cee199a0e` passed [E2E #742](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/39978370853): **typecheck PASS, build PASS, 66 Playwright tests PASS in 59.1s**. [Verify #809](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/39978370743) also passed both jobs. The latest docs HEAD's Verify #812 passed as well.
+- Measured build after route splitting + lazy study workspace: main JS `index-LeKntu3S.js` **506.86 kB minified / 142.10 kB gzip**; `StudentStudyWorkspace` chunk **17.70 kB / 5.04 kB gzip**; admin chunk `10.10 kB / 3.28 kB gzip`; CBT chunk `11.52 kB / 3.93 kB gzip`; academic editor chunk `19.41 kB / 5.54 kB gzip`. Build took 2.75s. Main bundle reduced another 17.25 kB minified and 3.48 kB gzip versus the previous route-split build. Vite's >500 kB warning remains (main is 6.86 kB above threshold).
+- The lazy workspace fallback announces loading politely; existing workspace focus management remains in place. No backend/database/deployment/catalogue changes or dependency additions.
+- Additional E2E runs on later docs-only commits were still active when checked, but E2E #742 and Verify #809 cover the exact source commit. No need to wait on docs-only runs to claim the source/test commit passed.
+- **Next action:** stop speculative splitting for now; investigate actual large dependency contribution only if a source-based analysis can identify a safe win. Prioritize the remaining student/CBT UX and keyboard review. Manual screen-reader and physical-device checks remain unverified.
