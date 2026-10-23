@@ -4,15 +4,15 @@
 
 - **Updated:** 2026-10-23 (UTC; exact time not asserted)
 - **Repository:** `DarealNovaking/Nova-ace-jamb`, branch `main`.
-- **Latest tested source/test commit:** `6c3201ba83d90ab384dae53b6faf724d0d8da8ab`; subsequent commits in this continuation are documentation-only.
-- **User-approved scope:** Frontend only. Do not deploy the app or change backend/database state. Do not resume catalogue work.
-- **Current milestone:** Frontend Phase 2 — latest code and E2E checks pass; acceptance closeout remains OPEN.
-- **Latest Verify:** #729 / run `39966265866` PASS, including typecheck, build, Node/Deno checks and disposable PostgreSQL migration/policy tests.
-- **Latest E2E:** #662 / run `39966266064` PASS, 64 Playwright tests passed, 0 failed; typecheck/build/browser installation passed too.
-- **Current frontend change:** `AdminFoundationGate` no longer renders legacy catalogue import, single-row staging, or IBASS staging. E2E assertions enforce their absence. The component source files and backend functions were not deleted; no backend/database changes occurred.
-- **Open limitations:** Live deployed-browser acceptance is blocked/unverified because no approved existing URL has been established and deployment is out of scope. Provider-dependent payment/referral/AI/audio/notification delivery and production content availability remain unverified. Vite bundle-size warning and prior npm audit findings remain unresolved.
-- **Exact next action:** Reconcile the remaining source-based frontend acceptance matrix, marking each route/behavior covered, blocked, or unverified; fix only evidenced frontend defects and update all handoffs. Do not deploy or touch backend/database state.
-- **Evidence correction:** an earlier claim that Playwright artifact trace/context files were inspected is unsupported by the tool record; the artifact was retrieved but those contents were not verified. The successful GitHub Actions summaries and E2E job logs have been independently checked.
+- **Latest source/test commit under verification:** `85a4b5b1aed59b8d5bfb3e7c09de53d873cdb9af`; prior passing source/test commit was `6c3201ba83d90ab384dae53b6faf724d0d8da8ab`.
+- **User-approved scope:** Frontend only. Do not deploy the app or change backend/database state. The active product no longer uses the catalogue UI.
+- **Current milestone:** Frontend completion acceptance remains OPEN.
+- **Prior verified baseline:** Verify #729 / run `39966265866` PASS. ACE JAMB E2E #662 / run `39966266064` PASS: 64 Playwright tests passed, 0 failed on commit `6c3201b`.
+- **Latest frontend change:** Removed stale `admin-import.html` and `src/admin-import.tsx`; active admin gate no longer renders catalogue import, review-only staging, or IBASS staging. The legacy `/admin-import` path remains a compatibility alias to the authorized admin dashboard. Added E2E assertions for retired UI absence.
+- **Latest CI:** Verify #740 and ACE JAMB E2E #673 were in progress when last checked for commit `85a4b5b`; refresh and confirm final results before calling latest change verified.
+- **Open limitations:** No approved existing deployed frontend URL established; deployment remains out of scope. Provider-dependent payment/referral/AI/audio/notification delivery and production content availability remain unverified. Vite chunk-size warning and prior npm audit findings remain unresolved.
+- **Exact next action:** Poll latest Verify/E2E for `85a4b5b`, fix only reproducible failures, then reconcile the remaining frontend acceptance matrix and update all handoffs. Do not deploy or touch backend/database state.
+- **Evidence correction:** the earlier claim that Playwright artifact trace/context files were inspected is unsupported; the artifact was retrieved but those contents were not verified. Successful runner summaries and job logs are independently checked.
 
 ---
 
@@ -1309,3 +1309,13 @@ Check Verify and ACE JAMB E2E on the latest main commit after `cba0c14` and this
 - The active admin dashboard no longer renders the retired catalogue import, single-row staging, or IBASS staging workflows. This is only a frontend visibility change; underlying legacy component files/backend functions/database objects were not deleted or changed.
 - No deployment or production/backend/database change was made. Build chunk-size warning and previous npm audit findings remain unresolved. Live deployed-browser acceptance and live provider integrations remain unverified because app deployment is out of scope.
 - **Next action:** continue reconciling the remaining frontend acceptance matrix from existing source and CI evidence; mark each item covered, blocked, or unverified. Phase 2 remains OPEN until the remaining acceptance criteria are reconciled; do not deploy or touch backend state.
+
+
+## Legacy catalogue entrypoint removal — 2026-10-23
+
+- Further source review found the old standalone `admin-import.html` and `src/admin-import.tsx` still presented a catalogue import page even after the active admin dashboard had stopped rendering the catalogue workflows. Deleted both stale entrypoint files.
+- Added a Playwright assertion that the legacy `/admin-import` URL resolves to the normal authorized admin dashboard and never renders catalogue or IBASS staging UI. The active route alias is intentionally retained for compatibility; it no longer exposes the retired importer.
+- Commits: `d9b4e576bc3fc5802cc30ed786e37aeea59e23cf` (remove HTML entrypoint), `df44ebea2a27cbb62f2327ef45fd4177bc5b94a8` (remove TSX entrypoint), `85a4b5b1aed59b8d5bfb3e7c09de53d873cdb9af` (E2E route guard).
+- Latest main CI was reported running: Verify #740 and ACE JAMB E2E #673. These are not verified until final workflow conclusions are read. Prior commit `6c3201ba83d90ab384dae53b6faf724d0d8da8ab` had both workflows pass, including 64 Playwright tests, but does not cover the latest deletions and route assertion.
+- Scope remains frontend-only: no backend functions, database objects/data, migration, workflow, or deployment changes. Unused catalogue component sources and contract tests remain in the repository to avoid deleting backend-adjacent safety coverage; they are no longer rendered or reachable from the active UI.
+- Next action: verify both workflows for `85a4b5b1aed59b8d5bfb3e7c09de53d873cdb9af`, then reconcile the remaining frontend acceptance list. Do not deploy or touch backend/database state.
