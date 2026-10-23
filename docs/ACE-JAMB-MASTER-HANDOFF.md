@@ -3333,3 +3333,12 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - This resolves the specific test-harness failure documented above: the mock now emulates the browser's same-origin `Response.type === 'basic'` contract. The test now covers install-time static shell caching, exclusion boundaries, same-origin build asset caching, and offline navigation fallback under mocked service-worker APIs.
 - E2E #830 on `a2f50cb5b5` was still running at the last check; E2E on the latest docs HEAD is also pending. Do not claim current docs HEAD E2E passed until the relevant run completes. Runtime service-worker tests are mocked and do not substitute for browser/device install and offline acceptance.
 - **Next action:** check the latest main HEAD's Verify/E2E status. If both are green, continue the bounded accessibility audit; leave real-device PWA/offline and manual screen-reader gates open.
+
+## Frontend Phase 3 — reduced-motion browser regression test (2026-10-23)
+
+- Added a Playwright E2E test in `tests/e2e/smoke.spec.ts` that emulates `prefers-reduced-motion: reduce` and verifies document scrolling becomes non-smooth and computed animation/transition durations are reduced to at most 0.1 ms.
+- This tests the existing reduced-motion CSS in `src/index.css`; no runtime CSS or application behavior was changed. Supabase calls are mocked by the existing prepared-student helper.
+- Source/test commit: `a389b2faaedc36c8a2b3510ab937eba5c4bdf069`. Verify #904 and ACE JAMB E2E #837 were queued immediately after this commit; the new browser test is **pending CI verification** and must not be called passed until E2E completes successfully.
+- Scope remained frontend tests only: no backend/database, deployment, catalogue UI, dependencies, or production data changes.
+- Open acceptance gates remain: full manual keyboard-only journey, real screen-reader behavior, physical low-end Android usability, and real-device PWA installation/offline recovery.
+- **Next action:** inspect E2E #837 and Verify #904 plus the latest runs on `main`; diagnose any reproduced failure, then record final CI results in all continuity documents.
