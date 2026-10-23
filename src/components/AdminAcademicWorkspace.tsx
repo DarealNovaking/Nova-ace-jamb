@@ -229,7 +229,7 @@ export default function AdminAcademicWorkspace() {
     }, 'Syllabus version activated through the server-side validation function.')
   }
 
-  if (loading) return <div className="grid min-h-[50vh] place-items-center text-white"><Loader2 className="animate-spin" aria-label="Loading academic workspace" /></div>
+  if (loading) return <div role="status" aria-live="polite" aria-atomic="true" aria-busy="true" className="grid min-h-[50vh] place-items-center text-white"><Loader2 className="animate-spin" aria-hidden="true" /><span className="sr-only">Loading academic workspace…</span></div>
 
   return (
     <div className="space-y-6">
@@ -244,7 +244,7 @@ export default function AdminAcademicWorkspace() {
           <label className="text-sm text-white/70">Version title<input className={inputClass} value={versionTitle} onChange={(e) => setVersionTitle(e.target.value)} maxLength={160} placeholder="Defaults to season + subject syllabus"/></label>
           <label className="text-sm text-white/70">Source title<input className={inputClass} value={sourceTitle} onChange={(e) => setSourceTitle(e.target.value)} maxLength={200} required placeholder="Official document or source name"/></label>
           <label className="text-sm text-white/70 md:col-span-2">HTTPS source URL<input className={inputClass} type="url" value={sourceUrl} onChange={(e) => setSourceUrl(e.target.value)} required placeholder="https://…"/></label>
-          <div className="md:col-span-2"><button className={buttonClass} disabled={busy}><Plus size={16}/> Create draft version</button></div>
+          <div className="md:col-span-2"><button type="submit" className={buttonClass} disabled={busy}><Plus size={16}/> Create draft version</button></div>
         </form>
       </section>
 
@@ -273,7 +273,7 @@ export default function AdminAcademicWorkspace() {
             <form onSubmit={addTopic} className="mt-3 space-y-3">
               <label className="block text-sm text-white/70">Topic name<input className={inputClass} value={topicName} onChange={(e) => setTopicName(e.target.value)} maxLength={200} required/></label>
               <label className="block text-sm text-white/70">Description (optional)<textarea className={inputClass} value={topicDescription} onChange={(e) => setTopicDescription(e.target.value)} rows={2} maxLength={2000}/></label>
-              <button className={buttonClass} disabled={busy}><Plus size={15}/> Add inactive topic</button>
+              <button type="submit" className={buttonClass} disabled={busy}><Plus size={15}/> Add inactive topic</button>
             </form>
             <ul className="mt-4 space-y-2">{topics.map((topic) => <li key={topic.id} className="flex items-start justify-between gap-3 rounded-xl bg-white/[.035] p-3"><button type="button" onClick={() => setSelectedTopicId(topic.id)} className="min-w-0 text-left"><span className="block font-semibold">{topic.name}</span><span className="text-xs text-white/45">{topic.active ? 'Active for review' : 'Inactive draft'} · order {topic.sort_order}</span></button><button type="button" className={secondaryClass} onClick={() => void toggleActive('topic', topic.id, !topic.active)} disabled={busy}>{topic.active ? 'Deactivate' : 'Mark active'}</button></li>)}</ul>
             {!topics.length && <p className="mt-3 text-sm text-white/45">No topics yet. Add verified source-backed syllabus topics.</p>}
@@ -285,7 +285,7 @@ export default function AdminAcademicWorkspace() {
               <label className="block text-sm text-white/70">Parent topic<select className={inputClass} value={selectedTopicId} onChange={(e) => setSelectedTopicId(e.target.value)} required><option value="">Choose topic</option>{topics.map((topic) => <option key={topic.id} value={topic.id}>{topic.name}</option>)}</select></label>
               <label className="block text-sm text-white/70">Subtopic name<input className={inputClass} value={subtopicName} onChange={(e) => setSubtopicName(e.target.value)} maxLength={200} required/></label>
               <label className="block text-sm text-white/70">Description (optional)<textarea className={inputClass} value={subtopicDescription} onChange={(e) => setSubtopicDescription(e.target.value)} rows={2} maxLength={2000}/></label>
-              <button className={buttonClass} disabled={busy || !selectedTopic}><Plus size={15}/> Add inactive subtopic</button>
+              <button type="submit" className={buttonClass} disabled={busy || !selectedTopic}><Plus size={15}/> Add inactive subtopic</button>
             </form>
             <ul className="mt-4 space-y-2">{subtopics.filter((item) => item.topic_id === selectedTopicId).map((item) => <li key={item.id} className="flex items-start justify-between gap-3 rounded-xl bg-white/[.035] p-3"><div><p className="font-semibold">{item.name}</p><p className="text-xs text-white/45">{item.active ? 'Active for review' : 'Inactive draft'} · order {item.sort_order}</p></div><button type="button" className={secondaryClass} onClick={() => void toggleActive('subtopic', item.id, !item.active)} disabled={busy}>{item.active ? 'Deactivate' : 'Mark active'}</button></li>)}</ul>
             {!subtopics.some((item) => item.topic_id === selectedTopicId) && <p className="mt-3 text-sm text-white/45">No subtopics for this topic yet.</p>}
