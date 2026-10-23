@@ -189,3 +189,12 @@ Proceed to the source-based keyboard/semantic audit of student workspace and CBT
 - **Verification at documentation time:** pending CI for the source/test changes; do not call this slice verified until Verify and ACE JAMB E2E complete successfully. No live Supabase calls are made by the added test.
 - **Scope:** frontend only. No backend/database/deployment/catalogue changes.
 - **Exact next action:** inspect CI for the latest source/test HEAD. Fix only reproducible failures; if both workflows pass, continue the documented keyboard/semantic audit and keep manual screen-reader/device/PWA acceptance gates open until actually performed.
+
+
+## Skip-link CI failure investigation — 2026-10-23
+
+- **Observed current-main CI:** Verify #863 passed on `f70e99ab`, but ACE JAMB E2E #796 failed. The E2E suite reported 68 passed and 2 failed (Chromium and mobile Chromium variants of the student preparation-workspace test); both failed at the browser-history assertion expecting the dashboard immediately after one `goBack()`. The newly added native skip link navigates to `#workspace-content`, which creates a same-route fragment history entry. This is a deterministic test expectation mismatch, not a typecheck/build failure; CI Verify passed.
+- **Fix committed:** `698adc82d653967d0963d93d58fe428988bc3882` updates `tests/e2e/smoke.spec.ts` to assert that Back first removes the fragment while staying in Learn, then returns to the dashboard; Forward traverses both entries. This preserves native accessible anchor behavior instead of suppressing the fragment or weakening the test.
+- **Verification status:** the fix has been committed to `main`; the new Verify/E2E runs have not yet been observed to completion. Do not mark the fix verified until E2E passes.
+- **Scope:** frontend test-only change. No backend, database, deployment, catalogue, or production-data changes.
+- **Exact next action:** inspect the new GitHub Actions runs for commit `698adc82`; if E2E passes, continue Phase 3 manual keyboard/screen-reader/device/PWA acceptance and leave those gates open until actually observed.
