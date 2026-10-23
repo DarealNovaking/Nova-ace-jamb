@@ -496,7 +496,10 @@ test.describe('ACE JAMB persistent CBT', () => {
     await expect(page.getByRole('group', { name: 'Which option is correct?' })).toBeVisible()
     await expect(page.getByRole('button', { name: 'Go to question 1, unanswered' })).toHaveAttribute('aria-current', 'step')
     // The server-provided option order is B, A, so canonical option A is displayed second.
-    await page.getByRole('button', { name: 'B. First answer' }).click()
+    const firstAnswer = page.getByRole('button', { name: 'B. First answer' })
+    await firstAnswer.focus()
+    await expect(firstAnswer).toBeFocused()
+    await firstAnswer.press('Enter')
     await expect(page.getByRole('status')).toContainText('Saving your answer…')
     await expect(page.getByRole('button', { name: 'B. First answer' })).toHaveAttribute('aria-pressed', 'true')
     await expect(page.getByRole('status')).toHaveText('')
