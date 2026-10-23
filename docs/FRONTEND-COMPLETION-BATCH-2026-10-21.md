@@ -700,7 +700,7 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 ## Phase 3 accessibility slice — corrected test verified — 2026-10-23
 
 - Corrected source/test commit: `667085dea853f4c30ed9b639259ab593304305ed`.
-- **ACE JAMB E2E run #703: PASS**, 66 Playwright tests passed in 42.4 seconds. Run: https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/39973000000 (GitHub Actions run inspected as #703; use the canonical workflow run page when available).
+- **ACE JAMB E2E run #703: PASS**, 66 Playwright tests passed in 42.4 seconds. The run was inspected in GitHub Actions; its numeric run ID/canonical URL was not surfaced by the browser summary, so no URL is recorded here.
 - The prior failing test commit `90459bc` failed because the test delayed the profile query needed by the student gate. The corrected test delays only `get_active_exam_blueprint`, a dashboard-only request, so the dashboard can mount and announce loading. The corrected full suite passed.
 - **Verify workflow: PASS** for the same source/test commit; both `verify` and `utme-subject-choice-migration` jobs succeeded. The E2E workflow also includes successful typecheck and build steps. Exact individual typecheck/build logs were not extracted from the visible summary, so their job presence and overall workflow success are verified, but no detailed compiler/build output is claimed.
 - Granular per-browser counts for the new test were not exposed in the inspected run summary. Overall Playwright run passed; do not claim a separate test-specific desktop/mobile breakdown.
