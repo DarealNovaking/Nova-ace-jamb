@@ -455,6 +455,7 @@ test.describe('ACE JAMB persistent CBT', () => {
       }] })
     })
     await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/save_attempt_answer'), async (route) => {
+      await new Promise((resolve) => setTimeout(resolve, 250))
       await route.fulfill({ json: {
         attempt_id: attemptId, question_id: questionId, selected_option_key: 'A',
         is_correct: true, answered_at: new Date().toISOString(), answered_count: 1,
@@ -476,7 +477,9 @@ test.describe('ACE JAMB persistent CBT', () => {
     await expect(page.getByRole('button', { name: 'Go to question 1, unanswered' })).toHaveAttribute('aria-current', 'step')
     // The server-provided option order is B, A, so canonical option A is displayed second.
     await page.getByRole('button', { name: 'B. First answer' }).click()
+    await expect(page.getByRole('status')).toContainText('Saving your answer…')
     await expect(page.getByRole('button', { name: 'B. First answer' })).toHaveAttribute('aria-pressed', 'true')
+    await expect(page.getByRole('status')).toHaveText('')
     await expect(page.getByRole('button', { name: 'Go to question 1, answered' })).toHaveAttribute('aria-current', 'step')
     await page.getByRole('button', { name: 'Submit CBT' }).click()
     await expect(page.getByText('100%', { exact: true })).toBeVisible()
