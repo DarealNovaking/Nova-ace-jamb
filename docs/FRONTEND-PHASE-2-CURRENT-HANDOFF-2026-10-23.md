@@ -3,7 +3,7 @@
 > **Status: CLOSED for the currently authorized frontend-only scope.** The closure accepts the documented exceptions below as carried-forward dependencies; it does not certify the entire platform as production-complete.
 
 ## Scope
-Current user-approved task is Frontend Phase 2 closeout. Do not drift to catalogue ingestion or infer a formal Phase 3 milestone.
+Current user-approved task is Frontend Phase 2 closeout. Do not drift to catalogue ingestion. Phase 3 planning should now use the master handoff and the accepted-exception register below.
 
 ## Repository
 - Repository: `DarealNovaking/Nova-ace-jamb`
@@ -26,7 +26,7 @@ Current user-approved task is Frontend Phase 2 closeout. Do not drift to catalog
 - The master handoff and checkpoint have extensive historical logs; this file is the concise current pointer and does not replace that history.
 
 ## Exact next action
-Inspect the E2E job annotations/start reason at the job link above. When a runner is available, execute the existing E2E suite against the current `main` SHA; review reports and verify desktop/mobile navigation, student settings, admin authorization and PWA shell. Fix only reproducible defects, then record run IDs/results in the master handoff, continuity checkpoint and frontend batch log. Phase 2 remains OPEN until that evidence is recorded or the owner explicitly accepts documented exceptions.
+Inspect the E2E job annotations/start reason at the job link above. When a runner is available, execute the existing E2E suite against the current `main` SHA; review reports and verify desktop/mobile navigation, student settings, admin authorization and PWA shell. Fix only reproducible defects, then record run IDs/results in the master handoff, continuity checkpoint and frontend batch log. At the time of this historical snapshot, Phase 2 remained OPEN; this was superseded by the closeout section below. until that evidence is recorded or the owner explicitly accepts documented exceptions.
 
 ## Anti-drift notes
 - Do not reopen resolved admin/student routing without new evidence.
@@ -43,7 +43,7 @@ Inspect the E2E job annotations/start reason at the job link above. When a runne
   2. `tests/e2e/smoke.spec.ts:941`, first-use settings regression: expected the dashboard greeting but it never rendered in this test fixture. The test layers route handlers over `mockPreparedStudent`, returning a 406/PGRST116 for missing preferences and overriding profile writes. The service’s `getStudentPreferences()` uses `.maybeSingle()`, so the fixture's 406 response may not accurately represent the zero-row response; inspect trace/error context and fix the mock contract or the actual dashboard failure based on evidence. Do not blindly change production logic.
 - Artifacts uploaded: [Playwright test artifacts](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/39810652048/artifacts/12500570258). The job did execute real browser tests; the prior “no steps ran” record describes the pre-retry attempt only. Keep both historical facts, and treat this latest attempt as the current evidence.
 - This run checked out source SHA `0cf9fe0aae55a5f7a907a09503dc239d63d89598`; documentation commits added after that SHA were not included in the tested source snapshot. Refresh current `main` and rerun after any test/code changes.
-- Phase 2 remains OPEN. Next action: inspect the two failing tests’ Playwright traces/context, correct the deterministic test/fixture issue or reproducible app defect, then rerun E2E on latest `main`. After a clean suite, complete deployed student/admin/mobile acceptance. No source code, database, migration, workflow, or deployment was changed during this triage.
+- At the time of this historical snapshot, Phase 2 remained OPEN; this was superseded by the closeout section below.. Next action: inspect the two failing tests’ Playwright traces/context, correct the deterministic test/fixture issue or reproducible app defect, then rerun E2E on latest `main`. After a clean suite, complete deployed student/admin/mobile acceptance. No source code, database, migration, workflow, or deployment was changed during this triage.
 
 
 ## Frontend Phase 2 E2E defect fixes — 2026-10-23
@@ -54,7 +54,7 @@ Inspect the E2E job annotations/start reason at the job link above. When a runne
 - Safety correction: `src/components/AdminOperationsOverview.tsx` now explicitly says student AI stays disabled when rights-cleared knowledge-source readiness is unavailable, rather than implying active approved sources when the metric is unknown.
 - Commits: `bd7ac99d9b24cd475d4826579c00992db223857d` (fixtures), `412d4ecda826f146e5754c044bedcd93c87af18f` (safe unknown-state copy), `922633452c6c5153386406694709762ef6287459` (wait for settled admin metric state). Current source HEAD at documentation time: `922633452c6c5153386406694709762ef6287459`.
 - Verification after these fixes: NOT YET RUN. The earlier run's typecheck/build passed but the E2E suite failed; those results do not verify these new commits. No local test runner is available through this GitHub-only editing path, and no new runner result has yet been retrieved. No database, migration, production data, or deployment changes were made.
-- Exact next action: retrieve current-main Verify and ACE JAMB E2E results for the latest commit; if Actions runs have not started, inspect current workflow status/runner availability and wait for a real runner-backed execution. Fix only reproducible failures, then refresh this record and the checkpoint. Phase 2 remains OPEN.
+- Exact next action: retrieve current-main Verify and ACE JAMB E2E results for the latest commit; if Actions runs have not started, inspect current workflow status/runner availability and wait for a real runner-backed execution. Fix only reproducible failures, then refresh this record and the checkpoint. At the time of this historical snapshot, Phase 2 remained OPEN; this was superseded by the closeout section below..
 
 
 ## Follow-up after runner-backed E2E rerun — 2026-10-23
@@ -63,7 +63,7 @@ Inspect the E2E job annotations/start reason at the job link above. When a runne
 - Trace evidence shows the gate intentionally routes a student to onboarding when `student_preferences.daily_minutes` is absent. The previous test returned a missing-preferences response to the gate itself, so its expectation of the dashboard was invalid. Updated the test fixture so the gate receives a complete preference record first, then the Account Settings component receives an empty representation to exercise its own missing-row fallback and authenticated upsert path. This is test-only; no app/backend behavior or production data was changed in this adjustment.
 - Fix commit: `1763de8ad72a2c486907a7643ea3865fdbd5a0ea` (`test: isolate missing preferences to account settings screen`).
 - Verification: the new Verify run `#706` and E2E run `#639` were still QUEUED when checked; the rerun is therefore not yet verified. The prior current-main run did verify typecheck/build but E2E remained failed on the now-corrected fixture. Do not mark Phase 2 complete.
-- Exact next action: poll Verify `#706` and ACE JAMB E2E `#639` for commit `1763de8`; inspect any new Playwright artifacts, fix only reproducible failures, and rerun on the latest source. Then complete deployed student/admin/mobile acceptance if supported. Phase 2 remains OPEN.
+- Exact next action: poll Verify `#706` and ACE JAMB E2E `#639` for commit `1763de8`; inspect any new Playwright artifacts, fix only reproducible failures, and rerun on the latest source. Then complete deployed student/admin/mobile acceptance if supported. At the time of this historical snapshot, Phase 2 remained OPEN; this was superseded by the closeout section below..
 
 
 ## Frontend E2E fixes verified — 2026-10-23
@@ -72,7 +72,7 @@ Inspect the E2E job annotations/start reason at the job link above. When a runne
 - GitHub Actions **Verify #706** (run `39963740781`) completed successfully on `1763de8`: Node contract tests, Deno checks for both catalogue functions, `npm run typecheck`, `npm run build`, and both disposable PostgreSQL migration/policy tests passed.
 - GitHub Actions **ACE JAMB E2E #639** (run `39963740632`) completed successfully on `1763de8`: typecheck, build, browser installation, and Playwright all passed; both prior repeated failures no longer reproduce. The job status and each step were re-read and confirmed successful.
 - These are mocked-contract browser tests, not proof of production content availability or live payment/referral/AI/audio/notification services. No production deployment, database writes, schema changes, or migrations were performed. The earlier build chunk-size warning and npm audit findings remain unresolved.
-- **Phase 2 remains OPEN** pending the remaining documented acceptance review, including existing deployed student/admin/mobile navigation and PWA behavior. Do not claim whole-product frontend completion from this CI pass alone.
+- **At the time of this historical snapshot, Phase 2 remained OPEN; this was superseded by the closeout section below.** pending the remaining documented acceptance review, including existing deployed student/admin/mobile navigation and PWA behavior. Do not claim whole-product frontend completion from this CI pass alone.
 - Exact next action: perform read-only acceptance of the existing frontend routes and PWA shell (student dashboard/navigation/settings, admin authorization and academic route, narrow mobile layout, service-worker cache exclusions) without deploying or changing backend state; fix only reproducible defects and update the acceptance matrix before deciding whether Phase 2 can close.
 
 
@@ -113,7 +113,7 @@ Inspect the E2E job annotations/start reason at the job link above. When a runne
 - Commits: `0eb373ae1393bfab0dbae8edf856f9617a698e72` (active admin UI) and `6c3201ba83d90ab384dae53b6faf724d0d8da8ab` (regression assertions).
 - This is a frontend-only visibility change. It does not delete backend functions, database objects, catalogue component source files, or data; no backend/DB/deployment changes were made. The legacy `/admin-import` path still resolves to the admin gate, but the retired catalogue workflows are no longer rendered there.
 - Latest source/test commit `85a4b5b` is also verified: Verify #740 / run `39967022806` **PASS** and ACE JAMB E2E #673 / run `39967023111` **PASS** (64 Playwright tests passed, 0 failed).
-- **Next action:** reconcile the remaining frontend acceptance matrix, recording each item as covered, blocked, or unverified. Phase 2 remains OPEN pending remaining frontend acceptance-matrix reconciliation; deployment remains out of scope.
+- **Next action:** reconcile the remaining frontend acceptance matrix, recording each item as covered, blocked, or unverified. At the time of this historical snapshot, Phase 2 remained OPEN; this was superseded by the closeout section below. pending remaining frontend acceptance-matrix reconciliation; deployment remains out of scope.
 
 
 ## Retired catalogue UI change — CI verified — 2026-10-23
@@ -123,7 +123,7 @@ Inspect the E2E job annotations/start reason at the job link above. When a runne
 - ACE JAMB E2E #662 / run `39966266064`: **PASS**. The Playwright job completed successfully with **64 passed, 0 failed** in 40.5 seconds. Typecheck, build, browser installation, and browser tests all passed across the configured desktop and mobile projects.
 - The active admin dashboard no longer renders the retired catalogue import, single-row staging, or IBASS staging workflows. This is only a frontend visibility change; underlying legacy component files/backend functions/database objects were not deleted or changed.
 - No deployment or production/backend/database change was made. Build chunk-size warning and previous npm audit findings remain unresolved. Live deployed-browser acceptance and live provider integrations remain unverified because app deployment is out of scope.
-- **Next action:** continue reconciling the remaining frontend acceptance matrix from existing source and CI evidence; mark each item covered, blocked, or unverified. Phase 2 remains OPEN until the remaining acceptance criteria are reconciled; do not deploy or touch backend state.
+- **Next action:** continue reconciling the remaining frontend acceptance matrix from existing source and CI evidence; mark each item covered, blocked, or unverified. At the time of this historical snapshot, Phase 2 remained OPEN; this was superseded by the closeout section below. until the remaining acceptance criteria are reconciled; do not deploy or touch backend state.
 
 
 ## Legacy catalogue entrypoint removal — 2026-10-23
@@ -164,7 +164,7 @@ This matrix separates what automated mocked-contract CI proves from live/data/pr
 - Prior commit `6c3201ba83d90ab384dae53b6faf724d0d8da8ab` passed Verify #729 and E2E #662 (64 passed, 0 failed), but predates removal of the standalone HTML/TSX entrypoint and the added `/admin-import` route guard.
 
 ### Next action
-Poll E2E #673 and record its final result. Then prioritize only frontend work supportable by existing real contracts/content; do not invent official content or implement fake provider flows. Phase 2 remains OPEN until this matrix's blocked/partial areas are either completed safely or explicitly accepted as external/backend dependencies. Deployment and backend work remain out of scope.
+Poll E2E #673 and record its final result. Then prioritize only frontend work supportable by existing real contracts/content; do not invent official content or implement fake provider flows. At the time of this historical snapshot, Phase 2 remained OPEN; this was superseded by the closeout section below. until this matrix's blocked/partial areas are either completed safely or explicitly accepted as external/backend dependencies. Deployment and backend work remain out of scope.
 
 
 ## Legacy importer retirement — CI result and deployment audit — 2026-10-23
@@ -173,7 +173,7 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - E2E job logs were fetched after completion: **64 Playwright tests passed in 44.4 seconds, 0 failed**. Typecheck, build, browser installation and browser tests all completed successfully. The new assertions confirm the retired catalogue UI is absent from `/admin` and `/admin-import` resolves only to the normal authorized admin dashboard.
 - Read-only path checks on current main returned 404 for `.github/workflows/deploy-production.yml`, `wrangler.jsonc`, `backend/index.ts`, and `src/App.tsx`; `package.json` has no deploy script and `src/vite-env.d.ts` has no AppDeploy shim. This confirms the deployment workflow/config and legacy entrypoint are absent from the current branch. Historical deployment references in old handoff notes are archival; do not recreate deployment assets.
 - Updated `README.md` to reflect Phase 1's verified mocked-contract closure, the still-open integrated whole-product frontend batch, the retired importer route, and the explicit no-deploy boundary. README and handoff changes after `85a4b5b` are documentation-only; the tested application source did not change.
-- No backend, database, production data, migration, or deployment changes were made. Phase 2 remains OPEN: content-driven learning/practice/flashcards/progress, provider-dependent payment/referral/AI/audio/push delivery, full admin operations and live deployed acceptance are blocked or unverified under current scope. See the acceptance matrix above.
+- No backend, database, production data, migration, or deployment changes were made. At the time of this historical snapshot, Phase 2 remained OPEN; this was superseded by the closeout section below.: content-driven learning/practice/flashcards/progress, provider-dependent payment/referral/AI/audio/push delivery, full admin operations and live deployed acceptance are blocked or unverified under current scope. See the acceptance matrix above.
 - **Next action:** continue only with frontend improvements supported by existing verified content/contracts; otherwise record the exact backend/content dependency and leave the feature honestly unavailable. Do not deploy or touch backend/database state.
 
 
