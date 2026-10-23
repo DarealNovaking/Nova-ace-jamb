@@ -25,7 +25,7 @@ The GitHub repository is the source of truth. The current frontend uses React, T
 
 ## Current milestone status
 
-**Phase 1 (frontend acceptance batches 1–5) is closed for the verified mocked-contract scope.** The integrated whole-product frontend batch remains open. Current CI verifies the frontend against mocked service contracts; it does not prove live content or provider integrations exist. The last recorded live audit found no published topics, subtopics, questions, flashcards or attempts. Do not fabricate official JAMB content or present fixtures as production data.
+**Phase 1 (frontend acceptance batches 1–5) is closed for the verified mocked-contract scope. Frontend Phase 2 is now closed for the authorized frontend-only scope, with explicit exceptions carried forward to Phase 3.** CI verifies the frontend against mocked service contracts; it does not prove live content or provider integrations exist. Content-driven learning/practice/progress, payment/referral/AI/audio/notification delivery, expanded admin operations, manual accessibility and real-device PWA acceptance remain incomplete or unverified as recorded in the master handoff. Do not fabricate official JAMB content or present fixtures as production data.
 
 The user has explicitly kept app deployment out of scope. Deployment workflows/configuration and the legacy AppDeploy entrypoint were removed; do not recreate or deploy the app unless the user explicitly reverses that instruction.
 
