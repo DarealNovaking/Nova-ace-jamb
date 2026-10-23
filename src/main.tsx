@@ -1,9 +1,14 @@
-import { StrictMode, useEffect, useState } from 'react';
+import { StrictMode, Suspense, lazy, useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import ProtectedCBT from './components/ProtectedCBT';
 import StudentFoundationGate from './components/StudentFoundationGate';
-import AdminFoundationGate from './components/AdminFoundationGate';
-import AcademicFoundationGate from './components/AcademicFoundationGate';
+
+const ProtectedCBT = lazy(() => import('./components/ProtectedCBT'));
+const AdminFoundationGate = lazy(() => import('./components/AdminFoundationGate'));
+const AcademicFoundationGate = lazy(() => import('./components/AcademicFoundationGate'));
+
+function WorkspaceLoading({ label }: { label: string }) {
+  return <main className="grid min-h-[50vh] place-items-center bg-[#07050d] px-5 text-white"><p role="status" aria-live="polite" aria-atomic="true">{label}</p></main>;
+}
 import './index.css';
 
 function AppShell() {
@@ -16,11 +21,11 @@ function AppShell() {
   }, []);
 
   if (window.location.pathname === '/admin-academic') {
-    return <AcademicFoundationGate />;
+    return <Suspense fallback={<WorkspaceLoading label="Loading academic workspace…" />}><AcademicFoundationGate /></Suspense>;
   }
 
   if (window.location.pathname === '/admin' || window.location.pathname === '/admin-import') {
-    return <AdminFoundationGate />;
+    return <Suspense fallback={<WorkspaceLoading label="Loading admin workspace…" />}><AdminFoundationGate /></Suspense>;
   }
 
   if (cbt) {
@@ -33,7 +38,7 @@ function AppShell() {
           >
             ← Back to ACE JAMB
           </button>
-          <ProtectedCBT />
+          <Suspense fallback={<WorkspaceLoading label="Loading CBT session…" />}><ProtectedCBT /></Suspense>
         </div>
       </main>
     );
