@@ -315,6 +315,11 @@ test.describe('ACE JAMB prepared student dashboard', () => {
     await expect(page.getByText('Use of English')).toBeVisible()
     await expect(page.getByText(/Verified learning content is not published yet/)).toBeVisible()
 
+    await page.getByRole('button', { name: /Learn Approved syllabus topics/ }).click()
+    await expect(page.getByRole('heading', { name: 'Learn', exact: true })).toBeFocused()
+    await page.getByRole('button', { name: 'Dashboard' }).click()
+    await expect(page.getByRole('heading', { name: 'Welcome back, Test Futarian.' })).toBeFocused()
+
     await page.reload()
     await expect(page.getByRole('heading', { name: 'Welcome back, Test Futarian.' })).toBeVisible()
     await page.getByRole('button', { name: /CBT Practice/ }).click()
