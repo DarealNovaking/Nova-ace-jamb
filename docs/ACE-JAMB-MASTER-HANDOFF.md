@@ -3207,3 +3207,9 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - Verify #840 / E2E #773 were queued for the latest test commit at documentation time; earlier runs #836–#839 / #769–#772 were still processing. Verify latest results before treating the slice as passed.
 - Manual keyboard-only, screen-reader, real-device PWA/offline and low-end Android checks are not executable through the current CI evidence and remain unverified. Live deployed-browser acceptance and all deployment work remain out of scope by owner instruction. Previously reported npm audit debt (8 vulnerabilities, 2 moderate and 6 high) remains unresolved and should be handled as a separately scoped security task, not via an unreviewed bulk upgrade.
 - Next: inspect current source-commit CI, resolve only reproduced failures, then reconcile Phase 3 acceptance items and record any unavoidable manual/external blockers honestly.
+
+## Phase 3 continuation — student/academic loading semantics — 2026-10-23
+
+- Student initial account preparation now uses a polite atomic status inside a busy main landmark; the academic editor workspace announces its loading state. Academic syllabus creation/topic/subtopic forms now explicitly mark submit buttons as type="submit".
+- Added mocked-request Playwright coverage for student auth-gate and academic-workspace loading announcements. Latest test commit 4824534d9dc2f3cfef23d130a2f461b5337bce47 had Verify #848 and E2E #781 queued; Verify #845 passed on the preceding test commit 4b918836, while E2E #778 was still in progress. Do not claim the newest changes passed until the exact latest commit's checks finish.
+- Next action: poll CI for the latest source/test commit and current main, fix only reproducible failures, then record Phase 3 completion status and any remaining manual/device acceptance requirements.
