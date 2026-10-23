@@ -1671,3 +1671,9 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - CBT skip-link commits: `7a2439232662ba9f6e084ae99148e0f8c1ce8404` (implementation), `a2305b077e44a7ac685b17d90a3c26c6d18debad` (test). Current-main CI is pending/in progress; wait for E2E to complete before claiming the new test passes.
 - No backend/database, deployment, catalogue UI, dependency, or production data changes. Phase 3 remains IN PROGRESS.
 - **Exact next action:** poll latest main E2E and Verify; inspect any failed Playwright assertion/log, fix only evidenced issues, then record final results here and in the master/current Phase 3 handoffs.
+
+## CBT skip-link verification update — 2026-10-23
+
+- Verify #912 (`40001230846`) passed on `a2305b077e44` for the CBT skip-link source/test revision. The automated verification workflow completed successfully.
+- E2E #845 (`40001230788`) was still installing Playwright browser, so the new focus assertion has not yet been exercised in a browser. Latest-main E2E #848 and Verify #915 were queued at last check.
+- **Next action:** poll E2E #845 and current-main E2E #848; if the CBT skip-link assertion fails, inspect the Playwright output and fix only the demonstrated issue.
