@@ -756,6 +756,13 @@ test.describe('ACE JAMB preparation workspaces', () => {
     await page.getByRole('button', { name: /Learn Approved syllabus topics/ }).click()
     await expect(page).toHaveURL(/[?&]view=learn(?:&|$)/)
     await expect(page.getByRole('heading', { name: 'Learn', exact: true })).toBeVisible()
+
+    const skipLink = page.getByRole('link', { name: 'Skip to workspace content' })
+    await skipLink.focus()
+    await expect(skipLink).toBeVisible()
+    await skipLink.press('Enter')
+    await expect(page.locator('#workspace-content')).toBeFocused()
+
     await expect(page.getByText('No approved topics available yet')).toBeVisible()
 
     // Workspace selection is route state: reload and browser history must restore it.
