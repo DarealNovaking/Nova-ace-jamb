@@ -2973,3 +2973,13 @@ A read-only browser inspection of the private repository's GitHub Actions page r
 - Searched repository references for a currently configured frontend deployment URL; no Cloudflare Pages, Vercel or Netlify frontend URL was found. The user instruction to remove app-deployment work remains in force. Therefore live deployed-browser acceptance is **BLOCKED/UNVERIFIED** without an already-existing approved URL; no deployment was attempted.
 - No new source defect was established in this read-only acceptance pass. This is not whole-product completion: provider-dependent payment/referral/AI/audio/notification delivery and production content availability remain unverified.
 - Next action: continue the remaining frontend acceptance matrix using existing source/CI coverage, and perform live browser acceptance only if an existing approved URL is documented/provided. Do not create a deployment or touch backend state.
+
+
+## Academic editor authorization error hardening — 2026-10-23
+
+- Read-only review found `AcademicFoundationGate` rendered caught authorization/RPC errors using `caught.message`, unlike the admin gate's generic safe error. Changed it to show only “Unable to verify academic editor access. Please try again.”
+- Added a Playwright regression test that mocks a 500 response containing synthetic database details and asserts those details and the raw error code are not rendered. All Supabase calls remain intercepted; no production data is used.
+- Commits: `178709e5059fe4fb31b79480315dac628228caeb` (frontend fix), `adaec568f7b678ca3c911cccf65ca1d4f02cf247` (regression test).
+- Verification: Verify workflow #719 / run `39964865822` **PASS** (Node tests, Deno checks, typecheck, build, and disposable PostgreSQL policy/migration tests). ACE JAMB E2E #652 / run `39964865810` had typecheck and build pass; browser installation was still in progress at the last check, so Playwright outcome is **PENDING/UNVERIFIED**.
+- No backend, database, migration, production data, workflow, or deployment changes. App deployment remains explicitly out of scope. Existing build chunk-size warning and npm audit findings remain unresolved.
+- Phase 2 remains **OPEN**. Exact next action: refresh run `39964865810`, inspect Playwright results for the new academic-authorization regression and the full desktop/mobile suite, fix only reproducible failures, then update the checkpoint and handoffs with the final run evidence.
