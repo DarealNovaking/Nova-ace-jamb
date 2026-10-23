@@ -22,8 +22,8 @@ export default function AcademicFoundationGate() {
           setAllowed(data === true)
           if (!data) setError('An administrator or authorized content-editor role is required.')
         }
-      } catch (caught) {
-        if (active) setError(caught instanceof Error ? caught.message : 'Unable to verify academic editor access.')
+      } catch {
+        if (active) setError('Unable to verify academic editor access. Please try again.')
       } finally {
         if (active) setChecking(false)
       }
