@@ -2,10 +2,10 @@
 
 > Refresh from verified repository/system state at the start and end of meaningful work. Historical entries below may be superseded by newer verification records.
 
-- **Updated:** 2026-10-23 (Phase 3 kickoff; source/test CI pending)
+- **Updated:** 2026-10-23 (Phase 3 test correction recorded; rerun pending)
 - **Repository:** `DarealNovaking/Nova-ace-jamb`, branch `main`.
 - **Latest main HEAD observed during Phase 3 handoff readback:** `b98f9899ad2048402d28e3a6024a6e023611f781` (new Phase 3 handoff document; source/test CI still pending).
-- **Latest fully tested source/test commit:** `85a4b5b1aed59b8d5bfb3e7c09de53d873cdb9af`. Phase 3 source/test commits `a50672679b4e70a307e52ed86f29c015e1f01574` and `90459bc9eb64ad17f1f4df125cdc9449f48ded5b` are newer; CI verification is pending.
+- **Latest fully verified baseline:** `85a4b5b1aed59b8d5bfb3e7c09de53d873cdb9af` (Verify and E2E passed). Phase 3 source commit `a50672679b4e70a307e52ed86f29c015e1f01574` passed E2E-only run #694; test commit `90459bc9eb64ad17f1f4df125cdc9449f48ded5b` failed E2E-only run #695 due to the test delaying a request required by the student gate. Corrected test commit `667085dea853f4c30ed9b639259ab593304305ed` awaits rerun.
 - **User-approved scope:** Frontend only. Do not deploy the app or change backend/database state. The active product no longer uses the catalogue UI.
 - **Current milestone:** Frontend Phase 2 CLOSED for the authorized frontend-only scope; Frontend Phase 3 IN PROGRESS. Documented exceptions remain incomplete.
 - **Latest Verify:** #740 / run `39967022806` PASS (Node/Deno checks, typecheck/build, disposable PostgreSQL policy/migration tests).
@@ -13,7 +13,7 @@
 - **Current frontend change:** Removed catalogue UI from active admin, deleted stale `admin-import.html` and `src/admin-import.tsx`, retained `/admin-import` only as an authorized admin-dashboard compatibility alias, and added route/UI regression assertions.
 - **Deployment-removal audit:** current-main checks return 404 for `.github/workflows/deploy-production.yml`, `wrangler.jsonc`, `backend/index.ts`, and `src/App.tsx`; no deploy script or AppDeploy shim is present. Do not recreate deployment assets; historical docs are archival.
 - **Accepted exceptions carried forward:** content-driven learning/practice/flashcards/progress/study plans need verified published content and real activity; payment/referral/AI/audio/notification delivery need verified provider/service contracts; expanded admin operations, manual accessibility and real-device PWA/offline acceptance remain incomplete/unverified. Live deployed-browser acceptance is out of scope. Bundle-size warning and previous npm audit findings remain unresolved.
-- **Exact next action:** inspect CI for Phase 3 source/test HEAD `90459bc9eb64ad17f1f4df125cdc9449f48ded5b`; fix any reproducible failure, then audit student workspace/CBT keyboard and semantic accessibility. Do not deploy or touch backend/database state.
+- **Exact next action:** inspect E2E for corrected test commit `667085dea853f4c30ed9b639259ab593304305ed`; verify typecheck/build separately via existing Verify workflow if available, then audit student workspace/CBT keyboard and semantic accessibility. Do not deploy or touch backend/database state.
 - **Evidence correction:** an earlier claim that Playwright artifact trace/context files were inspected is unsupported; the artifact was retrieved but those contents were not verified. The successful runner summaries and E2E job logs were independently checked.
 
 ---
@@ -1394,3 +1394,13 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - Confirmed the dashboard contains the polite atomic loading status and `aria-busy` landmark; confirmed the new deterministic E2E regression test is present; confirmed all continuity documents and README reflect Phase 3 kickoff.
 - `get_commit_combined_status` returned no status records for source/test commit `90459bc9eb64ad17f1f4df125cdc9449f48ded5b` or docs HEAD at the time checked. This is **not** a test pass; Phase 3 typecheck/build/E2E remains pending/unverified until a run result is available.
 - Exact next action remains: obtain/inspect CI for the source/test commit, fix any reproducible failure, then continue the source-based accessibility audit. No deployment/backend/database/catalogue work.
+
+
+## Phase 3 accessibility-test failure and fixture correction — 2026-10-23
+
+- E2E run [#694 / 39972910693](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/39972910693) for source commit `a50672679b4e70a307e52ed86f29c015e1f01574` **PASS**. This was an E2E-only workflow; it did not run separate typecheck/build jobs.
+- E2E run [#695 / 39972935144](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/39972935144) for test commit `90459bc9eb64ad17f1f4df125cdc9449f48ded5b` **FAIL**: 2 of 4 browser variants could not find the expected dashboard loading status.
+- Root cause in the new test fixture: it delayed the `profiles` request, which the student foundation gate itself needs before mounting the dashboard. Therefore the dashboard loading status could not appear. This was a test synchronization mistake, not evidence of a production dashboard defect.
+- Correction committed as `667085dea853f4c30ed9b639259ab593304305ed`: delay the dashboard-only `get_active_exam_blueprint` RPC instead, allowing the auth/onboarding gate to complete before asserting the dashboard's announced loading state. The delayed request still falls back to the existing mocked response; all Supabase traffic remains intercepted.
+- **Verification after correction: pending.** Do not claim the regression test passes until a new E2E run on commit `667085dea853f4c30ed9b639259ab593304305ed` completes. This E2E workflow does not include dedicated typecheck/build jobs.
+- Exact next action: inspect the new CI run, confirm the targeted test and both desktop/mobile projects pass, then run/confirm typecheck and build via the repository's Verify workflow if available. No backend/database/deployment changes.
