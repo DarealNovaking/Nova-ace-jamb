@@ -3468,3 +3468,12 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - Prior baseline at commit `5b81fb2b507aa800d8043c637e7b1a8c7bd1274c`: Verify #939 and ACE JAMB E2E #872 both passed. Those results predate this source change.
 - No local test runner/repository checkout is available through the current connected GitHub tools. No backend/database, catalogue, dependency, deployment, or production-data changes were made.
 - **Next action:** inspect Verify and ACE JAMB E2E runs for commit `5a40cf658a652e816dd3f5f9973ef0234848bb66`; if both pass, record their terminal results and continue the next bounded accessibility audit. Manual keyboard-only, actual screen-reader, physical low-end Android, and real-device PWA/offline acceptance remain unverified.
+
+
+## Phase 3 verification and study-plan loading status — 2026-10-24
+
+- Verified GitHub Actions on documentation HEAD `e44330417f86fdf661dbc1c5e3630149e4ce35cd`: Verify #957 completed successfully (https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40041370064); ACE JAMB E2E #890 completed successfully (https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40041370063). The E2E run includes successful typecheck, build, browser test step, and artifact upload. This HEAD includes the workspace loading main-landmark fix from `5a40cf658a652e816dd3f5f9973ef0234848bb66`.
+- Continued source audit found `src/components/StudentStudyPlan.tsx` rendered its asynchronous “Loading your saved preferences…” message without status semantics. Updated it to `role="status" aria-live="polite" aria-atomic="true"`; marked the spinner `aria-hidden="true"` as decorative. Source commit: `0599678b0010298d0228cb804b714aac2450b58e`.
+- Verification for the new study-plan status change is pending; do not attribute the earlier passing CI results to this later commit. Connected GitHub tools do not provide a local checkout/test runner.
+- No auth, database, catalogue, dependency, or deployment changes. Manual keyboard-only, actual screen-reader, physical low-end Android, and real-device PWA/offline acceptance remain unverified.
+- **Next action:** inspect Verify and ACE JAMB E2E for `0599678b0010298d0228cb804b714aac2450b58e`; if green, continue the bounded audit of dynamic announcements and keyboard/focus behavior. Keep catalogue importer isolated until its separate auth integration blocker is resolved.
