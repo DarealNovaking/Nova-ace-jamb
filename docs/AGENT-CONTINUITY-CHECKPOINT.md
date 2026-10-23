@@ -1530,3 +1530,10 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - At handoff write time, Verify #840 and E2E #773 for the latest test commit were queued; Verify #836–#839 and E2E #769–#772 were processing earlier source commits. Their final outcomes must be checked before calling this slice verified.
 - User scope remains frontend only: no deploy, backend/database/production data, catalogue UI restoration, or invented JAMB content. Manual keyboard/screen-reader/physical-device/PWA-offline checks remain unverified. Existing reported npm audit debt (8 vulnerabilities: 2 moderate, 6 high) remains open.
 - Exact next action: poll workflows through `f1de92e`; inspect failed job logs if any. Then finish source/test audit and update all three handoffs with the final Phase 3 status, remaining external/manual acceptance, and exact next project milestone.
+
+## Phase 3 — student and academic loading announcements — 2026-10-23
+
+- Added a polite atomic status + busy main landmark for the initial StudentFoundationGate account-preparation state. Added a polite atomic status to AdminAcademicWorkspace initial loading and explicit type="submit" to its three form submission controls.
+- Added E2E cases that hold mocked /auth/v1/user and /rest/v1/exam_seasons requests to deterministically assert student-gate and academic-workspace loading announcements. Latest test fixture commit: 4824534d9dc2f3cfef23d130a2f461b5337bce47. Verify #848 and E2E #781 queued; Verify #845 passed for preceding commit 4b918836, while E2E #778 was still running. Latest source/test state remains unverified pending those CI runs.
+- Keep manual keyboard-only, screen-reader, real-device PWA/offline and low-end Android acceptance unverified. Frontend-only boundary remains unchanged; no deployment/backend/database/catalogue restoration.
+- Exact next action: inspect CI for 4824534 and current main, fix only reproduced issues, then finalize Phase 3 checklist with outstanding manual checks clearly separated from automated pass evidence.
