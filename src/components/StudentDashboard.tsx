@@ -115,12 +115,12 @@ export default function StudentDashboard() {
     window.dispatchEvent(new PopStateEvent('popstate'))
   }
 
-  if (loading) return <main className="grid min-h-[70vh] place-items-center text-white"><div className="text-center"><Loader2 className="mx-auto animate-spin" /><p className="mt-3 text-sm text-white/50">Loading your preparation dashboard…</p></div></main>
+  if (loading) return <main id="main-content" aria-busy="true" className="grid min-h-[70vh] place-items-center text-white"><div role="status" aria-live="polite" aria-atomic="true" className="text-center"><Loader2 aria-hidden="true" className="mx-auto animate-spin" /><p className="mt-3 text-sm text-white/50">Loading your preparation dashboard…</p></div></main>
 
   if (activeView !== 'home') return <StudentStudyWorkspace mode={activeView} subjects={subjects} topics={topics} onBack={() => { const url = new URL(window.location.href); url.searchParams.delete('view'); window.history.pushState({}, '', url); setActiveView('home') }} onStartCbt={startCbt} />
 
   return (
-    <main className="min-h-screen bg-[#07050d] px-5 py-8 text-white sm:py-12">
+    <main id="main-content" className="min-h-screen bg-[#07050d] px-5 py-8 text-white sm:py-12">
       <div className="mx-auto max-w-6xl">
         <header className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
