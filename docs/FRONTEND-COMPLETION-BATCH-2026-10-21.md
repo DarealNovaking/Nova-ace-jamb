@@ -672,3 +672,16 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - **Known debt:** previous npm audit reported 8 vulnerabilities (2 moderate, 6 high); build warns about an approximately 916 kB minified chunk. No dependency changes made during closeout.
 - **No backend/database/deployment changes.** Catalogue UI remains retired; `/admin-import` remains only a compatibility alias to the authorized admin dashboard.
 - **Next action:** begin Frontend Phase 3 from the master handoff, using the exception register above. Keep the no-deploy/frontend-only boundary and do not invent official JAMB content or provider outcomes.
+
+
+## Frontend Phase 3 kickoff — accessible loading feedback — 2026-10-23
+
+- **Milestone:** Frontend Phase 3 IN PROGRESS. Scope remains frontend-only; no deployment, backend, database, production-data, or catalogue work is authorized.
+- **Starting evidence:** Phase 2 was closed for the authorized frontend-only scope. Latest prior CI applies to source/test commit `85a4b5b1aed59b8d5bfb3e7c09de53d873cdb9af` (Verify #740 PASS; E2E #673 PASS, 64 passed / 0 failed). Those results do **not** cover the Phase 3 commits below.
+- **First implementation slice:** `src/components/StudentDashboard.tsx` now gives its initial loading state a polite, atomic `role=status` announcement, marks the loading main landmark `aria-busy=true`, hides the decorative spinner from assistive technology, and assigns the dashboard main landmark `id=main-content`.
+- **Regression coverage:** `tests/e2e/smoke.spec.ts` adds a Playwright test that deliberately holds the mocked profile request, checks the loading announcement, releases the request, and verifies the dashboard becomes available. All Supabase calls remain intercepted; no production data is read or written by this test.
+- **Commits:** `a50672679b4e70a307e52ed86f29c015e1f01574` (frontend accessibility change); `90459bc9eb64ad17f1f4df125cdc9449f48ded5b` (E2E regression test).
+- **Verification:** pending at kickoff-document time. Do not claim the new test/typecheck/build passed until a workflow run for the new source/test HEAD completes. Previous CI results are not evidence for these commits.
+- **Phase 3 workstreams:** (1) accessible async/loading/error feedback and keyboard/semantic navigation; (2) measurable frontend performance and bundle attribution before any justified optimization; (3) remaining admin/student UX gaps supported by existing contracts. Keep payment/referral/AI/audio/push and content-driven flows honestly unavailable where their verified dependencies are missing. Manual screen-reader/keyboard, real-device PWA/offline, and low-end Android checks remain unverified; live deployed acceptance remains out of scope.
+- **Known debt carried forward:** prior npm audit reported 8 vulnerabilities (2 moderate, 6 high); Vite warned of an approximately 916 kB minified chunk. No dependency updates or speculative bundle changes have been made.
+- **Exact next action:** inspect CI for commit `90459bc9eb64ad17f1f4df125cdc9449f48ded5b`; fix any reproducible failure, then continue a source-based accessibility audit of the student workspace and CBT controls before tackling bundle optimization. Update the master handoff and continuity checkpoint after each meaningful change. Do not deploy or touch backend/database state.
