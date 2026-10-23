@@ -33,6 +33,7 @@ function AppShell() {
       <main className="min-h-screen bg-[#07050d] px-5 py-10 text-white">
         <div className="mx-auto max-w-6xl">
           <button
+            type="button"
             className="mb-5 rounded-xl border border-white/10 px-4 py-2 text-sm text-white/70 hover:bg-white/5"
             onClick={() => { const url = new URL(window.location.href); url.searchParams.delete('cbt'); window.history.pushState({}, '', url); setCbt(false); }}
           >
