@@ -2,13 +2,13 @@
 
 > Refresh from verified repository/system state at the start and end of meaningful work. Older historical entries below may be superseded by the latest verification record.
 
-- **Updated:** 2026-10-23 (PWA runtime test harness corrected after CI exposed Node-vs-browser Response.type mismatch; Verify #897 pending).
+- **Updated:** 2026-10-23 (Verify #897 passed for PWA runtime test commit `a2f50cb5b5`; latest docs HEAD CI still pending).
 - **Repository:** `DarealNovaking/Nova-ace-jamb`, branch `main`.
 - **Latest HEAD:** `a2f50cb5b55ff46ccc5d0531d3d3856aa9275e62` (`test(pwa): emulate same-origin response type in worker harness`).
 - **User-approved scope:** frontend only. Do not deploy, change backend/database/production data, restore catalogue UI, or perform app deployment work. The active frontend no longer uses the catalogue UI.
 - **Current milestone:** Frontend Phase 2 CLOSED for the authorized scope; Frontend Phase 3 IN PROGRESS.
-- **Latest Verify:** #897 on `a2f50cb5b5` queued at last inspection. Verify #893 on `6b6686997a` FAILED due to test mock returning Node `Response.type === 'default'`; mock corrected to emulate browser `type === 'basic'`. Awaiting rerun.
-- **Latest E2E:** #830 on `a2f50cb5b5` queued at last inspection. E2E does not replace Verify's Node contract/runtime test.
+- **Latest Verify:** #897 / run `39999507889` PASS on `a2f50cb5b55ff46ccc5d0531d3d3856aa9275e62`, including PWA runtime tests. Verify #899 on docs commit `88600f87` was in progress at last check; current docs HEAD Verify #900 queued.
+- **Latest E2E:** #830 on `a2f50cb5b5` was still in progress at last check; E2E #833 for current docs HEAD queued. No claim of current HEAD E2E pass yet.
 - **Accessibility source/test state:** workspace skip link and keyboard/fragment coverage; CBT keyboard answer selection; CBT exit restores focus to dashboard heading; async loading/saving status, timer, answer state and question-map semantics have source/E2E coverage. Real screen-reader behavior remains unverified.
 - **Open acceptance gates:** full manual keyboard-only navigation, real screen-reader testing, physical low-end Android usability, and real-device PWA/offline installation/recovery. These cannot be closed by mocked CI alone.
 - **Open engineering debt:** main bundle about 507 kB minified / 142 kB gzip (Vite >500 kB warning); latest install audit 4 vulnerabilities (3 moderate, 1 high), not remediated. Avoid speculative splitting or broad dependency upgrades.
@@ -1639,3 +1639,11 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - **Verification of the correction is pending**: Verify #897 and E2E #830 were queued on `a2f50cb5b5` at last inspection. Do not call the new runtime test green until Verify finishes successfully.
 - Failed CI on intervening docs-only commits also contained the same harness assertion, because those commits retained the failing test. The relevant root cause was found from the job log, and the test mock—not the service worker's privacy guard—was corrected.
 - **Exact next action:** inspect Verify #897 logs/result. If green, record passing runtime tests and then check current HEAD workflows. If another failure occurs, use its exact output to correct only the failing assertion/harness. Continue to leave physical-device PWA/offline and manual accessibility acceptance open.
+
+
+## PWA runtime regression verification result — 2026-10-23
+
+- Verify #897, run `39999507889`, completed **PASS** on source/test commit `a2f50cb5b55ff46ccc5d0531d3d3856aa9275e62`. Both Verify jobs passed, including the expanded Node suite with `tests/pwa-runtime.test.mjs`, Deno/typecheck/build checks, and disposable PostgreSQL tests.
+- This resolves the specific test-harness failure documented above: the mock now emulates the browser's same-origin `Response.type === 'basic'` contract. The test now covers install-time static shell caching, exclusion boundaries, same-origin build asset caching, and offline navigation fallback under mocked service-worker APIs.
+- E2E #830 on `a2f50cb5b5` was still running at the last check; E2E on the latest docs HEAD is also pending. Do not claim current docs HEAD E2E passed until the relevant run completes. Runtime service-worker tests are mocked and do not substitute for browser/device install and offline acceptance.
+- **Next action:** check the latest main HEAD's Verify/E2E status. If both are green, continue the bounded accessibility audit; leave real-device PWA/offline and manual screen-reader gates open.
