@@ -2,9 +2,9 @@
 
 > Refresh from verified repository/system state at the start and end of meaningful work. Historical entries below may be superseded by newer verification records.
 
-- **Updated:** 2026-10-23 (Phase 3 accessibility and focus regression verified)
+- **Updated:** 2026-10-23 (Phase 3 route-splitting experiment; CI pending)
 - **Repository:** `DarealNovaking/Nova-ace-jamb`, branch `main`.
-- **Latest source/test commit:** `a88473b4d14e29ca9f509470219fecaafb274435`; latest docs HEAD at this update `ccf670c651a2eea940b9814ee8cd390737d3df31`. E2E #733 PASS (66 tests, 42.3s) and Verify #800 PASS on the latest docs HEAD including all source/test changes.
+- **Latest source commit:** `9438d852bc2f8b52197c9b120abb354295945862` (route-level code-splitting experiment; E2E #738 and Verify #805 pending). Prior source/test HEAD `a88473b4d14e29ca9f509470219fecaafb274435` is covered by E2E #733 PASS (66 tests / 42.3s) and Verify #800 PASS.
 - **Latest fully E2E-verified CBT source commit:** `4841974f0536a4de71cf2d0541931dc8f6ba7ac4` (E2E #719 PASS). Verify #787 passed on test commit `7755aafd46e078ad490c8f278263c715a2777a58`; E2E #720 typecheck/build passed but browser tests were pending. Newer answer-state source/test commits `21d971e0b4f0b538e2f1263b895d34a8019627ea` and `bbf7e88a52c3967201cdabf2571cc9f70e2c4fbe` await their E2E/Verify completions.
 - **User-approved scope:** Frontend only. Do not deploy the app or change backend/database state. The active product no longer uses the catalogue UI.
 - **Current milestone:** Frontend Phase 2 CLOSED for the authorized frontend-only scope; Frontend Phase 3 IN PROGRESS. Documented exceptions remain incomplete.
@@ -1449,3 +1449,11 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - Build still emits Vite's >500 kB minified chunk warning. A completed build from the same source family previously showed the main JS at **563.22 kB minified / 153.84 kB gzip**; no bundle splitting or dependency changes have been made. Build time in #733 was 3.80 seconds.
 - **Accessibility slice status:** implementation and automated regression coverage PASS. Manual keyboard-only and screen-reader verification remains unperformed; this CI is not a substitute for manual assistive-technology review.
 - **Next action:** inspect the app's static route imports and the existing build output to identify a minimal code-splitting opportunity that reduces initial student download without changing behavior. Keep backend/database/deploy/catalogue out of scope; verify the change with typecheck/build/E2E and update this checkpoint again.
+
+
+## Phase 3 performance slice — route-level code splitting (2026-10-23)
+
+- `src/main.tsx` commit `9438d852bc2f8b52197c9b120abb354295945862` changes `ProtectedCBT`, `AdminFoundationGate`, and `AcademicFoundationGate` to lazy imports and adds accessible Suspense loading feedback. The student entry gate remains eager; the other route bundles should load only when needed.
+- This is an experiment to reduce the first student-page JS payload, not yet a proven improvement. Baseline main JS: `563.22 kB` minified / `153.84 kB` gzip; Vite warned over 500 kB.
+- Verification pending: E2E #738 and Verify #805 were in progress after this source change. Compare actual generated chunks before claiming improvement. No deployment, backend/database, production-data or catalogue changes; no dependencies added.
+- Next action: inspect #738 and #805, compare main/shared/admin/academic/CBT chunk sizes, and retain or revert based on verified output.
