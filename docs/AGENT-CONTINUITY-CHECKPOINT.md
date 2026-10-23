@@ -1,20 +1,19 @@
 # ACE JAMB — Current Agent Checkpoint
 
-> Refresh from verified repository/system state at the start and end of meaningful work. Historical entries below may be superseded by newer verification records.
+> Refresh from verified repository/system state at the start and end of meaningful work. Older historical entries below may be superseded by the latest verification record.
 
-- **Updated:** 2026-10-23 (Verify #824 passed; E2E #757 browser run pending; bundle baseline measured)
+- **Updated:** 2026-10-23 (verified HEAD `9785f548c063a9c35125b3538978d2f82054fb55`; Verify #874 passed; E2E #807 was still installing Playwright at last check).
 - **Repository:** `DarealNovaking/Nova-ace-jamb`, branch `main`.
-- **Latest source/test commit:** `9fcf5bcd1d05f9f8073c955e1815446e476b5305` (CBT answer-save status regression test). Verify #824 PASS (typecheck/build and migration/policy checks); E2E #757 remains in progress with browser installation running.
-- **Latest fully E2E-verified CBT source commit:** `4841974f0536a4de71cf2d0541931dc8f6ba7ac4` (E2E #719 PASS). Verify #787 passed on test commit `7755aafd46e078ad490c8f278263c715a2777a58`; E2E #720 typecheck/build passed but browser tests were pending. Newer answer-state source/test commits `21d971e0b4f0b538e2f1263b895d34a8019627ea` and `bbf7e88a52c3967201cdabf2571cc9f70e2c4fbe` await their E2E/Verify completions.
-- **User-approved scope:** Frontend only. Do not deploy the app or change backend/database state. The active product no longer uses the catalogue UI.
-- **Current milestone:** Frontend Phase 2 CLOSED for the authorized frontend-only scope; Frontend Phase 3 IN PROGRESS. Documented exceptions remain incomplete.
-- **Latest Verify:** #740 / run `39967022806` PASS (Node/Deno checks, typecheck/build, disposable PostgreSQL policy/migration tests).
-- **Latest E2E:** #673 / run `39967023111` PASS; fetched logs confirm **64 Playwright tests passed, 0 failed in 44.4s**. Typecheck/build/browser installation passed.
-- **Current frontend change:** Removed catalogue UI from active admin, deleted stale `admin-import.html` and `src/admin-import.tsx`, retained `/admin-import` only as an authorized admin-dashboard compatibility alias, and added route/UI regression assertions.
-- **Deployment-removal audit:** current-main checks return 404 for `.github/workflows/deploy-production.yml`, `wrangler.jsonc`, `backend/index.ts`, and `src/App.tsx`; no deploy script or AppDeploy shim is present. Do not recreate deployment assets; historical docs are archival.
-- **Accepted exceptions carried forward:** content-driven learning/practice/flashcards/progress/study plans need verified published content and real activity; payment/referral/AI/audio/notification delivery need verified provider/service contracts; expanded admin operations, manual accessibility and real-device PWA/offline acceptance remain incomplete/unverified. Live deployed-browser acceptance is out of scope. Bundle-size warning and previous npm audit findings remain unresolved.
-- **Exact next action:** inspect E2E #757 completion/logs for `9fcf5bcd`. If it passes, proceed to module-level bundle attribution; if it fails, fix only the reproduced cause. Keep manual screen-reader/device checks unverified. Do not deploy or touch backend/database state.
-- **Evidence correction:** an earlier claim that Playwright artifact trace/context files were inspected is unsupported; the artifact was retrieved but those contents were not verified. The successful runner summaries and E2E job logs were independently checked.
+- **Latest HEAD:** `9785f548c063a9c35125b3538978d2f82054fb55` (`docs(phase-3): record verification and bundle audit`). Latest source/test commit with passing E2E evidence: `6f5d18d1`, E2E #805 PASS; Verify #872 PASS. E2E #801 PASS (70 tests) on `e1adc838`; Verify #868 PASS.
+- **User-approved scope:** frontend only. Do not deploy, change backend/database/production data, restore catalogue UI, or perform app deployment work. The active frontend no longer uses the catalogue UI.
+- **Current milestone:** Frontend Phase 2 CLOSED for the authorized scope; Frontend Phase 3 IN PROGRESS.
+- **Latest Verify:** #874 / run `39992531606` PASS on current HEAD.
+- **Latest E2E:** #807 / run `39992531601` was IN PROGRESS at Playwright browser installation at last inspection; do not claim it passed. E2E #805 on `6f5d18d1` is the latest completed successful run in the checked Actions list.
+- **Accessibility source/test state:** workspace skip link and keyboard/fragment coverage; CBT keyboard answer selection; CBT exit restores focus to dashboard heading; async loading/saving status, timer, answer state and question-map semantics have source/E2E coverage. Real screen-reader behavior remains unverified.
+- **Open acceptance gates:** full manual keyboard-only navigation, real screen-reader testing, physical low-end Android usability, and real-device PWA/offline installation/recovery. These cannot be closed by mocked CI alone.
+- **Open engineering debt:** main bundle about 507 kB minified / 142 kB gzip (Vite >500 kB warning); latest install audit 4 vulnerabilities (3 moderate, 1 high), not remediated. Avoid speculative splitting or broad dependency upgrades.
+- **Exact next action:** poll E2E #807 to terminal and inspect logs. If it passes, continue bounded source/test audit; if it fails, fix only the evidenced failure. Keep backend/deployment/catalogue out of scope.
+- **Evidence correction:** successful mocked E2E and build checks do not prove live Supabase/provider correctness or physical-device accessibility. No production mutation or deployment was performed in this refresh.
 
 ---
 
