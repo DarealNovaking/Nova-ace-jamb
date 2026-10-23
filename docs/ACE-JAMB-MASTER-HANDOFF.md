@@ -3181,3 +3181,12 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - **CI status at documentation time:** E2E #755 / Verify #822 were in progress on workspace source commit `341b40b`; E2E #756 / Verify #823 were queued on CBT source commit `4177102`; E2E #757 / Verify #824 were queued on test commit `9fcf5bc`. Do not treat this change as verified until the latest E2E and Verify runs complete successfully.
 - No backend/database, catalogue, or deployment changes. Manual keyboard/screen-reader and real-device checks remain unverified.
 - Next action: inspect CI for `9fcf5bc`; fix only reproducible failures. Then continue source-based audit and measure bundle composition from actual build output before optimization.
+
+
+## Phase 3 verification and bundle baseline — 2026-10-23
+
+- **Verify #824 PASS** on test commit `9fcf5bcd1d05f9f8073c955e1815446e476b5305`: repository node tests, Deno checks, TypeScript typecheck, Vite build, and disposable PostgreSQL migration/policy checks all passed. This is repository CI; no production database changes occurred.
+- **E2E #757 still IN PROGRESS** at last inspection. Typecheck and build steps passed; Playwright browser installation was still running, and the browser test step had not started. Do not claim the regression suite passed until the E2E workflow completes.
+- Build output measured from Verify #824: 1,644 modules transformed; main `index-*.js` chunk **506.90 kB minified / 142.13 kB gzip**; `StudentStudyWorkspace` 17.72 kB, `AcademicFoundationGate` 19.41 kB, `AdminFoundationGate` 10.10 kB, and `ProtectedCBT` 12.11 kB. Vite still warns that a chunk exceeds 500 kB. `vite.config.ts` has no explicit manual chunk strategy. This measures emitted chunk sizes, not per-module contribution; no speculative optimization or dependency was added.
+- Accessibility changes in source commits `341b40b` and `4177102`: syllabus topic selection exposes `aria-pressed`; CBT answer-saving feedback is announced with a polite atomic status; Previous/Next/Submit controls explicitly declare button type. Regression assertion is in `9fcf5bc`.
+- Next action: inspect E2E #757 completion and logs. If it passes, proceed to module-level bundle attribution using existing tooling/build artifacts before considering any split. If it fails, fix only the reproduced cause. Continue manual keyboard/screen-reader/device checks as unverified. No deployment/backend/database/catalogue changes.
