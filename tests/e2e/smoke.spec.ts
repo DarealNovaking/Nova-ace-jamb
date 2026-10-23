@@ -694,12 +694,12 @@ test.describe('ACE JAMB admin operations command center', () => {
 test.describe('ACE JAMB academic editor access', () => {
   test('announces academic workspace loading while the season list resolves', async ({ page }) => {
     await mockFirstTimeStudent(page)
+    let releaseSeasonRequest!: () => void
+    const seasonRequestGate = new Promise<void>((resolve) => { releaseSeasonRequest = resolve })
     await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/exam_seasons'), async (route) => {
       await seasonRequestGate
       await route.fallback()
     })
-    let releaseSeasonRequest!: () => void
-    const seasonRequestGate = new Promise<void>((resolve) => { releaseSeasonRequest = resolve })
 
     await page.route(`${projectUrl}/rest/v1/rpc/is_admin_or_editor`, async (route) => {
       await route.fulfill({ json: true })
