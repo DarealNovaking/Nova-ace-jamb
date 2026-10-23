@@ -84,7 +84,7 @@ export default function StudentOnboarding({ onComplete }: { onComplete: () => vo
     }
   }
 
-  if (busy) return <div className="grid min-h-screen place-items-center bg-[#07050d] px-5 text-white"><p className="text-white/60">Loading your ACE profile…</p></div>
+  if (busy) return <main aria-busy="true" className="grid min-h-screen place-items-center bg-[#07050d] px-5 text-white"><p role="status" aria-live="polite" aria-atomic="true" className="text-white/60">Loading your ACE profile…</p></main>
 
   return <main className="min-h-screen bg-[#07050d] px-5 py-8 text-white">
     <div className="mx-auto max-w-2xl">
@@ -132,7 +132,7 @@ export default function StudentOnboarding({ onComplete }: { onComplete: () => vo
           <label className="mt-4 block"><span className="mb-2 block text-sm text-white/60">Intended course</span><input className="field w-full" value={courseGoal} onChange={(e) => setCourseGoal(e.target.value)} maxLength={160} placeholder="e.g. your intended course" /></label>
           <p className="mt-3 text-xs text-white/40">Verify official requirements using the <a className="text-purple-200 underline" href="https://ibass.jamb.gov.ng/eligibility-checker" target="_blank" rel="noreferrer">JAMB IBASS eligibility checker</a>.</p>
         </div>
-        <button type="button" disabled={saving || !englishSubject || subjects.length < 4 || additionalSelectedSubjects.length !== 3} onClick={save} className="w-full rounded-xl bg-white py-3 font-bold text-black disabled:opacity-50">{saving ? 'Saving…' : 'Continue to ACE'}</button>
+        <button type="button" disabled={saving || !englishSubject || subjects.length < 4 || additionalSelectedSubjects.length !== 3} onClick={save} className="w-full rounded-xl bg-white py-3 font-bold text-black disabled:opacity-50">{saving ? 'Saving…' : 'Continue to ACE'}</button>{saving && <p role="status" aria-live="polite" aria-atomic="true" className="text-center text-sm text-white/60">Saving your preparation profile…</p>}
       </section>
       <button type="button" onClick={() => supabase.auth.signOut()} className="mt-4 w-full py-3 text-sm text-white/40">Sign out</button>
     </div>
