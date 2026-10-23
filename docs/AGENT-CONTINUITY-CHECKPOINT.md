@@ -2,9 +2,9 @@
 
 > Refresh from verified repository/system state at the start and end of meaningful work. Historical entries below may be superseded by newer verification records.
 
-- **Updated:** 2026-10-23 (Phase 3 student workspace/CBT save-state accessibility follow-up; CI pending)
+- **Updated:** 2026-10-23 (Verify #824 passed; E2E #757 browser run pending; bundle baseline measured)
 - **Repository:** `DarealNovaking/Nova-ace-jamb`, branch `main`.
-- **Latest source/test commit:** `9fcf5bcd1d05f9f8073c955e1815446e476b5305` (CBT answer-save status regression test). CI E2E #757 / Verify #824 were queued at last inspection; preceding source/test commits #755/#822 and #756/#823 were running/queued. Latest CI is not yet verified.
+- **Latest source/test commit:** `9fcf5bcd1d05f9f8073c955e1815446e476b5305` (CBT answer-save status regression test). Verify #824 PASS (typecheck/build and migration/policy checks); E2E #757 remains in progress with browser installation running.
 - **Latest fully E2E-verified CBT source commit:** `4841974f0536a4de71cf2d0541931dc8f6ba7ac4` (E2E #719 PASS). Verify #787 passed on test commit `7755aafd46e078ad490c8f278263c715a2777a58`; E2E #720 typecheck/build passed but browser tests were pending. Newer answer-state source/test commits `21d971e0b4f0b538e2f1263b895d34a8019627ea` and `bbf7e88a52c3967201cdabf2571cc9f70e2c4fbe` await their E2E/Verify completions.
 - **User-approved scope:** Frontend only. Do not deploy the app or change backend/database state. The active product no longer uses the catalogue UI.
 - **Current milestone:** Frontend Phase 2 CLOSED for the authorized frontend-only scope; Frontend Phase 3 IN PROGRESS. Documented exceptions remain incomplete.
@@ -13,7 +13,7 @@
 - **Current frontend change:** Removed catalogue UI from active admin, deleted stale `admin-import.html` and `src/admin-import.tsx`, retained `/admin-import` only as an authorized admin-dashboard compatibility alias, and added route/UI regression assertions.
 - **Deployment-removal audit:** current-main checks return 404 for `.github/workflows/deploy-production.yml`, `wrangler.jsonc`, `backend/index.ts`, and `src/App.tsx`; no deploy script or AppDeploy shim is present. Do not recreate deployment assets; historical docs are archival.
 - **Accepted exceptions carried forward:** content-driven learning/practice/flashcards/progress/study plans need verified published content and real activity; payment/referral/AI/audio/notification delivery need verified provider/service contracts; expanded admin operations, manual accessibility and real-device PWA/offline acceptance remain incomplete/unverified. Live deployed-browser acceptance is out of scope. Bundle-size warning and previous npm audit findings remain unresolved.
-- **Exact next action:** inspect E2E #757 and Verify #824 for `9fcf5bcd`; fix only reproducible failures. Then continue the keyboard/semantic accessibility audit and measure bundle composition before optimization. Keep manual screen-reader/device checks unverified. Do not deploy or touch backend/database state.
+- **Exact next action:** inspect E2E #757 completion/logs for `9fcf5bcd`. If it passes, proceed to module-level bundle attribution; if it fails, fix only the reproduced cause. Keep manual screen-reader/device checks unverified. Do not deploy or touch backend/database state.
 - **Evidence correction:** an earlier claim that Playwright artifact trace/context files were inspected is unsupported; the artifact was retrieved but those contents were not verified. The successful runner summaries and E2E job logs were independently checked.
 
 ---
@@ -1504,3 +1504,12 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - **CI status at documentation time:** E2E #755 / Verify #822 were in progress on workspace source commit `341b40b`; E2E #756 / Verify #823 were queued on CBT source commit `4177102`; E2E #757 / Verify #824 were queued on test commit `9fcf5bc`. Do not treat this change as verified until the latest E2E and Verify runs complete successfully.
 - No backend/database, catalogue, or deployment changes. Manual keyboard/screen-reader and real-device checks remain unverified.
 - Next action: inspect CI for `9fcf5bc`; fix only reproducible failures. Then continue source-based audit and measure bundle composition from actual build output before optimization.
+
+
+## Phase 3 verification and bundle baseline — 2026-10-23
+
+- **Verify #824 PASS** on test commit `9fcf5bcd1d05f9f8073c955e1815446e476b5305`: repository node tests, Deno checks, TypeScript typecheck, Vite build, and disposable PostgreSQL migration/policy checks all passed. This is repository CI; no production database changes occurred.
+- **E2E #757 still IN PROGRESS** at last inspection. Typecheck and build steps passed; Playwright browser installation was still running, and the browser test step had not started. Do not claim the regression suite passed until the E2E workflow completes.
+- Build output measured from Verify #824: 1,644 modules transformed; main `index-*.js` chunk **506.90 kB minified / 142.13 kB gzip**; `StudentStudyWorkspace` 17.72 kB, `AcademicFoundationGate` 19.41 kB, `AdminFoundationGate` 10.10 kB, and `ProtectedCBT` 12.11 kB. Vite still warns that a chunk exceeds 500 kB. `vite.config.ts` has no explicit manual chunk strategy. This measures emitted chunk sizes, not per-module contribution; no speculative optimization or dependency was added.
+- Accessibility changes in source commits `341b40b` and `4177102`: syllabus topic selection exposes `aria-pressed`; CBT answer-saving feedback is announced with a polite atomic status; Previous/Next/Submit controls explicitly declare button type. Regression assertion is in `9fcf5bc`.
+- Next action: inspect E2E #757 completion and logs. If it passes, proceed to module-level bundle attribution using existing tooling/build artifacts before considering any split. If it fails, fix only the reproduced cause. Continue manual keyboard/screen-reader/device checks as unverified. No deployment/backend/database/catalogue changes.
