@@ -53,7 +53,7 @@ export default function AdminFoundationGate() {
   }
 
   if (checking) {
-    return <main className="grid min-h-screen place-items-center bg-[#07050d] text-white"><p className="text-white/60">Verifying administrator access…</p></main>
+    return <main className="grid min-h-screen place-items-center bg-[#07050d] text-white"><p role="status" aria-live="polite" aria-atomic="true" className="text-white/60">Verifying administrator access…</p></main>
   }
 
   if (!allowed) {
