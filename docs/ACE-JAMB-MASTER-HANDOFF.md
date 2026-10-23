@@ -3172,3 +3172,12 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - `smoke.spec.ts` commit `4ad0acef545eca041fd1d31fb6dc28a315569523` asserts these semantics. Source commit `bc85cdc` passed E2E #749 (66 tests) and Verify #816. Verify #817 passed on `4ad0ace`; E2E #750 was still installing Playwright browsers, so the new assertions remain unverified. [E2E #750](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/39979019310).
 - Main bundle remains 506.86 kB minified / 142.10 kB gzip, with Vite's >500 kB warning. No backend/database/deploy/catalogue changes. Manual keyboard-only/screen-reader review remains unverified.
 - Next action: inspect E2E #750, resolve only a reproducible failure, then continue frontend accessibility review.
+
+
+## Phase 3 accessibility follow-up — 2026-10-23
+
+- Source commits: `341b40b317f7d08f804dbfb9808569b8f4c52e16` adds `aria-pressed` to selected verified-syllabus topic buttons in `src/components/StudentStudyWorkspace.tsx`; `417710238550ee0a537b4ef95e21152e20960000` adds a polite atomic status announcement while a CBT answer is being saved and explicit `type="button"` to CBT Previous/Next/Submit controls in `src/components/PersistentCBT.tsx`.
+- Regression test commit: `9fcf5bcd1d05f9f8073c955e1815446e476b5305` delays the mocked `save_attempt_answer` response and asserts the save status is announced and cleared after the save. All test traffic remains mocked; no production data is accessed.
+- **CI status at documentation time:** E2E #755 / Verify #822 were in progress on workspace source commit `341b40b`; E2E #756 / Verify #823 were queued on CBT source commit `4177102`; E2E #757 / Verify #824 were queued on test commit `9fcf5bc`. Do not treat this change as verified until the latest E2E and Verify runs complete successfully.
+- No backend/database, catalogue, or deployment changes. Manual keyboard/screen-reader and real-device checks remain unverified.
+- Next action: inspect CI for `9fcf5bc`; fix only reproducible failures. Then continue source-based audit and measure bundle composition from actual build output before optimization.
