@@ -343,7 +343,7 @@ test.describe('ACE JAMB persistent CBT', () => {
     await page.getByRole('button', { name: 'Start a practice session' }).click()
     await expect(page).toHaveURL(/[?&]mode=practice(?:&|$)/)
     await expect.poll(() => requestedMode).toBe('practice')
-    await expect(page.getByText(/No reviewed questions are published for this session yet/)).toBeVisible()
+    await expect(page.getByRole('alert')).toContainText(/No reviewed questions are published for this session yet/)
   })
 
   test('restores the same active attempt after reload instead of starting another', async ({ page }) => {
