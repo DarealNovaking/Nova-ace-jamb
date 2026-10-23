@@ -134,7 +134,7 @@ export default function StudentDashboard() {
 
   if (loading) return <main id="main-content" aria-busy="true" className="grid min-h-[70vh] place-items-center text-white"><div role="status" aria-live="polite" aria-atomic="true" className="text-center"><Loader2 aria-hidden="true" className="mx-auto animate-spin" /><p className="mt-3 text-sm text-white/50">Loading your preparation dashboard…</p></div></main>
 
-  if (activeView !== 'home') return <Suspense fallback={<div className="grid min-h-[50vh] place-items-center bg-[#07050d] px-5 text-white"><p role="status" aria-live="polite" aria-atomic="true">Loading your study workspace…</p></div>}><StudentStudyWorkspace mode={activeView} subjects={subjects} topics={topics} onBack={() => { const url = new URL(window.location.href); url.searchParams.delete('view'); window.history.pushState({}, '', url); setActiveView('home') }} onStartCbt={startCbt} /></Suspense>
+  if (activeView !== 'home') return <Suspense fallback={<main id="workspace-content" aria-busy="true" className="grid min-h-[50vh] place-items-center bg-[#07050d] px-5 text-white"><p role="status" aria-live="polite" aria-atomic="true">Loading your study workspace…</p></main>}><StudentStudyWorkspace mode={activeView} subjects={subjects} topics={topics} onBack={() => { const url = new URL(window.location.href); url.searchParams.delete('view'); window.history.pushState({}, '', url); setActiveView('home') }} onStartCbt={startCbt} /></Suspense>
 
   return (
     <>
