@@ -1690,3 +1690,19 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - E2E #850 (`40001391449`) verified the earlier CBT skip link and reduced-motion assertion with **74 passed**; that run predates this dashboard-link change. The new dashboard test remains pending until current-main E2E completes.
 - Bundle evidence from Verify #918: main `index` chunk 507.45 kB minified / 142.27 kB gzip; separate chunks already exist for CBT/workspace/admin routes. Build logs do not identify the dominant dependency, so do not add manual chunk rules or alter dependencies without further attribution.
 - **Next action:** poll the newest E2E/Verify runs. Fix any actual dashboard skip-link failure. If green, continue with a non-invasive bundle attribution approach; keep manual screen-reader, full keyboard journey, physical Android, and real-device PWA/offline checks explicitly unverified.
+
+
+
+## Current verified checkpoint — 2026-10-24
+
+- Repository/branch: `DarealNovaking/Nova-ace-jamb` / `main`.
+- Verified HEAD: `f4282be00bd2f0a244891a8942c70f91954b7e6f`; repository default branch is `main`.
+- Scope: frontend only. Do not deploy, change backend/database/production data, restore catalogue UI, or do app-deployment work.
+- Phase 2 closed for authorized frontend scope; Frontend Phase 3 remains in progress.
+- Latest progress handoff: `docs/FRONTEND-PHASE-3-CURRENT-HANDOFF-2026-10-23.md`.
+- Verified current-HEAD CI: ACE JAMB E2E run #859, run ID `40002624496`, PASS on the exact HEAD above. Confirmed job steps: Typecheck PASS, Build PASS, Playwright browser tests PASS. Link: https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40002624496. No separate Verify workflow result was established in this inspection; do not claim one.
+- Dashboard skip link and focusable target are present in `src/components/StudentDashboard.tsx`; the latest E2E run succeeded. Exact per-project test counts were not extracted.
+- Current `vite.config.ts` has only the React plugin; no bundle analyzer is configured. Package scripts include build/typecheck/e2e. Prior handoff reports entry chunk 507.45 kB minified / 142.27 kB gzip, but this must be remeasured from current output before optimizing.
+- No source-code changes, backend/database changes, deployment, or production mutation were made in this continuation.
+- Open acceptance gates: manual keyboard-only navigation; real screen-reader behavior; physical low-end Android; real-device PWA/offline installation and recovery. Dependency audit debt remains open. CI is mocked and does not prove live Supabase/provider/content correctness.
+- Exact next action: measure and attribute the current build's entry chunk to actual modules; only then decide whether a narrowly scoped frontend optimization is justified. Continue updating both master handoff and checkpoint after meaningful work.
