@@ -768,8 +768,14 @@ test.describe('ACE JAMB preparation workspaces', () => {
     // Workspace selection is route state: reload and browser history must restore it.
     await page.reload()
     await expect(page.getByRole('heading', { name: 'Learn', exact: true })).toBeVisible()
+    // Native skip-link fragment navigation adds a same-route history entry.
+    // Back first removes that fragment, then returns to the dashboard.
+    await page.goBack()
+    await expect(page.getByRole('heading', { name: 'Learn', exact: true })).toBeVisible()
     await page.goBack()
     await expect(page.getByRole('heading', { name: 'Welcome back, Test Futarian.' })).toBeVisible()
+    await page.goForward()
+    await expect(page.getByRole('heading', { name: 'Learn', exact: true })).toBeVisible()
     await page.goForward()
     await expect(page.getByRole('heading', { name: 'Learn', exact: true })).toBeVisible()
 
