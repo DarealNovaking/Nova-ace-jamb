@@ -1683,3 +1683,10 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - ACE JAMB E2E #850 (`40001391449`) **PASS** on commit `693a94fae956`; its job log explicitly reports **74 passed (1.1m)**. This verifies the CBT skip-link keyboard-focus assertion and the reduced-motion regression in the same browser suite.
 - Verify #917 (`40001391242`) passed on `693a94fae956`; Verify #918 passed on current HEAD `d751b9f1dc98ae2b58d34d4c985bc6aead7a7cf3`. E2E #851 (`40001413124`) on that HEAD remained in progress during latest inspection.
 - **Next action:** recheck E2E #851; then inspect Vite bundle composition/source map or build output before deciding whether a safe code-splitting change is warranted. Do not change dependencies or split chunks speculatively. Manual accessibility and physical-device PWA/offline checks remain unverified.
+
+## Dashboard keyboard skip-link improvement — 2026-10-23
+
+- `src/components/StudentDashboard.tsx` now renders a `Skip to dashboard content` link and makes the main dashboard landmark focusable with `tabIndex={-1}`. Playwright coverage was added to `tests/e2e/smoke.spec.ts` for Enter activation and target focus.
+- E2E #850 (`40001391449`) verified the earlier CBT skip link and reduced-motion assertion with **74 passed**; that run predates this dashboard-link change. The new dashboard test remains pending until current-main E2E completes.
+- Bundle evidence from Verify #918: main `index` chunk 507.45 kB minified / 142.27 kB gzip; separate chunks already exist for CBT/workspace/admin routes. Build logs do not identify the dominant dependency, so do not add manual chunk rules or alter dependencies without further attribution.
+- **Next action:** poll the newest E2E/Verify runs. Fix any actual dashboard skip-link failure. If green, continue with a non-invasive bundle attribution approach; keep manual screen-reader, full keyboard journey, physical Android, and real-device PWA/offline checks explicitly unverified.
