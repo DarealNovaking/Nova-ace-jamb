@@ -622,6 +622,8 @@ test.describe('ACE JAMB admin operations command center', () => {
     await page.goto('/admin')
     await expect(page.getByRole('heading', { name: 'Admin Dashboard' })).toBeVisible()
     await expect(page.getByRole('heading', { name: 'Operations command center' })).toBeVisible()
+    // Wait until asynchronous count queries settle before asserting their dynamic detail text.
+    await expect(page.getByRole('button', { name: 'Refresh status' })).toBeEnabled()
     await expect(page.getByText('No delivery worker is currently listed')).toBeVisible()
     await expect(page.getByText('Grounded student AI stays disabled')).toBeVisible()
     await expect(page.getByText(/Audio content has no dedicated table or delivery service/)).toBeVisible()
