@@ -291,6 +291,21 @@ test.describe('ACE JAMB dashboard recovery', () => {
 })
 
 test.describe('ACE JAMB prepared student dashboard', () => {
+  test('announces initial account preparation while authentication resolves', async ({ page }) => {
+    await mockPreparedStudent(page)
+    let releaseAuthRequest!: () => void
+    const authRequestGate = new Promise<void>((resolve) => { releaseAuthRequest = resolve })
+    await page.route((url) => new URL(url).pathname === '/auth/v1/user', async (route) => {
+      await authRequestGate
+      await route.fallback()
+    })
+
+    await page.goto('/')
+    await expect(page.getByRole('status')).toContainText('Preparing your ACE account')
+    releaseAuthRequest()
+    await expect(page.getByRole('heading', { name: 'Welcome back, Test Futarian.' })).toBeVisible()
+  })
+
   test('announces dashboard loading state to assistive technology', async ({ page }) => {
     await mockPreparedStudent(page)
     let releaseProfileRequest!: () => void
