@@ -950,13 +950,23 @@ test.describe('ACE JAMB account settings first-use regression', () => {
   test('settings load and save when the student preferences row does not exist yet', async ({ page }) => {
     await mockPreparedStudent(page)
     let preferencesUpserted = false
+    let preferencesReads = 0
 
-    // This student has a profile but no preferences row. All API calls stay mocked.
+    // Keep the gate's preparation record complete, then model a missing preferences
+    // row when Account Settings loads. All API calls stay mocked.
     await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/student_preferences'), async (route) => {
       if (route.request().method() === 'GET') {
-        // PostgREST's maybeSingle() GET contract returns an empty array for zero rows.
-        // A synthetic 406 here does not model that client contract reliably.
-        await route.fulfill({ status: 200, contentType: 'application/json', json: [] })
+        preferencesReads += 1
+        if (preferencesReads === 1) {
+          await route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            json: { user_id: userId, learning_style: null, daily_minutes: 60, preferred_study_days: [], timezone: null, preferences: {}, updated_at: '2026-10-21T00:00:00.000Z' },
+          })
+        } else {
+          // Empty representation models no preference row for the settings component.
+          await route.fulfill({ status: 200, contentType: 'application/json', json: [] })
+        }
         return
       }
       if (['POST', 'PATCH', 'PUT'].includes(route.request().method())) {
