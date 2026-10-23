@@ -2,17 +2,17 @@
 
 > Refresh from verified repository/system state at the start and end of meaningful work. Historical entries below may be superseded by newer verification records.
 
-- **Updated:** 2026-10-23 (UTC; exact time not asserted; Phase 2 closeout documented)
+- **Updated:** 2026-10-23 (Phase 3 kickoff; source/test CI pending)
 - **Repository:** `DarealNovaking/Nova-ace-jamb`, branch `main`.
-- **Latest tested source/test commit:** `85a4b5b1aed59b8d5bfb3e7c09de53d873cdb9af`; later commits are documentation-only.
+- **Latest fully tested source/test commit:** `85a4b5b1aed59b8d5bfb3e7c09de53d873cdb9af`. Phase 3 source/test commits `a50672679b4e70a307e52ed86f29c015e1f01574` and `90459bc9eb64ad17f1f4df125cdc9449f48ded5b` are newer; CI verification is pending.
 - **User-approved scope:** Frontend only. Do not deploy the app or change backend/database state. The active product no longer uses the catalogue UI.
-- **Current milestone:** Frontend Phase 2 CLOSED for the currently authorized frontend-only scope; documented exceptions remain incomplete and carry forward to Phase 3.
+- **Current milestone:** Frontend Phase 2 CLOSED for the authorized frontend-only scope; Frontend Phase 3 IN PROGRESS. Documented exceptions remain incomplete.
 - **Latest Verify:** #740 / run `39967022806` PASS (Node/Deno checks, typecheck/build, disposable PostgreSQL policy/migration tests).
 - **Latest E2E:** #673 / run `39967023111` PASS; fetched logs confirm **64 Playwright tests passed, 0 failed in 44.4s**. Typecheck/build/browser installation passed.
 - **Current frontend change:** Removed catalogue UI from active admin, deleted stale `admin-import.html` and `src/admin-import.tsx`, retained `/admin-import` only as an authorized admin-dashboard compatibility alias, and added route/UI regression assertions.
 - **Deployment-removal audit:** current-main checks return 404 for `.github/workflows/deploy-production.yml`, `wrangler.jsonc`, `backend/index.ts`, and `src/App.tsx`; no deploy script or AppDeploy shim is present. Do not recreate deployment assets; historical docs are archival.
 - **Accepted exceptions carried forward:** content-driven learning/practice/flashcards/progress/study plans need verified published content and real activity; payment/referral/AI/audio/notification delivery need verified provider/service contracts; expanded admin operations, manual accessibility and real-device PWA/offline acceptance remain incomplete/unverified. Live deployed-browser acceptance is out of scope. Bundle-size warning and previous npm audit findings remain unresolved.
-- **Exact next action:** start Frontend Phase 3 planning from the master handoff and the accepted-exception register. Prioritize frontend-auditable accessibility/performance/admin improvements; leave content/provider-dependent features unavailable until verified dependencies exist. Do not deploy or touch backend/database state.
+- **Exact next action:** inspect CI for Phase 3 source/test HEAD `90459bc9eb64ad17f1f4df125cdc9449f48ded5b`; fix any reproducible failure, then audit student workspace/CBT keyboard and semantic accessibility. Do not deploy or touch backend/database state.
 - **Evidence correction:** an earlier claim that Playwright artifact trace/context files were inspected is unsupported; the artifact was retrieved but those contents were not verified. The successful runner summaries and E2E job logs were independently checked.
 
 ---
@@ -1373,3 +1373,16 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - **Known debt:** previous npm audit reported 8 vulnerabilities (2 moderate, 6 high); build warns about an approximately 916 kB minified chunk. No dependency changes made during closeout.
 - **No backend/database/deployment changes.** Catalogue UI remains retired; `/admin-import` remains only a compatibility alias to the authorized admin dashboard.
 - **Next action:** begin Frontend Phase 3 from the master handoff, using the exception register above. Keep the no-deploy/frontend-only boundary and do not invent official JAMB content or provider outcomes.
+
+
+## Frontend Phase 3 kickoff — accessible loading feedback — 2026-10-23
+
+- **Milestone:** Frontend Phase 3 IN PROGRESS. Scope remains frontend-only; no deployment, backend, database, production-data, or catalogue work is authorized.
+- **Starting evidence:** Phase 2 was closed for the authorized frontend-only scope. Latest prior CI applies to source/test commit `85a4b5b1aed59b8d5bfb3e7c09de53d873cdb9af` (Verify #740 PASS; E2E #673 PASS, 64 passed / 0 failed). Those results do **not** cover the Phase 3 commits below.
+- **First implementation slice:** `src/components/StudentDashboard.tsx` now gives its initial loading state a polite, atomic `role=status` announcement, marks the loading main landmark `aria-busy=true`, hides the decorative spinner from assistive technology, and assigns the dashboard main landmark `id=main-content`.
+- **Regression coverage:** `tests/e2e/smoke.spec.ts` adds a Playwright test that deliberately holds the mocked profile request, checks the loading announcement, releases the request, and verifies the dashboard becomes available. All Supabase calls remain intercepted; no production data is read or written by this test.
+- **Commits:** `a50672679b4e70a307e52ed86f29c015e1f01574` (frontend accessibility change); `90459bc9eb64ad17f1f4df125cdc9449f48ded5b` (E2E regression test).
+- **Verification:** pending at kickoff-document time. Do not claim the new test/typecheck/build passed until a workflow run for the new source/test HEAD completes. Previous CI results are not evidence for these commits.
+- **Phase 3 workstreams:** (1) accessible async/loading/error feedback and keyboard/semantic navigation; (2) measurable frontend performance and bundle attribution before any justified optimization; (3) remaining admin/student UX gaps supported by existing contracts. Keep payment/referral/AI/audio/push and content-driven flows honestly unavailable where their verified dependencies are missing. Manual screen-reader/keyboard, real-device PWA/offline, and low-end Android checks remain unverified; live deployed acceptance remains out of scope.
+- **Known debt carried forward:** prior npm audit reported 8 vulnerabilities (2 moderate, 6 high); Vite warned of an approximately 916 kB minified chunk. No dependency updates or speculative bundle changes have been made.
+- **Exact next action:** inspect CI for commit `90459bc9eb64ad17f1f4df125cdc9449f48ded5b`; fix any reproducible failure, then continue a source-based accessibility audit of the student workspace and CBT controls before tackling bundle optimization. Update the master handoff and continuity checkpoint after each meaningful change. Do not deploy or touch backend/database state.
