@@ -18,13 +18,16 @@ The GitHub repository is the source of truth. The current frontend uses React, T
 
 ## Administration
 
-- `/admin` — administrator-only workspace for source/catalogue review
-- `/admin-academic` — academic structure and syllabus version/topic authoring
+- `/admin` — administrator-only operations overview and academic workspace entry
+- `/admin-academic` — authorized academic structure and syllabus version/topic authoring
+- `/admin-import` — compatibility alias to the normal authorized admin dashboard; the retired catalogue importer is no longer exposed
 - Draft content must remain unpublished until its source, rights and review status are approved.
 
 ## Current milestone status
 
-**Phase 1 is still open.** The automated student journey suite currently passes, but the live database has no active approved syllabus versions, topics, subtopics, questions, flashcards or attempts. Do not fabricate official JAMB questions or present mock fixtures as production content. The question-rights publication migration is in the repository and covered by disposable PostgreSQL tests; the live database policy still requires an approved, controlled migration step.
+**Phase 1 (frontend acceptance batches 1–5) is closed for the verified mocked-contract scope.** The integrated whole-product frontend batch remains open. Current CI verifies the frontend against mocked service contracts; it does not prove live content or provider integrations exist. The last recorded live audit found no published topics, subtopics, questions, flashcards or attempts. Do not fabricate official JAMB content or present fixtures as production data.
+
+The user has explicitly kept app deployment out of scope. Deployment workflows/configuration and the legacy AppDeploy entrypoint were removed; do not recreate or deploy the app unless the user explicitly reverses that instruction.
 
 ## Local development
 
