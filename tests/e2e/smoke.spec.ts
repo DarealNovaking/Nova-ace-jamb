@@ -295,7 +295,7 @@ test.describe('ACE JAMB prepared student dashboard', () => {
     await mockPreparedStudent(page)
     let releaseProfileRequest!: () => void
     const profileRequestGate = new Promise<void>((resolve) => { releaseProfileRequest = resolve })
-    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/profiles'), async (route) => {
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/get_active_exam_blueprint'), async (route) => {
       await profileRequestGate
       await route.fallback()
     })
