@@ -3362,3 +3362,10 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 
 - Verify #912 (`40001230846`) completed **PASS** on commit `a2305b077e44`, covering the CBT skip-link implementation and test at that revision. Typecheck/build and repository verification succeeded. This does **not** substitute for browser E2E.
 - ACE JAMB E2E #845 (`40001230788`) was still in progress at Playwright browser installation at last inspection; the new CBT skip-link focus assertion remains **pending browser verification**. Latest-main E2E #848 (`40001308034`) is queued and Verify #915 (`40001308239`) is queued. Recheck latest workflow results before any final claim.
+
+## CBT skip-link browser verification result — 2026-10-23
+
+- ACE JAMB E2E #850 (`40001391449`) completed **PASS** on commit `693a94fae956`; the job log confirms **74 browser tests passed**. This run includes the CBT skip-link implementation/test and the earlier reduced-motion regression test.
+- Verify #917 (`40001391242`) also completed **PASS** on `693a94fae956`. Latest HEAD at the time of this update is `d751b9f1dc98ae2b58d34d4c985bc6aead7a7cf3`; Verify #918 passed on that HEAD, while E2E #851 (`40001413124`) is still in progress. The new test is verified on #850, but latest-HEAD browser run should still be allowed to finish.
+- Next engineering target after CI settles: inspect bundle composition before considering code splitting; preserve existing lazy-loaded route/workspace boundaries. Continue to leave manual keyboard-only, screen-reader, low-end Android, and physical-device PWA/offline acceptance open.
+- Phase 3 remains IN PROGRESS. No backend/database, deployment, catalogue UI, dependency, or production-data changes.
