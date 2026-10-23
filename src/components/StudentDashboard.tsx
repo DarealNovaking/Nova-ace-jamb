@@ -1,6 +1,8 @@
-import { useEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { BookOpen, Brain, ChevronRight, Clock3, GraduationCap, Loader2, RefreshCw, CalendarDays, Layers3, Trophy } from 'lucide-react'
-import StudentStudyWorkspace, { type StudentWorkspaceMode } from './StudentStudyWorkspace'
+import type { StudentWorkspaceMode } from './StudentStudyWorkspace'
+
+const StudentStudyWorkspace = lazy(() => import('./StudentStudyWorkspace'))
 import StudentNotifications from './StudentNotifications'
 import StudentAccountAccess from './StudentAccountAccess'
 import LearningSupportStatus from './LearningSupportStatus'
@@ -124,7 +126,7 @@ export default function StudentDashboard() {
 
   if (loading) return <main id="main-content" aria-busy="true" className="grid min-h-[70vh] place-items-center text-white"><div role="status" aria-live="polite" aria-atomic="true" className="text-center"><Loader2 aria-hidden="true" className="mx-auto animate-spin" /><p className="mt-3 text-sm text-white/50">Loading your preparation dashboard…</p></div></main>
 
-  if (activeView !== 'home') return <StudentStudyWorkspace mode={activeView} subjects={subjects} topics={topics} onBack={() => { const url = new URL(window.location.href); url.searchParams.delete('view'); window.history.pushState({}, '', url); setActiveView('home') }} onStartCbt={startCbt} />
+  if (activeView !== 'home') return <Suspense fallback={<div className="grid min-h-[50vh] place-items-center bg-[#07050d] px-5 text-white"><p role="status" aria-live="polite" aria-atomic="true">Loading your study workspace…</p></div>}><StudentStudyWorkspace mode={activeView} subjects={subjects} topics={topics} onBack={() => { const url = new URL(window.location.href); url.searchParams.delete('view'); window.history.pushState({}, '', url); setActiveView('home') }} onStartCbt={startCbt} /></Suspense>
 
   return (
     <main id="main-content" className="min-h-screen bg-[#07050d] px-5 py-8 text-white sm:py-12">
