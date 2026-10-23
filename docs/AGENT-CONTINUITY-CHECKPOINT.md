@@ -2,9 +2,9 @@
 
 > Refresh from verified repository/system state at the start and end of meaningful work. Historical entries below may be superseded by newer verification records.
 
-- **Updated:** 2026-10-23 (Phase 3 route splitting and lazy workspace verified)
+- **Updated:** 2026-10-23 (CBT timer/question-map semantics; new assertion CI pending)
 - **Repository:** `DarealNovaking/Nova-ace-jamb`, branch `main`.
-- **Latest source commit:** `d3b9cc07302f770195236b72c0be180cee199a0e` (lazy study workspace). E2E #742 PASS (typecheck/build + 66 Playwright tests, 59.1s); Verify #809 PASS. Latest docs HEAD Verify #812 PASS.
+- **Latest source/test commit:** `4ad0acef545eca041fd1d31fb6dc28a315569523` (CBT timer/question-map semantics). Source `bc85cdc` E2E #749 PASS (66 tests) and Verify #816 PASS; Verify #817 PASS for `4ad0ace`, with E2E #750 pending browser installation.
 - **Latest fully E2E-verified CBT source commit:** `4841974f0536a4de71cf2d0541931dc8f6ba7ac4` (E2E #719 PASS). Verify #787 passed on test commit `7755aafd46e078ad490c8f278263c715a2777a58`; E2E #720 typecheck/build passed but browser tests were pending. Newer answer-state source/test commits `21d971e0b4f0b538e2f1263b895d34a8019627ea` and `bbf7e88a52c3967201cdabf2571cc9f70e2c4fbe` await their E2E/Verify completions.
 - **User-approved scope:** Frontend only. Do not deploy the app or change backend/database state. The active product no longer uses the catalogue UI.
 - **Current milestone:** Frontend Phase 2 CLOSED for the authorized frontend-only scope; Frontend Phase 3 IN PROGRESS. Documented exceptions remain incomplete.
@@ -1475,3 +1475,13 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - The lazy workspace fallback announces loading politely; existing workspace focus management remains in place. No backend/database/deployment/catalogue changes or dependency additions.
 - Additional E2E runs on later docs-only commits were still active when checked, but E2E #742 and Verify #809 cover the exact source commit. No need to wait on docs-only runs to claim the source/test commit passed.
 - **Next action:** stop speculative splitting for now; investigate actual large dependency contribution only if a source-based analysis can identify a safe win. Prioritize the remaining student/CBT UX and keyboard review. Manual screen-reader and physical-device checks remain unverified.
+
+
+## Phase 3 CBT timer and question-map semantics — 2026-10-23
+
+- `src/components/PersistentCBT.tsx` commit `bc85cdc14928b1f9cec8fabffa3985fb665d1e75` gives the countdown a named `role=timer`, marks the clock icon decorative, groups answer buttons under the question heading, and labels question-map buttons with question number plus answered/unanswered state; the current map entry exposes `aria-current=step`.
+- `tests/e2e/smoke.spec.ts` commit `4ad0acef545eca041fd1d31fb6dc28a315569523` asserts the named timer, question-associated group, current question-map step, and answered state after saving.
+- Source commit `bc85cdc` passed [E2E #749](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/39978976244): typecheck/build and **66 Playwright tests passed**. [Verify #816](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/39978975983) passed both jobs.
+- Test commit `4ad0ace` passed typecheck/build and [Verify #817](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/39979019223), but E2E #750 remains active at Playwright browser installation; its new assertions are not yet verified. No test failure has been observed. Main bundle remains 506.86 kB minified / 142.10 kB gzip; Vite's >500 kB warning remains.
+- No backend/database/deployment/catalogue changes. Manual keyboard-only and screen-reader acceptance remains unverified.
+- Exact next action: inspect [E2E #750](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/39979019310) until terminal; fix only a reproducible assertion failure. Then continue the student/CBT accessibility audit without speculative dependency changes.
