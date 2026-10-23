@@ -622,6 +622,10 @@ test.describe('ACE JAMB admin operations command center', () => {
     await page.goto('/admin')
     await expect(page.getByRole('heading', { name: 'Admin Dashboard' })).toBeVisible()
     await expect(page.getByRole('heading', { name: 'Operations command center' })).toBeVisible()
+    // Catalogue ingestion was retired from the active frontend; Batch 3 uses the academic workspace.
+    await expect(page.getByRole('heading', { name: 'Admin Catalogue Import' })).toHaveCount(0)
+    await expect(page.getByRole('heading', { name: 'Single-row review-only staging' })).toHaveCount(0)
+    await expect(page.getByRole('heading', { name: 'Stage programmes & UTME requirements' })).toHaveCount(0)
     // Wait until asynchronous count queries settle before asserting their dynamic detail text.
     await expect(page.getByRole('button', { name: 'Refresh status' })).toBeEnabled()
     await expect(page.getByText('No delivery worker is currently listed')).toBeVisible()
