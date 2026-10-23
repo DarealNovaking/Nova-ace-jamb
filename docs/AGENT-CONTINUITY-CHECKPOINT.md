@@ -4,15 +4,16 @@
 
 - **Updated:** 2026-10-23 (UTC; exact time not asserted)
 - **Repository:** `DarealNovaking/Nova-ace-jamb`, branch `main`.
-- **Latest source/test commit under verification:** `85a4b5b1aed59b8d5bfb3e7c09de53d873cdb9af`; prior passing source/test commit was `6c3201ba83d90ab384dae53b6faf724d0d8da8ab`.
+- **Latest source/test commit under verification:** `85a4b5b1aed59b8d5bfb3e7c09de53d873cdb9af`.
 - **User-approved scope:** Frontend only. Do not deploy the app or change backend/database state. The active product no longer uses the catalogue UI.
-- **Current milestone:** Frontend completion acceptance remains OPEN.
-- **Prior verified baseline:** Verify #729 / run `39966265866` PASS. ACE JAMB E2E #662 / run `39966266064` PASS: 64 Playwright tests passed, 0 failed on commit `6c3201b`.
-- **Latest frontend change:** Removed stale `admin-import.html` and `src/admin-import.tsx`; active admin gate no longer renders catalogue import, review-only staging, or IBASS staging. The legacy `/admin-import` path remains a compatibility alias to the authorized admin dashboard. Added E2E assertions for retired UI absence.
-- **Latest CI:** Verify #740 and ACE JAMB E2E #673 were in progress when last checked for commit `85a4b5b`; refresh and confirm final results before calling latest change verified.
-- **Open limitations:** No approved existing deployed frontend URL established; deployment remains out of scope. Provider-dependent payment/referral/AI/audio/notification delivery and production content availability remain unverified. Vite chunk-size warning and prior npm audit findings remain unresolved.
-- **Exact next action:** Poll latest Verify/E2E for `85a4b5b`, fix only reproducible failures, then reconcile the remaining frontend acceptance matrix and update all handoffs. Do not deploy or touch backend/database state.
-- **Evidence correction:** the earlier claim that Playwright artifact trace/context files were inspected is unsupported; the artifact was retrieved but those contents were not verified. Successful runner summaries and job logs are independently checked.
+- **Current milestone:** Integrated whole-product frontend Phase 2; acceptance remains OPEN.
+- **Latest Verify:** #740 / run `39967022806` PASS (Node/Deno checks, typecheck/build, disposable PostgreSQL policy/migration tests).
+- **Latest E2E:** #673 / run `39967023111` still in progress at last check; typecheck/build passed, Playwright/browser-install outcome not yet final.
+- **Current frontend change:** Removed retired catalogue import dashboard components from the active admin UI and deleted stale `admin-import.html` / `src/admin-import.tsx` entrypoints. `/admin-import` remains a compatibility alias to the authorized admin dashboard, and E2E asserts no importer UI appears there.
+- **Prior passing baseline:** commit `6c3201ba83d90ab384dae53b6faf724d0d8da8ab`, Verify #729 and E2E #662 both PASS; 64 Playwright tests passed, 0 failed. This baseline predates the latest entrypoint deletion/route assertion.
+- **Open limitations:** content-driven learning/practice/flashcards/progress require verified published content; provider-dependent payment/referral/AI/audio/notification delivery remains blocked or unverified. Live deployed-browser acceptance is blocked because no approved existing URL is established and deployment is prohibited. Bundle-size warning and prior npm audit findings remain open.
+- **Exact next action:** Poll E2E #673 / run `39967023111`, then reconcile the acceptance matrix in the frontend completion batch. Implement only frontend work backed by verified contracts; do not fabricate JAMB content or provider outcomes. Do not deploy or touch backend/database state.
+- **Evidence correction:** the earlier claim that Playwright artifact trace/context files were inspected is unsupported; the artifact was retrieved but those contents were not verified. Runner summaries and job logs have been independently checked.
 
 ---
 
@@ -1319,3 +1320,34 @@ Check Verify and ACE JAMB E2E on the latest main commit after `cba0c14` and this
 - Latest main CI was reported running: Verify #740 and ACE JAMB E2E #673. These are not verified until final workflow conclusions are read. Prior commit `6c3201ba83d90ab384dae53b6faf724d0d8da8ab` had both workflows pass, including 64 Playwright tests, but does not cover the latest deletions and route assertion.
 - Scope remains frontend-only: no backend functions, database objects/data, migration, workflow, or deployment changes. Unused catalogue component sources and contract tests remain in the repository to avoid deleting backend-adjacent safety coverage; they are no longer rendered or reachable from the active UI.
 - Next action: verify both workflows for `85a4b5b1aed59b8d5bfb3e7c09de53d873cdb9af`, then reconcile the remaining frontend acceptance list. Do not deploy or touch backend/database state.
+
+
+## Whole-product frontend acceptance matrix — evidence snapshot 2026-10-23
+
+This matrix separates what automated mocked-contract CI proves from live/data/provider behavior that remains unavailable or unverified. It is not a declaration that the whole frontend is complete.
+
+| Area | Status | Evidence / remaining boundary |
+|---|---|---|
+| Sign-up/sign-in/recovery, session restore, onboarding and profile save | **Covered by E2E contracts** | Playwright covers account recovery, student entry, first-use onboarding, persistence and error recovery on desktop/mobile. Live email delivery and production-account acceptance are not established by these mocked tests. |
+| Community/channel welcome | **UI covered; membership verification blocked** | Onboarding-to-community flow and the user-supplied official WhatsApp channel URL are tested. A CTA is not membership verification; no server-verifiable membership/group mapping contract is established. |
+| Dashboard/navigation/account settings | **Covered by E2E contracts** | Workspace URL/history, reload persistence, account settings and first-use missing-preferences path are covered. Real student records are not part of the mocked suite. |
+| Learning/syllabus/revision | **Partial; content-dependent** | Published/pending syllabus visibility and honest empty states are tested. Last recorded live audit (2026-10-21) showed 0 topics/subtopics; recheck live data before claiming content availability. |
+| Practice/CBT | **Flow contracts covered; production content blocked** | E2E covers start, resume, answer persistence, expiry/retry and saved result recovery. Last recorded live audit showed 0 published questions and 0 attempts; no official question data may be invented. |
+| Flashcards/progress/adaptive recommendations | **Partial / data-dependent** | Honest no-deck/no-performance states exist. Last recorded live audit showed 0 flashcards and 0 learning-progress rows. Substantive content-driven behavior is unverified until reviewed content and real attempts exist. |
+| Study plan | **Preferences covered; adaptive plan unverified** | Preferences load/save and error handling are covered. Live study plan/item data was empty in the last recorded audit; adaptive recommendations are not proven. |
+| Notifications | **Inbox/preferences UI covered; delivery blocked/unverified** | Student-scoped inbox/read-state and preferences have E2E coverage. No delivery worker/scheduling/push integration was evidenced by the last source/schema audit. |
+| ACE Pass/payments/referrals | **Read-only status UI; transactions/qualification blocked** | Account surfaces read self-scoped rows and show honest empty states. No client-side payment, entitlement, referral qualification or reward writes; provider/webhook verification is not established in the frontend-only scope. |
+| Grounded AI/audio | **Safely unavailable; provider/content contracts missing** | UI does not claim tutor/audio readiness when sources/providers are absent. Last audit showed 0 knowledge sources/chunks and no dedicated AI request or audio delivery service. |
+| Admin/academic | **Authorization and basic operations covered; full command center partial** | Admin/academic access, safe generic error handling, read-only readiness counts and academic authoring routes have E2E coverage. Legacy catalogue import UI and standalone entrypoint were retired; no backend/catalogue objects were deleted. Broader moderation, monetization and delivery operations remain incomplete. |
+| PWA/offline/cache | **Static-shell contract covered** | Playwright checks manifest/service-worker behavior; source excludes auth/API/storage/CBT-sensitive requests from cache. Real-device install/offline behavior remains unverified. |
+| Accessibility/performance | **Partial** | Desktop and Pixel 5 Playwright projects pass on prior source commit. A dedicated manual keyboard/screen-reader/low-end Android audit is not recorded. Build still emits the ~916 kB chunk warning; prior npm audit reported 8 vulnerabilities (2 moderate, 6 high). |
+| Live deployed browser | **Blocked by user scope** | No approved existing deployment URL is established; user explicitly prohibited app deployment. No deployment attempted. |
+
+### Current verification boundary
+- Latest tested source/test commit: `85a4b5b1aed59b8d5bfb3e7c09de53d873cdb9af`.
+- Verify #740 / run `39967022806`: **PASS**.
+- ACE JAMB E2E #673 / run `39967023111`: **IN PROGRESS** at the time of this matrix update; typecheck/build passed and browser installation was still running. Do not claim the latest route assertion passed until E2E finishes.
+- Prior commit `6c3201ba83d90ab384dae53b6faf724d0d8da8ab` passed Verify #729 and E2E #662 (64 passed, 0 failed), but predates removal of the standalone HTML/TSX entrypoint and the added `/admin-import` route guard.
+
+### Next action
+Poll E2E #673 and record its final result. Then prioritize only frontend work supportable by existing real contracts/content; do not invent official content or implement fake provider flows. Phase 2 remains OPEN until this matrix's blocked/partial areas are either completed safely or explicitly accepted as external/backend dependencies. Deployment and backend work remain out of scope.
