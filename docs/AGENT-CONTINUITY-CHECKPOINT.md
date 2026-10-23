@@ -1,25 +1,18 @@
 # ACE JAMB — Current Agent Checkpoint
 
-> Refresh from verified repository/system state at the start and end of meaningful work. This is a navigation aid, not a substitute for source code or live evidence.
+> Refresh from verified repository/system state at the start and end of meaningful work. This checkpoint is the current navigation aid; historical entries below are retained as history and may contain superseded statuses.
 
-- **Updated at (UTC):** 2026-10-19 (exact time not asserted)
+- **Updated at (UTC):** 2026-10-23 (exact time not asserted)
 - **Repository:** `DarealNovaking/Nova-ace-jamb`
-- **Branch / HEAD commit:** `main`; latest HEAD must be refreshed after the catalogue-independent onboarding commits.
-- **Task / milestone:** Multi-agent continuity; Batch 2 catalogue pipeline remains the highest-value product milestone.
-- **Status:** Continuity protocol and role-specific prompt pack committed; catalogue implementation is blocked on live DB inspection and official programme/UTME data validation.
-- **Goal / acceptance criteria:** Agents can switch safely across providers/chats, know who owns integration, avoid duplicate investigations, make scoped changes, verify them, and keep handoff current.
-- **Last verified repository facts:** `main` was observed at `0627479eb5f5ddf891c2f55b2a8325c1137f3ea1` before the new prompt-pack commit. Latest dated progress handoff is `docs/MASTER-HANDOFF-BATCH-2-IBASS-ENDPOINTS-2026-09-16.md`. Master handoff and catalogue import contract were read. Repo `supabase/functions/catalog-import/index.ts` differs materially from the deployed version 7.
-- **Last verified deployed function facts:** `catalog-import` is ACTIVE, version 7, `verify_jwt=true`. Deployed code includes CORS OPTIONS handling, calls caller-JWT `can_manage_catalog`, and stages via `stage_catalog_import`; repository source instead queries `ace.roles`, loads/checks `catalog_sources` and `exam_seasons`, and inserts batches/rows directly. Do not redeploy until the drift is reconciled and the deployed code's source/contract is understood.
-- **Database evidence / limitation:** Attempts to list Supabase migrations and inspect `ace` tables failed with PostgreSQL password-authentication errors (both postgres and read-only DB users). No DB writes were performed. Prior reports of 791 institution rows and zero programme/rule rows are stale until verified through a working live read path.
-- **Official data notes:** `docs/MASTER-HANDOFF-BATCH-2-IBASS-ENDPOINTS-2026-09-16.md` records official JAMB IBASS endpoint discovery and says Batch 2 remains IN PROGRESS, Batch 3 LOCKED. Preserve alternatives/optional UTME subject groups; never guess institution IDs or course rules.
-- **Changes made in this work:** Added `docs/AGENT-PROMPTS.md` with shared rules and role-specific prompts for integrator, Supabase security, catalogue data, frontend, QA, research, code review, and continuity. No app code or database rows changed.
-- **Verification performed:** GitHub read/write tools accessed the private repository; repository metadata showed default branch `main`; read back master handoff, protocol, checkpoint, progress handoff, catalogue contract, UI importer and repository Edge Function source; fetched deployed `catalog-import` metadata/source. Prompt-pack creation returned commit `e8789b4a22869b97bd244eb3800954c9cadf31fc`. Supabase migration/table reads failed authentication. No build, tests, Playwright, data writes, or deployment were run.
-- **Uncommitted work / open PRs:** Not verified. Check current HEAD and open PRs before implementation.
-- **Blockers / required human action:** Restore/fix the Supabase connector's database authentication or provide a supported read-only path. Exact step: open ChatGPT Settings → Plugins/connected Supabase integration (where this connector is configured), reconnect/refresh authorization if offered, then ask the agent to rerun a read-only query. If it still fails, use the Supabase dashboard SQL Editor to run read-only counts for `ace.institutions`, `ace.programs`, and `ace.program_utme_rules`, and share only the results—not passwords, keys, or tokens. Do not change DB passwords or paste secrets into chat unless the integration's secure credential UI explicitly requires it.
-- **Failed approaches:** Supabase `list_migrations` and `list_tables` via the connected tool failed with PostgreSQL password authentication. Do not keep repeating identical calls without reconnecting or using an alternate authorized read path.
-- **Next action:** Restore read-only Supabase access and inspect the live schema/data; in parallel, use a read-only research agent to validate official JAMB programme and eligibility payload shapes. Then reconcile deployed/repo Edge Function drift before any importer code or deployment change.
-- **Do not repeat / safety constraints:** Do not re-upload the institution workbook without evidence it is missing. Do not reopen the resolved admin/student routing issue without new evidence. Do not guess JAMB IDs or UTME combinations. Do not deploy the repository version of `catalog-import` blindly. Do not activate unverified records. Never store secrets or student PII in handoffs.
-- **Definition of done:** Prompt pack exists and is readable; checkpoint reflects verified evidence and honest blockers; next agent has one concrete next action; future meaningful changes update checkpoint and master handoff.
+- **Branch / latest verified source HEAD:** `main`; latest source/test commit `adaec568f7b678ca3c911cccf65ca1d4f02cf247`.
+- **Current user-approved scope:** Finish the frontend acceptance work only. Do not deploy the app or touch backend/database state. Catalogue ingestion and other backend tasks are out of scope for this continuation.
+- **Current milestone:** Frontend Phase 2 closeout; still OPEN.
+- **Verified baseline:** Verify #719 / run `39964865822` passed on the academic authorization error hardening commit. ACE JAMB E2E #652 / run `39964865810` had typecheck/build passed and browser installation in progress at the last status check; Playwright remains pending/unverified until refreshed.
+- **Latest frontend change:** `AcademicFoundationGate` now uses a generic authorization-verification error instead of exposing raw caught RPC/database error messages; a Playwright regression test covers that behavior. Commits: `178709e5059fe4fb31b79480315dac628228caeb`, `adaec568f7b678ca3c911cccf65ca1d4f02cf247`.
+- **Previously verified frontend checks:** Verify #706 / run `39963740781` and ACE JAMB E2E #639 / run `39963740632` passed on `1763de8ad72a2c486907a7643ea3865fdbd5a0ea`. These do not replace the pending run on latest main.
+- **Known unresolved:** Vite build warns about a ~916 kB minified chunk; npm audit previously reported 8 vulnerabilities (2 moderate, 6 high). No automatic dependency updates made. Live provider-dependent payment/referral/AI/audio/notification behavior and production content availability remain unverified. No approved existing deployed URL was found; do not deploy to close this gap.
+- **Next action:** Refresh E2E run `39964865810`; confirm the full Playwright suite result on latest main. Fix only reproducible frontend defects. Then update this checkpoint, master handoff and current frontend handoff with final evidence and decide whether remaining unverified production-only checks keep Phase 2 open.
+- **Safety constraints:** Do not deploy, change backend/database state, guess official JAMB data, or claim production behavior from mocked tests. Never store secrets or student PII.
 
 
 ## Anti-drift prompt update — 2026-10-18
@@ -1274,3 +1267,13 @@ Check Verify and ACE JAMB E2E on the latest main commit after `cba0c14` and this
 - Searched repository references for a currently configured frontend deployment URL; no Cloudflare Pages, Vercel or Netlify frontend URL was found. The user instruction to remove app-deployment work remains in force. Therefore live deployed-browser acceptance is **BLOCKED/UNVERIFIED** without an already-existing approved URL; no deployment was attempted.
 - No new source defect was established in this read-only acceptance pass. This is not whole-product completion: provider-dependent payment/referral/AI/audio/notification delivery and production content availability remain unverified.
 - Next action: continue the remaining frontend acceptance matrix using existing source/CI coverage, and perform live browser acceptance only if an existing approved URL is documented/provided. Do not create a deployment or touch backend state.
+
+
+## Academic editor authorization error hardening — 2026-10-23
+
+- Read-only review found `AcademicFoundationGate` rendered caught authorization/RPC errors using `caught.message`, unlike the admin gate's generic safe error. Changed it to show only “Unable to verify academic editor access. Please try again.”
+- Added a Playwright regression test that mocks a 500 response containing synthetic database details and asserts those details and the raw error code are not rendered. All Supabase calls remain intercepted; no production data is used.
+- Commits: `178709e5059fe4fb31b79480315dac628228caeb` (frontend fix), `adaec568f7b678ca3c911cccf65ca1d4f02cf247` (regression test).
+- Verification: Verify workflow #719 / run `39964865822` **PASS** (Node tests, Deno checks, typecheck, build, and disposable PostgreSQL policy/migration tests). ACE JAMB E2E #652 / run `39964865810` had typecheck and build pass; browser installation was still in progress at the last check, so Playwright outcome is **PENDING/UNVERIFIED**.
+- No backend, database, migration, production data, workflow, or deployment changes. App deployment remains explicitly out of scope. Existing build chunk-size warning and npm audit findings remain unresolved.
+- Phase 2 remains **OPEN**. Exact next action: refresh run `39964865810`, inspect Playwright results for the new academic-authorization regression and the full desktop/mobile suite, fix only reproducible failures, then update the checkpoint and handoffs with the final run evidence.
