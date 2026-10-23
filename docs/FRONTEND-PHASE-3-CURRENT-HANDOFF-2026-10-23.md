@@ -121,3 +121,12 @@ Proceed to the source-based keyboard/semantic audit of student workspace and CBT
 - `smoke.spec.ts` commit `4ad0acef545eca041fd1d31fb6dc28a315569523` covers these semantics. E2E #749 passed with 66 tests on the source commit; Verify #816 and #817 passed. E2E #750 for the new assertions remained at browser installation when checked. [E2E #750](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/39979019310).
 - Bundle after route/workspace splitting: main JS 506.86 kB / 142.10 kB gzip; >500 kB Vite warning remains. No deploy/backend/database/catalogue work.
 - Next: inspect E2E #750 terminal result; then continue keyboard and screen-reader source review.
+
+
+## Phase 3 accessibility follow-up — 2026-10-23
+
+- Source commits: `341b40b317f7d08f804dbfb9808569b8f4c52e16` adds `aria-pressed` to selected verified-syllabus topic buttons in `src/components/StudentStudyWorkspace.tsx`; `417710238550ee0a537b4ef95e21152e20960000` adds a polite atomic status announcement while a CBT answer is being saved and explicit `type="button"` to CBT Previous/Next/Submit controls in `src/components/PersistentCBT.tsx`.
+- Regression test commit: `9fcf5bcd1d05f9f8073c955e1815446e476b5305` delays the mocked `save_attempt_answer` response and asserts the save status is announced and cleared after the save. All test traffic remains mocked; no production data is accessed.
+- **CI status at documentation time:** E2E #755 / Verify #822 were in progress on workspace source commit `341b40b`; E2E #756 / Verify #823 were queued on CBT source commit `4177102`; E2E #757 / Verify #824 were queued on test commit `9fcf5bc`. Do not treat this change as verified until the latest E2E and Verify runs complete successfully.
+- No backend/database, catalogue, or deployment changes. Manual keyboard/screen-reader and real-device checks remain unverified.
+- Next action: inspect CI for `9fcf5bc`; fix only reproducible failures. Then continue source-based audit and measure bundle composition from actual build output before optimization.
