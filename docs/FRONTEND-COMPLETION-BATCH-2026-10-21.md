@@ -609,3 +609,13 @@ Check Verify and ACE JAMB E2E on the latest main commit after `cba0c14` and this
 - The active admin dashboard no longer renders the retired catalogue import, single-row staging, or IBASS staging workflows. This is only a frontend visibility change; underlying legacy component files/backend functions/database objects were not deleted or changed.
 - No deployment or production/backend/database change was made. Build chunk-size warning and previous npm audit findings remain unresolved. Live deployed-browser acceptance and live provider integrations remain unverified because app deployment is out of scope.
 - **Next action:** continue reconciling the remaining frontend acceptance matrix from existing source and CI evidence; mark each item covered, blocked, or unverified. Phase 2 remains OPEN until the remaining acceptance criteria are reconciled; do not deploy or touch backend state.
+
+
+## Legacy catalogue entrypoint removal — 2026-10-23
+
+- Further source review found the old standalone `admin-import.html` and `src/admin-import.tsx` still presented a catalogue import page even after the active admin dashboard had stopped rendering the catalogue workflows. Deleted both stale entrypoint files.
+- Added a Playwright assertion that the legacy `/admin-import` URL resolves to the normal authorized admin dashboard and never renders catalogue or IBASS staging UI. The active route alias is intentionally retained for compatibility; it no longer exposes the retired importer.
+- Commits: `d9b4e576bc3fc5802cc30ed786e37aeea59e23cf` (remove HTML entrypoint), `df44ebea2a27cbb62f2327ef45fd4177bc5b94a8` (remove TSX entrypoint), `85a4b5b1aed59b8d5bfb3e7c09de53d873cdb9af` (E2E route guard).
+- Latest main CI was reported running: Verify #740 and ACE JAMB E2E #673. These are not verified until final workflow conclusions are read. Prior commit `6c3201ba83d90ab384dae53b6faf724d0d8da8ab` had both workflows pass, including 64 Playwright tests, but does not cover the latest deletions and route assertion.
+- Scope remains frontend-only: no backend functions, database objects/data, migration, workflow, or deployment changes. Unused catalogue component sources and contract tests remain in the repository to avoid deleting backend-adjacent safety coverage; they are no longer rendered or reachable from the active UI.
+- Next action: verify both workflows for `85a4b5b1aed59b8d5bfb3e7c09de53d873cdb9af`, then reconcile the remaining frontend acceptance list. Do not deploy or touch backend/database state.
