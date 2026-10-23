@@ -75,7 +75,7 @@ export default function AdminOperationsOverview() {
     { label: 'Pending payments', value: metrics.pendingPayments, detail: 'Server-side verification required', icon: Activity },
     { label: 'Notification records', value: metrics.notificationRecords, detail: 'No delivery worker is currently listed', icon: BellRing },
     { label: 'Active referral campaigns', value: metrics.activeReferralCampaigns, detail: metrics.activeReferralCampaigns === 0 ? 'No reward target should be shown' : 'Campaign configuration count', icon: Gift },
-    { label: 'Rights-cleared knowledge sources', value: metrics.approvedKnowledgeSources, detail: metrics.approvedKnowledgeSources === 0 ? 'Grounded student AI stays disabled' : 'Active approved sources', icon: BrainCircuit },
+    { label: 'Rights-cleared knowledge sources', value: metrics.approvedKnowledgeSources, detail: metrics.approvedKnowledgeSources === 0 ? 'Grounded student AI stays disabled' : metrics.approvedKnowledgeSources === null ? 'Readiness unavailable; student AI stays disabled' : 'Active approved sources; provider and request gates still required', icon: BrainCircuit },
     { label: 'Enabled AI providers', value: metrics.enabledAiProviders, detail: 'Provider alone does not enable student AI', icon: BrainCircuit },
     { label: 'Active flashcards', value: metrics.activeFlashcards, detail: 'Only active cards counted', icon: Database },
     { label: 'Registered devices', value: metrics.registeredDevices, detail: 'Device records; not proof of push delivery', icon: Smartphone },
