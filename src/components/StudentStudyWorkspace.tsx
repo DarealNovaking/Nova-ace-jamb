@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import StudentStudyPlan from './StudentStudyPlan'
 import { ArrowLeft, BookOpen, Brain, CalendarDays, CheckCircle2, Clock3, Layers3, ListChecks, Sparkles, Target, Trophy } from 'lucide-react'
 
@@ -32,6 +32,11 @@ export default function StudentStudyWorkspace({ mode, subjects, topics, onBack, 
   )
   const activeMode = modes.find((item) => item.id === mode) ?? modes[0]
   const Icon = activeMode.icon
+  const headingRef = useRef<HTMLHeadingElement>(null)
+
+  useEffect(() => {
+    headingRef.current?.focus()
+  }, [mode])
 
   return (
     <main className="min-h-screen bg-[#07050d] px-4 py-6 text-white sm:px-6 sm:py-10">
@@ -40,7 +45,7 @@ export default function StudentStudyWorkspace({ mode, subjects, topics, onBack, 
           <div>
             <button type="button" onClick={onBack} className="mb-4 inline-flex items-center gap-2 text-sm text-white/55 hover:text-white"><ArrowLeft size={16}/> Dashboard</button>
             <p className="text-xs uppercase tracking-[.22em] text-purple-300/70">ÑØVÃ · ACE JAMB</p>
-            <h1 className="mt-2 flex items-center gap-3 text-3xl font-black sm:text-4xl"><Icon className="text-purple-200" size={30}/>{activeMode.label}</h1>
+            <h1 ref={headingRef} tabIndex={-1} className="mt-2 flex items-center gap-3 text-3xl font-black outline-none sm:text-4xl"><Icon aria-hidden="true" className="text-purple-200" size={30}/>{activeMode.label}</h1>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-white/50">Your preparation workspace uses your saved subjects and verified published content. Unpublished material is never presented as official syllabus content.</p>
           </div>
           <button type="button" onClick={() => onStartCbt('cbt')} className="inline-flex items-center justify-center gap-2 rounded-xl bg-purple-300 px-4 py-3 text-sm font-bold text-[#120b1c] hover:bg-purple-200"><Brain size={16}/> Open CBT</button>
