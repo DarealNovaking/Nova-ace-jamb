@@ -1,9 +1,6 @@
 import { useEffect, useState } from 'react'
 import { ace, supabase } from '../lib/supabase'
 import { getCurrentUser } from '../lib/authService'
-import AdminCatalogueImport from './AdminCatalogueImport'
-import AdminIbassStage from './AdminIbassStage'
-import AdminReviewOnlyStage from './AdminReviewOnlyStage'
 import AdminOperationsOverview from './AdminOperationsOverview'
 
 export default function AdminFoundationGate() {
@@ -79,7 +76,7 @@ export default function AdminFoundationGate() {
           <div>
             <p className="text-xs uppercase tracking-[.2em] text-purple-300/70">ÑØVÃ ACE JAMB · Administration</p>
             <h1 className="mt-2 text-4xl font-black">Admin Dashboard</h1>
-            <p className="mt-2 text-white/50">Manage secure imports, source review, and academic content.</p>
+            <p className="mt-2 text-white/50">Review operational readiness and manage academic structure.</p>
           </div>
           <div className="flex flex-wrap gap-2"><a href="/admin-academic" className="w-fit rounded-xl border border-purple-300/25 bg-purple-500/10 px-4 py-2 text-sm font-semibold text-purple-100 hover:bg-purple-500/20">Academic Structure</a><button type="button" onClick={signOut} className="w-fit rounded-xl border border-white/10 px-4 py-2 text-sm font-semibold hover:bg-white/5">Sign out</button></div>
         </header>
@@ -91,9 +88,6 @@ export default function AdminFoundationGate() {
         </div>
 
         <AdminOperationsOverview />
-        <AdminReviewOnlyStage />
-        <AdminCatalogueImport />
-        <AdminIbassStage />
       </div>
     </main>
   )
