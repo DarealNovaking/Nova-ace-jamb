@@ -3299,3 +3299,10 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - Commits: test `9b426edc4381fabb673c7d0df251828dd927f074`; CI wiring `75b14bc1564456e7108a79bd1bca263359d1e723`. CI verification is **PENDING** at this note; check Actions for the current `main` HEAD before claiming the new test passes.
 - No runtime application behavior, dependencies, backend/database state, catalogue UI, or deployment configuration was changed. Frontend-only scope remains in force.
 - **Exact next action:** inspect Verify and ACE JAMB E2E workflows triggered by `75b14bc`. If Verify fails, correct only a reproduced test/contract mismatch; if green, keep real-device PWA/offline and screen-reader acceptance unverified until hands-on checks occur.
+
+
+## PWA contract CI result — 2026-10-23
+
+- Verify #885, run `39994246802`, completed **PASS** on commit `75b14bc1564456e7108a79bd1bca263359d1e723`. Confirmed successful steps: the expanded Node test command including `tests/pwa-contract.test.mjs`, both Deno checks, TypeScript typecheck, Vite build, and both disposable PostgreSQL migration/policy tests. This verifies the static source-contract checks only, not live service-worker/browser/offline behavior.
+- ACE JAMB E2E #818, run `39994246766`, was still **in progress at Playwright browser installation** at the time of this update. Do not claim E2E passed for this change until the browser tests complete.
+- **Next action:** poll E2E #818 and the current-main E2E run; if a run fails, inspect the failed step and logs before changing code. Keep physical-device PWA/offline and screen-reader acceptance open.
