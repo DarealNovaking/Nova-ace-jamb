@@ -3458,3 +3458,13 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - Older Batch 2 review-only component remains on branch `feat/batch2-review-only-staging` and is not integrated into current `main`; it is not the next action under the current Phase 3 checkpoint. Keep it isolated and do not merge/deploy it as complete. It remains blocked by the AppDeploy-vs-Supabase auth boundary, and no production data was changed.
 - No application code or production state changed in this continuation. No tests were run locally because the connected GitHub tools provide file/status retrieval but no repository checkout/test runner; do not mark code-level tests as run.
 - Next action: inspect GitHub Actions directly for current-main HEAD `5b81fb2b507aa800d8043c637e7b1a8c7bd1274c` (Verify and ACE JAMB E2E). Once terminal outcomes are known, continue the next bounded frontend accessibility audit; keep manual keyboard-only, actual screen-reader, physical low-end Android, and real-device PWA/offline checks open until performed.
+
+
+## Workspace lazy-loading landmark accessibility fix — 2026-10-24
+
+- Source-based Phase 3 audit found that the lazy-loaded study workspace's `Suspense` fallback in `src/components/StudentDashboard.tsx` used a generic `div` while loading. During that interval, the page temporarily lacked the workspace's main landmark and did not expose a busy main region.
+- Changed the fallback to a `main` landmark with `id="workspace-content"`, `aria-busy="true"`, and the existing polite atomic loading status. The loaded `StudentStudyWorkspace` retains the same target ID and skip link; the change does not alter routing, auth, data, or runtime feature behavior.
+- Source commit: `5a40cf658a652e816dd3f5f9973ef0234848bb66`. CI verification is pending at the time of this note; do not claim this specific change passed until current-HEAD Verify and E2E runs finish.
+- Prior baseline at commit `5b81fb2b507aa800d8043c637e7b1a8c7bd1274c`: Verify #939 and ACE JAMB E2E #872 both passed. Those results predate this source change.
+- No local test runner/repository checkout is available through the current connected GitHub tools. No backend/database, catalogue, dependency, deployment, or production-data changes were made.
+- **Next action:** inspect Verify and ACE JAMB E2E runs for commit `5a40cf658a652e816dd3f5f9973ef0234848bb66`; if both pass, record their terminal results and continue the next bounded accessibility audit. Manual keyboard-only, actual screen-reader, physical low-end Android, and real-device PWA/offline acceptance remain unverified.
