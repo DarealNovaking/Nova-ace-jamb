@@ -103,7 +103,7 @@ export default function StudentStudyPlan({ subjects }: { subjects: Subject[] }) 
         <p className="text-xs text-white/35">{selectedDays.length} study day{selectedDays.length === 1 ? '' : 's'} selected · {dailyMinutes || 0} minutes per selected day</p>
         <button type="button" onClick={() => void savePlan()} disabled={loading || saving || !Number.isInteger(dailyMinutes) || dailyMinutes < 1 || dailyMinutes > 1440} className="inline-flex items-center justify-center gap-2 rounded-xl bg-purple-300 px-4 py-3 text-sm font-bold text-[#120b1c] transition hover:bg-purple-200 disabled:cursor-not-allowed disabled:opacity-40">{saving ? <Loader2 size={16} className="animate-spin"/> : <Save size={16}/>} {saving ? 'Saving…' : 'Save study preferences'}</button>
       </div>
-      {loading && <p className="mt-4 flex items-center gap-2 text-sm text-white/45"><Loader2 size={15} className="animate-spin"/> Loading your saved preferences…</p>}
+      {loading && <p role="status" aria-live="polite" aria-atomic="true" className="mt-4 flex items-center gap-2 text-sm text-white/45"><Loader2 aria-hidden="true" size={15} className="animate-spin"/> Loading your saved preferences…</p>}
     </section>
   )
 }
