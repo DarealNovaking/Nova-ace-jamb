@@ -110,7 +110,7 @@ Inspect the E2E job annotations/start reason at the job link above. When a runne
 - Added E2E assertions that the active admin dashboard does not render the retired “Admin Catalogue Import”, “Single-row review-only staging”, or “Stage programmes & UTME requirements” workflows.
 - Commits: `0eb373ae1393bfab0dbae8edf856f9617a698e72` (active admin UI) and `6c3201ba83d90ab384dae53b6faf724d0d8da8ab` (regression assertions).
 - This is a frontend-only visibility change. It does not delete backend functions, database objects, catalogue component source files, or data; no backend/DB/deployment changes were made. The legacy `/admin-import` path still resolves to the admin gate, but the retired catalogue workflows are no longer rendered there.
-- Latest GitHub Actions verification: Verify #729 / run `39966265866` **PASS** and ACE JAMB E2E #662 / run `39966266064` **PASS** (64 Playwright tests passed, 0 failed).
+- Latest source/test commit `85a4b5b` is also verified: Verify #740 / run `39967022806` **PASS** and ACE JAMB E2E #673 / run `39967023111` **PASS** (64 Playwright tests passed, 0 failed).
 - **Next action:** reconcile the remaining frontend acceptance matrix, recording each item as covered, blocked, or unverified. Phase 2 remains OPEN pending remaining frontend acceptance-matrix reconciliation; deployment remains out of scope.
 
 
@@ -129,7 +129,7 @@ Inspect the E2E job annotations/start reason at the job link above. When a runne
 - Further source review found the old standalone `admin-import.html` and `src/admin-import.tsx` still presented a catalogue import page even after the active admin dashboard had stopped rendering the catalogue workflows. Deleted both stale entrypoint files.
 - Added a Playwright assertion that the legacy `/admin-import` URL resolves to the normal authorized admin dashboard and never renders catalogue or IBASS staging UI. The active route alias is intentionally retained for compatibility; it no longer exposes the retired importer.
 - Commits: `d9b4e576bc3fc5802cc30ed786e37aeea59e23cf` (remove HTML entrypoint), `df44ebea2a27cbb62f2327ef45fd4177bc5b94a8` (remove TSX entrypoint), `85a4b5b1aed59b8d5bfb3e7c09de53d873cdb9af` (E2E route guard).
-- Latest main CI was reported running: Verify #740 and ACE JAMB E2E #673. These are not verified until final workflow conclusions are read. Prior commit `6c3201ba83d90ab384dae53b6faf724d0d8da8ab` had both workflows pass, including 64 Playwright tests, but does not cover the latest deletions and route assertion.
+- Latest CI for this change is verified: Verify #740 / run `39967022806` PASS and ACE JAMB E2E #673 / run `39967023111` PASS (64 Playwright tests passed, 0 failed).
 - Scope remains frontend-only: no backend functions, database objects/data, migration, workflow, or deployment changes. Unused catalogue component sources and contract tests remain in the repository to avoid deleting backend-adjacent safety coverage; they are no longer rendered or reachable from the active UI.
 - Next action: verify both workflows for `85a4b5b1aed59b8d5bfb3e7c09de53d873cdb9af`, then reconcile the remaining frontend acceptance list. Do not deploy or touch backend/database state.
 
@@ -163,3 +163,13 @@ This matrix separates what automated mocked-contract CI proves from live/data/pr
 
 ### Next action
 Poll E2E #673 and record its final result. Then prioritize only frontend work supportable by existing real contracts/content; do not invent official content or implement fake provider flows. Phase 2 remains OPEN until this matrix's blocked/partial areas are either completed safely or explicitly accepted as external/backend dependencies. Deployment and backend work remain out of scope.
+
+
+## Legacy importer retirement — CI result and deployment audit — 2026-10-23
+
+- Tested source/test commit `85a4b5b1aed59b8d5bfb3e7c09de53d873cdb9af` passed **Verify #740 / run `39967022806`** and **ACE JAMB E2E #673 / run `39967023111`**.
+- E2E job logs were fetched after completion: **64 Playwright tests passed in 44.4 seconds, 0 failed**. Typecheck, build, browser installation and browser tests all completed successfully. The new assertions confirm the retired catalogue UI is absent from `/admin` and `/admin-import` resolves only to the normal authorized admin dashboard.
+- Read-only path checks on current main returned 404 for `.github/workflows/deploy-production.yml`, `wrangler.jsonc`, `backend/index.ts`, and `src/App.tsx`; `package.json` has no deploy script and `src/vite-env.d.ts` has no AppDeploy shim. This confirms the deployment workflow/config and legacy entrypoint are absent from the current branch. Historical deployment references in old handoff notes are archival; do not recreate deployment assets.
+- Updated `README.md` to reflect Phase 1's verified mocked-contract closure, the still-open integrated whole-product frontend batch, the retired importer route, and the explicit no-deploy boundary. README and handoff changes after `85a4b5b` are documentation-only; the tested application source did not change.
+- No backend, database, production data, migration, or deployment changes were made. Phase 2 remains OPEN: content-driven learning/practice/flashcards/progress, provider-dependent payment/referral/AI/audio/push delivery, full admin operations and live deployed acceptance are blocked or unverified under current scope. See the acceptance matrix above.
+- **Next action:** continue only with frontend improvements supported by existing verified content/contracts; otherwise record the exact backend/content dependency and leave the feature honestly unavailable. Do not deploy or touch backend/database state.
