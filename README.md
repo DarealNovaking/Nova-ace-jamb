@@ -25,7 +25,7 @@ The GitHub repository is the source of truth. The current frontend uses React, T
 
 ## Current milestone status
 
-**Phase 1 (frontend acceptance batches 1–5) is closed for the verified mocked-contract scope. Frontend Phase 2 is now closed for the authorized frontend-only scope, with explicit exceptions carried forward to Phase 3.** CI verifies the frontend against mocked service contracts; it does not prove live content or provider integrations exist. Content-driven learning/practice/progress, payment/referral/AI/audio/notification delivery, expanded admin operations, manual accessibility and real-device PWA acceptance remain incomplete or unverified as recorded in the master handoff. Do not fabricate official JAMB content or present fixtures as production data.
+**Phase 1 (frontend acceptance batches 1–5) and Frontend Phase 2 are closed for their verified/authorized scopes. Frontend Phase 3 is now in progress**, beginning with accessible loading feedback and regression coverage. CI for the new Phase 3 source/test commits is pending. CI verifies the frontend against mocked service contracts; it does not prove live content or provider integrations exist. Content-driven learning/practice/progress, payment/referral/AI/audio/notification delivery, expanded admin operations, manual accessibility and real-device PWA acceptance remain incomplete or unverified as recorded in the master handoff. Do not fabricate official JAMB content or present fixtures as production data.
 
 The user has explicitly kept app deployment out of scope. Deployment workflows/configuration and the legacy AppDeploy entrypoint were removed; do not recreate or deploy the app unless the user explicitly reverses that instruction.
 
@@ -52,3 +52,8 @@ GitHub Actions also runs parser/contract tests and SQL policy/migration tests ag
 - Keep authorization and scoring decisions server-authoritative.
 - Publish only reviewed content with an approved rights status.
 - Do not invent official syllabus records, UTME combinations, questions or answer explanations.
+
+
+## Frontend Phase 3
+
+Current work prioritizes accessible async feedback, keyboard/semantic navigation, measurable performance, and frontend UX improvements backed by existing contracts. See the master handoff and continuity checkpoint for current status. Do not deploy, modify backend/database state, revive catalogue UI, or fabricate JAMB content/provider outcomes.
