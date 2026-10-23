@@ -40,6 +40,7 @@ export default function StudentStudyWorkspace({ mode, subjects, topics, onBack, 
 
   return (
     <main className="min-h-screen bg-[#07050d] px-4 py-6 text-white sm:px-6 sm:py-10">
+      <a className="skip-link" href="#workspace-content">Skip to workspace content</a>
       <div className="mx-auto max-w-6xl">
         <header className="mb-7 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
@@ -58,6 +59,7 @@ export default function StudentStudyWorkspace({ mode, subjects, topics, onBack, 
           })}
         </nav>
 
+        <div id="workspace-content" tabIndex={-1} className="outline-none">
         {mode === 'learn' && <section className="grid gap-5 lg:grid-cols-[.85fr_1.15fr]">
           <div className="glass-card rounded-3xl p-5 sm:p-6">
             <div className="flex items-center gap-3"><BookOpen className="text-purple-200"/><h2 className="text-xl font-black">Verified topics</h2></div>
@@ -79,6 +81,7 @@ export default function StudentStudyWorkspace({ mode, subjects, topics, onBack, 
         {mode === 'progress' && <section className="glass-card rounded-3xl p-6 sm:p-8"><div className="flex items-center gap-3"><Trophy className="text-purple-200"/><h2 className="text-2xl font-black">Your progress</h2></div><p className="mt-3 text-sm leading-6 text-white/50">Progress should be calculated from your real saved answers and completed attempts—not sample numbers.</p><div className="mt-6 grid gap-3 sm:grid-cols-3">{[{label:'Saved subjects',value:String(subjects.length)},{label:'Approved topics',value:String(topics.length)},{label:'Verified performance',value:'Not available yet'}].map((item) => <div key={item.label} className="rounded-2xl border border-white/10 bg-white/[.025] p-5"><p className="text-sm text-white/45">{item.label}</p><p className="mt-3 text-xl font-black">{item.value}</p></div>)}</div><p className="mt-5 text-sm leading-6 text-white/45">Attempt scores and mastery trends will appear when saved attempt data is available to the student analytics view.</p></section>}
 
         {mode === 'plan' && <StudentStudyPlan subjects={subjects} />}
+        </div>
 
       </div>
     </main>
