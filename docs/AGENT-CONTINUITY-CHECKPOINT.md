@@ -1706,3 +1706,12 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - No source-code changes, backend/database changes, deployment, or production mutation were made in this continuation.
 - Open acceptance gates: manual keyboard-only navigation; real screen-reader behavior; physical low-end Android; real-device PWA/offline installation and recovery. Dependency audit debt remains open. CI is mocked and does not prove live Supabase/provider/content correctness.
 - Exact next action: measure and attribute the current build's entry chunk to actual modules; only then decide whether a narrowly scoped frontend optimization is justified. Continue updating both master handoff and checkpoint after meaningful work.
+
+
+## Bundle investigation checkpoint — 2026-10-24
+
+- Retrieved current-main E2E #859 build logs (run `40002624496`, job `120582364412`). Build transformed 1,644 modules; entry bundle is 507.56 kB minified / 142.26 kB gzip; CSS 21.51 kB / 5.27 kB gzip. CBT, student workspace, admin and academic gate are already separate lazy chunks (12.11, 17.91, 10.36 and 19.71 kB respectively, minified).
+- Typecheck PASS, build PASS, Playwright PASS (**76 tests passed**). Build time 3.69 s. The warning is real, but current log does not attribute bytes to individual modules; no root cause or safe split can yet be asserted.
+- CI's npm install reported 4 vulnerabilities (3 moderate, 1 high). This differs from the older handoff audit; current full audit details remain unverified.
+- No source change or dependency was introduced. No deployment, backend/database/catalogue change, or production mutation.
+- **Next action:** obtain module-level size attribution with a reproducible non-production analysis method. Then make only an evidence-backed, narrow optimization and rerun typecheck/build/E2E. Do not add speculative manual chunk rules. Manual screen-reader/device/PWA acceptance remains open.
