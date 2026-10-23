@@ -1656,3 +1656,9 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - No backend/database, deployment, catalogue UI, dependency, or production-data changes. Phase 3 remains IN PROGRESS.
 - Manual gates still open: full keyboard-only acceptance, actual screen-reader test, low-end physical Android, and real-device PWA install/offline recovery.
 - **Exact next action:** poll the E2E and Verify runs for the test commit and current `main`; fix only evidence-backed failures and then update all three handoffs with terminal results.
+
+## Reduced-motion test CI status update — 2026-10-23
+
+- Verify #904 (`40000305709`) passed on `a389b2faaedc36c8a2b3510ab937eba5c4bdf069`; Node tests, Deno checks, typecheck, build, and disposable PostgreSQL migration/policy checks all completed successfully.
+- ACE JAMB E2E #837 (`40000305699`) was still in progress during Playwright browser installation. The new reduced-motion browser assertion remains **unverified** until E2E completes. Check current-main workflow runs after docs updates.
+- **Exact next action:** inspect E2E #837 and newest E2E run; diagnose any failing assertion from the report/log before modifying code.
