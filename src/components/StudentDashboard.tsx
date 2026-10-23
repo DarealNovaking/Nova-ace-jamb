@@ -25,6 +25,8 @@ export default function StudentDashboard() {
       ? requested as StudentWorkspaceMode
       : 'home'
   })
+  const dashboardHeadingRef = useRef<HTMLHeadingElement>(null)
+  const previousActiveView = useRef(activeView)
 
   async function loadDashboard() {
     const sequence = ++loadSequence.current
@@ -83,6 +85,11 @@ export default function StudentDashboard() {
   useEffect(() => { void loadDashboard() }, [])
 
   useEffect(() => {
+    if (activeView === 'home' && previousActiveView.current !== 'home') dashboardHeadingRef.current?.focus()
+    previousActiveView.current = activeView
+  }, [activeView])
+
+  useEffect(() => {
     const validModes: StudentWorkspaceMode[] = ['learn', 'practice', 'revision', 'flashcards', 'progress', 'plan']
     const syncFromUrl = () => {
       const requested = new URLSearchParams(window.location.search).get('view')
@@ -125,7 +132,7 @@ export default function StudentDashboard() {
         <header className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-xs uppercase tracking-[.22em] text-purple-300/70">ÑØVÃ · ACE JAMB</p>
-            <h1 className="mt-3 text-3xl font-black sm:text-5xl">Welcome back, {name}.</h1>
+            <h1 ref={dashboardHeadingRef} tabIndex={-1} className="mt-3 text-3xl font-black sm:text-5xl">Welcome back, {name}.</h1>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-white/55">Your preparation space. Learn from verified syllabus content when available, and practise through saved CBT sessions.</p>
           </div>
           <button type="button" onClick={() => void loadDashboard()} className="inline-flex w-fit items-center gap-2 rounded-xl border border-white/10 px-4 py-3 text-sm font-semibold hover:bg-white/5"><RefreshCw size={16}/> Refresh</button>
