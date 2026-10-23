@@ -520,3 +520,11 @@ Check Verify and ACE JAMB E2E on the latest main commit after `cba0c14` and this
 - User instruction: defer the full typecheck/build/Playwright/deployed acceptance suite until the end of Phase 2. This investigation used read-only database queries only; no tests were run.
 - Phase 2 is still OPEN. Backend-dependent notification delivery/scheduling, payments, referral qualification/rewards, grounded AI retrieval, audio delivery, and PWA/browser acceptance are not proven complete by their status UI.
 - Exact next action: continue implementation without re-uploading the institution workbook; reconcile the deployed IBASS/catalog-import contracts and use the authenticated admin staging flow to ingest official programme and UTME-rule data, preserving unresolved/alternative subject requirements. Record batch IDs/statuses and verify only through read-only counts. Perform the agreed full test matrix at the end.
+
+
+## Current Phase 2 runner status — 2026-10-23
+- Current main HEAD observed: `0cf9fe0aae55a5f7a907a09503dc239d63d89598` (the documentation-only current-handoff commit follows this observed HEAD).
+- Verify run `39810652243` passed, including typecheck, build and reported Node/Deno/SQL checks.
+- E2E run `39810652048`, job `119935661138`, failed before steps started (`steps: []`, no runner assigned). No Playwright assertions executed; exact runner-start cause is unconfirmed. User previously reported Actions billing/spending restrictions, which should be checked rather than assumed as confirmed for this job.
+- Phase 2 remains OPEN pending actual Playwright desktop/mobile and deployed-flow acceptance. No application source, database rows, migrations or deployment changed in this investigation.
+- Next action: inspect job annotations, get a runner to execute E2E on current main, review results for student navigation/settings, admin access and PWA, fix reproducible defects, then record actual run IDs. See `docs/FRONTEND-PHASE-2-CURRENT-HANDOFF-2026-10-23.md` for the current concise status and anti-drift instructions.
