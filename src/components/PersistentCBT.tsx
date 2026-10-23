@@ -184,21 +184,21 @@ export default function PersistentCBT({ attemptId = null, questionCount = 20, du
   return <div className="space-y-5">
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div><p className="text-xs uppercase tracking-[.2em] text-purple-300/70">Persistent CBT</p><h1 className="mt-1 text-3xl font-black">JAMB simulation</h1></div>
-      <div className={`rounded-xl px-4 py-2 font-mono ${remaining < 60 ? 'bg-red-500/20 text-red-200' : 'bg-white/5'}`}><Clock3 className="mr-2 inline" size={16}/>{formatTime(remaining)}</div>
+      <div role="timer" aria-label={`Time remaining ${formatTime(remaining)}`} className={`rounded-xl px-4 py-2 font-mono ${remaining < 60 ? 'bg-red-500/20 text-red-200' : 'bg-white/5'}`}><Clock3 aria-hidden="true" className="mr-2 inline" size={16}/>{formatTime(remaining)}</div>
     </div>
     {error && <div role="alert" className="rounded-xl border border-red-400/20 bg-red-500/10 p-3 text-sm text-red-100">{error}</div>}
     <div className="grid gap-5 lg:grid-cols-[1fr_230px]">
       <section className="glass-card rounded-3xl p-6">
         <div className="flex items-center justify-between text-xs text-white/40"><span>Question {current + 1} of {questions.length}</span><span>{attempt.answered_count} answered</span></div>
-        <h2 className="mt-5 text-xl font-bold leading-8">{question.text}</h2>
-        <div className="mt-6 grid gap-3">{optionKeys.map((key) => {
+        <h2 id="cbt-question-title" className="mt-5 text-xl font-bold leading-8">{question.text}</h2>
+        <div role="group" aria-labelledby="cbt-question-title" className="mt-6 grid gap-3">{optionKeys.map((key) => {
           const option = optionsByKey.get(key)
           if (!option) return null
           return <button key={key} type="button" aria-pressed={selected === key} aria-label={String.fromCharCode(65 + optionKeys.indexOf(key)) + '. ' + option.text} disabled={saving || submitting} onClick={() => void choose(key)} className={`rounded-xl border p-4 text-left transition ${selected === key ? 'border-purple-300/60 bg-purple-500/10' : 'border-white/10 bg-white/5 hover:bg-white/10'}`}><span aria-hidden="true" className="mr-3 font-bold">{String.fromCharCode(65 + optionKeys.indexOf(key))}.</span>{option.text}</button>
         })}</div>
         <div className="mt-5 flex gap-3"><button disabled={current === 0} onClick={() => setCurrent((v) => Math.max(0, v - 1))} className="flex-1 rounded-xl border border-white/10 py-3 disabled:opacity-30">Previous</button>{current < questions.length - 1 ? <button onClick={() => setCurrent((v) => Math.min(questions.length - 1, v + 1))} className="flex-1 rounded-xl bg-white py-3 font-bold text-black">Next</button> : <button disabled={submitting} onClick={() => void finish()} className="flex-1 rounded-xl bg-purple-500 py-3 font-bold">{submitting ? 'Submitting…' : 'Submit CBT'}</button>}</div>
       </section>
-      <aside className="glass-card h-fit rounded-2xl p-4"><p className="text-xs text-white/40">Question map</p><div className="mt-3 grid grid-cols-4 gap-2">{questions.map((item, index) => <button key={item.id} onClick={() => setCurrent(index)} className={`h-9 rounded-lg text-xs ${index === current ? 'bg-white text-black' : answers[item.id] != null ? 'bg-purple-500/25' : 'bg-white/5'}`}>{index + 1}</button>)}</div></aside>
+      <aside aria-label="Question navigation" className="glass-card h-fit rounded-2xl p-4"><p id="cbt-question-map-label" className="text-xs text-white/40">Question map</p><div role="group" aria-labelledby="cbt-question-map-label" className="mt-3 grid grid-cols-4 gap-2">{questions.map((item, index) => <button key={item.id} type="button" aria-label={`Go to question ${index + 1}, ${answers[item.id] != null ? 'answered' : 'unanswered'}`} aria-current={index === current ? 'step' : undefined} onClick={() => setCurrent(index)} className={`h-9 rounded-lg text-xs ${index === current ? 'bg-white text-black' : answers[item.id] != null ? 'bg-purple-500/25' : 'bg-white/5'}`}>{index + 1}</button>)}</div></aside>
     </div>
   </div>
 }
