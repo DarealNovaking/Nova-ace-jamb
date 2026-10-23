@@ -2,13 +2,13 @@
 
 > Refresh from verified repository/system state at the start and end of meaningful work. Older historical entries below may be superseded by the latest verification record.
 
-- **Updated:** 2026-10-23 (PWA runtime cache regression tests added; Verify #892 and E2E #825 pending).
+- **Updated:** 2026-10-23 (PWA runtime test harness corrected after CI exposed Node-vs-browser Response.type mismatch; Verify #897 pending).
 - **Repository:** `DarealNovaking/Nova-ace-jamb`, branch `main`.
-- **Latest HEAD:** `6b6686997a2635ad3700f8aabb04c4d26e7a3fbc` (`test(pwa): include runtime service worker checks in CI`). Runtime test file is `ec6aa50e3bb7e49906bbaf8cd1b39f6055a6a010`.
+- **Latest HEAD:** `a2f50cb5b55ff46ccc5d0531d3d3856aa9275e62` (`test(pwa): emulate same-origin response type in worker harness`).
 - **User-approved scope:** frontend only. Do not deploy, change backend/database/production data, restore catalogue UI, or perform app deployment work. The active frontend no longer uses the catalogue UI.
 - **Current milestone:** Frontend Phase 2 CLOSED for the authorized scope; Frontend Phase 3 IN PROGRESS.
-- **Latest Verify:** #892 / run `39999218330` was IN PROGRESS at npm install at last check; it includes `tests/pwa-runtime.test.mjs`. Verify #885 on the earlier static-only suite passed.
-- **Latest E2E:** #825 / run `39999218502` was IN PROGRESS at dependency installation; current HEAD E2E #826 queued. No result yet for current HEAD.
+- **Latest Verify:** #897 on `a2f50cb5b5` queued at last inspection. Verify #893 on `6b6686997a` FAILED due to test mock returning Node `Response.type === 'default'`; mock corrected to emulate browser `type === 'basic'`. Awaiting rerun.
+- **Latest E2E:** #830 on `a2f50cb5b5` queued at last inspection. E2E does not replace Verify's Node contract/runtime test.
 - **Accessibility source/test state:** workspace skip link and keyboard/fragment coverage; CBT keyboard answer selection; CBT exit restores focus to dashboard heading; async loading/saving status, timer, answer state and question-map semantics have source/E2E coverage. Real screen-reader behavior remains unverified.
 - **Open acceptance gates:** full manual keyboard-only navigation, real screen-reader testing, physical low-end Android usability, and real-device PWA/offline installation/recovery. These cannot be closed by mocked CI alone.
 - **Open engineering debt:** main bundle about 507 kB minified / 142 kB gzip (Vite >500 kB warning); latest install audit 4 vulnerabilities (3 moderate, 1 high), not remediated. Avoid speculative splitting or broad dependency upgrades.
@@ -1630,3 +1630,12 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - Previous static PWA contract suite did pass as part of Verify #885 on `75b14bc`; E2E #818 passed on that commit. That result does not include the new runtime test file.
 - Runtime test is still an isolated mock-based exercise, not an actual browser service-worker lifecycle or device/offline test. Real-device install/offline recovery and manual screen-reader/keyboard acceptance remain open. No app runtime code, backend/database, deployment, catalogue UI, or dependencies were changed.
 - **Exact next action:** inspect Verify #892 and E2E #825. If Verify fails, inspect the Node test output and correct the test harness or assertion with evidence; if green, confirm the current main commit's Verify/E2E status, then continue with the next bounded frontend-only accessibility check.
+
+
+## PWA runtime-test failure investigation and correction — 2026-10-23
+
+- CI exposed a **test-harness mismatch**, not a confirmed service-worker defect: Verify #893 on `6b6686997a` failed in `tests/pwa-runtime.test.mjs` because Node's built-in `Response` reports `type: "default"`, while a real same-origin browser fetch response has `type: "basic"`. The service worker correctly caches only `response.type === 'basic'`; the test mock had incorrectly used a default Node Response.
+- Corrected the test mock in commit `a2f50cb5b55ff46ccc5d0531d3d3856aa9275e62` to emulate the browser's same-origin response contract (`ok: true`, `type: 'basic'`, `clone()`). No production/runtime app code was changed.
+- **Verification of the correction is pending**: Verify #897 and E2E #830 were queued on `a2f50cb5b5` at last inspection. Do not call the new runtime test green until Verify finishes successfully.
+- Failed CI on intervening docs-only commits also contained the same harness assertion, because those commits retained the failing test. The relevant root cause was found from the job log, and the test mock—not the service worker's privacy guard—was corrected.
+- **Exact next action:** inspect Verify #897 logs/result. If green, record passing runtime tests and then check current HEAD workflows. If another failure occurs, use its exact output to correct only the failing assertion/harness. Continue to leave physical-device PWA/offline and manual accessibility acceptance open.
