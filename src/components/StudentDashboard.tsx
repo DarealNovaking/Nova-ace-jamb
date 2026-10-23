@@ -92,6 +92,14 @@ export default function StudentDashboard() {
   }, [activeView])
 
   useEffect(() => {
+    if (loading || activeView !== 'home' || window.history.state?.restoreDashboardFocus !== true) return
+    dashboardHeadingRef.current?.focus()
+    const nextState = { ...(window.history.state ?? {}) }
+    delete nextState.restoreDashboardFocus
+    window.history.replaceState(nextState, '', window.location.href)
+  }, [loading, activeView])
+
+  useEffect(() => {
     const validModes: StudentWorkspaceMode[] = ['learn', 'practice', 'revision', 'flashcards', 'progress', 'plan']
     const syncFromUrl = () => {
       const requested = new URLSearchParams(window.location.search).get('view')
