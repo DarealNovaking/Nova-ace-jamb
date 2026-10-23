@@ -344,3 +344,13 @@ Proceed to the source-based keyboard/semantic audit of student workspace and CBT
 - Typecheck and build passed; Playwright suite passed **76 tests** in 1.1 minutes. CI npm install reported 4 vulnerabilities (3 moderate, 1 high); investigate current audit details separately because prior audit counts differ.
 - This log provides chunk-level sizes only, not module-level attribution. The large entry chunk's dominant modules remain unknown. No code/dependency change or speculative chunking was made.
 - **Exact next action:** obtain module-level attribution using a reproducible analysis approach without deploying or altering backend/production data; only then decide whether an evidence-backed optimization is warranted. Re-run typecheck, build, and E2E for any resulting code change. Manual screen-reader, low-end Android, and real-device PWA/offline checks remain unverified.
+
+
+## Opt-in bundle module attribution tooling — 2026-10-24
+
+- Added an opt-in Rollup/Vite build-report plugin in `vite.config.ts`. It is inactive by default and only logs the top 20 rendered modules per output chunk when `ANALYZE_BUNDLE=1`; it adds no package dependency and does not alter app runtime behavior.
+- Updated `.github/workflows/verify.yml` so its build step sets `ANALYZE_BUNDLE=1`, making module-level rendered-size evidence available in the Verify build log. This is diagnostic tooling only; no manual chunk rules or dependency upgrades were introduced.
+- Initial workflow edit accidentally encoded newlines literally and produced an invalid workflow run (#934, run `40038978894`, failure before jobs). Inspected the stored file, corrected the YAML step formatting in a follow-up commit, and re-read both files. Treat that failure as a workflow-edit error, not an app-code failure.
+- Current code/config head: `b64cf42a0518ef416934a1053a051183fce69070`. Verify #936 (run `40039021997`) and E2E #869 (run `40039022122`) were queued at the time of this update. Results are pending; do not claim the report compiled or tests passed until those runs complete.
+- No backend/database, catalogue UI, deployment, production data, or app runtime behavior was changed. Frontend Phase 3 remains in progress.
+- **Exact next action:** inspect Verify #936 logs for typecheck/build status and the `[Bundle module report]` output; confirm E2E #869. If typecheck fails due to Vite plugin typing or path normalization, fix only that evidenced issue, then rerun. Use the measured top contributors to decide whether a narrow optimization is justified.
