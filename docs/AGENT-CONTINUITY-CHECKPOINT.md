@@ -1662,3 +1662,12 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - Verify #904 (`40000305709`) passed on `a389b2faaedc36c8a2b3510ab937eba5c4bdf069`; Node tests, Deno checks, typecheck, build, and disposable PostgreSQL migration/policy checks all completed successfully.
 - ACE JAMB E2E #837 (`40000305699`) was still in progress during Playwright browser installation. The new reduced-motion browser assertion remains **unverified** until E2E completes. Check current-main workflow runs after docs updates.
 - **Exact next action:** inspect E2E #837 and newest E2E run; diagnose any failing assertion from the report/log before modifying code.
+
+## CBT skip-link accessibility improvement — 2026-10-23
+
+- `src/main.tsx` now adds `Skip to CBT content` in the CBT shell and targets a `tabIndex={-1}` wrapper around the lazy CBT content, allowing keyboard users to skip the Back control.
+- Added an E2E regression test in `tests/e2e/smoke.spec.ts`: enter CBT, focus the skip link, press Enter, and assert `#cbt-content` receives focus.
+- Reduced-motion browser test verified: ACE JAMB E2E #842 (`40000507926`) **PASS** and Verify #909 (`40000507942`) **PASS** on commit `37c42c68d0cb`. This is evidence for reduced-motion only; it does not cover the newer CBT skip-link test.
+- CBT skip-link commits: `7a2439232662ba9f6e084ae99148e0f8c1ce8404` (implementation), `a2305b077e44a7ac685b17d90a3c26c6d18debad` (test). Current-main CI is pending/in progress; wait for E2E to complete before claiming the new test passes.
+- No backend/database, deployment, catalogue UI, dependency, or production data changes. Phase 3 remains IN PROGRESS.
+- **Exact next action:** poll latest main E2E and Verify; inspect any failed Playwright assertion/log, fix only evidenced issues, then record final results here and in the master/current Phase 3 handoffs.
