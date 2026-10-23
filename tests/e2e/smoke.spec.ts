@@ -471,9 +471,13 @@ test.describe('ACE JAMB persistent CBT', () => {
     await expect(page.getByRole('heading', { name: 'Welcome back, Test Futarian.' })).toBeVisible()
     await page.getByRole('button', { name: /CBT Practice/ }).click()
     await expect(page.getByRole('heading', { name: 'JAMB simulation' })).toBeVisible()
+    await expect(page.getByRole('timer', { name: 'Time remaining 00:30:00' })).toBeVisible()
+    await expect(page.getByRole('group', { name: 'Which option is correct?' })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Go to question 1, unanswered' })).toHaveAttribute('aria-current', 'step')
     // The server-provided option order is B, A, so canonical option A is displayed second.
     await page.getByRole('button', { name: 'B. First answer' }).click()
     await expect(page.getByRole('button', { name: 'B. First answer' })).toHaveAttribute('aria-pressed', 'true')
+    await expect(page.getByRole('button', { name: 'Go to question 1, answered' })).toHaveAttribute('aria-current', 'step')
     await page.getByRole('button', { name: 'Submit CBT' }).click()
     await expect(page.getByText('100%', { exact: true })).toBeVisible()
     await expect(page.getByText('1/1 correct')).toBeVisible()
