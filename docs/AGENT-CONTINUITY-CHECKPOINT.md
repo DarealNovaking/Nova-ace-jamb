@@ -2,16 +2,16 @@
 
 > Refresh from verified repository/system state at the start and end of meaningful work. Historical entries below may be superseded by newer verification records.
 
-- **Updated:** 2026-10-23 (UTC; exact time not asserted)
+- **Updated:** 2026-10-23 (UTC; exact time not asserted; Phase 2 closeout documented)
 - **Repository:** `DarealNovaking/Nova-ace-jamb`, branch `main`.
 - **Latest tested source/test commit:** `85a4b5b1aed59b8d5bfb3e7c09de53d873cdb9af`; later commits are documentation-only.
 - **User-approved scope:** Frontend only. Do not deploy the app or change backend/database state. The active product no longer uses the catalogue UI.
-- **Current milestone:** Integrated whole-product frontend Phase 2; acceptance remains OPEN.
+- **Current milestone:** Frontend Phase 2 CLOSED for the currently authorized frontend-only scope; documented exceptions remain incomplete and carry forward to Phase 3.
 - **Latest Verify:** #740 / run `39967022806` PASS (Node/Deno checks, typecheck/build, disposable PostgreSQL policy/migration tests).
 - **Latest E2E:** #673 / run `39967023111` PASS; fetched logs confirm **64 Playwright tests passed, 0 failed in 44.4s**. Typecheck/build/browser installation passed.
 - **Current frontend change:** Removed catalogue UI from active admin, deleted stale `admin-import.html` and `src/admin-import.tsx`, retained `/admin-import` only as an authorized admin-dashboard compatibility alias, and added route/UI regression assertions.
 - **Deployment-removal audit:** current-main checks return 404 for `.github/workflows/deploy-production.yml`, `wrangler.jsonc`, `backend/index.ts`, and `src/App.tsx`; no deploy script or AppDeploy shim is present. Do not recreate deployment assets; historical docs are archival.
-- **Open limitations:** content-driven learning/practice/flashcards/progress require verified published content; provider-dependent payment/referral/AI/audio/notification delivery remains blocked or unverified. Live deployed-browser acceptance is intentionally out of scope. Bundle-size warning and previous npm audit findings remain unresolved.
+- **Accepted exceptions carried forward:** content-driven learning/practice/flashcards/progress/study plans need verified published content and real activity; payment/referral/AI/audio/notification delivery need verified provider/service contracts; expanded admin operations, manual accessibility and real-device PWA/offline acceptance remain incomplete/unverified. Live deployed-browser acceptance is out of scope. Bundle-size warning and previous npm audit findings remain unresolved.
 - **Exact next action:** continue only frontend work backed by verified content/service contracts, or document the precise backend/content blocker. Keep unsupported provider flows disabled and do not invent official JAMB content. Do not deploy or touch backend/database state.
 - **Evidence correction:** an earlier claim that Playwright artifact trace/context files were inspected is unsupported; the artifact was retrieved but those contents were not verified. The successful runner summaries and E2E job logs were independently checked.
 
@@ -1361,3 +1361,15 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - Updated `README.md` to reflect Phase 1's verified mocked-contract closure, the still-open integrated whole-product frontend batch, the retired importer route, and the explicit no-deploy boundary. README and handoff changes after `85a4b5b` are documentation-only; the tested application source did not change.
 - No backend, database, production data, migration, or deployment changes were made. Phase 2 remains OPEN: content-driven learning/practice/flashcards/progress, provider-dependent payment/referral/AI/audio/push delivery, full admin operations and live deployed acceptance are blocked or unverified under current scope. See the acceptance matrix above.
 - **Next action:** continue only with frontend improvements supported by existing verified content/contracts; otherwise record the exact backend/content dependency and leave the feature honestly unavailable. Do not deploy or touch backend/database state.
+
+
+## Frontend Phase 2 closeout — 2026-10-23
+
+- **Milestone:** CLOSED for the currently authorized frontend-only scope, at the project owner's explicit request. This does not mean the whole ACE JAMB product is production-complete.
+- **Tested source/test commit:** `85a4b5b1aed59b8d5bfb3e7c09de53d873cdb9af`.
+- **Verify:** #740 / run `39967022806` PASS.
+- **E2E:** #673 / run `39967023111` PASS; 64 Playwright tests passed, 0 failed in 44.4 seconds. These results cover mocked service contracts and are not live-provider or production-content proof.
+- **Accepted exceptions carried forward:** verified educational content and real student activity for content-driven learning/practice/CBT/flashcards/progress/study plans; service/provider contracts for payment/referrals/grounded AI/audio/notification delivery; expanded admin operations; manual accessibility and real-device PWA/offline/low-end Android acceptance; live deployed-browser acceptance. The latter live/deployment checks remain out of scope; frontend-auditable accessibility/performance/admin work may continue in Phase 3. Exceptions remain incomplete, not silently passed.
+- **Known debt:** previous npm audit reported 8 vulnerabilities (2 moderate, 6 high); build warns about an approximately 916 kB minified chunk. No dependency changes made during closeout.
+- **No backend/database/deployment changes.** Catalogue UI remains retired; `/admin-import` remains only a compatibility alias to the authorized admin dashboard.
+- **Next action:** begin Frontend Phase 3 from the master handoff, using the exception register above. Keep the no-deploy/frontend-only boundary and do not invent official JAMB content or provider outcomes.
