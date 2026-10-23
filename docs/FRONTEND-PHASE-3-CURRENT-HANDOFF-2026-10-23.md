@@ -239,3 +239,12 @@ Proceed to the source-based keyboard/semantic audit of student workspace and CBT
 - Phase 3 remains **IN PROGRESS**. Automated source/CI gates cover loading/status semantics, workspace skip link, keyboard answer selection, focus return, CBT timer/question-map semantics, and route behavior. Still unverified: full manual keyboard-only acceptance, actual screen-reader behavior, physical low-end Android usability, and real-device PWA installation/offline recovery.
 - Performance/security follow-ups remain open: latest measured main JS chunk is approximately **507 kB minified / 142 kB gzip**, triggering Vite's >500 kB warning; latest install audit reported **4 vulnerabilities (3 moderate, 1 high)**. Do not attempt speculative chunking or broad dependency upgrades without attribution and review.
 - **Exact next action:** poll E2E #807 until terminal and inspect job summary/logs. If successful, proceed with a bounded frontend-only source/test audit for any remaining reproducible accessibility regression; if it fails, fix only the evidenced failure. Keep manual/device gates open and update all three handoff documents after the next meaningful change.
+
+
+## PWA cache/privacy contract regression coverage — 2026-10-23
+
+- Added `tests/pwa-contract.test.mjs` and wired it into `.github/workflows/verify.yml`. The new Node tests assert the app-shell list, same-origin GET and hashed-`/assets/` cache boundary, network-first navigation/static-shell fallback, exclusion of auth/API/storage/realtime/functions/service-worker paths before cache handling, and standalone root-scoped manifest/icon metadata.
+- This is a static source-contract test. It does **not** execute the service worker in a browser, and does not prove installability, cache lifecycle behavior, offline recovery, or physical-device behavior. Those manual gates remain open.
+- Commits: test `9b426edc4381fabb673c7d0df251828dd927f074`; CI wiring `75b14bc1564456e7108a79bd1bca263359d1e723`. CI verification is **PENDING** at this note; check Actions for the current `main` HEAD before claiming the new test passes.
+- No runtime application behavior, dependencies, backend/database state, catalogue UI, or deployment configuration was changed. Frontend-only scope remains in force.
+- **Exact next action:** inspect Verify and ACE JAMB E2E workflows triggered by `75b14bc`. If Verify fails, correct only a reproduced test/contract mismatch; if green, keep real-device PWA/offline and screen-reader acceptance unverified until hands-on checks occur.
