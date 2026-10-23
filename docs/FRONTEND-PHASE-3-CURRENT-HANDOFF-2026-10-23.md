@@ -179,3 +179,13 @@ Proceed to the source-based keyboard/semantic audit of student workspace and CBT
 - npm audit debt last reported as 8 vulnerabilities (2 moderate, 6 high) remains unresolved and is not silently folded into Phase 3 closure.
 - **Phase 3 status remains IN PROGRESS.** The remaining closure gates are manual keyboard-only navigation/focus continuity, actual screen-reader behavior, low-end Android device behavior, and PWA/offline behavior. Automated CI cannot verify these.
 - **Exact next action:** perform the four manual acceptance areas and record observed outcomes here and in the checkpoint. If the current environment lacks a physical device or screen-reader setup, document that as the blocker; do not claim Phase 3 is fully complete. No deployment, backend/database, production-data, or catalogue work is authorized.
+
+## Keyboard skip-navigation slice — 2026-10-23
+
+- **Finding:** the student study workspace moved focus to its heading when modes changed, but the workspace itself had no skip link to bypass the repeated header and six-item preparation-tools navigation. Its content area also lacked a stable keyboard-focus target.
+- **Implementation:** `src/components/StudentStudyWorkspace.tsx` now exposes a “Skip to workspace content” link before the workspace header and a focusable `#workspace-content` target after the preparation-tools navigation. `src/index.css` keeps the link off-screen until focused and gives it a high-contrast gold treatment.
+- **Regression coverage:** `tests/e2e/smoke.spec.ts` focuses the link, asserts it becomes visible, activates it, and verifies focus moves to the content target. This is a Playwright assertion against the mocked student session.
+- **Commits:** source `9bab0f1f2c2d09768204aef7d8d31a028e6f1b7c`; CSS `886bac0fadc36b131bae256ef4b7688084e00746`; E2E `0b74ed321726a6b1d4ab2647425fce79379e095b`.
+- **Verification at documentation time:** pending CI for the source/test changes; do not call this slice verified until Verify and ACE JAMB E2E complete successfully. No live Supabase calls are made by the added test.
+- **Scope:** frontend only. No backend/database/deployment/catalogue changes.
+- **Exact next action:** inspect CI for the latest source/test HEAD. Fix only reproducible failures; if both workflows pass, continue the documented keyboard/semantic audit and keep manual screen-reader/device/PWA acceptance gates open until actually performed.
