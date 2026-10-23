@@ -344,7 +344,9 @@ test.describe('ACE JAMB prepared student dashboard', () => {
     await expect(backButton).toHaveAttribute('type', 'button')
     await backButton.click()
     await expect(page).not.toHaveURL(/[?&]cbt=1(?:&|$)/)
-    await expect(page.getByRole('heading', { name: 'Welcome back, Test Futarian.' })).toBeVisible()
+    const dashboardHeading = page.getByRole('heading', { name: 'Welcome back, Test Futarian.' })
+    await expect(dashboardHeading).toBeVisible()
+    await expect(dashboardHeading).toBeFocused()
   })
 })
 
