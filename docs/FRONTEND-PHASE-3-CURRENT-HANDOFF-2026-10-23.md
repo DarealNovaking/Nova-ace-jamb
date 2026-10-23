@@ -297,3 +297,12 @@ Proceed to the source-based keyboard/semantic audit of student workspace and CBT
 - Verify #904 (`40000305709`) completed **PASS** on test commit `a389b2faaedc36c8a2b3510ab937eba5c4bdf069`, covering the Node suites, Deno checks, TypeScript typecheck, build, and disposable PostgreSQL migration/policy tests.
 - ACE JAMB E2E #837 (`40000305699`) remained **in progress during Playwright browser installation** at last inspection, so the new reduced-motion assertion is still pending browser verification. Newer documentation commits trigger separate runs; check the current HEAD's workflows before reporting overall green.
 - **Next action:** poll the E2E run and current-main E2E; investigate any reproduced failure and record final evidence.
+
+## CBT skip-link accessibility improvement — 2026-10-23
+
+- Added `Skip to CBT content` to the CBT shell (`src/main.tsx`) with a `tabIndex={-1}` target wrapper around lazy CBT content.
+- Added Playwright coverage that activates the link using Enter and checks focus reaches `#cbt-content`.
+- Reduced-motion browser test has since passed: E2E #842 (`40000507926`) and Verify #909 (`40000507942`) both succeeded on `37c42c68d0cb`. This does not verify the newer CBT skip-link test.
+- CBT skip-link source/test commits: `7a2439232662ba9f6e084ae99148e0f8c1ce8404`, `a2305b077e44a7ac685b17d90a3c26c6d18debad`. Current HEAD CI must be checked; the new browser assertion remains pending until E2E passes on a containing commit.
+- Scope stayed frontend only; no backend/database, deployment, catalogue UI, dependencies, or production data changed. Phase 3 remains IN PROGRESS.
+- **Next action:** inspect current HEAD and workflow status; debug any E2E failure, then update the three handoffs with the terminal result.
