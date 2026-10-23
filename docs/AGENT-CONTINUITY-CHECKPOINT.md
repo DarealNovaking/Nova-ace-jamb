@@ -1485,3 +1485,13 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - Test commit `4ad0ace` passed typecheck/build and [Verify #817](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/39979019223), but E2E #750 remains active at Playwright browser installation; its new assertions are not yet verified. No test failure has been observed. Main bundle remains 506.86 kB minified / 142.10 kB gzip; Vite's >500 kB warning remains.
 - No backend/database/deployment/catalogue changes. Manual keyboard-only and screen-reader acceptance remains unverified.
 - Exact next action: inspect [E2E #750](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/39979019310) until terminal; fix only a reproducible assertion failure. Then continue the student/CBT accessibility audit without speculative dependency changes.
+
+
+## Phase 3 CBT timer and question-map semantics — 2026-10-23
+
+- `src/components/PersistentCBT.tsx` commit `bc85cdc14928b1f9cec8fabffa3985fb665d1e75` gives the countdown a named `role=timer`, marks the clock icon decorative, groups answer buttons under the question heading, and labels question-map buttons with question number plus answered/unanswered state; the current map entry exposes `aria-current=step`.
+- `tests/e2e/smoke.spec.ts` commit `4ad0acef545eca041fd1d31fb6dc28a315569523` asserts the named timer, question-associated group, current question-map step, and answered state after saving.
+- Source commit `bc85cdc` passed [E2E #749](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/39978976244): typecheck/build and 66 Playwright tests passed. [Verify #816](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/39978975983) passed both jobs.
+- Test commit `4ad0ace` passed typecheck/build and [Verify #817](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/39979019223), but E2E #750 remains active at Playwright browser installation; its new assertions are not yet verified. No test failure has been observed. Main bundle remains 506.86 kB minified / 142.10 kB gzip; Vite's >500 kB warning remains.
+- No backend/database/deployment/catalogue changes. Manual keyboard-only and screen-reader acceptance remains unverified.
+- Exact next action: inspect [E2E #750](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/39979019310) until terminal; fix only a reproducible assertion failure. Then continue the student/CBT accessibility audit without speculative dependency changes.
