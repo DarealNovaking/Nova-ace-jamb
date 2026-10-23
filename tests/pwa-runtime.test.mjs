@@ -69,7 +69,7 @@ test('service worker leaves auth, API, storage, realtime, functions and cross-or
 })
 
 test('service worker caches successful same-origin build assets for repeat visits', async () => {
-  const worker = createWorker({ fetchImpl: async () => new Response('bundle', { status: 200 }) })
+  const worker = createWorker({ fetchImpl: async () => ({ ok: true, type: 'basic', text: async () => 'bundle', clone: () => new Response('bundle', { status: 200 }) }) })
   const request = { method: 'GET', url: 'https://ace.test/assets/app-abc123.js', mode: 'cors' }
   let pending
   worker.handlers.get('fetch')({ request, respondWith(promise) { pending = promise } })
