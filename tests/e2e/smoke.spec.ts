@@ -324,7 +324,12 @@ test.describe('ACE JAMB prepared student dashboard', () => {
     await expect(page.getByRole('heading', { name: 'Welcome back, Test Futarian.' })).toBeVisible()
     await page.getByRole('button', { name: /CBT Practice/ }).click()
     await expect(page).toHaveURL(/[?&]cbt=1(?:&|$)/)
-    await expect(page.getByRole('button', { name: /Back to ACE JAMB/ })).toBeVisible()
+    const backButton = page.getByRole('button', { name: /Back to ACE JAMB/ })
+    await expect(backButton).toBeVisible()
+    await expect(backButton).toHaveAttribute('type', 'button')
+    await backButton.click()
+    await expect(page).not.toHaveURL(/[?&]cbt=1(?:&|$)/)
+    await expect(page.getByRole('heading', { name: 'Welcome back, Test Futarian.' })).toBeVisible()
   })
 })
 
@@ -650,6 +655,8 @@ test.describe('ACE JAMB admin operations command center', () => {
     await page.goto('/admin')
     await expect(page.getByRole('heading', { name: 'Admin Dashboard' })).toBeVisible()
     await expect(page.getByRole('heading', { name: 'Operations command center' })).toBeVisible()
+    await expect(page.getByRole('status')).toContainText('Operational readiness check finished.')
+    await expect(page.locator('section[aria-labelledby="admin-operations-title"]')).toHaveAttribute('aria-busy', 'false')
     // Catalogue ingestion was retired from the active frontend; Batch 3 uses the academic workspace.
     await expect(page.getByRole('heading', { name: 'Admin Catalogue Import' })).toHaveCount(0)
     await expect(page.getByRole('heading', { name: 'Single-row review-only staging' })).toHaveCount(0)
@@ -687,6 +694,7 @@ test.describe('ACE JAMB academic editor access', () => {
     })
     await page.goto('/admin-academic')
     await expect(page.getByRole('heading', { name: 'Academic editor access required' })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Back to ACE JAMB' })).toHaveAttribute('type', 'button')
     await expect(page.getByText('Create a draft syllabus version')).toHaveCount(0)
   })
 
