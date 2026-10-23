@@ -550,3 +550,12 @@ Check Verify and ACE JAMB E2E on the latest main commit after `cba0c14` and this
 - Commits: `bd7ac99d9b24cd475d4826579c00992db223857d` (fixtures), `412d4ecda826f146e5754c044bedcd93c87af18f` (safe unknown-state copy), `922633452c6c5153386406694709762ef6287459` (wait for settled admin metric state). Current source HEAD at documentation time: `922633452c6c5153386406694709762ef6287459`.
 - Verification after these fixes: NOT YET RUN. The earlier run's typecheck/build passed but the E2E suite failed; those results do not verify these new commits. No local test runner is available through this GitHub-only editing path, and no new runner result has yet been retrieved. No database, migration, production data, or deployment changes were made.
 - Exact next action: retrieve current-main Verify and ACE JAMB E2E results for the latest commit; if Actions runs have not started, inspect current workflow status/runner availability and wait for a real runner-backed execution. Fix only reproducible failures, then refresh this record and the checkpoint. Phase 2 remains OPEN.
+
+
+## E2E fixture fixes verified — 2026-10-23
+
+- Source/test fix commit: `1763de8ad72a2c486907a7643ea3865fdbd5a0ea`.
+- Verify #706 / run `39963740781`: PASS. Node tests, Deno checks, typecheck, build and disposable PostgreSQL migration/policy tests passed.
+- ACE JAMB E2E #639 / run `39963740632`: PASS. Playwright passed on the current source-fix commit after correcting the admin count-query wait/headers and isolating the missing-preferences test to the Account Settings component rather than the onboarding gate.
+- No backend, database, migration, deployment or production data change. CI is mocked-contract coverage; provider-dependent payment, referral, AI, audio, notification delivery and production deployed acceptance remain unverified.
+- Phase 2 remains OPEN. Next: read-only acceptance of existing student/admin/mobile routes and PWA cache behavior, then reconcile the remaining acceptance matrix and report any genuine blockers.
