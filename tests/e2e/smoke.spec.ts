@@ -1135,3 +1135,36 @@ test.describe('ACE JAMB admin authorization recovery', () => {
   })
 })
 
+test.describe('ACE JAMB reduced-motion accessibility', () => {
+  test('respects the operating system reduced-motion preference', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' })
+    await mockPreparedStudent(page)
+    await page.goto('/')
+    await expect(page.getByRole('heading', { name: 'Welcome back, Test Futarian.' })).toBeVisible()
+
+    const motionStyles = await page.evaluate(() => {
+      const probe = document.createElement('button')
+      probe.className = 'field'
+      document.body.append(probe)
+      const parseMilliseconds = (value: string) => {
+        const trimmed = value.trim()
+        return trimmed.endsWith('ms')
+          ? Number.parseFloat(trimmed)
+          : Number.parseFloat(trimmed) * 1000
+      }
+      const styles = window.getComputedStyle(probe)
+      const transitionMilliseconds = Math.max(...styles.transitionDuration.split(',').map(parseMilliseconds))
+      const animationMilliseconds = Math.max(...styles.animationDuration.split(',').map(parseMilliseconds))
+      probe.remove()
+      return {
+        scrollBehavior: window.getComputedStyle(document.documentElement).scrollBehavior,
+        transitionMilliseconds,
+        animationMilliseconds,
+      }
+    })
+
+    expect(motionStyles.scrollBehavior).toBe('auto')
+    expect(motionStyles.transitionMilliseconds).toBeLessThanOrEqual(0.1)
+    expect(motionStyles.animationMilliseconds).toBeLessThanOrEqual(0.1)
+  })
+})
