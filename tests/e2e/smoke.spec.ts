@@ -651,6 +651,21 @@ test.describe('ACE JAMB academic editor access', () => {
     await expect(page.getByRole('heading', { name: 'Academic editor access required' })).toBeVisible()
     await expect(page.getByText('Create a draft syllabus version')).toHaveCount(0)
   })
+
+  test('does not expose raw authorization errors when academic editor verification fails', async ({ page }) => {
+    await mockFirstTimeStudent(page)
+    await page.route(`${projectUrl}/rest/v1/rpc/is_admin_or_editor`, async (route) => {
+      await route.fulfill({
+        status: 500,
+        contentType: 'application/json',
+        json: { code: 'internal_database_error', message: 'private database host and query details' },
+      })
+    })
+    await page.goto('/admin-academic')
+    await expect(page.getByRole('heading', { name: 'Academic editor access required' })).toBeVisible()
+    await expect(page.getByText('Unable to verify academic editor access. Please try again.')).toBeVisible()
+    await expect(page.getByText(/private database host|internal_database_error/)).toHaveCount(0)
+  })
 })
 
 
