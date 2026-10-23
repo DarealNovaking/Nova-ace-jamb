@@ -2,17 +2,17 @@
 
 > Refresh from verified repository/system state at the start and end of meaningful work. Older historical entries below may be superseded by the latest verification record.
 
-- **Updated:** 2026-10-23 (verified HEAD `9785f548c063a9c35125b3538978d2f82054fb55`; Verify #874 passed; E2E #807 was still installing Playwright at last check).
+- **Updated:** 2026-10-23 (PWA cache/privacy contract tests added; CI pending on latest HEAD `75b14bc1564456e7108a79bd1bca263359d1e723`).
 - **Repository:** `DarealNovaking/Nova-ace-jamb`, branch `main`.
-- **Latest HEAD:** `9785f548c063a9c35125b3538978d2f82054fb55` (`docs(phase-3): record verification and bundle audit`). Latest source/test commit with passing E2E evidence: `6f5d18d1`, E2E #805 PASS; Verify #872 PASS. E2E #801 PASS (70 tests) on `e1adc838`; Verify #868 PASS.
+- **Latest HEAD:** `75b14bc1564456e7108a79bd1bca263359d1e723` (`test(pwa): run service worker contract checks in CI`). PWA contract test added at `9b426edc4381fabb673c7d0df251828dd927f074`; current Verify/E2E results are pending.
 - **User-approved scope:** frontend only. Do not deploy, change backend/database/production data, restore catalogue UI, or perform app deployment work. The active frontend no longer uses the catalogue UI.
 - **Current milestone:** Frontend Phase 2 CLOSED for the authorized scope; Frontend Phase 3 IN PROGRESS.
-- **Latest Verify:** #874 / run `39992531606` PASS on current HEAD.
-- **Latest E2E:** #807 / run `39992531601` was IN PROGRESS at Playwright browser installation at last inspection; do not claim it passed. E2E #805 on `6f5d18d1` is the latest completed successful run in the checked Actions list.
+- **Latest Verify:** new run for `75b14bc` is pending; previous Verify #874 on `9785f548` passed.
+- **Latest E2E:** new run for `75b14bc` is pending; previous E2E #805 on `6f5d18d1` passed. Do not treat current HEAD as E2E-verified until its run completes.
 - **Accessibility source/test state:** workspace skip link and keyboard/fragment coverage; CBT keyboard answer selection; CBT exit restores focus to dashboard heading; async loading/saving status, timer, answer state and question-map semantics have source/E2E coverage. Real screen-reader behavior remains unverified.
 - **Open acceptance gates:** full manual keyboard-only navigation, real screen-reader testing, physical low-end Android usability, and real-device PWA/offline installation/recovery. These cannot be closed by mocked CI alone.
 - **Open engineering debt:** main bundle about 507 kB minified / 142 kB gzip (Vite >500 kB warning); latest install audit 4 vulnerabilities (3 moderate, 1 high), not remediated. Avoid speculative splitting or broad dependency upgrades.
-- **Exact next action:** poll E2E #807 to terminal and inspect logs. If it passes, continue bounded source/test audit; if it fails, fix only the evidenced failure. Keep backend/deployment/catalogue out of scope.
+- **Exact next action:** inspect Verify/E2E for `75b14bc`; fix only reproduced failures. Keep manual keyboard, screen-reader, low-end Android and real-device PWA/offline gates open.
 - **Evidence correction:** successful mocked E2E and build checks do not prove live Supabase/provider correctness or physical-device accessibility. No production mutation or deployment was performed in this refresh.
 
 ---
@@ -1604,3 +1604,12 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - **Open acceptance gates:** physical screen-reader test, full keyboard-only user journey on device, low-end Android usability, and install/offline behavior on a real device remain unverified. Main JS chunk warning (>500 kB minified) and install audit finding (4 vulnerabilities: 3 moderate, 1 high at Verify #865) remain unresolved; no broad dependency update or speculative chunking was attempted.
 - **Scope guard:** continue frontend-only. No backend, database, deployment, catalogue, or fabricated JAMB content changes.
 - **Exact next action:** inspect Verify #877 and E2E #810 (and latest runs for their descendant commits). Fix any reproducible failure, then update all three handoff documents with observed results. Keep manual device/screen-reader gates open until physically tested.
+
+
+## PWA cache/privacy contract regression coverage — 2026-10-23
+
+- Added `tests/pwa-contract.test.mjs` and wired it into `.github/workflows/verify.yml`. The new Node tests assert the app-shell list, same-origin GET and hashed-`/assets/` cache boundary, network-first navigation/static-shell fallback, exclusion of auth/API/storage/realtime/functions/service-worker paths before cache handling, and standalone root-scoped manifest/icon metadata.
+- This is a static source-contract test. It does **not** execute the service worker in a browser, and does not prove installability, cache lifecycle behavior, offline recovery, or physical-device behavior. Those manual gates remain open.
+- Commits: test `9b426edc4381fabb673c7d0df251828dd927f074`; CI wiring `75b14bc1564456e7108a79bd1bca263359d1e723`. CI verification is **PENDING** at this note; check Actions for the current `main` HEAD before claiming the new test passes.
+- No runtime application behavior, dependencies, backend/database state, catalogue UI, or deployment configuration was changed. Frontend-only scope remains in force.
+- **Exact next action:** inspect Verify and ACE JAMB E2E workflows triggered by `75b14bc`. If Verify fails, correct only a reproduced test/contract mismatch; if green, keep real-device PWA/offline and screen-reader acceptance unverified until hands-on checks occur.
