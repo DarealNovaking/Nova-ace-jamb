@@ -631,6 +631,12 @@ test.describe('ACE JAMB admin operations command center', () => {
     await expect(page.getByText('No delivery worker is currently listed')).toBeVisible()
     await expect(page.getByText('Grounded student AI stays disabled')).toBeVisible()
     await expect(page.getByText(/Audio content has no dedicated table or delivery service/)).toBeVisible()
+
+    // The retired legacy URL must resolve only to the normal admin dashboard, never a catalogue importer.
+    await page.goto('/admin-import')
+    await expect(page.getByRole('heading', { name: 'Admin Dashboard' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Admin Catalogue Import' })).toHaveCount(0)
+    await expect(page.getByRole('heading', { name: 'Stage programmes & UTME requirements' })).toHaveCount(0)
   })
 })
 
