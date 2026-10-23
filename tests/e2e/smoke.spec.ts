@@ -598,7 +598,14 @@ test.describe('ACE JAMB admin operations command center', () => {
         return
       }
       if (route.request().method() === 'HEAD') {
-        await route.fulfill({ status: 200, headers: { 'content-range': '*/0' }, body: '' })
+        await route.fulfill({
+          status: 200,
+          headers: {
+            'content-range': '*/0',
+            'access-control-expose-headers': 'content-range, x-total-count',
+          },
+          body: '',
+        })
         return
       }
       await route.fulfill({ status: 200, contentType: 'application/json', json: [] })
@@ -945,11 +952,9 @@ test.describe('ACE JAMB account settings first-use regression', () => {
     // This student has a profile but no preferences row. All API calls stay mocked.
     await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/student_preferences'), async (route) => {
       if (route.request().method() === 'GET') {
-        await route.fulfill({
-          status: 406,
-          contentType: 'application/json',
-          json: { code: 'PGRST116', message: 'JSON object requested, no rows returned', details: 'The result contains 0 rows', hint: null },
-        })
+        // PostgREST's maybeSingle() GET contract returns an empty array for zero rows.
+        // A synthetic 406 here does not model that client contract reliably.
+        await route.fulfill({ status: 200, contentType: 'application/json', json: [] })
         return
       }
       if (['POST', 'PATCH', 'PUT'].includes(route.request().method())) {
