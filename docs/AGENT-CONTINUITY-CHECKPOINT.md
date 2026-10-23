@@ -1544,3 +1544,15 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - Current build main JS is 506.97 kB minified / 142.11 kB gzip; Vite >500 kB warning remains. No spreadsheet chunk was emitted; ineffective manualChunks config was removed. Do not claim a bundle-size improvement.
 - Code-level Phase 3 accessibility/route/admin UX tasks are implemented. Do not close Phase 3 until manual keyboard-only, screen-reader, real low-end Android, and PWA/offline acceptance are performed and recorded. Live deployed-browser tests and deployment are prohibited. npm audit debt (previously 8 vulnerabilities: 2 moderate, 6 high) remains known/unresolved; treat separately and do not bulk-upgrade without review.
 - Exact next action: conduct and document the manual acceptance checks on a physical device/accessibility setup; otherwise the code/CI work is complete and Phase 3 remains open only for these unverified acceptance gates.
+
+## Current verified checkpoint — 2026-10-23
+
+- **Repository/branch:** `DarealNovaking/Nova-ace-jamb`, `main`; HEAD observed: `c917ede17cd22faa5f1ecb3722b536fb0ab04523`.
+- **Milestone:** Frontend Phase 3 IN PROGRESS. Follow the frontend-specific Phase 3 handoff; do not confuse it with product roadmap Phase 3 or Product Batch 3.
+- **Current-main CI:** Verify #854 PASS; ACE JAMB E2E #787 PASS. E2E #787 completed with 70 Playwright tests. These are repository/CI checks using mocked Supabase contracts, not live backend verification.
+- **Source-based audit revisited:** `StudentDashboard.tsx`, `StudentStudyWorkspace.tsx`, `PersistentCBT.tsx`, `AdminOperationsOverview.tsx`, `main.tsx`, and global CSS. Existing code-level semantics include focus-visible styling/reduced-motion handling, announced async states, CBT timer/question-map/answer state, and explicit button types. No additional source change was made because the remaining Phase 3 acceptance items need real keyboard/assistive-technology/device observation rather than an unverified code-only guess.
+- **Performance debt:** main JS is approximately 506.97 kB minified / 142.11 kB gzip; the Vite >500 kB warning remains. An `xlsx` manual-chunk experiment emitted no separate chunk and was removed. No bundle-size improvement is claimed.
+- **Security debt:** the previously reported npm audit total (8 vulnerabilities: 2 moderate, 6 high) remains unresolved and must be reviewed separately; no bulk dependency update was attempted.
+- **Scope preserved:** frontend only; no deploy, backend integration, database/production-data changes, or catalogue restoration.
+- **Unverified manual closure gates:** keyboard-only navigation/focus continuity, real screen-reader announcements, physical low-end Android usability, and PWA/offline behavior. Live deployed-browser checks remain prohibited.
+- **Exact next action:** conduct and document the manual closure gates. If the environment does not provide the needed physical device/accessibility tools, leave Phase 3 open and record that external requirement. Do not mark Phase 3 complete based on CI alone.
