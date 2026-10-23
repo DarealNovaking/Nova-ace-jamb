@@ -198,3 +198,12 @@ Proceed to the source-based keyboard/semantic audit of student workspace and CBT
 - **Verification status:** the fix has been committed to `main`; the new Verify/E2E runs have not yet been observed to completion. Do not mark the fix verified until E2E passes.
 - **Scope:** frontend test-only change. No backend, database, deployment, catalogue, or production-data changes.
 - **Exact next action:** inspect the new GitHub Actions runs for commit `698adc82`; if E2E passes, continue Phase 3 manual keyboard/screen-reader/device/PWA acceptance and leave those gates open until actually observed.
+
+
+## CBT keyboard interaction audit — 2026-10-23
+
+- **Skip-link history fix verification:** GitHub Actions ACE JAMB E2E #798 passed on `ec494db1`, and Verify #865 passed on that commit. Since `ec494db1` descends from `698adc82`, the E2E result covers the fragment-history assertion fix. The newest docs-only E2E runs were still queued/in progress during the previous check; they are not needed to establish source/test coverage for that fix.
+- **New keyboard regression:** `e1adc83834b5fb8467e85abdbc5797b2a9d5afd0` updates the existing persistent-CBT E2E interaction to focus the first answer and activate it with Enter, then retain assertions for the saving status, selected `aria-pressed` state, and answered question-map state. This adds direct automated keyboard coverage without changing product behavior.
+- **Verification status:** new E2E/Verify for `e1adc838` are pending; do not claim the new regression passes until confirmed.
+- **Source audit findings:** CBT options are native buttons with explicit `type="button"`, accessible option names and `aria-pressed`; question-map controls use accessible labels and `aria-current="step"`; answer saving uses a polite status announcement; the timer has a label; navigation is grouped and named. This source review is not a substitute for screen-reader/manual keyboard testing.
+- **Exact next action:** inspect CI for `e1adc838`; then continue reviewing bundle composition and leave real screen-reader, physical low-end Android, and real-device PWA/offline acceptance open until performed. No backend, database, deployment, or catalogue changes.
