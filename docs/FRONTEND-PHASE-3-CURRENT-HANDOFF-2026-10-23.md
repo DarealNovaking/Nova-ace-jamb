@@ -325,3 +325,14 @@ Proceed to the source-based keyboard/semantic audit of student workspace and CBT
 - Earlier E2E #850 passed **74 tests** including CBT skip-link and reduced-motion checks. The dashboard skip-link is newer and still awaits browser verification.
 - Verify #918 build log shows the entry chunk at 507.45 kB minified / 142.27 kB gzip, while CBT/workspace/admin routes are separate chunks. The build log does not prove which dependency dominates; no speculative code splitting or dependency upgrade was made.
 - Dashboard source/test commits: `de955f6ada0bd127b4f95b131c31bdce95de6e09`, `1ce8b9c62e53269adb3b6087bc089bea5d316cbb`. **Next action:** inspect the current-main CI result for this test and fix only evidence-backed failures; then continue measured bundle attribution. Manual/device gates remain open; frontend-only scope preserved.
+
+
+
+## Current-main continuation verification — 2026-10-24
+
+- Inspected repository metadata and current main HEAD: `f4282be00bd2f0a244891a8942c70f91954b7e6f`.
+- E2E run #859 / run ID `40002624496` completed successfully against that exact HEAD. Job steps explicitly show Typecheck, Build, Playwright browser tests, and report/artifact uploads all succeeded. https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40002624496
+- This verifies the dashboard skip-link update in the current main snapshot at suite level. The run summary does not establish separate desktop/mobile project counts. Manual keyboard-only, real screen-reader, physical low-end Android, and real-device PWA/offline checks remain unverified.
+- Bundle investigation status: `vite.config.ts` contains only `react()`; no bundle analyzer is configured. `package.json` exposes `build`, `typecheck`, and `e2e` scripts. The previously recorded 507.45 kB minified / 142.27 kB gzip entry chunk needs current-output remeasurement and module attribution before optimization. No analyzer dependency or speculative splitting has been introduced.
+- No application code changed during this verification; no backend/database/catalogue/deployment work was performed.
+- **Exact next action:** inspect current build output and determine the actual modules contributing to the entry chunk. Make no optimization until evidence identifies a meaningful target; preserve frontend-only scope and keep manual/device gates open.
