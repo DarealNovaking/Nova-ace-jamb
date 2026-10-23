@@ -718,3 +718,10 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - Workflow links: [E2E #719](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/39976382748), [Verify #787](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/39976414932), [E2E #720](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/39976414954), [E2E #721](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/39976917277), [Verify #788](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/39976917227), [E2E #722](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/39976939750), [Verify #789](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/39976939744).
 - No deployment, backend/database changes, or catalogue work. This is frontend semantics over existing behavior; CI uses mocked Supabase responses and is not evidence of live JAMB content availability.
 - **Exact next action:** wait for E2E #722 and Verify #789 on latest test HEAD `bbf7e88a52c3967201cdabf2571cc9f70e2c4fbe`; fix only reproducible failures. Then continue keyboard/focus review of CBT navigation and student workspace. Bundle analysis is still pending; prior build warning was approximately 916 kB minified.
+
+
+## Phase 3 — keyboard focus continuity update (2026-10-23)
+
+- Workspace focus management in `StudentStudyWorkspace.tsx` (`58e52bad51ed4d166870f9f5504ad0f9fb1a0bd1`) and dashboard return focus in `StudentDashboard.tsx` (`ec0b879572fe247eb8dc6cd1bcb0b2d7beb55fc3`); Playwright assertions in `smoke.spec.ts` (`a88473b4d14e29ca9f509470219fecaafb274435`).
+- E2E #729 and Verify #796 for latest test commit were pending at the last check; earlier E2E runs #727/#728 passed typecheck/build but remained installing Playwright browsers. Do not mark focus regression verified until #729 passes. [E2E #729](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/39977298929) · [Verify #796](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/39977298869).
+- No backend/database/deploy/catalogue changes. Next action: check terminal CI, then continue CBT keyboard audit and measure bundle composition.
