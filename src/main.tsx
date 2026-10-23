@@ -31,6 +31,7 @@ function AppShell() {
   if (cbt) {
     return (
       <main className="min-h-screen bg-[#07050d] px-5 py-10 text-white">
+        <a className="skip-link" href="#cbt-content">Skip to CBT content</a>
         <div className="mx-auto max-w-6xl">
           <button
             type="button"
@@ -39,7 +40,9 @@ function AppShell() {
           >
             ← Back to ACE JAMB
           </button>
-          <Suspense fallback={<WorkspaceLoading label="Loading CBT session…" />}><ProtectedCBT /></Suspense>
+          <div id="cbt-content" tabIndex={-1}>
+            <Suspense fallback={<WorkspaceLoading label="Loading CBT session…" />}><ProtectedCBT /></Suspense>
+          </div>
         </div>
       </main>
     );
