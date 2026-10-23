@@ -3369,3 +3369,12 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - Verify #917 (`40001391242`) also completed **PASS** on `693a94fae956`. Latest HEAD at the time of this update is `d751b9f1dc98ae2b58d34d4c985bc6aead7a7cf3`; Verify #918 passed on that HEAD, while E2E #851 (`40001413124`) is still in progress. The new test is verified on #850, but latest-HEAD browser run should still be allowed to finish.
 - Next engineering target after CI settles: inspect bundle composition before considering code splitting; preserve existing lazy-loaded route/workspace boundaries. Continue to leave manual keyboard-only, screen-reader, low-end Android, and physical-device PWA/offline acceptance open.
 - Phase 3 remains IN PROGRESS. No backend/database, deployment, catalogue UI, dependency, or production-data changes.
+
+## Dashboard keyboard skip-link improvement — 2026-10-23
+
+- Added `Skip to dashboard content` to the authenticated student dashboard in `src/components/StudentDashboard.tsx`, targeting the main dashboard landmark with `tabIndex={-1}`.
+- Added a Playwright regression test in `tests/e2e/smoke.spec.ts` that activates the link with Enter and verifies focus moves to `#dashboard-content`.
+- CBT skip-link/reduced-motion verification remains green on E2E #850 (`40001391449`): **74 browser tests passed** on `693a94fae956`. This does not verify the newly added dashboard skip-link test.
+- Dashboard skip-link commits: `de955f6ada0bd127b4f95b131c31bdce95de6e09` (implementation) and `1ce8b9c62e53269adb3b6087bc089bea5d316cbb` (test). CI on these changes is pending; do not claim this new assertion passed until an E2E run containing both commits succeeds.
+- Bundle inspection: Verify #918 build log shows `index-DiBYEi0l.js` at **507.45 kB minified / 142.27 kB gzip**, with separate lazy chunks for `ProtectedCBT` (12.11 kB), `StudentStudyWorkspace` (17.91 kB), and the admin/academic gates (~10–20 kB). The build output alone does not attribute the 507 kB chunk to a specific dependency; no speculative split or dependency change was made.
+- Phase 3 remains IN PROGRESS. Manual keyboard-only and screen-reader acceptance, low-end Android, physical PWA/offline checks, and safe bundle attribution remain open.
