@@ -3306,3 +3306,13 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - Verify #885, run `39994246802`, completed **PASS** on commit `75b14bc1564456e7108a79bd1bca263359d1e723`. Confirmed successful steps: the expanded Node test command including `tests/pwa-contract.test.mjs`, both Deno checks, TypeScript typecheck, Vite build, and both disposable PostgreSQL migration/policy tests. This verifies the static source-contract checks only, not live service-worker/browser/offline behavior.
 - ACE JAMB E2E #818, run `39994246766`, was still **in progress at Playwright browser installation** at the time of this update. Do not claim E2E passed for this change until the browser tests complete.
 - **Next action:** poll E2E #818 and the current-main E2E run; if a run fails, inspect the failed step and logs before changing code. Keep physical-device PWA/offline and screen-reader acceptance open.
+
+
+## Runtime PWA cache regression coverage — 2026-10-23
+
+- Added `tests/pwa-runtime.test.mjs`, which executes `public/sw.js` in a Node VM with mocked service-worker APIs. It exercises install-time app-shell caching, privacy exclusions for auth/API/storage/realtime/functions/cross-origin/non-GET/service-worker requests, successful same-origin asset caching, and offline navigation fallback to the static shell.
+- Wired the runtime tests into the existing Node test step in `.github/workflows/verify.yml`. Commits: test file `ec6aa50e3bb7e49906bbaf8cd1b39f6055a6a010`; CI wiring/current source HEAD `6b6686997a2635ad3700f8aabb04c4d26e7a3fbc`.
+- Verification is **PENDING** for the new runtime test commit at this checkpoint: Verify #892 (`39999218330`) was installing dependencies, and E2E #825 (`39999218502`) was installing dependencies. Latest HEAD has additional queued workflows #893 and #826. Do not claim the runtime test passed until Verify #892 or a newer Verify on the relevant source commit completes successfully.
+- Previous static PWA contract suite did pass as part of Verify #885 on `75b14bc`; E2E #818 passed on that commit. That result does not include the new runtime test file.
+- Runtime test is still an isolated mock-based exercise, not an actual browser service-worker lifecycle or device/offline test. Real-device install/offline recovery and manual screen-reader/keyboard acceptance remain open. No app runtime code, backend/database, deployment, catalogue UI, or dependencies were changed.
+- **Exact next action:** inspect Verify #892 and E2E #825. If Verify fails, inspect the Node test output and correct the test harness or assertion with evidence; if green, confirm the current main commit's Verify/E2E status, then continue with the next bounded frontend-only accessibility check.
