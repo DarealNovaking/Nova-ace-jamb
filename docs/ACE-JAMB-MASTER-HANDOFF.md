@@ -3500,3 +3500,12 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - The earlier study-plan source commit `0599678b0010298d0228cb804b714aac2450b58e` is verified: Verify #958 and E2E #891 both passed. Documentation-head E2E #893 was still running when last checked.
 - No backend/database, catalogue, dependency, deployment, or production-data changes. Manual keyboard-only, actual screen-reader, low-end Android, and real-device PWA/offline checks remain unverified.
 - **Next action:** inspect current-main Verify and ACE JAMB E2E for the account loading commits; if green, continue only if another concrete gap is found. Record all failures and outcomes; keep the importer isolated behind its separate auth integration blocker.
+
+
+## Phase 3 CI closure and onboarding feedback audit — 2026-10-24
+
+- Rechecked the latest GitHub Actions runs for the previous account loading changes. All Verify/E2E runs for source commits `050a1fb7a46958b26f7f728f812c25e53689bb94`, `45ffe07290496e155f546df274e08a7f73f0f0c9`, and `cd425a23ba57756fce170dad215e8422f4bd4809` completed successfully. Docs-head Verify #967 and E2E #900 also passed (https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40042114159 and https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40042114162). Docs-head E2E #893 ultimately passed (https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40041675326).
+- Continued bounded audit found `src/components/StudentOnboarding.tsx` had a plain loading paragraph without status semantics, and the asynchronous save had no separate live status. Updated the loading branch to a busy main landmark with polite atomic status; added a polite atomic “Saving your preparation profile…” announcement while saving. Source commit: `d978365ebe3a1edf794909702d98abf51655a41a`.
+- Verification for `d978365ebe3a1edf794909702d98abf51655a41a` is pending; do not attribute earlier green CI to this newest commit. No data access, authorization, save validation, or persistence logic was changed intentionally.
+- No backend/database/catalogue/dependency/deployment/production-data changes. Manual keyboard-only, actual screen-reader, low-end Android, and real-device PWA/offline acceptance remain unverified.
+- **Next action:** inspect Verify and ACE JAMB E2E for `d978365ebe3a1edf794909702d98abf51655a41a`; if both pass, proceed to any further confirmed student journey issue, otherwise diagnose and fix the actual failing check. Keep the catalogue importer isolated behind the existing auth integration blocker.
