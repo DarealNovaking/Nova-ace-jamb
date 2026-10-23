@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import type { AuthChangeEvent, User } from '@supabase/supabase-js'
 import StudentAuth from './StudentAuth'
 import StudentOnboarding from './StudentOnboarding'
@@ -10,7 +10,7 @@ import {
 } from '../lib/studentService'
 import { ace } from '../lib/supabase'
 import { registerCurrentDevice } from '../lib/deviceService'
-import StudentDashboard from './StudentDashboard'
+const StudentDashboard = lazy(() => import('./StudentDashboard'))
 import CommunityChannelWelcome from './CommunityChannelWelcome'
 
 function hasRecoverySession() {
@@ -119,5 +119,5 @@ export default function StudentFoundationGate() {
   if (!user) return <StudentAuth />
   if (needsOnboarding) return <StudentOnboarding onComplete={() => { setNeedsOnboarding(false); setNeedsCommunityGate(true) }} />
   if (needsCommunityGate) return <CommunityChannelWelcome onContinue={() => { setNeedsCommunityGate(false); void refresh(user) }} />
-  return <StudentDashboard />
+  return <Suspense fallback={<main id="main-content" aria-busy="true" className="grid min-h-screen place-items-center bg-[#07050d] text-white"><p role="status" aria-live="polite" aria-atomic="true" className="text-white/60">Loading your dashboard…</p></main>}><StudentDashboard /></Suspense>
 }
