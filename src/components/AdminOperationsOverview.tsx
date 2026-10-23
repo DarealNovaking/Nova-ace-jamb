@@ -82,7 +82,8 @@ export default function AdminOperationsOverview() {
   ]
 
   return (
-    <section aria-labelledby="admin-operations-title" className="mb-8 rounded-3xl border border-purple-300/15 bg-white/[.025] p-5 sm:p-7">
+    <section aria-labelledby="admin-operations-title" aria-busy={loading} className="mb-8 rounded-3xl border border-purple-300/15 bg-white/[.025] p-5 sm:p-7">
+      <p role="status" aria-live="polite" aria-atomic="true" className="sr-only">{loading ? 'Checking operational readiness counts…' : 'Operational readiness check finished.'}</p>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div><p className="text-xs uppercase tracking-[.2em] text-purple-200/60">Operational readiness</p><h2 id="admin-operations-title" className="mt-2 text-2xl font-black">Operations command center</h2><p className="mt-2 max-w-2xl text-sm leading-6 text-white/45">Read-only counts from existing ACE tables. These indicators do not send notifications, verify payments, qualify referrals, or enable AI services.</p></div>
         <button type="button" onClick={() => void load()} disabled={loading} className="inline-flex min-h-10 w-fit items-center gap-2 rounded-xl border border-white/10 px-3 py-2 text-sm font-semibold hover:bg-white/5 disabled:opacity-50"><RefreshCw size={15} className={loading ? 'animate-spin' : ''} aria-hidden="true" /> Refresh status</button>
