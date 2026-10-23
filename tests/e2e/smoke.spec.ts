@@ -468,6 +468,7 @@ test.describe('ACE JAMB persistent CBT', () => {
     await expect(page.getByRole('heading', { name: 'JAMB simulation' })).toBeVisible()
     // The server-provided option order is B, A, so canonical option A is displayed second.
     await page.getByRole('button', { name: 'B. First answer' }).click()
+    await expect(page.getByRole('button', { name: 'B. First answer' })).toHaveAttribute('aria-pressed', 'true')
     await page.getByRole('button', { name: 'Submit CBT' }).click()
     await expect(page.getByText('100%', { exact: true })).toBeVisible()
     await expect(page.getByText('1/1 correct')).toBeVisible()
