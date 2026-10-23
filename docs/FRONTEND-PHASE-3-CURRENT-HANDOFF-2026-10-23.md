@@ -312,3 +312,9 @@ Proceed to the source-based keyboard/semantic audit of student workspace and CBT
 - Verify #912 (`40001230846`) passed on source/test commit `a2305b077e44`.
 - E2E #845 (`40001230788`) remained in Playwright browser installation, so the new CBT skip-link focus assertion is still pending browser verification. Current-main E2E #848 (`40001308034`) and Verify #915 (`40001308239`) were queued.
 - **Next action:** poll the browser workflow for the CBT skip-link test and the latest-main workflow; investigate any actual failing assertion from CI output.
+
+## CBT skip-link browser verification result — 2026-10-23
+
+- ACE JAMB E2E #850 (`40001391449`) passed on commit `693a94fae956`; logs report **74 browser tests passed**. This run includes the CBT skip-link test and reduced-motion test.
+- Verify #917 passed on `693a94fae956`; Verify #918 passed on current HEAD `d751b9f1dc98ae2b58d34d4c985bc6aead7a7cf3`. E2E #851 for current HEAD remained in progress at the last poll.
+- **Next action:** check the current HEAD E2E outcome, then attribute the >500 kB Vite bundle warning to actual modules before making any code-splitting change. Keep real keyboard-only/screen-reader/device checks open and keep the project frontend-only.
