@@ -1,19 +1,19 @@
 # ACE JAMB — Current Agent Checkpoint
 
-> Refresh from verified repository/system state at the start and end of meaningful work. Older historical entries below may be superseded by the latest verification record.
+> **Current-state rule:** This opening section is authoritative. Older entries below are retained as history and must not override newer verified evidence. Refresh this section at the start/end of meaningful work.
 
-- **Updated:** 2026-10-23 (Verify #897 passed for PWA runtime test commit `a2f50cb5b5`; latest docs HEAD CI still pending).
-- **Repository:** `DarealNovaking/Nova-ace-jamb`, branch `main`.
-- **Latest HEAD:** `a2f50cb5b55ff46ccc5d0531d3d3856aa9275e62` (`test(pwa): emulate same-origin response type in worker harness`).
-- **User-approved scope:** frontend only. Do not deploy, change backend/database/production data, restore catalogue UI, or perform app deployment work. The active frontend no longer uses the catalogue UI.
-- **Current milestone:** Frontend Phase 2 CLOSED for the authorized scope; Frontend Phase 3 IN PROGRESS.
-- **Latest Verify:** #897 / run `39999507889` PASS on `a2f50cb5b55ff46ccc5d0531d3d3856aa9275e62`, including PWA runtime tests. Verify #899 on docs commit `88600f87` was in progress at last check; current docs HEAD Verify #900 queued.
-- **Latest E2E:** #830 on `a2f50cb5b5` was still in progress at last check; E2E #833 for current docs HEAD queued. No claim of current HEAD E2E pass yet.
-- **Accessibility source/test state:** workspace skip link and keyboard/fragment coverage; CBT keyboard answer selection; CBT exit restores focus to dashboard heading; async loading/saving status, timer, answer state and question-map semantics have source/E2E coverage. Real screen-reader behavior remains unverified.
-- **Open acceptance gates:** full manual keyboard-only navigation, real screen-reader testing, physical low-end Android usability, and real-device PWA/offline installation/recovery. These cannot be closed by mocked CI alone.
-- **Open engineering debt:** main bundle about 507 kB minified / 142 kB gzip (Vite >500 kB warning); latest install audit 4 vulnerabilities (3 moderate, 1 high), not remediated. Avoid speculative splitting or broad dependency upgrades.
-- **Exact next action:** inspect Verify/E2E for `75b14bc`; fix only reproduced failures. Keep manual keyboard, screen-reader, low-end Android and real-device PWA/offline gates open.
-- **Evidence correction:** successful mocked E2E and build checks do not prove live Supabase/provider correctness or physical-device accessibility. No production mutation or deployment was performed in this refresh.
+- **Updated:** 2026-10-24 (universal fast-execution workflow standardized).
+- **Repository:** `DarealNovaking/Nova-ace-jamb`, default branch `main`.
+- **Latest verified pre-checkpoint HEAD:** `f3e81fa7ab25e05ad3ec7ea37e9f4aabf4f9afbc` (`docs: define universal fast-execution workflow`).
+- **Workflow instruction commits:** root `AGENTS.md` added in `156e7ecd819e900dffff665249cdf43fa5b76ac9`; canonical universal prompt and dormant catalogue role/delegation correction in `docs/AGENT-PROMPTS.md` committed as `3d01a7df3aca5348f936e0966cc25bd37accefe6`; master handoff protocol and changelog committed as `f3e81fa7ab25e05ad3ec7ea37e9f4aabf4f9afbc`.
+- **Instruction-change scope:** documentation and agent instructions only. No application code, database, production data, or deployment was changed.
+- **CI status for instruction commits:** not yet polled after these documentation commits. Do not infer success from prior CI.
+- **Latest application-code verification evidence:** Verify run [40092049137](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40092049137) and ACE JAMB E2E run [40092049176](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40092049176) both passed on application-code commit `eefd1a0a86b55f6652285c92fdf9ddb1480b60f5`. The later `4feb57a` and workflow-standardization commits are documentation-only; do not assume they have separate CI results unless freshly checked.
+- **Current authorized scope:** frontend acceptance only. Do not deploy, change backend/database/production data, or reopen institutions/catalogue work without explicit user authorization. Fix only a concrete, reproducible frontend defect.
+- **Current implementation status:** Phase 3 frontend implementation is closed on repository/automated evidence. This is not full production acceptance.
+- **Outstanding acceptance gates:** verify Cloudflare deployed source SHA read-only if possible; manual keyboard-only check; actual TalkBack/screen-reader behavior; low-end Android interaction/performance; PWA installation/offline/recovery. Live smoke test loaded the auth screen without a visible error, but did not prove sign-in, persistence, practice-mode behavior, or deployed SHA. Device navigation/layout and forms/keyboard PASS are user-reported, not independently observed by the agent.
+- **Exact next action:** poll the relevant GitHub Verify and ACE JAMB E2E runs for the latest documentation commit(s). Then continue with the existing manual acceptance checklist; if a device/browser gate cannot be performed, record it as BLOCKED rather than inventing a new feature or claiming full production acceptance.
+- **Source-of-truth roles:** `AGENTS.md` is the discovery entry point; `docs/AGENT-PROMPTS.md` is the canonical universal prompt and specialist reference; this checkpoint is the current verified state; the master handoff defines product/architecture and the shared execution protocol.
 
 ---
 
