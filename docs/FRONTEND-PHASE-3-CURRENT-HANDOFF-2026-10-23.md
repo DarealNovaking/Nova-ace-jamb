@@ -432,3 +432,13 @@ Proceed to the source-based keyboard/semantic audit of student workspace and CBT
 - The latest repository `main` HEAD verified before this report was `e3522a452e2024fe9bd2774080ad8e99a6ed5409`; Verify #40071809240 and ACE JAMB E2E #40071809175 both passed. CI green does not prove Cloudflare is serving this commit. Existing handoff evidence says no verified frontend deployment URL was found and no deployment was performed. No deployment was initiated.
 - **Acceptance status:** partial manual acceptance passed; screen-reader and performance/offline remain skipped; the tested site's deployed version is unverified until its URL and live evidence are checked.
 - **Next action:** ask for the exact site URL tested, then verify available live deployment evidence. Only then continue skipped checks where feasible; do not deploy or alter production systems merely to enable testing.
+
+
+## Live URL investigation — 2026-10-24
+
+- User supplied the exact URL tested on their Tecno Pop 5 Pro: https://nova-ace-jamb.novaking5002.workers.dev/?mode=practice
+- A fresh public page fetch succeeded and returned the title “ÑØVÃ ACE JAMB” with the sign-in/create-account/forgot-password gate visible for this URL. This confirms the Workers URL responds with the expected app identity, but the HTML/page extraction exposes no deployed Git SHA, build ID, or deployment metadata; therefore it does not independently prove which source commit is live.
+- Repository main HEAD is e9ccb8288a62ead7d53f49fdfe3d7bf758e22736 (docs(phase-3): record manual acceptance report, 2026-10-24 07:49 UTC). Verify run #40075620405 and ACE JAMB E2E run #40075620412 both succeeded for this exact HEAD. This is a docs-only commit; the preceding app-code checkpoint remains e3522a452e2024fe9bd2774080ad8e99a6ed5409, whose Verify and E2E runs also passed.
+- User reports Cloudflare showed a recent deployment around the time of testing. This timing is plausible but is not independently verified from Cloudflare's dashboard/API here. Do not state that the live build SHA is confirmed.
+- No deployment or production change was performed.
+- Next action: compare the deployment's commit/source in Cloudflare dashboard with e3522a452e2024fe9bd2774080ad8e99a6ed5409 (or a later application-code commit if one exists). Then perform the still-skipped screen-reader and performance/offline checks when feasible. Keep acceptance partial until those checks are completed or explicitly deferred.
