@@ -6,6 +6,24 @@
 
 ---
 
+## Universal fast-execution protocol — mandatory for all agents
+
+This protocol applies to every model, provider, specialist, and conversation. `AGENTS.md` is the repository-discovery entry point; `docs/AGENT-PROMPTS.md` contains the canonical universal prompt and specialist briefs. This section governs workflow, not product scope.
+
+1. **Recover context once:** inspect current `main` HEAD, changed files, this master handoff, the current checkpoint, the latest relevant progress handoff, and only the source/tests/systems relevant to the task. Treat old notes as historical when superseded by newer evidence.
+2. **Pick one next action:** identify the active milestone and highest-value unfinished acceptance criterion. Do not reopen closed work without a concrete regression or new requirement.
+3. **Batch delivery:** group related changes into one reviewable unit and execute inspect → implement → targeted verification → fix reproduced failures → document. Avoid serial micro-tasks and redundant summaries.
+4. **Use tools first:** use connected repository/system tools for supported work; use a terminal, Codespace, or browser only when it adds required capability. Never make the user relay commands, logs, or screenshots when an authorized tool can obtain the evidence.
+5. **Keep ceremony proportional:** apply installed skills when relevant, but do not turn a clear, bounded, explicitly authorized task into repeated planning or approval loops. Ask only when a missing decision materially affects product behavior, security, cost, or irreversible actions.
+6. **Parallelize safely:** delegate only independent, bounded work; give one primary integrator ownership of shared files, milestone choices, integration, and release decisions. Avoid concurrent edits to the same file or production resource.
+7. **Time-box blockers:** record the exact failure and evidence, try a materially different authorized path once, then continue independent work. Never repeat an unchanged failed approach without new evidence.
+8. **Verify proportionately:** run focused tests after each batch; run typecheck, build, relevant Playwright journeys, security/integration checks, and broader regressions at milestone gates. State PASS/FAIL/BLOCKED/SKIPPED/UNVERIFIED accurately. Never infer live or device behavior from a build alone.
+9. **Preserve project boundaries:** current user-approved scope and newest verified checkpoint override stale role briefs. The active frontend work must not silently reopen the catalogue/institutions, backend, database, production data, or deployment.
+10. **Maintain continuity in the same batch:** after meaningful changes or a failed investigation that changes the next action, update both `docs/ACE-JAMB-MASTER-HANDOFF.md` and `docs/AGENT-CONTINUITY-CHECKPOINT.md`. Record changed files, exact verification, blockers, required user action, and one next action. Never record secrets or student PII.
+11. **Finish with evidence:** report what changed, files/commit, what was actually verified, remaining blockers, required user action, and the next concrete action. No progress narration without a result; no claims without tool evidence.
+
+**Optimization target:** maximize verified product progress per session while preserving security, data integrity, accessibility, one roadmap, one source of truth, and one accountable integrator.
+
 ## 1. PROJECT IDENTITY
 
 - **Product:** ÑØVÃ ACE JAMB
@@ -3635,3 +3653,14 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - Remaining manual acceptance gates: verify deployed source identity through read-only Cloudflare deployment/build metadata if available; keyboard-only navigation; real screen-reader/TalkBack announcements; physical low-end Android interaction/performance; PWA installation and offline/recovery behavior. These are **not yet verified** and must not be inferred from mocked E2E.
 - Scope remains frontend acceptance only. No deployment, database write, production data mutation, catalogue rework, or credentials submission was performed. Do not reopen the institutions/catalogue decision.
 - Exact next action: user runs the short device acceptance checklist in the current handoff. Reopen implementation only if a reproducible defect is found. Do not deploy merely to make source identity match.
+
+
+## Agent workflow optimization — 2026-10-24
+
+- Added root `AGENTS.md` as the repository-discovery entry point in commit `156e7ecd819e900dffff665249cdf43fa5b76ac9`.
+- Standardized the universal execution prompt in `docs/AGENT-PROMPTS.md` in commit `3d01a7df3aca5348f936e0966cc25bd37accefe6`: batch-first execution, direct tool use, proportional process, time-boxed blockers, truthful verification labels, single-owner integration, and mandatory continuity.
+- Marked the catalogue specialist as dormant unless explicitly re-authorized and removed the historical catalogue delegation sequence as current instruction. This respects the active frontend-only acceptance scope and prevents stale instructions from reopening catalogue work.
+- This is a documentation/instructions-only change. No application code, database, production data, or deployment was changed.
+- Verification status at this point: GitHub API confirmed both file writes and their commit SHAs. Repository CI for the new instruction commits has not yet been polled; do not infer it passed.
+- Next action: finish updating the current checkpoint with this change and read back all modified files to verify the final contents.
+
