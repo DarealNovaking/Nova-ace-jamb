@@ -3664,3 +3664,13 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - Verification status at this point: GitHub API confirmed both file writes and their commit SHAs. Repository CI for the new instruction commits has not yet been polled; do not infer it passed.
 - Next action: inspect the latest instruction-document commit and current CI evidence; then continue with the existing manual frontend acceptance checklist. Do not reopen implementation without a reproducible defect.
 
+
+
+## Fast-execution workflow CI confirmation — 2026-10-24 22:43 UTC
+
+- Current `main` HEAD verified from GitHub: `d55db734f9f3862bca3a9102a9e4138360cfba6d` (`docs: record instruction readback and CI uncertainty`).
+- Verify workflow [#1015](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40139634971) completed with conclusion `success` for this exact SHA.
+- ACE JAMB E2E workflow [#948](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40139635160) completed with conclusion `success` for this exact SHA.
+- This verifies repository CI for the documentation/instruction changes. It does not verify live Cloudflare source SHA, real TalkBack/screen-reader behavior, or on-device performance/offline/PWA behavior.
+- No application code, deployment, backend/database, catalogue, or production data was changed.
+- **Next action:** complete the remaining manual acceptance gates on the supported Android device: keyboard-only navigation; TalkBack/screen-reader announcements; PWA installation, offline behavior and recovery; and low-end device interaction/performance. Record each as PASS/FAIL/BLOCKED with actual observations. Verify Cloudflare's deployed source commit read-only if the dashboard provides it. Reopen implementation only for a concrete reproducible defect.
