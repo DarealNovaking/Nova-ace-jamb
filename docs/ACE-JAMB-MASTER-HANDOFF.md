@@ -3674,3 +3674,20 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - This verifies repository CI for the documentation/instruction changes. It does not verify live Cloudflare source SHA, real TalkBack/screen-reader behavior, or on-device performance/offline/PWA behavior.
 - No application code, deployment, backend/database, catalogue, or production data was changed.
 - **Next action:** complete the remaining manual acceptance gates on the supported Android device: keyboard-only navigation; TalkBack/screen-reader announcements; PWA installation, offline behavior and recovery; and low-end device interaction/performance. Record each as PASS/FAIL/BLOCKED with actual observations. Verify Cloudflare's deployed source commit read-only if the dashboard provides it. Reopen implementation only for a concrete reproducible defect.
+
+
+## Manual acceptance report — 2026-10-25 (user-reported)
+
+The project owner submitted the following manual acceptance results for the current frontend acceptance checklist. These are explicitly user-reported observations, not independently witnessed by the agent:
+
+- **Keyboard navigation: PASS** (user-reported).
+- **TalkBack / screen-reader behavior: BLOCKED**. Actual TalkBack announcements have not been verified. The reason for the block was not specified, so do not infer a technical defect or mark accessibility accepted.
+- **Performance and recovery: PASS** (user-reported).
+- **PWA installation/offline/recovery: PASS** (user-reported).
+- **Cloudflare deployed source version: PASS** (user-reported; exact deployed SHA was not included in the report and has not been independently read back in this session).
+
+A bounded source spot-check searched the current frontend source for accessible status and naming patterns. It found examples of `role="status"` / `aria-live="polite"` in `src/components/StudentAuth.tsx`, `src/components/PersistentCBT.tsx`, `src/components/StudentDashboard.tsx`, and other account/loading states, plus explicit accessible names for CBT answer buttons and timer. This is supporting source evidence only; it cannot prove that TalkBack announces the live application correctly. No concrete accessibility defect was established by this spot-check, so no application code was changed.
+
+The combined-status API returned an empty status list for pre-batch HEAD ba565da0da70d6bda626edd16d597ffc9102a0d3; this is **inconclusive**, not a pass or failure. Previous Verify #1015 and ACE JAMB E2E #948 passed on `d55db734f9f3862bca3a9102a9e4138360cfba6d`, but those results do not establish CI status for later documentation commits.
+
+**Next action:** unblock the TalkBack check on the Android device (Settings → Accessibility → TalkBack, enable it if available), then navigate the core student sign-in/onboarding/dashboard and CBT question flow and confirm that control names, validation/errors, loading/saving status, selected answers, and timer are announced meaningfully. Record PASS/FAIL/BLOCKED based on actual behavior. If TalkBack cannot be enabled or used, record the exact blocker; do not claim screen-reader acceptance. No deployment or production-data change is authorized by this report.
