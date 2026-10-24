@@ -1881,3 +1881,13 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - User reports Cloudflare showed a recent deployment around the time of testing. This timing is plausible but is not independently verified from Cloudflare's dashboard/API here. Do not state that the live build SHA is confirmed.
 - No deployment or production change was performed.
 - Next action: compare the deployment's commit/source in Cloudflare dashboard with e3522a452e2024fe9bd2774080ad8e99a6ed5409 (or a later application-code commit if one exists). Then perform the still-skipped screen-reader and performance/offline checks when feasible. Keep acceptance partial until those checks are completed or explicitly deferred.
+
+
+## Repository-only continuation — 2026-10-24
+
+- Re-read repository state: main HEAD b509b3541bc5ed91e4f9bbf89e6a3f6564ed480a (docs(phase-3): record live deployment investigation).
+- Latest-head CI confirmed terminal green: Verify run 40076019216 and ACE JAMB E2E run 40076019162, both for exact HEAD b509b3541bc5ed91e4f9bbf89e6a3f6564ed480a.
+- User requested skipping browser automation and asked to document the live-site smoke test as blocked. TinyFish strict mode was rejected because beta access is unavailable; per tool instruction, retrying in default mode required user approval, and the user explicitly chose to skip it. Status: BLOCKED / NOT RUN, not a site failure.
+- No source/app code changed. No browser automation, sign-in, form submission, deployment, backend/database, or production-data operations were performed. No new local test execution was performed.
+- Acceptance still stands: user-reported PASS for navigation/layout and forms/keyboard accessibility on Tecno Pop 5 Pro; screen-reader and performance/offline/PWA SKIPPED. Cloudflare version 12b23757-15a4-4173-be81-df22e2f0f12f is visible in user screenshots, but the screenshots do not show its source Git SHA. The public Workers page responds with expected ACE JAMB title/auth gate but exposes no build SHA.
+- Exact next action: when user is ready and browser automation is available/approved, run a read-only mobile smoke check of https://nova-ace-jamb.novaking5002.workers.dev/?mode=practice; separately complete real screen-reader and offline/PWA checks on-device. Do not claim full production acceptance or exact deployment/source matching until those gates have evidence.
