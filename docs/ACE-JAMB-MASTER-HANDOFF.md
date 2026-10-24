@@ -3624,3 +3624,14 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - Browser automation report indicates no visible error, but this does not constitute a full interactive authenticated journey or proof of backend correctness. Real screen-reader behavior and on-device performance/offline/PWA remain untested; navigation/layout and forms/keyboard PASS remain user-reported.
 - No deployment, database, catalogue, dependency, or production-data operation was performed. Catalogue work remains separate and must not be reopened as part of frontend Phase 3.
 - **Exact next action:** if deployment/source identity can be confirmed from Cloudflare dashboard or build metadata, record the verified SHA; otherwise keep it explicitly unverified. Complete real screen-reader and performance/offline/PWA checks on Tecno Pop 5 Pro when available. Reopen implementation only for a reproducible defect.
+
+
+## Phase 3 frontend acceptance checkpoint — 2026-10-24
+
+- Repository: `DarealNovaking/Nova-ace-jamb`, branch `main`. Verified pre-checkpoint HEAD: `eefd1a0a86b55f6652285c92fdf9ddb1480b60f5`.
+- Verify workflow [run 40092049137](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40092049137): **PASS** on that exact SHA. Jobs `verify` and `utme-subject-choice-migration` succeeded. Verified steps include parser/review-only-stage/catalog-import/PWA contract and runtime tests, Deno checks for both catalogue functions, `npm run typecheck`, build/bundle attribution, and disposable PostgreSQL migration/policy tests.
+- ACE JAMB E2E [run 40092049176](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40092049176): **PASS** on the same SHA. Typecheck, build, and Playwright browser tests all succeeded.
+- Read-only live smoke test completed at [TinyFish run 488b36f4-57af-4c5a-be1c-4cb17d1d85b7](https://agent.tinyfish.ai/runs/488b36f4-57af-4c5a-be1c-4cb17d1d85b7): deployed Cloudflare Worker URL loaded the authentication screen; no visible error overlay. The query `?mode=practice` did not visibly establish that practice mode was active. The deployed source SHA could not be established from the page.
+- Remaining manual acceptance gates: verify deployed source identity through read-only Cloudflare deployment/build metadata if available; keyboard-only navigation; real screen-reader/TalkBack announcements; physical low-end Android interaction/performance; PWA installation and offline/recovery behavior. These are **not yet verified** and must not be inferred from mocked E2E.
+- Scope remains frontend acceptance only. No deployment, database write, production data mutation, catalogue rework, or credentials submission was performed. Do not reopen the institutions/catalogue decision.
+- Exact next action: user runs the short device acceptance checklist in the current handoff. Reopen implementation only if a reproducible defect is found. Do not deploy merely to make source identity match.

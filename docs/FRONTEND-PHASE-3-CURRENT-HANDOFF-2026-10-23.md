@@ -499,3 +499,25 @@ Proceed to the source-based keyboard/semantic audit of student workspace and CBT
 - Browser automation report indicates no visible error, but this does not constitute a full interactive authenticated journey or proof of backend correctness. Real screen-reader behavior and on-device performance/offline/PWA remain untested; navigation/layout and forms/keyboard PASS remain user-reported.
 - No deployment, database, catalogue, dependency, or production-data operation was performed. Catalogue work remains separate and must not be reopened as part of frontend Phase 3.
 - **Exact next action:** if deployment/source identity can be confirmed from Cloudflare dashboard or build metadata, record the verified SHA; otherwise keep it explicitly unverified. Complete real screen-reader and performance/offline/PWA checks on Tecno Pop 5 Pro when available. Reopen implementation only for a reproducible defect.
+
+
+## Final automated CI checkpoint and remaining manual acceptance — 2026-10-24
+
+### Automated checks
+- Verified main HEAD at check time: `eefd1a0a86b55f6652285c92fdf9ddb1480b60f5`.
+- [Verify run 40092049137](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40092049137): **PASS**. Both `verify` and `utme-subject-choice-migration` jobs passed. Typecheck, build/bundle attribution, parser/review-stage/catalog-import/PWA tests, Deno checks, and disposable PostgreSQL migration/policy tests passed.
+- [ACE JAMB E2E run 40092049176](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40092049176): **PASS**. Typecheck, build, and Playwright browser tests passed.
+- [Read-only live smoke test](https://agent.tinyfish.ai/runs/488b36f4-57af-4c5a-be1c-4cb17d1d85b7): the Cloudflare Worker URL loaded the auth screen without a visible error overlay. No credentials were entered and no data was changed. Practice mode was not visibly confirmed by the query string; deployed source SHA remains unverified.
+
+### Manual acceptance checklist — still open
+1. On physical Android device, verify sign-in screen and normal navigation at mobile width; do not share credentials.
+2. Keyboard/focus: ensure all visible controls can be reached and activated, focus is visible, skip navigation works where present, and returning from CBT restores focus sensibly (external keyboard if available).
+3. TalkBack: enable Android Settings → Accessibility → TalkBack; navigate headings, form labels, buttons, loading states, errors, selected answers, and CBT timer/status. Record missing or confusing announcements; disable TalkBack after test if desired.
+4. PWA: install from Chrome menu if installation is offered; launch from home screen; load once online; then test airplane mode and relaunch. Record whether the app shell opens and whether unavailable live data/errors are handled clearly. Do not assume full offline CBT/data is supported.
+5. Performance: try one normal dashboard-to-practice/CBT journey on the Tecno device. Record freezes, unusable tap targets, long waits, or layout overflow. Use a test account only if one already exists; do not create/modify production data just for this checklist without explicit approval.
+6. Cloudflare: if access is available, inspect deployment/build metadata read-only to map the live deployment to a source SHA. Do not click Deploy or change production settings.
+
+### Acceptance rule
+Automated CI is green; full frontend acceptance is **not yet complete** until the manual gates above are observed. Reopen implementation only for a reproducible failure. No backend/database/deployment/catalogue changes were made. The institutions/catalogue decision remains closed and out of scope.
+
+**Next action:** user runs the manual checklist and reports PASS/FAIL/BLOCKED for each item. If any item fails, capture the exact screen and steps, then fix only that reproducible defect.
