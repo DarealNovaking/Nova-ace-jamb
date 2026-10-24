@@ -1842,3 +1842,12 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - Bounded review of onboarding, student workspace, auth, dashboard, foundation gate, notifications, account settings, and account access found no further confirmed defect warranting a speculative patch. No runtime code changed during that review.
 - No backend/database/catalogue/dependency/deployment/production-data changes. Manual keyboard-only, actual screen-reader, physical low-end Android, and real-device PWA/offline acceptance remain unverified.
 - **Next action:** continue Phase 3 with a bounded source/test audit for one concrete, reproducible student-journey accessibility defect; patch only with evidence, run focused tests and CI/E2E, then update this handoff plus the master handoff and continuity checkpoint. Keep catalogue importer isolated behind the existing auth integration blocker.
+
+
+## Authentication submission feedback audit — 2026-10-24
+
+- Audited `src/components/StudentAuth.tsx` after latest-main Verify #970 and E2E #903 passed, and latest docs-head Verify #40043704805 and E2E #40043704828 also passed on `1944b0305c5d10fced8d388954b1e8c0a4c888aa`. (The E2E runs for two superseded documentation commits remain in progress; they do not supersede the successful latest-head E2E result.)
+- Found one concrete accessibility gap: the submit button changed its visible label to “Please wait…” while authentication/reset work was in flight, but the busy state did not have a dedicated live status announcement. Fixed in `src/components/StudentAuth.tsx` commit `2f7be1d2cd79189014e159c46ccc4f24d1f2be97` by exposing mode-specific polite, atomic status text for sign-in, account creation, password reset, and password update. Existing button disabling and auth flow are unchanged.
+- Verification for the new source commit is pending until the new GitHub Verify and ACE JAMB E2E workflows complete. Do not call this fix verified until those results are terminal and successful.
+- No backend, database, catalogue, dependency, deployment, or production-data changes. Manual keyboard-only, actual screen-reader, low-end Android, and real-device PWA/offline acceptance remain unverified.
+- **Next action:** poll Verify/E2E for `2f7be1d2cd79189014e159c46ccc4f24d1f2be97`; if green, record exact run IDs and continue the bounded Phase 3 audit. Keep catalogue importer isolated behind the existing auth integration blocker.
