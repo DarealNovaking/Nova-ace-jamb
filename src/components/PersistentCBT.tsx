@@ -187,7 +187,7 @@ export default function PersistentCBT({ attemptId = null, questionCount = 20, du
       <div role="timer" aria-label={`Time remaining ${formatTime(remaining)}`} className={`rounded-xl px-4 py-2 font-mono ${remaining < 60 ? 'bg-red-500/20 text-red-200' : 'bg-white/5'}`}><Clock3 aria-hidden="true" className="mr-2 inline" size={16}/>{formatTime(remaining)}</div>
     </div>
     {error && <div role="alert" className="rounded-xl border border-red-400/20 bg-red-500/10 p-3 text-sm text-red-100">{error}</div>}
-    <p role="status" aria-live="polite" aria-atomic="true" className="min-h-5 text-sm text-purple-200/80">{saving ? 'Saving your answer…' : ''}</p>
+    <p role="status" aria-live="polite" aria-atomic="true" className="min-h-5 text-sm text-purple-200/80">{saving ? 'Saving your answer…' : submitting ? 'Submitting your CBT…' : ''}</p>
     <div className="grid gap-5 lg:grid-cols-[1fr_230px]">
       <section className="glass-card rounded-3xl p-6">
         <div className="flex items-center justify-between text-xs text-white/40"><span>Question {current + 1} of {questions.length}</span><span>{attempt.answered_count} answered</span></div>
