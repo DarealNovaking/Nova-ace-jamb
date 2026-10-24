@@ -1898,3 +1898,14 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - Re-polled current `main`: HEAD `93dbc1aa432f1ac1b10d67645bf6ef7998673b7e` (`docs(phase-3): record blocked live smoke test and acceptance status`).
 - Verify run `40079433968` and ACE JAMB E2E run `40079433972` both completed successfully for this exact HEAD. This confirms repository checks after the documentation update; it does not verify the live Cloudflare build, browser smoke test, screen-reader behavior, or physical-device offline/PWA behavior.
 - No app-code change, deployment, or production data operation. Continue with the next bounded repository-only review; preserve all manual/live acceptance gates as open.
+
+
+## Phase 3 CBT submission status announcement — 2026-10-24
+
+- Repository HEAD at implementation: `ba1695695b268f6310d5d2dc445e5c0d9417381e` (`fix(a11y): announce CBT submission progress`).
+- Bounded source audit of `src/components/PersistentCBT.tsx` found that answer saving already had a polite atomic status announcement, but submitting changed the button label only. Extended the existing status region to announce “Submitting your CBT…” while submission is in progress. No CBT submission, persistence, scoring, authorization, or timer logic was changed.
+- CI triggered for the source commit: Verify run 995 (`40090688712`) and ACE JAMB E2E run 928 (`40090688664`). They were in progress when this note was prepared; do not claim pass until both are terminal and successful.
+- Prior main HEAD `b13cb3023f2ac3bdf605ca04957b1d9911dd2657` had Verify #994 and ACE JAMB E2E #927 both green.
+- No deployment, backend/database, catalogue, dependency, or production-data changes.
+- Manual screen-reader announcement behavior remains unverified. Other outstanding acceptance: live Cloudflare source SHA mapping; real screen-reader; performance/offline/PWA on-device checks; user-reported device navigation/forms acceptance remains reported, not independently observed.
+- **Next action:** poll Verify and ACE JAMB E2E for `ba1695695b268f6310d5d2dc445e5c0d9417381e`; fix only any actual failure, then continue the bounded student journey/CBT accessibility audit for a concrete gap.
