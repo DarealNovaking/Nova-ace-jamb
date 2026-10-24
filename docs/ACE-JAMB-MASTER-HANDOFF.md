@@ -3547,3 +3547,13 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - **Rush-mode recommendation:** stop adding speculative frontend changes. Automated engineering gate is green; remaining acceptance is manual: keyboard-only navigation, actual screen-reader announcements, low-end Android behavior, and real-device PWA/offline behavior. These checks have not been performed by this agent and must not be represented as passed.
 - No deployment, backend/database/catalogue/dependency, or production-data changes were made. The catalogue importer remains isolated behind the existing auth integration blocker.
 - **Exact next action:** perform the four manual acceptance checks on a real supported device/browser. If unavailable before the deadline, close the implementation sprint as “automated checks passed; manual acceptance outstanding,” not as fully production-accepted. Only reopen implementation for a reproducible failure.
+
+
+## Real-device Phase 3 acceptance report — 2026-10-24
+
+- User-reported device: Tecno Pop 5 Pro (low-end Android). These are user-reported manual results, not independently observed by the agent.
+- **PASS (user-reported):** navigation and layout; forms and keyboard accessibility.
+- **SKIPPED:** screen-reader announcements; performance and offline/PWA behavior. Do not treat either as passed.
+- Deployment caveat remains: the latest repository `main` HEAD verified before this report was `e3522a452e2024fe9bd2774080ad8e99a6ed5409`, with Verify #40071809240 and ACE JAMB E2E #40071809175 both successful. These CI results do not establish that Cloudflare serves this commit. The repo's existing handoff reports no verified frontend deployment URL and says deployment was not performed; no deployment was initiated as part of this acceptance session.
+- **Current acceptance status:** partial manual acceptance passed on the user's device; screen-reader and performance/offline checks remain skipped; exact live deployment/version remains unverified until the user provides the URL and live deployment evidence can be checked.
+- **Next action:** obtain the exact site URL the user tested and verify what can be established about the live build. Then, if time/device settings permit, test performance/offline and screen-reader behavior. Do not deploy or alter production systems merely to make the tests possible.
