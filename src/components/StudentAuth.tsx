@@ -97,6 +97,7 @@ export default function StudentAuth({ recovery = false }: { recovery?: boolean }
           {error && <p role="alert" className="rounded-xl border border-red-400/20 bg-red-400/10 p-3 text-sm text-red-100">{error}</p>}
           {message && <p role="status" className="rounded-xl border border-emerald-400/20 bg-emerald-400/10 p-3 text-sm text-emerald-100">{message}</p>}
 
+          {busy && <p role="status" aria-live="polite" aria-atomic="true" className="text-sm text-white/60">{recoveryMode ? 'Updating your password…' : forgotMode ? 'Sending password-reset instructions…' : signupMode ? 'Creating your account…' : 'Signing you in…'}</p>}
           <button type="submit" disabled={busy} className="w-full rounded-xl bg-white px-5 py-3 font-bold text-black disabled:opacity-50">
             {busy ? 'Please wait…' : recoveryMode ? 'Update password' : forgotMode ? 'Send reset email' : signupMode ? 'Create account' : 'Sign in'}
           </button>
