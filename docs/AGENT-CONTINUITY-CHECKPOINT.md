@@ -1871,3 +1871,13 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - Deployment caveat remains: the latest repository `main` HEAD verified before this report was `e3522a452e2024fe9bd2774080ad8e99a6ed5409`, with Verify #40071809240 and ACE JAMB E2E #40071809175 both successful. These CI results do not establish that Cloudflare serves this commit. The repo's existing handoff reports no verified frontend deployment URL and says deployment was not performed; no deployment was initiated as part of this acceptance session.
 - **Current acceptance status:** partial manual acceptance passed on the user's device; screen-reader and performance/offline checks remain skipped; exact live deployment/version remains unverified until the user provides the URL and live deployment evidence can be checked.
 - **Next action:** obtain the exact site URL the user tested and verify what can be established about the live build. Then, if time/device settings permit, test performance/offline and screen-reader behavior. Do not deploy or alter production systems merely to make the tests possible.
+
+
+## Live URL investigation — 2026-10-24
+
+- User supplied the exact URL tested on their Tecno Pop 5 Pro: https://nova-ace-jamb.novaking5002.workers.dev/?mode=practice
+- A fresh public page fetch succeeded and returned the title “ÑØVÃ ACE JAMB” with the sign-in/create-account/forgot-password gate visible for this URL. This confirms the Workers URL responds with the expected app identity, but the HTML/page extraction exposes no deployed Git SHA, build ID, or deployment metadata; therefore it does not independently prove which source commit is live.
+- Repository main HEAD is e9ccb8288a62ead7d53f49fdfe3d7bf758e22736 (docs(phase-3): record manual acceptance report, 2026-10-24 07:49 UTC). Verify run #40075620405 and ACE JAMB E2E run #40075620412 both succeeded for this exact HEAD. This is a docs-only commit; the preceding app-code checkpoint remains e3522a452e2024fe9bd2774080ad8e99a6ed5409, whose Verify and E2E runs also passed.
+- User reports Cloudflare showed a recent deployment around the time of testing. This timing is plausible but is not independently verified from Cloudflare's dashboard/API here. Do not state that the live build SHA is confirmed.
+- No deployment or production change was performed.
+- Next action: compare the deployment's commit/source in Cloudflare dashboard with e3522a452e2024fe9bd2774080ad8e99a6ed5409 (or a later application-code commit if one exists). Then perform the still-skipped screen-reader and performance/offline checks when feasible. Keep acceptance partial until those checks are completed or explicitly deferred.
