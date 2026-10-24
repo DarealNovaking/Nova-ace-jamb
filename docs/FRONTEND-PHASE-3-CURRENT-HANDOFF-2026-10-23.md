@@ -422,3 +422,13 @@ Proceed to the source-based keyboard/semantic audit of student workspace and CBT
 - **Rush-mode recommendation:** stop adding speculative frontend changes. Automated engineering gate is green; remaining acceptance is manual: keyboard-only navigation, actual screen-reader announcements, low-end Android behavior, and real-device PWA/offline behavior. These checks have not been performed by this agent and must not be represented as passed.
 - No deployment, backend/database/catalogue/dependency, or production-data changes were made. The catalogue importer remains isolated behind the existing auth integration blocker.
 - **Exact next action:** perform the four manual acceptance checks on a real supported device/browser. If unavailable before the deadline, close the implementation sprint as “automated checks passed; manual acceptance outstanding,” not as fully production-accepted. Only reopen implementation for a reproducible failure.
+
+
+## Real-device Phase 3 acceptance report — 2026-10-24
+
+- User-reported device: Tecno Pop 5 Pro (low-end Android). Results are reported by the user and were not independently observed by the agent.
+- **PASS (user-reported):** navigation and layout; forms and keyboard accessibility.
+- **SKIPPED:** screen-reader announcements; performance and offline/PWA behavior.
+- The latest repository `main` HEAD verified before this report was `e3522a452e2024fe9bd2774080ad8e99a6ed5409`; Verify #40071809240 and ACE JAMB E2E #40071809175 both passed. CI green does not prove Cloudflare is serving this commit. Existing handoff evidence says no verified frontend deployment URL was found and no deployment was performed. No deployment was initiated.
+- **Acceptance status:** partial manual acceptance passed; screen-reader and performance/offline remain skipped; the tested site's deployed version is unverified until its URL and live evidence are checked.
+- **Next action:** ask for the exact site URL tested, then verify available live deployment evidence. Only then continue skipped checks where feasible; do not deploy or alter production systems merely to enable testing.
