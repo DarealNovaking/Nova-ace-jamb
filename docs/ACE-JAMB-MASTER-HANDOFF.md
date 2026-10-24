@@ -3662,5 +3662,5 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - Marked the catalogue specialist as dormant unless explicitly re-authorized and removed the historical catalogue delegation sequence as current instruction. This respects the active frontend-only acceptance scope and prevents stale instructions from reopening catalogue work.
 - This is a documentation/instructions-only change. No application code, database, production data, or deployment was changed.
 - Verification status at this point: GitHub API confirmed both file writes and their commit SHAs. Repository CI for the new instruction commits has not yet been polled; do not infer it passed.
-- Next action: finish updating the current checkpoint with this change and read back all modified files to verify the final contents.
+- Next action: inspect the latest instruction-document commit and current CI evidence; then continue with the existing manual frontend acceptance checklist. Do not reopen implementation without a reproducible defect.
 
