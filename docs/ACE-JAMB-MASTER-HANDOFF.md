@@ -3567,3 +3567,13 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - User reports Cloudflare showed a recent deployment around the time of testing. This timing is plausible but is not independently verified from Cloudflare's dashboard/API here. Do not state that the live build SHA is confirmed.
 - No deployment or production change was performed.
 - Next action: compare the deployment's commit/source in Cloudflare dashboard with e3522a452e2024fe9bd2774080ad8e99a6ed5409 (or a later application-code commit if one exists). Then perform the still-skipped screen-reader and performance/offline checks when feasible. Keep acceptance partial until those checks are completed or explicitly deferred.
+
+
+## Repository-only acceptance continuation — 2026-10-24
+
+- User elected to skip browser automation for now. A live-site smoke test was blocked before starting because TinyFish strict mode requires beta access; the user explicitly declined retrying in default mode. Do not describe this as a failed site test: no browser smoke assertions were run.
+- Re-verified GitHub main HEAD b509b3541bc5ed91e4f9bbf89e6a3f6564ed480a (docs(phase-3): record live deployment investigation). Verify run 40076019216 and ACE JAMB E2E run 40076019162 both completed successfully for this exact HEAD.
+- Current commit is documentation-only. The previously verified application-code checkpoint remains e3522a452e2024fe9bd2774080ad8e99a6ed5409; do not infer the Cloudflare version 12b23757-15a4-4173-be81-df22e2f0f12f maps to a specific Git SHA from the dashboard screenshots alone.
+- Manual device acceptance reported by the user: navigation/layout PASS; forms/keyboard accessibility PASS; screen-reader SKIPPED; performance/offline/PWA SKIPPED. Public fetch confirmed the Workers URL responds with ACE JAMB identity/auth gate but did not expose build metadata.
+- No application code, backend, database, catalogue, dependencies, deployment, or production data changed. No local source tests were rerun in this continuation; GitHub Verify/E2E are the repository verification evidence.
+- Exact next action: when browser automation is available/approved, run a read-only mobile live smoke test against https://nova-ace-jamb.novaking5002.workers.dev/?mode=practice; separately complete real screen-reader and offline/PWA checks on-device. Keep deployment-to-SHA linkage and those manual acceptance gates explicitly unverified until evidence is captured.
