@@ -442,3 +442,13 @@ Proceed to the source-based keyboard/semantic audit of student workspace and CBT
 - User reports Cloudflare showed a recent deployment around the time of testing. This timing is plausible but is not independently verified from Cloudflare's dashboard/API here. Do not state that the live build SHA is confirmed.
 - No deployment or production change was performed.
 - Next action: compare the deployment's commit/source in Cloudflare dashboard with e3522a452e2024fe9bd2774080ad8e99a6ed5409 (or a later application-code commit if one exists). Then perform the still-skipped screen-reader and performance/offline checks when feasible. Keep acceptance partial until those checks are completed or explicitly deferred.
+
+
+## Repository-only continuation — 2026-10-24
+
+- Current main HEAD verified as b509b3541bc5ed91e4f9bbf89e6a3f6564ed480a. Latest Verify 40076019216 and ACE JAMB E2E 40076019162 both completed successfully against this exact HEAD.
+- User chose to skip browser automation. The requested live-site smoke test is BLOCKED / NOT RUN because strict browser mode required unavailable beta access and user declined the default-mode retry. No live browser assertions were made in this step.
+- No application-code change or deployment was performed. Existing application optimization/auth accessibility changes remain covered by their previously recorded successful CI/E2E runs; current HEAD changes only documentation.
+- Live URL public fetch evidence: https://nova-ace-jamb.novaking5002.workers.dev/?mode=practice returned the ACE JAMB title and authentication gate; no build SHA/version metadata was exposed. Cloudflare dashboard screenshot shows deployment version 12b23757-15a4-4173-be81-df22e2f0f12f, but no commit SHA, so exact source-to-deployment mapping is unresolved.
+- Manual acceptance: user-reported navigation/layout PASS and forms/keyboard accessibility PASS on Tecno Pop 5 Pro; screen-reader SKIPPED; performance/offline/PWA SKIPPED.
+- Next action: perform a read-only mobile browser smoke test when approved/available; then finish real screen-reader and offline/PWA acceptance. Keep the deployment/source mapping and manual acceptance status open until verified.
