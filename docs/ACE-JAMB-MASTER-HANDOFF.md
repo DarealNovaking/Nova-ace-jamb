@@ -3698,3 +3698,14 @@ The combined-status API returned an empty status list for pre-batch HEAD ba565da
 The project owner reports that they found TalkBack in Android Accessibility settings, used it, and that it “worked well.” Record **TalkBack / screen-reader: PASS (user-reported smoke-test level)**. The agent did not independently observe the device test, and the user did not enumerate every announcement or core flow; do not claim exhaustive screen-reader acceptance. See `docs/acceptance/TALKBACK-ACCEPTANCE-2026-10-25.md` (commit `f2df6ef7963f9c226fe2f979f8f6fed5726b39c6`).
 
 Other manual results remain user-reported PASS: keyboard navigation, performance/recovery, PWA/offline, and Cloudflare source version. The exact deployed Cloudflare SHA remains independently unverified unless read back from deployment metadata. No reproducible defect was reported; no application code, backend/database, production data, or deployment was changed. Documentation CI for the acceptance update is unverified; an empty combined-status response is inconclusive, not a pass or failure. Next action: check workflow evidence for the latest documentation commit, then address only a concrete reported defect or explicitly required deeper accessibility test.
+
+
+## Latest documentation-HEAD CI confirmation — 2026-10-25
+
+- Verified main HEAD: `f6254d90ecc6b41b5da46c22ef2b29fcbc219111` (`docs: sync checkpoint with master TalkBack update`).
+- Verify workflow [#1023](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40169073637): **PASS** for this exact SHA. The run completed successfully.
+- ACE JAMB E2E workflow [#956](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40169073604): **PASS** for this exact SHA. Playwright browser tests completed successfully; the same job's dependency installation, typecheck, build, and Playwright browser setup steps also passed.
+- These checks verify repository automation for the current code/docs state; they do not independently validate Cloudflare's deployed SHA or exhaustively verify on-device accessibility/performance/offline behavior.
+- Manual acceptance remains user-reported PASS for keyboard navigation, TalkBack smoke test, performance/recovery, PWA/offline/recovery, and Cloudflare source version. The exact Cloudflare deployed SHA is still **not independently verified** in this session. No concrete frontend defect was reported.
+- No application code, deployment, backend/database, catalogue, dependency, or production-data change was made.
+- **Exact next action:** keep frontend implementation closed unless a reproducible defect is reported. If deployment metadata is accessible, read the deployed Cloudflare source SHA and compare it to the intended release commit; otherwise leave this item explicitly unverified. Do not reopen catalogue work or speculative frontend changes.
