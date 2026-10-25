@@ -3720,3 +3720,17 @@ Other manual results remain user-reported PASS: keyboard navigation, performance
 - Manual acceptance remains owner-reported PASS for keyboard navigation, TalkBack smoke test, performance/recovery, and PWA/offline/recovery. No concrete frontend defect is reported.
 - No application code, deployment, backend/database, catalogue, dependency, or production-data change was made.
 - **Exact next action:** Phase 3 frontend implementation remains closed unless a reproducible defect is reported. No further speculative code work. If an exact deployment SHA becomes available, compare it against the intended release commit and update this record; otherwise retain owner-confirmed deployment match with independent SHA read-back marked outstanding.
+
+
+## Gemini AI Studio frontend archive integration audit — 2026-10-25
+
+The owner supplied `nova-ace-jamb-frontend-complete.zip` for independent verification of Gemini's claimed Phases 1–8 before integration. The archive was inspected without replacing the current project.
+
+- Audit report: `docs/GEMINI-FRONTEND-ARCHIVE-AUDIT-2026-10-25.md`.
+- Main HEAD at audit start: `04ce73e44370722e41a48a6116bf51a0e8c7bb9e`.
+- Candidate tests: `npm test` PASS (21/21).
+- Dependency install timed out; candidate lint/typecheck could not resolve `vite/client`; build could not find `vite`; E2E was not run because `@playwright/test` and the `e2e` script are absent.
+- Candidate uses a different package/toolchain, falls back to a dummy Supabase key, includes a completion/download banner pointing at a ZIP not present in `public/`, and retains catalogue components/docs inconsistent with the current catalogue-independent direction.
+- The archive's named phase components do not all exist under those names in source. This is a claim/source mismatch; renamed/consolidated functionality is possible. All-eight-phase completion is **not independently established**.
+- No application code, dependency, database, production data, or deployment changes were made. The candidate ZIP was **not uploaded to main**.
+- Integration decision: do not replace current main. If further integration is requested, create a minimal feature-by-feature diff against current main, preserve existing auth/session/Supabase/routing architecture, resolve the dummy-key/configuration and workflow mismatches, and pass repository typecheck/build/E2E before merge.
