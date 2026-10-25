@@ -55,3 +55,20 @@ Absence of a named component alone is not treated as definitive absence of a fea
 - **No files from the candidate archive were uploaded to `main`.**
 - Do not replace current `main` with the ZIP. Preserve the completed Phase 3 work and existing repository architecture.
 - Next action: if integration is still desired, prepare a minimal, reviewable feature-by-feature diff against the verified current `main`; reuse existing auth/session, Supabase configuration, routes, and test setup. Remove the dummy-key fallback and unsupported completion banner, reconcile current catalogue-independent scope, then run the repository's existing `npm run typecheck`, `npm run build`, and `npm run e2e` checks before considering a merge.
+
+
+## Follow-up source-tree comparison — 2026-10-25
+
+A direct path-by-path check against the current default branch refined the integration decision:
+
+- The candidate contains 34 source paths. Most already exist in `main`; the archive is therefore largely a divergent snapshot of the same application, not an independent app that should be copied over the repository.
+- These candidate paths were not found in current `main`: `src/App.tsx`, `src/components/StudentAnalyticsMastery.tsx`, `src/lib/questionService.ts`, and `src/lib/practiceService.ts`.
+- Candidate `src/App.tsx` is an empty stub and is not used by the candidate HTML entry point. Do not import it.
+- Candidate `src/main.tsx` includes a global completion banner and a download URL for an archive absent from `public/`. Current `main` already has a working `src/main.tsx` with the existing routes and accessibility behavior; do not replace it with the candidate version.
+- Current `main` has newer/modified versions of several shared files, including `StudentDashboard.tsx`, `StudentStudyWorkspace.tsx`, `PersistentCBT.tsx`, `StudentAccountSettings.tsx`, `StudentStudyPlan.tsx`, `ProtectedCBT.tsx`, `seasonService.ts`, and other UI/service files. Their candidate versions must be reviewed as diffs, not copied blindly.
+- Code search found no reference to `StudentAnalyticsMastery` or `practiceService` in current `main`. Their presence in the archive alone does not make those features active. Before adding them, check table/schema compatibility and integrate the feature into the existing dashboard deliberately.
+- Candidate `src/lib/supabase.ts` is especially unsafe to copy because it uses a dummy-key fallback; retain the current repository's explicit configuration behavior.
+
+### Updated integration decision
+
+No safe wholesale copy is justified. Preserve the current `main` entry point, authentication/session routing, and accessibility fixes. Selective feature integration is still the intended direction, but only after each candidate delta is understood and its dependencies and current product scope are checked. The archive's files have not been uploaded to `main`; no deployment or backend/database change was made.
