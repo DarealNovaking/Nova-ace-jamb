@@ -822,9 +822,9 @@ test.describe('ACE JAMB preparation workspaces', () => {
 
     await page.getByRole('button', { name: 'Progress', exact: true }).click()
     await expect(page.getByRole('heading', { name: 'Your progress & mastery' })).toBeVisible()
-    await expect(page.getByText('Completed attempts')).toBeVisible()
-    await expect(page.getByText('Questions answered')).toBeVisible()
-    await expect(page.getByText('Answer accuracy')).toBeVisible()
+    await expect(page.getByText('Completed attempts', { exact: true })).toBeVisible()
+    await expect(page.getByText('Questions answered', { exact: true })).toBeVisible()
+    await expect(page.getByText('Answer accuracy', { exact: true })).toBeVisible()
     await expect(page.getByText('Your progress starts with your first completed session.')).toBeVisible()
 
     await page.getByRole('button', { name: /Study plan/ }).click()
