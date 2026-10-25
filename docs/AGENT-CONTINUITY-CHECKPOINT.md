@@ -1979,3 +1979,15 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - Confirmed mismatches: package/toolchain differs from main; candidate Supabase client falls back to a dummy key rather than failing clearly; completion banner links to a ZIP absent from `public/`; several component names claimed in `HANDOFF.md` do not exist in the source inventory; catalogue/importer code remains despite current catalogue-independent product direction.
 - Result: substantial frontend code exists, but all-eight-phase completion is not supported by the evidence collected. **Do not upload/replace main with this ZIP unchanged.** No app code, dependencies, backend/database, production data, or deployment changed.
 - Exact next action: if integration remains desired, build a minimal reviewable diff from the candidate against current main, preserving established auth/session/Supabase/routing and current scope; resolve configuration/workflow mismatches and run typecheck, build, and E2E before considering merge. Do not restart Phase 2 or redo completed Phase 3 work.
+
+
+## Gemini frontend archive integration checkpoint — 2026-10-25
+
+- User's intent: Gemini AI Studio claims to have completed frontend Phases 1–8; verify against project scope and selectively integrate useful deltas. Do **not** restart completed phases.
+- The ZIP is a divergent snapshot of the same app: most source paths already exist in `main`, and multiple candidate files differ from the current source. Do not copy the archive wholesale.
+- Keep current `src/main.tsx` and current auth/session/route/accessibility behavior. Candidate `src/App.tsx` is an empty stub; candidate `main.tsx` adds a broken/unverified archive download banner and may regress current accessibility improvements. Candidate Supabase config has a dummy-key fallback and must not replace current config.
+- Candidate-only paths identified: `src/components/StudentAnalyticsMastery.tsx`, `src/lib/questionService.ts`, `src/lib/practiceService.ts` (plus the unused empty `src/App.tsx`). They are not active features until dependencies, schema compatibility, and dashboard integration are verified.
+- Audit PR: https://github.com/DarealNovaking/Nova-ace-jamb/pull/7. The detailed source-tree addendum is in `docs/GEMINI-FRONTEND-ARCHIVE-AUDIT-2026-10-25.md`.
+- Verification: candidate tests 21/21 passed; archive dependency installation timed out; typecheck/build/E2E remain unverified. Current repository CI/workflows were not changed by the candidate.
+- No candidate app code was merged or deployed. No backend/database/production data was changed.
+- Exact next action: make a selective diff for one candidate feature at a time against current `main`, preserving newer accessibility fixes and existing routing; integrate only a feature with a clear scope match and compatible existing data contract, then run repository typecheck/build/E2E.
