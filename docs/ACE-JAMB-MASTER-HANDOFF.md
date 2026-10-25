@@ -3709,3 +3709,14 @@ Other manual results remain user-reported PASS: keyboard navigation, performance
 - Manual acceptance remains user-reported PASS for keyboard navigation, TalkBack smoke test, performance/recovery, PWA/offline/recovery, and Cloudflare source version. The exact Cloudflare deployed SHA is still **not independently verified** in this session. No concrete frontend defect was reported.
 - No application code, deployment, backend/database, catalogue, dependency, or production-data change was made.
 - **Exact next action:** keep frontend implementation closed unless a reproducible defect is reported. If deployment metadata is accessible, read the deployed Cloudflare source SHA and compare it to the intended release commit; otherwise leave this item explicitly unverified. Do not reopen catalogue work or speculative frontend changes.
+
+
+## Latest-HEAD CI and deployment confirmation — 2026-10-25
+
+- Current verified main HEAD: `98fe28cc8eb47b02d6e018cb97d8def919b3beb5` (`docs: record latest frontend CI results`).
+- Verify #1024 ([run 40169272168](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40169272168)): **PASS** on this exact HEAD.
+- ACE JAMB E2E #957 ([run 40169272184](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40169272184)): **PASS** on this exact HEAD, including typecheck, build, Playwright browser setup, and browser tests.
+- The project owner has now explicitly confirmed that the Cloudflare deployment matches. Record deployment/source alignment as **PASS (owner-confirmed)**. The exact deployed commit SHA was not provided and was not independently read from Cloudflare deployment metadata in this session, so independent SHA verification remains outstanding; do not overstate this as agent-verified metadata.
+- Manual acceptance remains owner-reported PASS for keyboard navigation, TalkBack smoke test, performance/recovery, and PWA/offline/recovery. No concrete frontend defect is reported.
+- No application code, deployment, backend/database, catalogue, dependency, or production-data change was made.
+- **Exact next action:** Phase 3 frontend implementation remains closed unless a reproducible defect is reported. No further speculative code work. If an exact deployment SHA becomes available, compare it against the intended release commit and update this record; otherwise retain owner-confirmed deployment match with independent SHA read-back marked outstanding.

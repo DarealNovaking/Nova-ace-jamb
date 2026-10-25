@@ -1958,3 +1958,14 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - Latest manual acceptance remains user-reported PASS: keyboard navigation; TalkBack smoke test; performance/recovery; PWA/offline/recovery; Cloudflare source version. Agent did not independently witness the device tests, and the precise deployed SHA was not independently read back.
 - No reproducible frontend defect is open. No app code, deployment, backend/database, catalogue, dependencies, or production data were changed.
 - **Exact next action:** do not reopen implementation speculatively. If Cloudflare deployment metadata is accessible, verify its deployed commit SHA against the intended release; if it is not accessible, explicitly retain that item as unverified. Continue source work only for a concrete reproducible defect or a specifically required deeper acceptance test.
+
+
+## Latest-HEAD CI and Cloudflare confirmation — 2026-10-25
+
+- Verified main HEAD: `98fe28cc8eb47b02d6e018cb97d8def919b3beb5` (`docs: record latest frontend CI results`).
+- Verify #1024 ([run 40169272168](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40169272168)): **PASS** on this exact SHA.
+- ACE JAMB E2E #957 ([run 40169272184](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40169272184)): **PASS** on this exact SHA; typecheck, build, Playwright browser setup, and browser tests passed.
+- Project owner confirms the Cloudflare deployment matches. Record **PASS (owner-confirmed)**. Exact deployed commit SHA was not provided or independently read from deployment metadata during this session; independent SHA verification remains outstanding.
+- Manual device acceptance remains user-reported PASS for keyboard navigation, TalkBack smoke test, performance/recovery, and PWA/offline/recovery. No concrete frontend defect is open.
+- No app code, deployment, backend/database, catalogue, dependencies, or production data were changed.
+- **Exact next action:** do not reopen frontend implementation speculatively. Continue only for a reproducible defect or a required deeper acceptance test. If the exact Cloudflare deployed SHA is later available, compare it to the intended release commit and record the evidence; otherwise keep the independent SHA read-back explicitly outstanding.
