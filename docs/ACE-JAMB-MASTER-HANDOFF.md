@@ -3731,3 +3731,16 @@ Other manual results remain user-reported PASS: keyboard navigation, performance
 - At documentation time, the fix commit's CI result has not yet been returned; do not call the E2E suite green until the new run completes successfully.
 - No production app was deployed, no database/schema or production data changed, no secrets changed, and no catalogue dependency was added.
 - Next action: poll Verify and ACE JAMB E2E for fix commit `b9d6e11a3d592fcc2ec42338b5d1acccc9a838b1`; inspect any further failure from its artifacts before merging. Keep the candidate integration isolated from `main` until CI is green.
+
+
+## Gemini frontend integration — browser verification update — 2026-10-25
+
+- Integration PR #8: https://github.com/DarealNovaking/Nova-ace-jamb/pull/8
+- Current integration head at verification: `98a42473e498ccbbca02f3a13d5be399963c965f`.
+- Fixed Playwright's ambiguous text locators in `tests/e2e/smoke.spec.ts` by requiring exact matches for the Progress metric labels. Fix commit: `98a42473e498ccbbca02f3a13d5be399963c965f`.
+- GitHub Actions on the fix commit: Verify workflow #1033 SUCCESS; ACE JAMB E2E workflow #966 SUCCESS. Playwright result: 76 passed, 0 failed, across Chromium and mobile Chromium. Typecheck and production build steps also passed in the E2E workflow.
+- The earlier 74-pass/2-fail result is superseded by the successful rerun.
+- Cloudflare's PR bot reports the preview build for commit `98a4247` FAILED. The dashboard log is behind Cloudflare authentication and no signed-in Cloudflare browser profile is available in this session, so the failure's cause remains unverified. Do not claim the preview deployment is green.
+- No changes were made to `main`, production data, database schema, secrets, or production deployment.
+- Merge readiness: GitHub typecheck/build/E2E checks are green; Cloudflare preview build remains the only identified external verification blocker. Inspect its authenticated build log and fix only if it exposes a reproducible project issue before merge.
+- Exact next action: inspect the Cloudflare preview build failure for `98a4247`, resolve any actionable source/configuration defect, then refresh the PR checks and handoff. Do not merge while the preview failure is unexplained.
