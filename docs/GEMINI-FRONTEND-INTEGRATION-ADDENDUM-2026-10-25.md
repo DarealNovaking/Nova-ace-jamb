@@ -1,35 +1,35 @@
 # Gemini frontend integration addendum — 2026-10-25
 
-This addendum records a user-authorized integration of compatible work from `nova-ace-jamb-frontend-complete.zip`. It supplements, and does not replace, `docs/ACE-JAMB-MASTER-HANDOFF.md` or `docs/AGENT-CONTINUITY-CHECKPOINT.md`.
+This addendum supplements the master handoff and continuity checkpoint. The existing `main` branch remains the source of truth; this work is isolated in PR #8.
 
-## Scope and decision
+## Scope
 
-- User explicitly authorized comparing Gemini AI Studio's Phase 1–8 frontend archive against the existing repository and integrating compatible improvements.
-- Existing `main` remains the source of truth. This work does not restart Phase 2 or reopen completed Phase 3 implementation.
-- No catalogue dependency, database migration, production data, secret, or deployment was changed.
-- Integration is isolated on branch `feat/gemini-progress-analytics-integration`; it is not merged to `main`.
+- Candidate archive: `nova-ace-jamb-frontend-complete.zip`.
+- Integration branch: `feat/gemini-progress-analytics-integration`.
+- This is a bounded integration, not a restart of Phase 2 or Phase 3 and not proof that all eight Gemini phases are complete.
+- No catalogue dependency, database migration, production data, secret, or production deployment was changed.
 
-## Changes on the integration branch
+## Application changes in this PR
 
-- Added `src/lib/practiceService.ts` to read the authenticated student's saved attempts and mistake statistics from the existing `ace.attempts` and `ace.student_question_stats` tables. Query failures are surfaced to the UI instead of being silently presented as an empty history.
-- Added `src/components/StudentAnalyticsMastery.tsx` for saved-attempt counts, answered-question totals, observed answer accuracy, subject breakdown, and revision-focus feedback. It explicitly avoids presenting practice accuracy as an official JAMB score prediction.
-- Updated `src/components/StudentStudyWorkspace.tsx` so the existing Progress view uses those real saved records, with loading, error/retry, and empty states.
+- Added `src/lib/practiceService.ts` to query the authenticated student's saved attempts and mistake statistics from existing `ace.attempts` and `ace.student_question_stats` tables, with user-scoped filters and surfaced query errors.
+- Added `src/components/StudentAnalyticsMastery.tsx` for saved-attempt counts, answered-question totals, observed answer accuracy, subject summaries, revision-focus feedback, and loading/error/retry/empty states.
+- Updated `src/components/StudentStudyWorkspace.tsx` to connect the existing Progress view to saved records.
+- Updated `tests/e2e/smoke.spec.ts` to use exact text locators for metric labels, preventing ambiguous matches with repeated subject summaries.
 
-## Verification
+## Verification evidence
 
-- Repository API confirmed the target branch was created from `main`.
-- Repository API accepted the three application-file changes on the integration branch.
-- Schema contract was checked against `supabase/migrations/20260912010000_persistent_cbt_service.sql`, which uses `ace.attempts` and upserts `ace.student_question_stats` on completed attempts.
-- Typecheck, production build, Playwright E2E, and live authenticated student journeys are **not yet verified** for this branch. Do not call the integration complete until CI results are reviewed.
-- Existing archive tests (21/21) were reported earlier, but those tests do not verify this branch's new code.
+- Fix commit: `98a42473e498ccbbca02d2a87c323801b319791da`.
+- GitHub Verify workflow #1033: SUCCESS.
+- GitHub ACE JAMB E2E workflow #966: SUCCESS.
+- Playwright: **76 passed, 0 failed**, on Chromium and mobile Chromium.
+- TypeScript typecheck and production build: PASS in CI.
+- The earlier E2E run's 74-pass/2-fail result is superseded by the successful rerun.
+- Existing migration `supabase/migrations/20260912010000_persistent_cbt_service.sql` supports the queried attempt tables.
+- A live authenticated student account with populated history has not been independently tested in this session; production student data must not be modified to test this.
+- Cloudflare's PR bot reports the preview build for commit `98a4247` FAILED. Its dashboard log requires Cloudflare authentication, and no signed-in Cloudflare browser profile is available in this session. The root cause is not yet established.
 
-## Remaining integration review
+## Merge gate and next action
 
-1. Inspect CI for this pull request and fix any reproduced type/build/E2E failures.
-2. Verify the Progress view with a student account that has no attempts and one with completed attempts/mistakes, without changing production data.
-3. Continue comparing the other Gemini-only differences file by file. Do not replace current CBT, auth, routing, or admin files wholesale.
-4. After verification, update the canonical master handoff and checkpoint with the resulting merge SHA and evidence.
+GitHub CI and all 76 Playwright browser tests are green. The Cloudflare preview-build failure is the remaining identified blocker to calling this PR fully ready to merge. Inspect the authenticated Cloudflare build log, fix a reproducible source/configuration issue if present, and refresh the preview/check status. Do not merge while that failure remains unexplained.
 
-## Exact next action
-
-Review the GitHub Actions results for the integration pull request and correct any reproduced failures before considering a merge.
+After the preview blocker is resolved, review the final PR diff and CI status, then update this addendum and the canonical master handoff/checkpoint with the final merge decision and evidence.
