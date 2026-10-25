@@ -3720,3 +3720,14 @@ Other manual results remain user-reported PASS: keyboard navigation, performance
 - Manual acceptance remains owner-reported PASS for keyboard navigation, TalkBack smoke test, performance/recovery, and PWA/offline/recovery. No concrete frontend defect is reported.
 - No application code, deployment, backend/database, catalogue, dependency, or production-data change was made.
 - **Exact next action:** Phase 3 frontend implementation remains closed unless a reproducible defect is reported. No further speculative code work. If an exact deployment SHA becomes available, compare it against the intended release commit and update this record; otherwise retain owner-confirmed deployment match with independent SHA read-back marked outstanding.
+
+
+## Gemini frontend integration — E2E regression fix — 2026-10-25
+
+- Integration PR: [#8](https://github.com/DarealNovaking/Nova-ace-jamb/pull/8), branch `feat/gemini-progress-analytics-integration`. `main` remains unchanged.
+- Latest inspected integration commit before this fix: `31dd3ceafc12dc0a20272846aeb825bdf7cf9f66`. Verify workflow #1030 passed; ACE JAMB E2E workflow #963 failed in the existing preparation-workspace smoke test.
+- Root cause verified from the uploaded Playwright artifact: the test still expected the old placeholder labels `Verified performance` and `Not available yet`, while the updated Progress view correctly shows saved-attempt metrics and an honest empty state. The actual failure was a stale test expectation, not a typecheck/build failure.
+- Fixed `tests/e2e/smoke.spec.ts` to assert the new Progress heading, completed-attempt/question/accuracy labels, and empty-history guidance. Fix commit: `b9d6e11a3d592fcc2ec42338b5d1acccc9a838b1`.
+- At documentation time, the fix commit's CI result has not yet been returned; do not call the E2E suite green until the new run completes successfully.
+- No production app was deployed, no database/schema or production data changed, no secrets changed, and no catalogue dependency was added.
+- Next action: poll Verify and ACE JAMB E2E for fix commit `b9d6e11a3d592fcc2ec42338b5d1acccc9a838b1`; inspect any further failure from its artifacts before merging. Keep the candidate integration isolated from `main` until CI is green.
