@@ -3734,3 +3734,17 @@ The owner supplied `nova-ace-jamb-frontend-complete.zip` for independent verific
 - The archive's named phase components do not all exist under those names in source. This is a claim/source mismatch; renamed/consolidated functionality is possible. All-eight-phase completion is **not independently established**.
 - No application code, dependency, database, production data, or deployment changes were made. The candidate ZIP was **not uploaded to main**.
 - Integration decision: do not replace current main. If further integration is requested, create a minimal feature-by-feature diff against current main, preserve existing auth/session/Supabase/routing architecture, resolve the dummy-key/configuration and workflow mismatches, and pass repository typecheck/build/E2E before merge.
+
+
+## Gemini AI Studio frontend archive — integration status (2026-10-25)
+
+The user supplied `nova-ace-jamb-frontend-complete.zip`, produced with Gemini AI Studio, with the intent of verifying its claimed frontend Phases 1–8 and integrating compatible improvements—not restarting completed phases.
+
+- The archive is a divergent snapshot of the same React app; most of its source paths already exist in `main`. Do not replace the repository with the archive.
+- Keep current `src/main.tsx`, current authentication/session routing, current Supabase configuration, and current accessibility/focus fixes. The archive contains an unused empty `src/App.tsx`, a completion banner linking to an absent ZIP asset, and a dummy Supabase key fallback.
+- Candidate-only paths include `StudentAnalyticsMastery.tsx`, `questionService.ts`, and `practiceService.ts`; they are not integrated merely by existing in the ZIP. Check imports, database/schema compatibility, and scope before adopting them.
+- Candidate test suite: 21/21 passed. Fresh install timed out; candidate typecheck/build/E2E are not verified.
+- Full audit and updated continuity checkpoint are included in PR #7: https://github.com/DarealNovaking/Nova-ace-jamb/pull/7.
+- No candidate application code was merged, and no deployment or backend/database/production-data change was made.
+
+**Next action:** selectively diff candidate feature changes against current `main`, preserve existing fixes, integrate only compatible functionality, and verify with the repository's typecheck, build, and Playwright E2E workflows. Do not declare all eight phases complete until acceptance criteria and working journeys are evidenced.
