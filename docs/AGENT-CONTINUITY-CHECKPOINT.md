@@ -2,9 +2,9 @@
 
 > **Current-state rule:** This opening section is authoritative. Older entries below are retained as history and must not override newer verified evidence. Refresh this section at the start/end of meaningful work.
 
-- **Updated:** 2026-10-25 (TalkBack manual acceptance result received and recorded).
+- **Updated:** 2026-10-25 (TalkBack manual acceptance and both handoff records updated).
 - **Repository:** `DarealNovaking/Nova-ace-jamb`, default branch `main`.
-- **Latest observed main HEAD before this handoff update:** `f2df6ef7963f9c226fe2f979f8f6fed5726b39c6` (`docs: record user-reported TalkBack acceptance`). Re-check main HEAD before further work.
+- **Latest observed main HEAD before this checkpoint refresh: `7b737e23db071d0f77a3df7e0dd17a77f7491713` (`docs: record TalkBack acceptance result`). This checkpoint refresh will create a newer commit; re-check main HEAD before further work.
 - **Current authorized scope:** frontend acceptance only. Do not deploy, change backend/database/production data, or reopen institutions/catalogue work without explicit authorization. Fix only concrete, reproducible frontend defects.
 - **Implementation status:** Phase 3 frontend implementation is closed on repository/automated evidence. Manual acceptance has user-reported PASS for keyboard navigation, TalkBack/screen-reader smoke test, performance and recovery, PWA/offline, and Cloudflare source version. These are user reports, not independently witnessed by the agent. The exact deployed Cloudflare SHA remains unverified unless separately read back from Cloudflare.
 - **TalkBack result (2026-10-25):** user found TalkBack in Android Accessibility settings, used it, and reported that it “worked well.” Record PASS at user-reported smoke-test level. Detailed announcements across every sign-in/onboarding/dashboard/CBT flow were not enumerated; do not overstate the depth of testing. Evidence note: `docs/acceptance/TALKBACK-ACCEPTANCE-2026-10-25.md` at commit `f2df6ef7963f9c226fe2f979f8f6fed5726b39c6`.
