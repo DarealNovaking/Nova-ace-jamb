@@ -824,3 +824,12 @@ No database/schema/RPC/Edge Function changes, production-data writes, or deploym
 - Correction commit: `b7b387cc3772e8be481573b687b19d17c826b08b`. Fresh Verify run [40421619735](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40421619735) and E2E run [40421619724](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40421619724) were queued at this update. No new E2E pass is claimed.
 - No live data, schema, backend functions or deployment changed.
 - **Exact next action:** inspect the new CI runs, fix any further reproduced failure, then record the terminal outcome and close Batch 6 only when E2E passes.
+
+
+## Batch 6 retry-fixture follow-up — 2026-10-27
+
+- The first E2E failure was corrected for duplicate accessible headings; that correction worked. E2E [40421619724](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40421619724) then reached **80 passed / 2 failed**, both instances of the same flashcard load-error/retry test across Chromium desktop/mobile.
+- The second fixture adjustment, “fail the first two parallel requests,” remained nondeterministic because the app may mount/reload before the user-initiated retry. The latest fixture instead keeps all flashcard requests at 503 until the test explicitly sets `allowFlashcardSuccess = true` just before clicking Retry.
+- Latest code/test commit: `5e50ad3911dca56752486889b78ae1b3815edbfa`. Verify [40422034609](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40422034609) and E2E [40422034652](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40422034652) were queued when this update was prepared.
+- No production data, schema, backend functions or deployment changed.
+- **Exact next action:** wait for the latest CI result, inspect any new E2E failure evidence, and close Batch 6 only when the complete Playwright suite passes.
