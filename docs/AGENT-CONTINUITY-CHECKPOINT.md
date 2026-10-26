@@ -1991,3 +1991,12 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - Verification: candidate tests 21/21 passed; archive dependency installation timed out; typecheck/build/E2E remain unverified. Current repository CI/workflows were not changed by the candidate.
 - No candidate app code was merged or deployed. No backend/database/production data was changed.
 - Exact next action: make a selective diff for one candidate feature at a time against current `main`, preserving newer accessibility fixes and existing routing; integrate only a feature with a clear scope match and compatible existing data contract, then run repository typecheck/build/E2E.
+
+
+## Frontend ZIP audit branch correction — 2026-10-26
+
+- User selected `audit/gemini-frontend-zip-2026-10-25` as the intended destination for the progress-analytics work that was accidentally committed to `main`.
+- Selectively added `StudentProgressSummary.tsx`, `practiceService.ts`, `progressSummary.ts`, and `tests/progress-summary.test.mjs`; wired the progress component into `StudentStudyWorkspace.tsx`.
+- `main` was not reset, force-pushed, or rewritten. The audit branch received new commits; no deployment was triggered manually.
+- Verified through GitHub file reads that the new files are present and the workspace uses the new component. Tests/typecheck/build/E2E and database schema/RLS compatibility remain **unverified**.
+- Exact next action: execute the repository's focused progress-summary test plus typecheck/build on this branch, then inspect database contracts for `ace.attempts` and `ace.student_question_stats` before declaring the progress feature complete.
