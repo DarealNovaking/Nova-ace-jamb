@@ -4,6 +4,23 @@
 >
 > **Critical separation rule:** ACE JAMB is a separate product from **Ñøvã CBT MAX** and **DROP**. Do not merge their roadmaps, databases, pricing, branding, or architecture.
 
+
+## Current integration checkpoint — 2026-10-26 (verified current state)
+
+- **Active integration PR:** [#8](https://github.com/DarealNovaking/Nova-ace-jamb/pull/8), branch `feat/gemini-progress-analytics-integration`; PR remains open/unmerged.
+- **Latest application-code/test-bearing commit verified:** `0183ada2f64f352ad4f8596ce42338e8c4f2958a`. Later branch commits are documentation-only (including the refreshed whole-product frontend readiness gate); `main` remains unchanged.
+- **GitHub Verify:** run #1079 (`40403690885`) **PASS** on the exact code/test-bearing commit `0183ada`.
+- **ACE JAMB E2E:** run #1012 (`40403690913`) **PASS** on the exact code/test-bearing commit `0183ada`, including typecheck/build and Playwright.
+- **Cloudflare preview:** Build and Deployment **SUCCESS** for commit `0183ada`, preview `https://896cde73-nova-ace-jamb.novaking5002.workers.dev`. Preview only; no production deploy.
+- **Latest browser regression resolved:** earlier head `6d20676` failed four Playwright assertions because a test expected obsolete empty-question wording in Chromium and mobile Chromium. Current assertions use the actual verified-content empty-state contract. The same review also fixed a subject-filter propagation gap: fresh CBT attempts now pass the chosen `subjectId`.
+- **Fresh ZIP audit:** user-provided `ñøvã-ace-jamb.zip` was reviewed for selective integration. No app source copied because it is a conflicting full snapshot (alternate app shell/toolchain, empty `src/App.tsx`, and misleading UTME /400 and “Cloud Synced” claims). Existing Gemini branch already includes safe saved-attempt analytics, subject-scoped/timed practice, weekly rotation, and local daily checklist. Detailed compatibility decision is recorded in `docs/GEMINI-FRONTEND-INTEGRATION-ADDENDUM-2026-10-25.md`.
+- **Frontend readiness:** Frontend Phase 3 remains closed for repository/automated evidence. User-reported manual acceptance for keyboard, TalkBack, performance/recovery, PWA/offline, and Cloudflare source match is PASS; it is not independently witnessed by this agent. These results do not prove live backend/content/provider functionality. The open PR adds optional Gemini-derived frontend features and has passed CI and preview.
+- **Scope/safety:** No merge, production deployment, `main` change, backend/database/schema/data mutation, or secrets change.
+- **Whole-product frontend assessment:** UI supported by current contracts is ready for closeout pending PR review/merge. Published official content/questions, notification delivery, payment/referral verification, membership verification, grounded AI/audio, and expanded admin operations remain backend/provider/content dependencies. The detailed superseding matrix is recorded at the end of `docs/FRONTEND-COMPLETION-BATCH-2026-10-21.md`.
+- **Decision gate:** Review PR #8's 14-file diff. If its tested Gemini features are accepted, the next action is owner-approved merge; otherwise leave it open and proceed to the separately scoped backend work. Do not merge or deploy automatically.
+
+
+
 ---
 
 ## Universal fast-execution protocol — mandatory for all agents
@@ -3720,3 +3737,83 @@ Other manual results remain user-reported PASS: keyboard navigation, performance
 - Manual acceptance remains owner-reported PASS for keyboard navigation, TalkBack smoke test, performance/recovery, and PWA/offline/recovery. No concrete frontend defect is reported.
 - No application code, deployment, backend/database, catalogue, dependency, or production-data change was made.
 - **Exact next action:** Phase 3 frontend implementation remains closed unless a reproducible defect is reported. No further speculative code work. If an exact deployment SHA becomes available, compare it against the intended release commit and update this record; otherwise retain owner-confirmed deployment match with independent SHA read-back marked outstanding.
+
+
+## Gemini frontend integration — E2E regression fix — 2026-10-25
+
+- Integration PR: [#8](https://github.com/DarealNovaking/Nova-ace-jamb/pull/8), branch `feat/gemini-progress-analytics-integration`. `main` remains unchanged.
+- Latest inspected integration commit before this fix: `31dd3ceafc12dc0a20272846aeb825bdf7cf9f66`. Verify workflow #1030 passed; ACE JAMB E2E workflow #963 failed in the existing preparation-workspace smoke test.
+- Root cause verified from the uploaded Playwright artifact: the test still expected the old placeholder labels `Verified performance` and `Not available yet`, while the updated Progress view correctly shows saved-attempt metrics and an honest empty state. The actual failure was a stale test expectation, not a typecheck/build failure.
+- Fixed `tests/e2e/smoke.spec.ts` to assert the new Progress heading, completed-attempt/question/accuracy labels, and empty-history guidance. Fix commit: `b9d6e11a3d592fcc2ec42338b5d1acccc9a838b1`.
+- At documentation time, the fix commit's CI result has not yet been returned; do not call the E2E suite green until the new run completes successfully.
+- No production app was deployed, no database/schema or production data changed, no secrets changed, and no catalogue dependency was added.
+- Next action: poll Verify and ACE JAMB E2E for fix commit `b9d6e11a3d592fcc2ec42338b5d1acccc9a838b1`; inspect any further failure from its artifacts before merging. Keep the candidate integration isolated from `main` until CI is green.
+
+
+## Gemini frontend integration — browser verification update — 2026-10-25
+
+- Integration PR #8: https://github.com/DarealNovaking/Nova-ace-jamb/pull/8
+- Current integration head at verification: `98a42473e498ccbbca02f3a13d5be399963c965f`.
+- Fixed Playwright's ambiguous text locators in `tests/e2e/smoke.spec.ts` by requiring exact matches for the Progress metric labels. Fix commit: `98a42473e498ccbbca02f3a13d5be399963c965f`.
+- GitHub Actions on the fix commit: Verify workflow #1033 SUCCESS; ACE JAMB E2E workflow #966 SUCCESS. Playwright result: 76 passed, 0 failed, across Chromium and mobile Chromium. Typecheck and production build steps also passed in the E2E workflow.
+- The earlier 74-pass/2-fail result is superseded by the successful rerun.
+- Cloudflare's PR bot reports the preview build for commit `98a4247` FAILED. The dashboard log is behind Cloudflare authentication and no signed-in Cloudflare browser profile is available in this session, so the failure's cause remains unverified. Do not claim the preview deployment is green.
+- No changes were made to `main`, production data, database schema, secrets, or production deployment.
+- Merge readiness: GitHub typecheck/build/E2E checks are green; Cloudflare preview build remains the only identified external verification blocker. Inspect its authenticated build log and fix only if it exposes a reproducible project issue before merge.
+- Exact next action: inspect the Cloudflare preview build failure for `98a4247`, resolve any actionable source/configuration defect, then refresh the PR checks and handoff. Do not merge while the preview failure is unexplained.
+
+## Gemini ZIP integration audit — 2026-10-26
+
+- Compared the uploaded `nova-ace-jamb-frontend-complete.zip` (34 `src/` files; alternate Vite 8 / React 19 app scaffold) against the current repository architecture and PR #8. The archive is a separate generated app, not a drop-in replacement for the existing authenticated app. Do not wholesale copy its `main.tsx`, app shell, service layer, dependencies, or admin/student routing.
+- Compatible feature review: the repository already contains equivalent student dashboard, account/onboarding, protected/persistent CBT, study plan, notification, admin academic-workspace, and service components. Keep repository-owned auth, route guards, CBT persistence, admin controls, and existing deployment/build configuration as authoritative.
+- Rejected unsafe/unverified archive behavior: the ZIP's analytics calculates a projected `/400` UTME score from aggregate practice accuracy and calls the browser `online` state “Cloud Synced” / offline “Cached Data” without proving a cache or successful sync. Those claims are not carried over. The ZIP's pacing calculation uses configured attempt duration rather than measured elapsed time, so it is not a valid measured pace.
+- Compatible analytics improvement carried forward on PR #8: use the already-loaded approved syllabus topics to show the approved-topic count per subject alongside actual saved attempt counts/accuracy. `StudentAnalyticsMastery` now receives `topics`; `StudentStudyWorkspace` passes its existing `topics` prop. No extra query, dependency, schema change, catalogue coupling, or production data write is introduced.
+- Data-layer review: the ZIP's `practiceService.ts` uses the same `ace.attempts` and `ace.student_question_stats` sources, but silently swallows query failures. Keep the PR's explicit error propagation and user-facing retry state instead. Optional `question_text` / `subject_id` / `topic_id` mistake fields are not added because the ZIP query does not select them.
+- Verification: the change is isolated to PR #8's feature branch; no change to `main`, no production deployment, no schema/data mutation, and no secrets change. CI for the newly updated head must finish before calling this batch verified.
+- Exact next action: inspect latest PR head and run Verify + ACE JAMB E2E; fix any resulting type/test failure, then update this record with exact run IDs and conclusions. PR remains open and unmerged.
+
+## ZIP compatibility audit — study-plan improvements — 2026-10-26
+
+- Extended the bounded ZIP integration after confirming the archive's study plan had useful features absent from the repository version. `src/components/StudentStudyPlan.tsx` now includes a weekly subject rotation over the student's selected days and a daily three-item checklist for approved-topic review, practice when reviewed questions exist, and mistake/note review.
+- Checklist completion is local-device convenience state keyed by the user's local calendar date. The UI explicitly says checkmarks are not server-verified study activity; it does not claim generated lessons, available questions, or persisted cross-device progress. Storage failures are handled without breaking the checklist. Existing saved account preferences and their save/error states remain intact.
+- Together with the progress subject topic counts, this is a selective integration, not a wholesale ZIP import. Archive score forecasting, unsupported online/offline sync claims, duration-based pacing estimates, alternate app shell/services/dependency versions, and catalogue coupling remain excluded.
+- No auth, routing, persistent CBT, admin workflow, schema, production data, secrets, or production deployment changed. The code is on PR #8's integration branch only.
+- Exact next action: wait for Verify, ACE JAMB E2E (including browser tests), and Cloudflare preview checks on the final head; fix any failure and refresh this checkpoint with exact outcomes. Do not merge automatically.
+
+## Daily checklist date-boundary hardening — 2026-10-26
+
+- Hardened the new local study checklist so a study-plan view left open across midnight detects the local calendar date change and loads that date's checklist state rather than carrying yesterday's checked tasks forward. The check runs once per minute while the component is mounted; localStorage read/write failures remain non-fatal.
+- This is device-local convenience tracking only, not verified study activity. No database/schema/auth/CBT/admin/deployment changes.
+- Latest feature branch head after this fix and handoff refresh must be rechecked; do not use CI results from an earlier head as verification.
+- Exact next action: verify the latest head with GitHub Verify, ACE JAMB E2E browser tests, and Cloudflare preview. Record the final status and any failures here before considering PR #8 ready for review.
+
+## ZIP study-plan regression coverage — 2026-10-26
+- Extended `tests/e2e/smoke.spec.ts` to assert the weekly subject plan and daily checklist render, and that a checked checklist item persists across a page reload. This is localStorage persistence only, not server-verified activity.
+- Latest feature branch head after this test and handoff update must be verified; prior CI runs do not establish this latest head's result.
+- Exact next action: inspect latest Verify, ACE JAMB E2E, and Cloudflare preview results, then record exact final outcomes. PR #8 remains open/unmerged.
+
+## Latest ZIP integration verification — 2026-10-26
+
+- Code/test head verified: `6a467f9bd6eb82571c4d6bc42c90df821049fdd9`.
+- Verify workflow #1056 (`40265401865`): **PASS**. ACE JAMB E2E workflow #989 (`40265401866`): **PASS**, including TypeScript typecheck, production build, Playwright browser tests, and the new weekly-plan/daily-checklist persistence assertions.
+- Cloudflare preview bot reports **Build: Success** and **Deployment: Success** for `6a467f9`; this is a preview deployment, not production.
+- ZIP audit: all 34 source paths compared against `main` by Git blob hash (18 identical, 12 different existing files, 4 ZIP-only paths). Selective compatible features integrated: per-subject approved-topic counts, weekly subject rotation, and local daily checklist with date-boundary reset. Unsupported score projection, misleading connectivity/cache labels, inaccurate duration-based pacing, silent service errors, and wholesale alternate app shell/services/dependency changes were not imported.
+- No change to `main`; PR #8 remains open/unmerged. No production deployment, schema/data mutation, or secrets change.
+- Exact next action: confirm CI and preview status on the handoff-only commit created by this update; if green, leave PR open for owner review/merge decision. Do not merge automatically.
+
+
+## Fresh full-project ZIP compatibility audit — 2026-10-26
+
+The user supplied `ñøvã-ace-jamb.zip` (160 archive entries) for integration into this repository's Gemini branch (`feat/gemini-progress-analytics-integration`), not the separate private Gemini repository. Audit result: no application source files were copied because the ZIP is a full snapshot with duplicate/embedded archives, stale handoff claims, an empty `src/App.tsx`, and a `react-example` package/toolchain that conflicts with this canonical app. The ZIP's larger StudentStudyPlan contains an unsupported “top 5% UTME percentile” claim and assumes timed practice availability; its StudentAnalyticsMastery derives an estimated `/400` UTME score from practice accuracy and labels `navigator.onLine` as “Cloud Synced”; its StudentStudyWorkspace overlaps existing subject/timed practice and mistake-bank flows; its main.tsx is an alternate app shell. These are excluded. Existing branch implementations already contain the compatible features previously selected: saved-attempt grounded analytics, subject-scoped/timed practice, weekly subject rotation and local daily checklist. No app source, auth, routing, CBT scoring, admin flow, schema/data, secrets, main branch or deployment was changed by this audit. Audit note is recorded in `docs/GEMINI-FRONTEND-INTEGRATION-ADDENDUM-2026-10-25.md`. Verification on head `6d206767a9bd556eb8dfc26c80992346d1747fb6`: Verify PASS; ACE JAMB E2E run `40289520999` FAILED. Exact next action: inspect and fix the verified E2E failure, rerun CI, and leave PR #8 open for owner review; do not merge or deploy automatically.
+
+
+## E2E failure investigation and correction — 2026-10-26
+
+Investigated the failed ACE JAMB E2E run `40289520999`: 72 tests passed and four failures were stale selectors/copy duplicated across desktop/mobile. The tests expected the old `Start a practice session` button and old reviewed-question notice, while the current workspace uses `Start 20-question practice` and updated truthful copy. Corrected `tests/e2e/smoke.spec.ts` in commit `74e6001f6fca83023f58a68b7f1decff5de13d6e`. Also fixed a real defect in `src/components/PersistentCBT.tsx`: fresh attempts did not forward the selected `subjectId`; both fresh-start and stale-local-recovery paths now pass it (commit `114de381a1fceab2dc0e9261340e5b7db83b5532`). CI on code-fix head: Verify run `40402083909` and ACE JAMB E2E run `40402084211` were pending at note time. Exact next action: verify both runs on the final head; if either fails, inspect logs and fix the verified cause. PR #8 remains open/unmerged; no production deploy.
+
+
+## Fresh ZIP audit and final verification — 2026-10-26
+
+The new user-provided `ñøvã-ace-jamb.zip` was audited for safe integration into the existing Gemini branch, `feat/gemini-progress-analytics-integration`. No new application source was copied because this is an alternate full-project snapshot with conflicting package/toolchain and app-shell files, unsupported `/400` UTME score projection, misleading `navigator.onLine` “Cloud Synced” labeling, and ungrounded timed-practice assumptions. The branch already contains the compatible selected features: saved-attempt-grounded analytics, subject-scoped/timed practice, weekly subject rotation, and local daily checklist. Full rationale: `docs/GEMINI-FRONTEND-INTEGRATION-ADDENDUM-2026-10-25.md`.
+
+The prior E2E failure was fixed: four assertions were stale desktop/mobile duplicates; tests now assert current UI copy. A real subject-filter propagation defect was also fixed so fresh CBT attempts forward `subjectId`. Latest verified head before this handoff refresh: `23ddcb6d20bee947f6d3ed6006e13c0c95bcb612`; Verify run #1076 / workflow `40402266576` **PASS**; ACE JAMB E2E run #1009 / workflow `40402266579` **PASS**. Cloudflare preview bot reports Build **Success** and Deployment **Success** for commit `23ddcb6` at `https://f0347103-nova-ace-jamb.novaking5002.workers.dev`. These are preview checks only. PR #8 remains open/unmerged; `main` and production remain untouched. Exact next action: refresh final CI and preview evidence after this handoff-only commit; keep PR open for owner review, do not merge or deploy automatically.
