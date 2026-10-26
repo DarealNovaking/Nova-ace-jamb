@@ -3720,3 +3720,41 @@ Other manual results remain user-reported PASS: keyboard navigation, performance
 - Manual acceptance remains owner-reported PASS for keyboard navigation, TalkBack smoke test, performance/recovery, and PWA/offline/recovery. No concrete frontend defect is reported.
 - No application code, deployment, backend/database, catalogue, dependency, or production-data change was made.
 - **Exact next action:** Phase 3 frontend implementation remains closed unless a reproducible defect is reported. No further speculative code work. If an exact deployment SHA becomes available, compare it against the intended release commit and update this record; otherwise retain owner-confirmed deployment match with independent SHA read-back marked outstanding.
+
+
+## Gemini AI Studio frontend archive integration audit — 2026-10-25
+
+The owner supplied `nova-ace-jamb-frontend-complete.zip` for independent verification of Gemini's claimed Phases 1–8 before integration. The archive was inspected without replacing the current project.
+
+- Audit report: `docs/GEMINI-FRONTEND-ARCHIVE-AUDIT-2026-10-25.md`.
+- Main HEAD at audit start: `04ce73e44370722e41a48a6116bf51a0e8c7bb9e`.
+- Candidate tests: `npm test` PASS (21/21).
+- Dependency install timed out; candidate lint/typecheck could not resolve `vite/client`; build could not find `vite`; E2E was not run because `@playwright/test` and the `e2e` script are absent.
+- Candidate uses a different package/toolchain, falls back to a dummy Supabase key, includes a completion/download banner pointing at a ZIP not present in `public/`, and retains catalogue components/docs inconsistent with the current catalogue-independent direction.
+- The archive's named phase components do not all exist under those names in source. This is a claim/source mismatch; renamed/consolidated functionality is possible. All-eight-phase completion is **not independently established**.
+- No application code, dependency, database, production data, or deployment changes were made. The candidate ZIP was **not uploaded to main**.
+- Integration decision: do not replace current main. If further integration is requested, create a minimal feature-by-feature diff against current main, preserve existing auth/session/Supabase/routing architecture, resolve the dummy-key/configuration and workflow mismatches, and pass repository typecheck/build/E2E before merge.
+
+
+## Gemini AI Studio frontend archive — integration status (2026-10-25)
+
+The user supplied `nova-ace-jamb-frontend-complete.zip`, produced with Gemini AI Studio, with the intent of verifying its claimed frontend Phases 1–8 and integrating compatible improvements—not restarting completed phases.
+
+- The archive is a divergent snapshot of the same React app; most of its source paths already exist in `main`. Do not replace the repository with the archive.
+- Keep current `src/main.tsx`, current authentication/session routing, current Supabase configuration, and current accessibility/focus fixes. The archive contains an unused empty `src/App.tsx`, a completion banner linking to an absent ZIP asset, and a dummy Supabase key fallback.
+- Candidate-only paths include `StudentAnalyticsMastery.tsx`, `questionService.ts`, and `practiceService.ts`; they are not integrated merely by existing in the ZIP. Check imports, database/schema compatibility, and scope before adopting them.
+- Candidate test suite: 21/21 passed. Fresh install timed out; candidate typecheck/build/E2E are not verified.
+- Full audit and updated continuity checkpoint are included in PR #7: https://github.com/DarealNovaking/Nova-ace-jamb/pull/7.
+- No candidate application code was merged, and no deployment or backend/database/production-data change was made.
+
+**Next action:** selectively diff candidate feature changes against current `main`, preserve existing fixes, integrate only compatible functionality, and verify with the repository's typecheck, build, and Playwright E2E workflows. Do not declare all eight phases complete until acceptance criteria and working journeys are evidenced.
+
+
+## Frontend ZIP audit branch correction — 2026-10-26
+
+- The user's latest uploaded frontend ZIP progress work had mistakenly been committed to `main`; the user clarified the intended destination is `audit/gemini-frontend-zip-2026-10-25`.
+- Selectively ported the five progress-analytics files/changes onto this audit branch. Added `src/components/StudentProgressSummary.tsx`, `src/lib/practiceService.ts`, `src/lib/progressSummary.ts`, and `tests/progress-summary.test.mjs`; updated `src/components/StudentStudyWorkspace.tsx` to render the real-data progress component.
+- The branch now contains the implementation and its unit tests; it uses the existing Supabase client and reads the signed-in student's attempts/mistake statistics, failing safely to empty lists. Schema/RLS compatibility still requires verification.
+- No force push, reset, or deletion was performed. The existing `main` history was left untouched; the intended branch received new commits.
+- Verification performed: GitHub API confirmed the five paths exist on this audit branch and the workspace imports/renders `StudentProgressSummary`. No local typecheck, build, unit-test run, E2E run, or deployment verification was performed in this session.
+- **Next action:** run the new progress-summary test and repository typecheck/build on this branch; resolve any failures and inspect the `attempts` and `student_question_stats` schema/RLS before considering the feature ready.
