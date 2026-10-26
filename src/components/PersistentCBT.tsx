@@ -16,6 +16,7 @@ type Props = {
   attemptId?: string | null
   questionCount?: number
   durationSeconds?: number
+  subjectId?: string
   onComplete?: (result: Awaited<ReturnType<typeof submitCbt>>) => void
   storageKey?: string | null
   mode?: CbtMode
@@ -45,7 +46,7 @@ function formatTime(seconds: number) {
   return [h, m, s].map((v) => String(v).padStart(2, '0')).join(':')
 }
 
-export default function PersistentCBT({ attemptId = null, questionCount = 20, durationSeconds = 1800, onComplete, storageKey = null, mode = 'cbt' }: Props) {
+export default function PersistentCBT({ attemptId = null, questionCount = 20, durationSeconds = 1800, subjectId, onComplete, storageKey = null, mode = 'cbt' }: Props) {
   const [attempt, setAttempt] = useState<CbtAttemptState | null>(null)
   const [questions, setQuestions] = useState<CbtQuestion[]>([])
   const [current, setCurrent] = useState(0)
@@ -80,7 +81,7 @@ export default function PersistentCBT({ attemptId = null, questionCount = 20, du
           // An explicit attempt ID must fail visibly; a stale local recovery pointer may be replaced.
           if (attemptToResume || !storageKey) throw resumeError
           window.localStorage.removeItem(storageKey)
-          const started = await startCbt({ mode, questionCount, durationSeconds })
+          const started = await startCbt({ mode, subjectId, questionCount, durationSeconds })
           window.localStorage.setItem(storageKey, started.attempt_id)
           state = await resumeCbt(started.attempt_id)
         }
