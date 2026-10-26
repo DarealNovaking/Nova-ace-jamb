@@ -90,3 +90,14 @@ After the preview blocker is resolved, review the final PR diff and CI status, t
 - The E2E regression was stale test selectors/copy; tests were corrected. The subject-filter propagation defect was also fixed so fresh CBT attempts receive the chosen `subjectId`.
 - New ZIP audit outcome unchanged: no app source copied from the full-project snapshot because no independently safe additive source delta was established; previously selected compatible Gemini features remain in branch. No production deployment, main change, or database/schema/data/secrets mutation.
 - Exact next action: check final verification on the latest handoff commit; keep PR #8 open for owner review. Do not merge or deploy automatically.
+
+
+## Current-head frontend integration readiness — 2026-10-26
+
+- Current PR #8 head: `0183ada2f64f352ad4f8596ce42338e8c4f2958a`.
+- Verify #1079 / run `40403690885`: **PASS**. ACE JAMB E2E #1012 / run `40403690913`: **PASS**. These runs are associated with the exact current head and cover typecheck, build, and browser tests.
+- Cloudflare PR bot: **Build: Success** and **Deployment: Success** for preview commit `0183ada`, URL `https://896cde73-nova-ace-jamb.novaking5002.workers.dev`. Preview only; no production deployment.
+- Earlier E2E failure on `6d20676` was caused by four stale empty-question copy assertions across desktop/mobile browser projects. Current assertions match the UI's reviewed-question/verified-answer contract. Review also found and fixed missing `subjectId` forwarding on the fresh CBT-attempt path.
+- Fresh ZIP audit remains selective/no-copy: the new archive is a conflicting full project snapshot and adds no independently safe, verified feature that should replace existing branch code. See the ZIP audit above.
+- **Readiness assessment:** frontend implementation and current PR verification are ready for owner review. This is not a statement that the entire product is production-complete; live backend/content/provider behavior remains a separate scope. User-reported manual checks are keyboard PASS, TalkBack PASS, performance/recovery PASS, PWA/offline PASS, and Cloudflare source/deployment match PASS.
+- **Exact next action:** owner review of PR #8's 13-file diff and explicit merge decision. If accepted, merge PR #8; if not, keep it open and continue with the separately scoped backend work. Do not merge automatically.
