@@ -72,3 +72,10 @@ After the preview blocker is resolved, review the final PR diff and CI status, t
 - No auth, routing, CBT scoring, admin flow, schema, production data, secrets, `main`, or deployment was changed by this audit. No production deployment was performed.
 - Verification note: this was a source/compatibility audit only; no new app code was introduced, so it does not establish a new typecheck/build/E2E pass. At audit time, Verify on head `6d206767a9bd556eb8dfc26c80992346d1747fb6` was **PASS** and ACE JAMB E2E run `40289520999` had **FAILURE**; investigate that failure before treating the branch as merge-ready.
 - Exact next action: inspect the failed ACE JAMB E2E run on the current PR head, fix the verified cause, and rerun CI. Keep PR #8 open for owner review; do not merge or deploy automatically.
+
+
+## Follow-up: E2E failure diagnosed and corrected — 2026-10-26
+
+- Inspected failed E2E run `40289520999`: 72 tests passed; 4 failures were two stale UI assertions duplicated across Chromium/mobile. The test expected the old button name `Start a practice session` and old copy `Practice sessions require reviewed questions with verified answers.` while the current workspace uses `Start 20-question practice` and states that sessions use reviewed questions/verified answers only. Updated `tests/e2e/smoke.spec.ts` to assert the actual current UI contract (commit `74e6001f6fca83023f58a68b7f1decff5de13d6e`).
+- Also fixed a real subject-filter propagation gap in `src/components/PersistentCBT.tsx`: the fresh-attempt path omitted `subjectId` even though the stale-local-recovery path forwarded it. Commit `114de381a1fceab2dc0e9261340e5b7db83b5532` forwards the subject ID in both paths.
+- CI on code-fix head `114de381a1fceab2dc0e9261340e5b7db83b5532` started as Verify run `40402083909` and ACE JAMB E2E run `40402084211`; final outcomes were still pending when this note was written. Do not call the branch green until both finish on the final head.
