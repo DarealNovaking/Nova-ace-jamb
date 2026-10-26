@@ -886,22 +886,11 @@ test.describe('ACE JAMB preparation workspaces', () => {
   })
 
   test('flashcards prioritize due cards, show syllabus mapping and saved review history', async ({ page }) => {
-    await mockPreparedStudent(page)
+    await mockSyllabusPublicationState(page, 'approved')
     const topicId = '70000000-0000-4000-8000-000000000001'
     const dueCardId = '50000000-0000-4000-8000-000000000011'
     const scheduledCardId = '50000000-0000-4000-8000-000000000012'
     const futureDate = new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString()
-
-    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/topics'), async (route) => {
-      await route.fulfill({ json: [{
-        id: topicId, subject_id: subjects[0].id, syllabus_version_id: null,
-        name: 'Verified comprehension fixture', description: 'Test-only topic.',
-        sort_order: 1, active: true,
-      }] })
-    })
-    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/subtopics'), async (route) => {
-      await route.fulfill({ json: [] })
-    })
     await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/flashcards'), async (route) => {
       const url = new URL(route.request().url())
       if ((url.searchParams.get('subject_id') ?? '').startsWith('in.')) {
