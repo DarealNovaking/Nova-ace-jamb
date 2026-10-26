@@ -3748,3 +3748,13 @@ The user supplied `nova-ace-jamb-frontend-complete.zip`, produced with Gemini AI
 - No candidate application code was merged, and no deployment or backend/database/production-data change was made.
 
 **Next action:** selectively diff candidate feature changes against current `main`, preserve existing fixes, integrate only compatible functionality, and verify with the repository's typecheck, build, and Playwright E2E workflows. Do not declare all eight phases complete until acceptance criteria and working journeys are evidenced.
+
+
+## Frontend ZIP audit branch correction — 2026-10-26
+
+- The user's latest uploaded frontend ZIP progress work had mistakenly been committed to `main`; the user clarified the intended destination is `audit/gemini-frontend-zip-2026-10-25`.
+- Selectively ported the five progress-analytics files/changes onto this audit branch. Added `src/components/StudentProgressSummary.tsx`, `src/lib/practiceService.ts`, `src/lib/progressSummary.ts`, and `tests/progress-summary.test.mjs`; updated `src/components/StudentStudyWorkspace.tsx` to render the real-data progress component.
+- The branch now contains the implementation and its unit tests; it uses the existing Supabase client and reads the signed-in student's attempts/mistake statistics, failing safely to empty lists. Schema/RLS compatibility still requires verification.
+- No force push, reset, or deletion was performed. The existing `main` history was left untouched; the intended branch received new commits.
+- Verification performed: GitHub API confirmed the five paths exist on this audit branch and the workspace imports/renders `StudentProgressSummary`. No local typecheck, build, unit-test run, E2E run, or deployment verification was performed in this session.
+- **Next action:** run the new progress-summary test and repository typecheck/build on this branch; resolve any failures and inspect the `attempts` and `student_question_stats` schema/RLS before considering the feature ready.
