@@ -818,7 +818,7 @@ test.describe('ACE JAMB preparation workspaces', () => {
     await expect(page.getByText('Revision materials are not published yet')).toBeVisible()
 
     await page.getByRole('button', { name: 'Flashcards', exact: true }).click()
-    await expect(page.getByText('No verified flashcard deck yet')).toBeVisible()
+    await expect(page.getByText('No approved flashcards are available for your selected subjects yet.')).toBeVisible()
 
     await page.getByRole('button', { name: 'Progress', exact: true }).click()
     await expect(page.getByText('Verified performance')).toBeVisible()
@@ -834,6 +834,74 @@ test.describe('ACE JAMB preparation workspaces', () => {
 
     await page.getByRole('button', { name: 'Dashboard', exact: true }).click()
     await expect(page.getByRole('heading', { name: 'Welcome back, Test Futarian.' })).toBeVisible()
+  })
+
+  test('flashcard review reveals verified content and persists a self-scoped review', async ({ page }) => {
+    await mockPreparedStudent(page)
+    let savedReview: Record<string, unknown> | null = null
+    const cardId = '50000000-0000-4000-8000-000000000001'
+
+    await page.route((requestUrl) => new URL(requestUrl).pathname.endsWith('/rest/v1/flashcards'), async (route) => {
+      const url = new URL(route.request().url())
+      const subjectFilter = url.searchParams.get('subject_id') ?? ''
+      if (subjectFilter.startsWith('in.')) {
+        await route.fulfill({ json: [{
+          id: cardId,
+          subject_id: subjects[0].id,
+          topic_id: null,
+          subtopic_id: null,
+          front: 'What does a flashcard review test?',
+          back: 'Recall of a reviewed learning fact.',
+          source_type: 'platform',
+          source_metadata: { review_status: 'approved' },
+          content_version: 1,
+          created_at: '2026-01-01T00:00:00.000Z',
+        }] })
+      } else {
+        await route.fulfill({ json: [] })
+      }
+    })
+    await page.route((requestUrl) => new URL(requestUrl).pathname.endsWith('/rest/v1/flashcard_reviews'), async (route) => {
+      if (route.request().method() === 'GET') {
+        await route.fulfill({ json: [] })
+        return
+      }
+      savedReview = route.request().postDataJSON() as Record<string, unknown>
+      await route.fulfill({ status: 201, contentType: 'application/json', json: savedReview })
+    })
+
+    await page.goto('/?view=flashcards')
+    await expect(page.getByRole('heading', { name: 'Flashcards', exact: true })).toBeVisible()
+    await expect(page.getByText('What does a flashcard review test?')).toBeVisible()
+    await page.getByRole('button', { name: 'Show answer' }).click()
+    await expect(page.getByText('Recall of a reviewed learning fact.')).toBeVisible()
+    await page.getByRole('button', { name: 'I knew it' }).click()
+    await expect(page.getByRole('status')).toContainText('Review saved')
+    await expect(page.getByRole('heading', { name: 'Deck complete' })).toBeVisible()
+    await expect.poll(() => savedReview).not.toBeNull()
+    expect(savedReview?.user_id).toBe(userId)
+    expect(savedReview?.flashcard_id).toBe(cardId)
+    expect(savedReview?.review_count).toBe(1)
+    expect(savedReview?.correct_count).toBe(1)
+  })
+
+  test('flashcards show a recoverable error and retry to an honest empty state', async ({ page }) => {
+    await mockPreparedStudent(page)
+    let failOnce = true
+    await page.route((requestUrl) => new URL(requestUrl).pathname.endsWith('/rest/v1/flashcards'), async (route) => {
+      if (failOnce) {
+        failOnce = false
+        await route.fulfill({ status: 503, contentType: 'application/json', json: { message: 'private database host should not be shown' } })
+        return
+      }
+      await route.fulfill({ json: [] })
+    })
+
+    await page.goto('/?view=flashcards')
+    await expect(page.getByRole('alert')).toContainText('We could not load your flashcards.')
+    await expect(page.getByText(/private database host/)).toHaveCount(0)
+    await page.getByRole('button', { name: 'Try again' }).click()
+    await expect(page.getByText('No approved flashcards are available for your selected subjects yet.')).toBeVisible()
   })
 })
 

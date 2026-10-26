@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import StudentStudyPlan from './StudentStudyPlan'
 import StudentProgressSummary from './StudentProgressSummary'
+import StudentFlashcards from './StudentFlashcards'
 import { ArrowLeft, BookOpen, Brain, CalendarDays, CheckCircle2, Clock3, Layers3, ListChecks, Sparkles, Target, Trophy } from 'lucide-react'
 
 type Subject = { id: string; name: string; code: string }
@@ -77,7 +78,7 @@ export default function StudentStudyWorkspace({ mode, subjects, topics, onBack, 
 
         {mode === 'revision' && <section className="glass-card rounded-3xl p-6 sm:p-8"><div className="flex items-center gap-3"><Clock3 className="text-purple-200"/><h2 className="text-2xl font-black">Quick revision</h2></div><p className="mt-3 text-sm leading-6 text-white/50">A compact list of approved topics for your final review. Topic names alone are not a substitute for published revision notes.</p>{visibleTopics.length ? <div className="mt-6 grid gap-3 sm:grid-cols-2">{visibleTopics.map((topic) => <article key={topic.id} className="rounded-2xl border border-white/10 p-4"><p className="text-xs text-purple-200/70">{topic.subjectName}</p><h3 className="mt-2 font-bold">{topic.name}</h3><p className="mt-2 text-sm text-white/45">{topic.description || 'Revision notes have not been published for this topic yet.'}</p></article>)}</div> : <div className="mt-6 rounded-2xl border border-dashed border-white/15 p-6"><p className="font-semibold">Revision materials are not published yet</p><p className="mt-2 text-sm leading-6 text-white/45">Once reviewed topic content is published, it will be available here.</p></div>}</section>}
 
-        {mode === 'flashcards' && <section className="glass-card rounded-3xl p-6 sm:p-8"><div className="flex items-center gap-3"><Layers3 className="text-purple-200"/><h2 className="text-2xl font-black">Flashcards</h2></div><p className="mt-3 max-w-2xl text-sm leading-6 text-white/50">Flashcards will be built from reviewed definitions, formulas and facts, with progress tracked against your account.</p><div className="mt-6 rounded-2xl border border-dashed border-white/15 p-8 text-center"><Layers3 className="mx-auto text-white/35" size={30}/><h3 className="mt-4 text-lg font-bold">No verified flashcard deck yet</h3><p className="mx-auto mt-2 max-w-md text-sm leading-6 text-white/45">We will not turn topic titles into made-up study facts. Approved learning content is needed before a deck can be created.</p></div></section>}
+        {mode === 'flashcards' && <StudentFlashcards subjects={subjects} />}
 
         {mode === 'progress' && <StudentProgressSummary subjects={subjects} topicCount={topics.length} onStartCbt={onStartCbt} />}
 
