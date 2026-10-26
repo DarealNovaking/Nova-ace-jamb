@@ -3786,3 +3786,12 @@ Other manual results remain user-reported PASS: keyboard navigation, performance
 - Extended `tests/e2e/smoke.spec.ts` to assert the weekly subject plan and daily checklist render, and that a checked checklist item persists across a page reload. This is localStorage persistence only, not server-verified activity.
 - Latest feature branch head after this test and handoff update must be verified; prior CI runs do not establish this latest head's result.
 - Exact next action: inspect latest Verify, ACE JAMB E2E, and Cloudflare preview results, then record exact final outcomes. PR #8 remains open/unmerged.
+
+## Latest ZIP integration verification — 2026-10-26
+
+- Code/test head verified: `6a467f9bd6eb82571c4d6bc42c90df821049fdd9`.
+- Verify workflow #1056 (`40265401865`): **PASS**. ACE JAMB E2E workflow #989 (`40265401866`): **PASS**, including TypeScript typecheck, production build, Playwright browser tests, and the new weekly-plan/daily-checklist persistence assertions.
+- Cloudflare preview bot reports **Build: Success** and **Deployment: Success** for `6a467f9`; this is a preview deployment, not production.
+- ZIP audit: all 34 source paths compared against `main` by Git blob hash (18 identical, 12 different existing files, 4 ZIP-only paths). Selective compatible features integrated: per-subject approved-topic counts, weekly subject rotation, and local daily checklist with date-boundary reset. Unsupported score projection, misleading connectivity/cache labels, inaccurate duration-based pacing, silent service errors, and wholesale alternate app shell/services/dependency changes were not imported.
+- No change to `main`; PR #8 remains open/unmerged. No production deployment, schema/data mutation, or secrets change.
+- Exact next action: confirm CI and preview status on the handoff-only commit created by this update; if green, leave PR open for owner review/merge decision. Do not merge automatically.
