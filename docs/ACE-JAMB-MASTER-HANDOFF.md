@@ -4,6 +4,17 @@
 >
 > **Critical separation rule:** ACE JAMB is a separate product from **Ñøvã CBT MAX** and **DROP**. Do not merge their roadmaps, databases, pricing, branding, or architecture.
 
+
+## Current integration checkpoint — 2026-10-26
+
+- **Active integration PR:** [#8](https://github.com/DarealNovaking/Nova-ace-jamb/pull/8), branch `feat/gemini-progress-analytics-integration`.
+- **Cloudflare preview investigation:** Owner authorized restoring `wrangler.jsonc` on this PR branch only. Commit `65e3330c97280a2aed9a6dac4c90b46743f18aed` restores the previously used static-assets configuration: `./dist`, SPA fallback, observability, compatibility date `2026-10-01`, and `previews: {}`.
+- **Why this is a hypothesis:** Cloudflare reports preview build failures for both an application commit and a docs-only commit, while GitHub Verify and ACE JAMB E2E were green on prior PR head `6b5c3df41427a1d07b1a286a1b748f117e4defb9`. The authenticated Cloudflare build log could not be accessed, so missing configuration has not been proven to be the cause.
+- **Scope/safety:** config change is confined to the integration branch. No production deployment, main-branch change, database/schema/data change, secrets, or removed workflow/backend restoration. Do not merge until preview status is checked and the failure is resolved or conclusively explained.
+- **Verification pending:** GitHub workflows and Cloudflare preview for the config commit must be polled after the handoff commit. Previous successful verification does not automatically apply to these new commits.
+- **Exact next action:** poll the latest PR head and both GitHub workflows, then inspect Cloudflare's preview result. If it still fails, obtain the actual build error from an accessible PR bot comment or supplied log and make a targeted fix; do not guess at additional config changes.
+
+
 ---
 
 ## Universal fast-execution protocol — mandatory for all agents
