@@ -3774,3 +3774,10 @@ Other manual results remain user-reported PASS: keyboard navigation, performance
 - Together with the progress subject topic counts, this is a selective integration, not a wholesale ZIP import. Archive score forecasting, unsupported online/offline sync claims, duration-based pacing estimates, alternate app shell/services/dependency versions, and catalogue coupling remain excluded.
 - No auth, routing, persistent CBT, admin workflow, schema, production data, secrets, or production deployment changed. The code is on PR #8's integration branch only.
 - Exact next action: wait for Verify, ACE JAMB E2E (including browser tests), and Cloudflare preview checks on the final head; fix any failure and refresh this checkpoint with exact outcomes. Do not merge automatically.
+
+## Daily checklist date-boundary hardening — 2026-10-26
+
+- Hardened the new local study checklist so a study-plan view left open across midnight detects the local calendar date change and loads that date's checklist state rather than carrying yesterday's checked tasks forward. The check runs once per minute while the component is mounted; localStorage read/write failures remain non-fatal.
+- This is device-local convenience tracking only, not verified study activity. No database/schema/auth/CBT/admin/deployment changes.
+- Latest feature branch head after this fix and handoff refresh must be rechecked; do not use CI results from an earlier head as verification.
+- Exact next action: verify the latest head with GitHub Verify, ACE JAMB E2E browser tests, and Cloudflare preview. Record the final status and any failures here before considering PR #8 ready for review.
