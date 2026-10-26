@@ -97,7 +97,7 @@ export default function StudentFlashcards({ subjects, topics }: { subjects: Subj
   return (
     <section aria-labelledby="flashcards-title" className="glass-card rounded-3xl p-6 text-white sm:p-8">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-3"><Layers3 className="text-purple-200" aria-hidden="true" /><div><h2 id="flashcards-title" className="text-2xl font-black">Flashcards</h2><p className="mt-1 text-sm text-white/45">Recall reviewed facts and keep your review history on your account.</p></div></div>
+        <div className="flex items-center gap-3"><Layers3 className="text-purple-200" aria-hidden="true" /><div><h2 id="flashcards-title" className="text-2xl font-black">Your flashcard deck</h2><p className="mt-1 text-sm text-white/45">Recall reviewed facts and keep your review history on your account.</p></div></div>
         <button type="button" onClick={() => void load()} disabled={saving} className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-white/10 px-3 py-2 text-sm font-semibold hover:bg-white/5 disabled:opacity-50"><RotateCcw size={15} aria-hidden="true" /> Refresh deck</button>
       </div>
 

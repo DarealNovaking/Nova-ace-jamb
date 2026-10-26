@@ -871,7 +871,7 @@ test.describe('ACE JAMB preparation workspaces', () => {
     })
 
     await page.goto('/?view=flashcards')
-    await expect(page.getByRole('heading', { name: 'Flashcards', exact: true })).toBeVisible()
+    await expect(page.getByRole('heading', { level: 1, name: 'Flashcards', exact: true })).toBeVisible()
     await expect(page.getByText('What does a flashcard review test?')).toBeVisible()
     await page.getByRole('button', { name: 'Show answer' }).click()
     await expect(page.getByText('Recall of a reviewed learning fact.')).toBeVisible()
@@ -927,10 +927,10 @@ test.describe('ACE JAMB preparation workspaces', () => {
 
   test('flashcards show a recoverable error and retry to an honest empty state', async ({ page }) => {
     await mockPreparedStudent(page)
-    let failOnce = true
+    let failedRequestsRemaining = 2
     await page.route((requestUrl) => new URL(requestUrl).pathname.endsWith('/rest/v1/flashcards'), async (route) => {
-      if (failOnce) {
-        failOnce = false
+      if (failedRequestsRemaining > 0) {
+        failedRequestsRemaining -= 1
         await route.fulfill({ status: 503, contentType: 'application/json', json: { message: 'private database host should not be shown' } })
         return
       }
