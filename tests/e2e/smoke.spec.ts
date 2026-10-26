@@ -392,7 +392,7 @@ test.describe('ACE JAMB persistent CBT', () => {
     await expect(page.getByRole('heading', { name: 'Welcome back, Test Futarian.' })).toBeVisible()
     await page.getByRole('button', { name: /Practice Verified question sets/ }).click()
     await expect(page.getByRole('heading', { name: 'Practice', exact: true })).toBeVisible()
-    await page.getByRole('button', { name: 'Start a practice session' }).click()
+    await page.getByRole('button', { name: 'Start 20-question practice' }).click()
     await expect(page).toHaveURL(/[?&]mode=practice(?:&|$)/)
     await expect.poll(() => requestedMode).toBe('practice')
     await expect(page.getByRole('alert')).toContainText(/No reviewed questions are published for this session yet/)
@@ -811,7 +811,7 @@ test.describe('ACE JAMB preparation workspaces', () => {
 
     await page.getByRole('button', { name: 'Practice', exact: true }).click()
     await expect(page.getByRole('heading', { name: 'Practice', exact: true })).toBeVisible()
-    await expect(page.getByText('Practice sessions require reviewed questions with verified answers.')).toBeVisible()
+    await expect(page.getByText(/Sessions use reviewed questions and verified answers only/)).toBeVisible()
 
     await page.getByRole('button', { name: 'Quick revision', exact: true }).click()
     await expect(page.getByRole('heading', { level: 1, name: 'Quick revision', exact: true })).toBeVisible()
