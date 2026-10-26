@@ -79,3 +79,14 @@ After the preview blocker is resolved, review the final PR diff and CI status, t
 - Inspected failed E2E run `40289520999`: 72 tests passed; 4 failures were two stale UI assertions duplicated across Chromium/mobile. The test expected the old button name `Start a practice session` and old copy `Practice sessions require reviewed questions with verified answers.` while the current workspace uses `Start 20-question practice` and states that sessions use reviewed questions/verified answers only. Updated `tests/e2e/smoke.spec.ts` to assert the actual current UI contract (commit `74e6001f6fca83023f58a68b7f1decff5de13d6e`).
 - Also fixed a real subject-filter propagation gap in `src/components/PersistentCBT.tsx`: the fresh-attempt path omitted `subjectId` even though the stale-local-recovery path forwarded it. Commit `114de381a1fceab2dc0e9261340e5b7db83b5532` forwards the subject ID in both paths.
 - CI on code-fix head `114de381a1fceab2dc0e9261340e5b7db83b5532` started as Verify run `40402083909` and ACE JAMB E2E run `40402084211`; final outcomes were still pending when this note was written. Do not call the branch green until both finish on the final head.
+
+
+## Final verification after E2E correction — 2026-10-26
+
+- Current verified code/documentation head before this note: `23ddcb6d20bee947f6d3ed6006e13c0c95bcb612`.
+- Verify workflow #1076 (`40402266576`): **PASS**.
+- ACE JAMB E2E workflow #1009 (`40402266579`): **PASS**.
+- Cloudflare preview bot reports **Build: Success** and **Deployment: Success** for `23ddcb6`, preview URL `https://f0347103-nova-ace-jamb.novaking5002.workers.dev`.
+- The E2E regression was stale test selectors/copy; tests were corrected. The subject-filter propagation defect was also fixed so fresh CBT attempts receive the chosen `subjectId`.
+- New ZIP audit outcome unchanged: no app source copied from the full-project snapshot because no independently safe additive source delta was established; previously selected compatible Gemini features remain in branch. No production deployment, main change, or database/schema/data/secrets mutation.
+- Exact next action: check final verification on the latest handoff commit; keep PR #8 open for owner review. Do not merge or deploy automatically.
