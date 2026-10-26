@@ -927,10 +927,9 @@ test.describe('ACE JAMB preparation workspaces', () => {
 
   test('flashcards show a recoverable error and retry to an honest empty state', async ({ page }) => {
     await mockPreparedStudent(page)
-    let failedRequestsRemaining = 2
+    let allowFlashcardSuccess = false
     await page.route((requestUrl) => new URL(requestUrl).pathname.endsWith('/rest/v1/flashcards'), async (route) => {
-      if (failedRequestsRemaining > 0) {
-        failedRequestsRemaining -= 1
+      if (!allowFlashcardSuccess) {
         await route.fulfill({ status: 503, contentType: 'application/json', json: { message: 'private database host should not be shown' } })
         return
       }
@@ -940,6 +939,7 @@ test.describe('ACE JAMB preparation workspaces', () => {
     await page.goto('/?view=flashcards')
     await expect(page.getByRole('alert')).toContainText('We could not load your flashcards.')
     await expect(page.getByText(/private database host/)).toHaveCount(0)
+    allowFlashcardSuccess = true
     await page.getByRole('button', { name: 'Try again' }).click()
     await expect(page.getByText('No approved flashcards are available for your selected subjects yet.')).toBeVisible()
   })
