@@ -3782,3 +3782,18 @@ No database/schema/RPC/Edge Function changes, production-data writes, or deploym
 - Continue the canonical frontend batches with real existing contracts and truthful unavailable states; do not fabricate JAMB content or claim provider behavior.
 - **Next concrete action:** implement the missing functional flashcard deck/reveal/review UI against the existing `ace.flashcards` and self-scoped `ace.flashcard_reviews` tables, add mocked Playwright coverage for empty/error and successful review paths, and verify it with CI. Then continue the remaining frontend gaps in the canonical 16-batch order.
 - Backend milestone remains unauthorized until the whole-product frontend acceptance matrix is complete or the owner explicitly accepts named frontend items as backend-dependent exceptions.
+
+
+## Frontend batch 6 — flashcard review UI implementation — 2026-10-27
+
+- Implemented on `main` in application commit `cd495e4685e7629c5d6342c55e7ae5b6b4cbe2a2`.
+- Added `src/lib/flashcardService.ts`: reads active cards for the authenticated student's selected subjects plus general cards; reads only the current user's review rows; saves review history through the existing `flashcard_reviews` composite key and self-scoped RLS policy. The UI never invents cards or writes to other users' progress.
+- Added `src/components/StudentFlashcards.tsx`: loading, error/retry, honest empty, randomized deck, answer reveal, recall / needs-practice response, saved review status, per-card progress and completion/restart states.
+- Wired the component into `src/components/StudentStudyWorkspace.tsx`.
+- Updated `tests/e2e/smoke.spec.ts`: empty-state assertion plus Playwright cases for revealing a real fixture card and persisting a review, and for a recoverable load error/retry.
+- **Verify run 40419868322:** PASS on the exact application commit (TypeScript typecheck, build and repository verification workflow).
+- **ACE JAMB E2E run 40419868321:** NOT YET VERIFIED. The job reached Typecheck PASS and Build PASS, then remained at “Install Playwright browser”; the browser tests had not started at the last check. Attempting to retrieve the in-progress job log returned GitHub `404 BlobNotFound`, so this is a runner/browser-install blocker, not an app-test failure. Do not report E2E as passed or failed until the run reaches a terminal result.
+- Read-only schema/RLS checks confirmed `ace.flashcards.active` supports public reading of active cards and `ace.flashcard_reviews` has a primary key on `(user_id, flashcard_id)` plus self-only authenticated RLS. Live flashcards/reviews are both currently 0 rows; all UI behavior is tested with mocked Playwright fixtures. No live rows were inserted or changed.
+- No backend/schema/RPC/Edge Function change, deployment, or production-data write was made.
+- **Exact next action:** recheck E2E run 40419868321. If it remains stalled, inspect and resolve the browser-install/runner path using fresh evidence; then record the terminal E2E result before moving to the next frontend batch.
+
