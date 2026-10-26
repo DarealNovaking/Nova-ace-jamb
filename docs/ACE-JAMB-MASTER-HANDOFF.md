@@ -3781,3 +3781,8 @@ Other manual results remain user-reported PASS: keyboard navigation, performance
 - This is device-local convenience tracking only, not verified study activity. No database/schema/auth/CBT/admin/deployment changes.
 - Latest feature branch head after this fix and handoff refresh must be rechecked; do not use CI results from an earlier head as verification.
 - Exact next action: verify the latest head with GitHub Verify, ACE JAMB E2E browser tests, and Cloudflare preview. Record the final status and any failures here before considering PR #8 ready for review.
+
+## ZIP study-plan regression coverage — 2026-10-26
+- Extended `tests/e2e/smoke.spec.ts` to assert the weekly subject plan and daily checklist render, and that a checked checklist item persists across a page reload. This is localStorage persistence only, not server-verified activity.
+- Latest feature branch head after this test and handoff update must be verified; prior CI runs do not establish this latest head's result.
+- Exact next action: inspect latest Verify, ACE JAMB E2E, and Cloudflare preview results, then record exact final outcomes. PR #8 remains open/unmerged.
