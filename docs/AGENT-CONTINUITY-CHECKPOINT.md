@@ -2039,3 +2039,10 @@ Latest user-provided `ñøvã-ace-jamb.zip` was audited against `feat/gemini-pro
 ## Current continuation — E2E fix and verification gate (2026-10-26)
 
 Failed E2E run `40289520999` was diagnosed: four failures (desktop/mobile duplicates) were stale selectors and copy, not application runtime failures. `tests/e2e/smoke.spec.ts` now targets the current practice button and truthful workspace message (commit `74e6001f6fca83023f58a68b7f1decff5de13d6e`). Fixed `src/components/PersistentCBT.tsx` so a fresh CBT attempt forwards `subjectId` just like the recovery path (commit `114de381a1fceab2dc0e9261340e5b7db83b5532`). Verify run `40402083909` and ACE JAMB E2E run `40402084211` were pending at note time. Next action: check both on the final head, fix any remaining failure, and re-check Cloudflare preview. Keep PR #8 open/unmerged; no production deployment.
+
+
+## Latest status — fresh ZIP audit and green verification (2026-10-26)
+
+The new `ñøvã-ace-jamb.zip` was audited for the existing Gemini branch. No app source was copied: conflicting alternate app shell/package, unsupported `/400` score projection, misleading “Cloud Synced” from `navigator.onLine`, and ungrounded timed-practice assumptions were rejected. Compatible selected features are already in this branch; rationale is in `docs/GEMINI-FRONTEND-INTEGRATION-ADDENDUM-2026-10-25.md`.
+
+The prior E2E failure was fixed (stale UI assertions updated; fresh CBT subjectId now reaches `startCbt`). On head `23ddcb6d20bee947f6d3ed6006e13c0c95bcb612`, Verify run #1076 (`40402266576`) and ACE JAMB E2E run #1009 (`40402266579`) both **PASS**. Cloudflare preview Build/Deployment **Success** for `23ddcb6` at `https://f0347103-nova-ace-jamb.novaking5002.workers.dev`. This is preview only. PR #8 is open/unmerged; `main` and production unchanged. Exact next action: confirm checks/preview after this documentation update; then leave the PR for owner review/merge decision. Do not merge or deploy automatically.
