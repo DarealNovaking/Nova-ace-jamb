@@ -22,7 +22,7 @@ function localDateKey(date = new Date()) {
 }
 
 export default function StudentStudyPlan({ subjects }: { subjects: Subject[] }) {
-  const todayKey = localDateKey()
+  const [todayKey, setTodayKey] = useState(() => localDateKey())
   const todayId = days[new Date().getDay() === 0 ? 6 : new Date().getDay() - 1].id
   const [completedTasks, setCompletedTasks] = useState<string[]>(() => {
     try {
@@ -32,6 +32,22 @@ export default function StudentStudyPlan({ subjects }: { subjects: Subject[] }) 
       return []
     }
   })
+  useEffect(() => {
+    const refreshForNewDay = () => {
+      const nextKey = localDateKey()
+      if (nextKey === todayKey) return
+      setTodayKey(nextKey)
+      try {
+        const stored = window.localStorage.getItem(`ace-study-routine-${nextKey}`)
+        setCompletedTasks(stored ? JSON.parse(stored) as string[] : [])
+      } catch {
+        setCompletedTasks([])
+      }
+    }
+    const timer = window.setInterval(refreshForNewDay, 60_000)
+    return () => window.clearInterval(timer)
+  }, [todayKey])
+
   const [dailyMinutes, setDailyMinutes] = useState(60)
   const [selectedDays, setSelectedDays] = useState<string[]>(['monday', 'tuesday', 'wednesday', 'thursday', 'friday'])
   const [loading, setLoading] = useState(true)
