@@ -122,12 +122,16 @@ export default function StudentDashboard() {
     }
   }, [])
 
-  const startCbt = (mode: 'cbt' | 'practice' = 'cbt') => {
+  const startCbt = (mode: 'cbt' | 'practice' = 'cbt', subjectId?: string, count = 20, duration = 1800) => {
     const url = new URL(window.location.href)
     url.searchParams.set('cbt', '1')
     url.searchParams.delete('view')
     if (mode === 'practice') url.searchParams.set('mode', 'practice')
     else url.searchParams.delete('mode')
+    if (subjectId) url.searchParams.set('subject', subjectId)
+    else url.searchParams.delete('subject')
+    url.searchParams.set('count', String(Math.max(1, Math.min(100, Math.trunc(count)))))
+    url.searchParams.set('duration', String(Math.max(60, Math.min(14400, Math.trunc(duration)))))
     window.history.pushState({}, '', url)
     window.dispatchEvent(new PopStateEvent('popstate'))
   }
