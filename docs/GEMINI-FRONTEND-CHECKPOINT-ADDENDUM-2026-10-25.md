@@ -24,3 +24,12 @@
 - Together with the progress subject topic counts, this is a selective integration, not a wholesale ZIP import. Archive score forecasting, unsupported online/offline sync claims, duration-based pacing estimates, alternate app shell/services/dependency versions, and catalogue coupling remain excluded.
 - No auth, routing, persistent CBT, admin workflow, schema, production data, secrets, or production deployment changed. The code is on PR #8's integration branch only.
 - Exact next action: wait for Verify, ACE JAMB E2E (including browser tests), and Cloudflare preview checks on the final head; fix any failure and refresh this checkpoint with exact outcomes. Do not merge automatically.
+
+## Latest ZIP integration verification — 2026-10-26
+
+- Code/test head verified: `6a467f9bd6eb82571c4d6bc42c90df821049fdd9`.
+- Verify workflow #1056 (`40265401865`): **PASS**. ACE JAMB E2E workflow #989 (`40265401866`): **PASS**, including TypeScript typecheck, production build, Playwright browser tests, and the new weekly-plan/daily-checklist persistence assertions.
+- Cloudflare preview bot reports **Build: Success** and **Deployment: Success** for `6a467f9`; this is a preview deployment, not production.
+- ZIP audit: all 34 source paths compared against `main` by Git blob hash (18 identical, 12 different existing files, 4 ZIP-only paths). Selective compatible features integrated: per-subject approved-topic counts, weekly subject rotation, and local daily checklist with date-boundary reset. Unsupported score projection, misleading connectivity/cache labels, inaccurate duration-based pacing, silent service errors, and wholesale alternate app shell/services/dependency changes were not imported.
+- No change to `main`; PR #8 remains open/unmerged. No production deployment, schema/data mutation, or secrets change.
+- Exact next action: confirm CI and preview status on the handoff-only commit created by this update; if green, leave PR open for owner review/merge decision. Do not merge automatically.
