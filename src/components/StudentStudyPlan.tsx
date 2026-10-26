@@ -1,20 +1,37 @@
 import { useEffect, useState } from 'react'
-import { CalendarDays, CheckCircle2, Loader2, Save } from 'lucide-react'
+import { BookOpen, Brain, CalendarDays, CheckCircle2, ListTodo, Loader2, RotateCcw, Save } from 'lucide-react'
 import { getStudentPreferences, updateStudentPreferences } from '../lib/studentService'
 
 type Subject = { id: string; name: string; code: string }
 
 const days = [
-  { id: 'monday', label: 'Mon' },
-  { id: 'tuesday', label: 'Tue' },
-  { id: 'wednesday', label: 'Wed' },
-  { id: 'thursday', label: 'Thu' },
-  { id: 'friday', label: 'Fri' },
-  { id: 'saturday', label: 'Sat' },
-  { id: 'sunday', label: 'Sun' },
+  { id: 'monday', label: 'Mon', full: 'Monday' },
+  { id: 'tuesday', label: 'Tue', full: 'Tuesday' },
+  { id: 'wednesday', label: 'Wed', full: 'Wednesday' },
+  { id: 'thursday', label: 'Thu', full: 'Thursday' },
+  { id: 'friday', label: 'Fri', full: 'Friday' },
+  { id: 'saturday', label: 'Sat', full: 'Saturday' },
+  { id: 'sunday', label: 'Sun', full: 'Sunday' },
 ]
 
+function localDateKey(date = new Date()) {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
 export default function StudentStudyPlan({ subjects }: { subjects: Subject[] }) {
+  const todayKey = localDateKey()
+  const todayId = days[new Date().getDay() === 0 ? 6 : new Date().getDay() - 1].id
+  const [completedTasks, setCompletedTasks] = useState<string[]>(() => {
+    try {
+      const stored = window.localStorage.getItem(`ace-study-routine-${todayKey}`)
+      return stored ? JSON.parse(stored) as string[] : []
+    } catch {
+      return []
+    }
+  })
   const [dailyMinutes, setDailyMinutes] = useState(60)
   const [selectedDays, setSelectedDays] = useState<string[]>(['monday', 'tuesday', 'wednesday', 'thursday', 'friday'])
   const [loading, setLoading] = useState(true)
@@ -51,6 +68,40 @@ export default function StudentStudyPlan({ subjects }: { subjects: Subject[] }) 
     setSelectedDays((current) => current.includes(day) ? current.filter((item) => item !== day) : [...current, day])
     setNotice('')
   }
+
+  function toggleTask(taskId: string) {
+    setCompletedTasks((current) => {
+      const updated = current.includes(taskId) ? current.filter((id) => id !== taskId) : [...current, taskId]
+      try {
+        window.localStorage.setItem(`ace-study-routine-${todayKey}`, JSON.stringify(updated))
+      } catch {
+        // Keep the checklist usable if local storage is unavailable.
+      }
+      return updated
+    })
+  }
+
+  function resetTodayTasks() {
+    setCompletedTasks([])
+    try {
+      window.localStorage.removeItem(`ace-study-routine-${todayKey}`)
+    } catch {
+      // Keep the checklist usable if local storage is unavailable.
+    }
+  }
+
+  const weeklySchedule = days.map((day, index) => ({
+    ...day,
+    selected: selectedDays.includes(day.id),
+    primary: subjects.length && selectedDays.includes(day.id) ? subjects[index % subjects.length] : null,
+    secondary: subjects.length > 1 && selectedDays.includes(day.id) ? subjects[(index + 1) % subjects.length] : null,
+  }))
+  const todaySchedule = weeklySchedule.find((day) => day.id === todayId)
+  const routineTasks = [
+    { id: 'concept-review', label: 'Review an approved syllabus topic', detail: todaySchedule?.primary ? `Focus on ${todaySchedule.primary.name}.` : 'Choose an approved topic when one is available.', icon: BookOpen },
+    { id: 'practice-drill', label: 'Complete a practice session', detail: todaySchedule?.secondary ? `Try ${todaySchedule.secondary.name} if reviewed questions are available.` : 'Use reviewed questions when available; no practice content is invented.', icon: Brain },
+    { id: 'mistake-review', label: 'Review saved mistakes and notes', detail: 'Revisit recorded mistakes or your own notes if available.', icon: CheckCircle2 },
+  ]
 
   async function savePlan() {
     setSaving(true)
@@ -97,6 +148,22 @@ export default function StudentStudyPlan({ subjects }: { subjects: Subject[] }) 
       <div className="mt-6 rounded-2xl border border-white/10 bg-black/15 p-5">
         <h3 className="font-bold">Your preparation subjects</h3>
         {subjects.length ? <p className="mt-2 text-sm leading-6 text-white/55">{subjects.map((subject) => subject.name).join(' · ')}</p> : <p className="mt-2 text-sm text-white/45">No saved subjects were found. You can update your preparation profile from onboarding.</p>}
+      </div>
+
+
+
+      <div className="mt-6 grid gap-6 lg:grid-cols-2">
+        <section className="rounded-2xl border border-white/10 p-5" aria-labelledby="weekly-study-schedule-title">
+          <div className="flex items-center gap-2"><CalendarDays className="text-purple-200" size={18} aria-hidden="true"/><h3 id="weekly-study-schedule-title" className="font-bold">Your weekly subject plan</h3></div>
+          <p className="mt-2 text-sm leading-6 text-white/45">Subjects rotate across your selected study days. This is a planning aid, not a claim that lessons or question sets are published.</p>
+          <ul className="mt-4 space-y-2">{weeklySchedule.map((day) => <li key={day.id} className={`rounded-xl border p-3 ${day.selected ? 'border-purple-300/20 bg-purple-500/[.06]' : 'border-white/5 opacity-60'}`}><div className="flex items-start justify-between gap-3"><span className="text-sm font-semibold">{day.full}</span><span className="text-xs text-white/40">{day.selected ? 'Study day' : 'Rest day'}</span></div>{day.selected && <p className="mt-2 text-sm text-white/55">{day.primary ? day.primary.name : 'Select subjects in your preparation profile'}{day.secondary && day.secondary.id !== day.primary?.id ? ` · ${day.secondary.name}` : ''}</p>}</li>)}</ul>
+        </section>
+        <section className="rounded-2xl border border-white/10 p-5" aria-labelledby="daily-routine-title">
+          <div className="flex items-center justify-between gap-3"><div className="flex items-center gap-2"><ListTodo className="text-purple-200" size={18} aria-hidden="true"/><h3 id="daily-routine-title" className="font-bold">Today's checklist</h3></div><span className="text-xs text-white/40">{completedTasks.length}/{routineTasks.length}</span></div>
+          <p className="mt-2 text-sm leading-6 text-white/45">Your checkmarks are saved on this device for today. They do not represent server-verified study activity.</p>
+          <ul className="mt-4 space-y-3">{routineTasks.map((task) => { const TaskIcon = task.icon; const checked = completedTasks.includes(task.id); return <li key={task.id} className="rounded-xl border border-white/10 p-3"><label className="flex cursor-pointer items-start gap-3"><input type="checkbox" checked={checked} onChange={() => toggleTask(task.id)} className="mt-1 accent-purple-300"/><span className="min-w-0 flex-1"><span className={`flex items-center gap-2 text-sm font-semibold ${checked ? 'text-white/45 line-through' : 'text-white'}`}><TaskIcon size={15} aria-hidden="true"/>{task.label}</span><span className="mt-1 block text-xs leading-5 text-white/40">{task.detail}</span></span></label></li> })}</ul>
+          <button type="button" onClick={resetTodayTasks} disabled={completedTasks.length === 0} className="mt-4 inline-flex items-center gap-2 rounded-lg border border-white/10 px-3 py-2 text-xs font-semibold text-white/60 hover:bg-white/5 disabled:opacity-40"><RotateCcw size={14} aria-hidden="true"/> Reset today's checklist</button>
+        </section>
       </div>
 
       <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
