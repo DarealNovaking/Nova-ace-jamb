@@ -2012,3 +2012,7 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - Together with the progress subject topic counts, this is a selective integration, not a wholesale ZIP import. Archive score forecasting, unsupported online/offline sync claims, duration-based pacing estimates, alternate app shell/services/dependency versions, and catalogue coupling remain excluded.
 - No auth, routing, persistent CBT, admin workflow, schema, production data, secrets, or production deployment changed. The code is on PR #8's integration branch only.
 - Exact next action: wait for Verify, ACE JAMB E2E (including browser tests), and Cloudflare preview checks on the final head; fix any failure and refresh this checkpoint with exact outcomes. Do not merge automatically.
+
+## Study-plan checklist follow-up — 2026-10-26
+- Daily checklist now reloads its local-device state when the local calendar date changes, preventing yesterday's completed tasks from carrying into a new day. Local-storage failures remain non-fatal.
+- Verify the newest branch head with Verify, ACE JAMB E2E, and Cloudflare preview before considering PR #8 ready. No production deploy or schema/data changes.
