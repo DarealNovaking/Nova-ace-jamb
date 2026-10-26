@@ -65,7 +65,8 @@ export default function StudentFlashcards({ subjects, topics }: { subjects: Subj
     return subjects.find((subject) => subject.id === card.subject_id)?.name ?? 'Selected subject'
   }, [card, subjects])
   const review = card ? reviews[card.id] : undefined
-  const due = review?.next_review_at ? Date.parse(review.next_review_at) <= Date.now() : true
+  const nextReviewTime = review?.next_review_at ? Date.parse(review.next_review_at) : Number.NaN
+  const due = !Number.isFinite(nextReviewTime) || nextReviewTime <= Date.now()
   const topic = card?.topic_id ? topics.find((item) => item.id === card.topic_id) : undefined
   const subtopic = topic && card?.subtopic_id ? topic.subtopics?.find((item) => item.id === card.subtopic_id) : undefined
 
