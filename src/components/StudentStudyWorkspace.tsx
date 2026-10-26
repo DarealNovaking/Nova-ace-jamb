@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import StudentStudyPlan from './StudentStudyPlan'
+import StudentProgressSummary from './StudentProgressSummary'
 import { ArrowLeft, BookOpen, Brain, CalendarDays, CheckCircle2, Clock3, Layers3, ListChecks, Sparkles, Target, Trophy } from 'lucide-react'
 
 type Subject = { id: string; name: string; code: string }
@@ -78,7 +79,7 @@ export default function StudentStudyWorkspace({ mode, subjects, topics, onBack, 
 
         {mode === 'flashcards' && <section className="glass-card rounded-3xl p-6 sm:p-8"><div className="flex items-center gap-3"><Layers3 className="text-purple-200"/><h2 className="text-2xl font-black">Flashcards</h2></div><p className="mt-3 max-w-2xl text-sm leading-6 text-white/50">Flashcards will be built from reviewed definitions, formulas and facts, with progress tracked against your account.</p><div className="mt-6 rounded-2xl border border-dashed border-white/15 p-8 text-center"><Layers3 className="mx-auto text-white/35" size={30}/><h3 className="mt-4 text-lg font-bold">No verified flashcard deck yet</h3><p className="mx-auto mt-2 max-w-md text-sm leading-6 text-white/45">We will not turn topic titles into made-up study facts. Approved learning content is needed before a deck can be created.</p></div></section>}
 
-        {mode === 'progress' && <section className="glass-card rounded-3xl p-6 sm:p-8"><div className="flex items-center gap-3"><Trophy className="text-purple-200"/><h2 className="text-2xl font-black">Your progress</h2></div><p className="mt-3 text-sm leading-6 text-white/50">Progress should be calculated from your real saved answers and completed attempts—not sample numbers.</p><div className="mt-6 grid gap-3 sm:grid-cols-3">{[{label:'Saved subjects',value:String(subjects.length)},{label:'Approved topics',value:String(topics.length)},{label:'Verified performance',value:'Not available yet'}].map((item) => <div key={item.label} className="rounded-2xl border border-white/10 bg-white/[.025] p-5"><p className="text-sm text-white/45">{item.label}</p><p className="mt-3 text-xl font-black">{item.value}</p></div>)}</div><p className="mt-5 text-sm leading-6 text-white/45">Attempt scores and mastery trends will appear when saved attempt data is available to the student analytics view.</p></section>}
+        {mode === 'progress' && <StudentProgressSummary subjects={subjects} topicCount={topics.length} onStartCbt={onStartCbt} />}
 
         {mode === 'plan' && <StudentStudyPlan subjects={subjects} />}
         </div>
