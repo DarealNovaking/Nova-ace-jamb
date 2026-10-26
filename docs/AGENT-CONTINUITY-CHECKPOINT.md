@@ -2020,3 +2020,12 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 ## ZIP study-plan regression coverage — 2026-10-26
 - Added E2E assertions for weekly subject plan and daily checklist rendering, plus local checklist persistence across reload. The state is local-device convenience only, not server-verified activity.
 - Recheck all CI and Cloudflare preview status against the latest head before considering PR #8 ready; earlier results are not evidence for newer commits.
+
+## Latest ZIP integration verification — 2026-10-26
+
+- Code/test head verified: `6a467f9bd6eb82571c4d6bc42c90df821049fdd9`.
+- Verify workflow #1056 (`40265401865`): **PASS**. ACE JAMB E2E workflow #989 (`40265401866`): **PASS**, including TypeScript typecheck, production build, Playwright browser tests, and the new weekly-plan/daily-checklist persistence assertions.
+- Cloudflare preview bot reports **Build: Success** and **Deployment: Success** for `6a467f9`; this is a preview deployment, not production.
+- ZIP audit: all 34 source paths compared against `main` by Git blob hash (18 identical, 12 different existing files, 4 ZIP-only paths). Selective compatible features integrated: per-subject approved-topic counts, weekly subject rotation, and local daily checklist with date-boundary reset. Unsupported score projection, misleading connectivity/cache labels, inaccurate duration-based pacing, silent service errors, and wholesale alternate app shell/services/dependency changes were not imported.
+- No change to `main`; PR #8 remains open/unmerged. No production deployment, schema/data mutation, or secrets change.
+- Exact next action: confirm CI and preview status on the handoff-only commit created by this update; if green, leave PR open for owner review/merge decision. Do not merge automatically.
