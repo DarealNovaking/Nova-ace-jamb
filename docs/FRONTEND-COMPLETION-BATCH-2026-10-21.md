@@ -735,3 +735,33 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - Build still emits Vite's >500 kB minified chunk warning. A completed build from the same source family previously showed the main JS at **563.22 kB minified / 153.84 kB gzip**; no bundle splitting or dependency changes have been made. Build time in #733 was 3.80 seconds.
 - **Accessibility slice status:** implementation and automated regression coverage PASS. Manual keyboard-only and screen-reader verification remains unperformed; this CI is not a substitute for manual assistive-technology review.
 - **Next action:** inspect the app's static route imports and the existing build output to identify a minimal code-splitting opportunity that reduces initial student download without changing behavior. Keep backend/database/deploy/catalogue out of scope; verify the change with typecheck/build/E2E and update this checkpoint again.
+
+
+## Current whole-product frontend readiness gate — 2026-10-26
+
+This section supersedes the older verification timestamps and stale “Phase 2 remains OPEN until…” next-action text above. It does not erase the historical matrix.
+
+### Verified current integration candidate
+- Gemini integration PR #8, branch `feat/gemini-progress-analytics-integration`, current head at this gate: `c0f27b302b6aff3bfffe25ff48668cd40f983215`. The latest application-code/test-bearing previewed commit is `0183ada2f64f352ad4f8596ce42338e8c4f2958a`; commits after it are documentation-only.
+- Verify #1079 / run `40403690885`: **PASS** on `0183ada`.
+- ACE JAMB E2E #1012 / run `40403690913`: **PASS** on `0183ada`; typecheck/build and Playwright passed.
+- Cloudflare PR preview bot: **Build: Success** and **Deployment: Success** for `0183ada`, URL `https://896cde73-nova-ace-jamb.novaking5002.workers.dev`. Preview, not production.
+- The latest four Playwright failures on earlier head `6d20676` were stale copy assertions in desktop/mobile variants; current assertions match the actual verified-question empty-state contract. A real subject-filter propagation gap was fixed so fresh CBT attempts receive the selected `subjectId`.
+- The user reports keyboard navigation, TalkBack, performance/recovery, PWA/offline and Cloudflare source/deployment matching as PASS. Treat these as **owner-reported manual acceptance**, not independently witnessed evidence.
+- The fresh ZIP was reviewed and not wholesale-imported. It is a conflicting app snapshot and contains unsupported UTME /400 forecasting and misleading “Cloud Synced” labeling. Existing safe Gemini-derived features remain on the PR branch.
+
+### Frontend disposition by remaining work
+- **Student shell, auth/onboarding/navigation, CBT interaction/recovery, accessible async states, study plan/checklist, and saved-attempt progress:** current repository contracts and automated flows are implemented and the integration candidate's CI is green. Live auth/content/provider correctness is not proved by mocked E2E.
+- **Official syllabus/questions/explanations, flashcard decks and content-driven mastery:** **backend/content dependency**. Do not fabricate content. Confirm live published records and rights gates before claiming these screens are functionally populated.
+- **WhatsApp membership verification:** **backend/provider contract dependency**. The configured channel link/CTA is not proof that a student joined; only add verification when an approved server-verifiable integration exists.
+- **Notifications:** inbox/preferences UI exists; **delivery scheduling/push provider remains backend/provider work**.
+- **ACE Pass/payments/referrals:** status/read-only UI exists; **payment verification, entitlement, qualification and rewards require backend/provider/webhook work**.
+- **Grounded AI/audio:** safely unavailable until the knowledge-source, AI-request and audio-delivery contracts are established. This is a backend/provider/content dependency, not a reason to fake front-end responses.
+- **Admin/academic:** basic authorization/readiness and academic workspace flows exist; broader moderation, monetization and delivery operations are not implemented. Scope these after backend contracts are agreed.
+- **PWA/offline and low-end Android:** owner reports manual PASS; no independent device replay is claimed. Existing automated shell/offline boundary tests passed. Reopen frontend code only for a reproducible defect.
+- **Performance/security debt:** previous audits recorded a large Vite chunk warning and dependency vulnerabilities. Current typecheck/build/E2E pass does not mean these risks were remediated. Defer dependency/bundle changes unless the next bounded security/performance task is explicitly prioritized.
+
+### Decision
+- **Frontend-only implementation for currently available contracts: READY FOR CLOSEOUT**, subject to owner review/merge of PR #8. Do not call the entire product frontend fully production-complete: multiple content/provider-facing features are intentionally unavailable pending backend contracts, and manual acceptance remains owner-reported.
+- **Next action:** review PR #8's 13-file diff and explicitly decide merge. If accepted, merge the tested integration branch; then start a backend-contract milestone for published content/questions and the highest-priority missing provider-backed feature. If not accepted, leave PR open and begin backend planning without copying its changes to `main`.
+- No merge, production deployment, database/schema/data mutation, secrets change, or `main` update was performed by this readiness audit.
