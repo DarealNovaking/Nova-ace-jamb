@@ -1,17 +1,17 @@
 # ACE JAMB — Current Agent Checkpoint
 
-> **Current-state rule:** This opening section is authoritative. Older entries below are retained as history and must not override newer verified evidence. Refresh this section at the start/end of meaningful work.
+> **Current-state rule:** This opening section is authoritative. Older entries below are history and must not override this verified integration-PR state.
 
-- **Updated:** 2026-10-25 (TalkBack manual acceptance and both handoff records updated).
-- **Repository:** `DarealNovaking/Nova-ace-jamb`, default branch `main`.
-- **Latest observed main HEAD before this checkpoint refresh: `7b737e23db071d0f77a3df7e0dd17a77f7491713` (`docs: record TalkBack acceptance result`). This checkpoint refresh will create a newer commit; re-check main HEAD before further work.
-- **Current authorized scope:** frontend acceptance only. Do not deploy, change backend/database/production data, or reopen institutions/catalogue work without explicit authorization. Fix only concrete, reproducible frontend defects.
-- **Implementation status:** Phase 3 frontend implementation is closed on repository/automated evidence. Manual acceptance has user-reported PASS for keyboard navigation, TalkBack/screen-reader smoke test, performance and recovery, PWA/offline, and Cloudflare source version. These are user reports, not independently witnessed by the agent. The exact deployed Cloudflare SHA remains unverified unless separately read back from Cloudflare.
-- **TalkBack result (2026-10-25):** user found TalkBack in Android Accessibility settings, used it, and reported that it “worked well.” Record PASS at user-reported smoke-test level. Detailed announcements across every sign-in/onboarding/dashboard/CBT flow were not enumerated; do not overstate the depth of testing. Evidence note: `docs/acceptance/TALKBACK-ACCEPTANCE-2026-10-25.md` at commit `f2df6ef7963f9c226fe2f979f8f6fed5726b39c6`.
-- **No implementation changes:** no reproducible defect was reported. No application code, deployment, backend/database, or production data was changed for this acceptance update.
-- **CI status:** unverified for documentation commit `f2df6ef7963f9c226fe2f979f8f6fed5726b39c6`; the combined-status lookup returned an empty list, which is inconclusive, not a pass or failure. Previous Verify #1015 and E2E #948 passed on `d55db734f9f3862bca3a9102a9e4138360cfba6d`, not this latest commit.
-- **Exact next action:** verify whether workflows ran for the latest docs commit. Then continue only for a concrete reported frontend defect or any explicitly required deeper accessibility test. Do not reopen frontend implementation speculatively; do not deploy or modify production data.
+- **Updated:** 2026-10-26 — Cloudflare preview configuration experiment authorized and committed to PR #8 only.
+- **Repository / integration:** `DarealNovaking/Nova-ace-jamb`; PR #8, branch `feat/gemini-progress-analytics-integration`.
+- **Current PR head before handoff refresh:** `65e3330c97280a2aed9a6dac4c90b46743f18aed` (`fix: restore Cloudflare preview configuration on integration PR`). Re-check branch HEAD and CI after this documentation commit.
+- **Active task:** resolve the Cloudflare PR preview build failure blocking PR #8 merge. GitHub Verify and ACE JAMB E2E passed on previous head `6b5c3df41427a1d07b1a286a1b748f117e4defb9`; Playwright was 76 passed / 0 failed, with typecheck and build passing. Those results do not automatically cover the newer config commit.
+- **Authorized change:** owner explicitly approved restoring the prior minimal `wrangler.jsonc` configuration on the integration branch only. Restored file specifies Worker name `nova-ace-jamb`, compatibility date `2026-10-01`, observability, static assets from `./dist`, SPA not-found handling, and preview configuration. It was restored as commit `65e3330c97280a2aed9a6dac4c90b46743f18aed`.
+- **Safety boundary:** this commit is on PR #8's feature branch. No change to `main`, no production deployment, no database/schema/data mutation, no secrets, and no restoration of removed deployment workflows or backend files. Do not merge until the Cloudflare preview result is checked.
+- **Evidence limitation:** actual Cloudflare build log is still unavailable because its dashboard requires an authenticated session not accessible here. Restoring the previous config is a hypothesis test, not a proven root-cause fix. Preview status and new CI are pending at checkpoint creation.
+- **Exact next action:** verify the PR branch head and both GitHub workflows, then inspect the Cloudflare PR preview status/comments for the config commit. If preview passes, record evidence and reassess merge readiness; if it fails, obtain the actual build error via accessible PR bot output or owner-provided log text, then make only a log-supported correction. Keep `main` and production untouched.
 - **Source-of-truth roles:** `AGENTS.md` is the discovery entry point; `docs/AGENT-PROMPTS.md` is the canonical universal prompt and specialist reference; this checkpoint is the current state; the master handoff defines product/architecture and shared execution protocol.
+
 
 ---
 
