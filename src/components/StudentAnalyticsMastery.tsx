@@ -3,7 +3,7 @@ import { AlertCircle, CheckCircle2, Clock3, RefreshCw, Trophy } from 'lucide-rea
 import { listPastAttempts, listStudentMistakes, type PastAttempt, type StudentQuestionMistake } from '../lib/practiceService'
 
 type Subject = { id: string; name: string; code: string }
-type Topic = { id: string; name: string; description: string | null; subjectName: string; sort_order: number }
+type Topic = { id: string; subject_id: string; name: string; description: string | null; subjectName: string; sort_order: number }
 type Props = { subjects: Subject[]; topics: Topic[]; onStartCbt: (mode?: 'cbt' | 'practice') => void }
 
 export default function StudentAnalyticsMastery({ subjects, topics, onStartCbt }: Props) {
@@ -38,7 +38,7 @@ export default function StudentAnalyticsMastery({ subjects, topics, onStartCbt }
     const rows = completed.filter((attempt) => attempt.subject_id === subject.id)
     const answered = rows.reduce((sum, attempt) => sum + (attempt.answered_count || 0), 0)
     const correct = rows.reduce((sum, attempt) => sum + (attempt.correct_count || 0), 0)
-    return { ...subject, attempts: rows.length, answered, accuracy: answered ? Math.round(correct / answered * 100) : null, topicCount: topics.filter((topic) => topic.subjectName === subject.name).length }
+    return { ...subject, attempts: rows.length, answered, accuracy: answered ? Math.round(correct / answered * 100) : null, topicCount: topics.filter((topic) => topic.subject_id === subject.id).length }
   }), [subjects, completed, topics])
 
   return <section className="glass-card space-y-6 rounded-3xl p-6 sm:p-8" aria-labelledby="progress-summary-title">
