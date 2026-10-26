@@ -33,3 +33,10 @@ This addendum supplements the master handoff and continuity checkpoint. The exis
 GitHub CI and all 76 Playwright browser tests are green. The Cloudflare preview-build failure is the remaining identified blocker to calling this PR fully ready to merge. Inspect the authenticated Cloudflare build log, fix a reproducible source/configuration issue if present, and refresh the preview/check status. Do not merge while that failure remains unexplained.
 
 After the preview blocker is resolved, review the final PR diff and CI status, then update this addendum and the canonical master handoff/checkpoint with the final merge decision and evidence.
+
+## ZIP compatibility audit update — 2026-10-26
+
+- The uploaded ZIP is a separate React/Vite app scaffold; it was not fully imported. The repository's existing auth, route guards, persistent CBT, admin/student workspaces, and deployment setup remain authoritative.
+- Kept compatible student analytics improvements only. The ZIP's unsubstantiated `/400` score projection, misleading online/offline sync labels, and duration-based pacing estimate were rejected. Its practice service's silent error swallowing was also rejected in favor of the PR's explicit error/retry state.
+- Approved syllabus topic counts are now included in subject progress summaries using the already-loaded workspace `topics`; no additional query or schema change is needed.
+- Latest CI must be checked against the final documentation head before considering the audit batch verified. PR #8 remains open and unmerged; `main` and production remain unchanged.
