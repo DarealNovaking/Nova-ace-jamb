@@ -6,7 +6,20 @@ export default function ProtectedCBT() {
   const [checking, setChecking] = useState(true)
   const [signedIn, setSignedIn] = useState(false)
   const [storageKey, setStorageKey] = useState<string | null>(null)
-  const [mode] = useState<'cbt' | 'practice'>(() => new URLSearchParams(window.location.search).get('mode') === 'practice' ? 'practice' : 'cbt')
+  const [launchOptions] = useState(() => {
+    const params = new URLSearchParams(window.location.search)
+    const number = (key: string, fallback: number, min: number, max: number) => {
+      const parsed = Number(params.get(key))
+      return Number.isInteger(parsed) ? Math.max(min, Math.min(max, parsed)) : fallback
+    }
+    return {
+      mode: (params.get('mode') === 'practice' ? 'practice' : 'cbt') as 'cbt' | 'practice',
+      subjectId: params.get('subject') || undefined,
+      questionCount: number('count', 20, 1, 100),
+      durationSeconds: number('duration', 1800, 60, 14400),
+    }
+  })
+  const mode = launchOptions.mode
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [message, setMessage] = useState('')
@@ -46,5 +59,5 @@ export default function ProtectedCBT() {
       <button type="submit" disabled={busy} className="w-full rounded-xl bg-white py-3 font-bold text-black disabled:opacity-50">{busy ? 'Signing in…' : 'Sign in'}</button>
     </form>
   </section>
-  return <PersistentCBT storageKey={storageKey} mode={mode} />
+  return <PersistentCBT storageKey={storageKey} mode={mode} subjectId={launchOptions.subjectId} questionCount={launchOptions.questionCount} durationSeconds={launchOptions.durationSeconds} />
 }
