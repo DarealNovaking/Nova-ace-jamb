@@ -3810,3 +3810,13 @@ No database/schema/RPC/Edge Function changes, production-data writes, or deploym
 - No backend/schema/RPC/Edge Function changes, deployment, or catalogue work.
 - **Batch 6 acceptance:** implementation and focused test coverage are present; final E2E acceptance remains pending the latest workflow's terminal result.
 - **Exact next action:** check runs 40421139598 and 40421139647, fix any reproducible failures, and only then mark Batch 6 accepted.
+
+
+## Batch 6 E2E failure analysis and test-fixture correction — 2026-10-27
+
+- E2E run [40421139647](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40421139647) failed with 78 passed / 4 failed. The four failures were two tests each on desktop Chromium and mobile Chromium.
+- Root cause 1: the preparation workspace H1 and flashcard component H2 both had the exact accessible name “Flashcards”, making a broad Playwright heading locator violate strict mode. The component H2 now reads “Your flashcard deck”, and tests target the workspace H1 explicitly.
+- Root cause 2: the transient-error fixture failed only one of two parallel flashcard requests; the fixture now fails both initial requests, then returns empty responses on retry. This tests the intended error/retry state deterministically.
+- Correction commit: `b7b387cc3772e8be481573b687b19d17c826b08b`. Fresh Verify run [40421619735](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40421619735) and E2E run [40421619724](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40421619724) were queued at this update. No new E2E pass is claimed.
+- No live data, schema, backend functions or deployment changed.
+- **Exact next action:** inspect the new CI runs, fix any further reproduced failure, then record the terminal outcome and close Batch 6 only when E2E passes.
