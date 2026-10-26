@@ -5,15 +5,19 @@
 > **Critical separation rule:** ACE JAMB is a separate product from **Ñøvã CBT MAX** and **DROP**. Do not merge their roadmaps, databases, pricing, branding, or architecture.
 
 
-## Current integration checkpoint — 2026-10-26
+## Current integration checkpoint — 2026-10-26 (verified current state)
 
-- **Active integration PR:** [#8](https://github.com/DarealNovaking/Nova-ace-jamb/pull/8), branch `feat/gemini-progress-analytics-integration`.
-- **Cloudflare preview investigation:** Owner authorized restoring `wrangler.jsonc` on this PR branch only. Commit `65e3330c97280a2aed9a6dac4c90b46743f18aed` restores the previously used static-assets configuration: `./dist`, SPA fallback, observability, compatibility date `2026-10-01`, and `previews: {}`.
-- **Why this is a hypothesis:** Cloudflare reports preview build failures for both an application commit and a docs-only commit, while GitHub Verify and ACE JAMB E2E were green on prior PR head `6b5c3df41427a1d07b1a286a1b748f117e4defb9`. The authenticated Cloudflare build log could not be accessed, so missing configuration has not been proven to be the cause.
-- **Scope/safety:** config change is confined to the integration branch. No production deployment, main-branch change, database/schema/data change, secrets, or removed workflow/backend restoration. Do not merge until preview status is checked and the failure is resolved or conclusively explained.
-- **Verification evidence (head `733bd045149d7b196d673981e0c7bb1924d6bc36`):** GitHub Verify #1038 and ACE JAMB E2E #971 both **SUCCESS**. Cloudflare PR bot reports **Build: Success** for descendant commit `733bd04`, which includes the restored config and docs. The separate row for config commit `65e3330` still reads “In progress”; do not misreport that individual row as complete. The latest descendant preview succeeding with `wrangler.jsonc` present is sufficient evidence that the current preview path is green at that point, though the authenticated build log and precise original cause remain unavailable.
-- **Conclusion:** the prior preview failure is not reproduced on the latest descendant commit. Treat the config restoration as a successful candidate fix, pending refresh after the next handoff commit. No production deployment was performed.
-- **Exact next action:** refresh latest PR head, Verify/E2E runs, and Cloudflare preview after this documentation update. If all are green, reassess PR #8 merge readiness; do not merge automatically or deploy production.
+- **Active integration PR:** [#8](https://github.com/DarealNovaking/Nova-ace-jamb/pull/8), branch `feat/gemini-progress-analytics-integration`; PR remains open/unmerged.
+- **Exact current head:** `0183ada2f64f352ad4f8596ce42338e8c4f2958a`. `main` remains unchanged.
+- **GitHub Verify:** run #1079 (`40403690885`) **PASS** on the exact current head.
+- **ACE JAMB E2E:** run #1012 (`40403690913`) **PASS** on the exact current head, including typecheck/build and Playwright.
+- **Cloudflare preview:** Build and Deployment **SUCCESS** for commit `0183ada`, preview `https://896cde73-nova-ace-jamb.novaking5002.workers.dev`. Preview only; no production deploy.
+- **Latest browser regression resolved:** earlier head `6d20676` failed four Playwright assertions because a test expected obsolete empty-question wording in Chromium and mobile Chromium. Current assertions use the actual verified-content empty-state contract. The same review also fixed a subject-filter propagation gap: fresh CBT attempts now pass the chosen `subjectId`.
+- **Fresh ZIP audit:** user-provided `ñøvã-ace-jamb.zip` was reviewed for selective integration. No app source copied because it is a conflicting full snapshot (alternate app shell/toolchain, empty `src/App.tsx`, and misleading UTME /400 and “Cloud Synced” claims). Existing Gemini branch already includes safe saved-attempt analytics, subject-scoped/timed practice, weekly rotation, and local daily checklist. Detailed compatibility decision is recorded in `docs/GEMINI-FRONTEND-INTEGRATION-ADDENDUM-2026-10-25.md`.
+- **Frontend readiness:** Frontend Phase 3 remains closed for repository/automated evidence. User-reported manual acceptance for keyboard, TalkBack, performance/recovery, PWA/offline, and Cloudflare source match is PASS; it is not independently witnessed by this agent. These results do not prove live backend/content/provider functionality. The open PR adds optional Gemini-derived frontend features and has passed CI and preview.
+- **Scope/safety:** No merge, production deployment, `main` change, backend/database/schema/data mutation, or secrets change.
+- **Decision gate:** Review PR #8's 13-file diff. If its tested Gemini features are accepted, the next action is owner-approved merge; otherwise leave it open and proceed to the separately scoped backend work. Do not merge or deploy automatically.
+
 
 
 ---
