@@ -2016,3 +2016,7 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 ## Study-plan checklist follow-up — 2026-10-26
 - Daily checklist now reloads its local-device state when the local calendar date changes, preventing yesterday's completed tasks from carrying into a new day. Local-storage failures remain non-fatal.
 - Verify the newest branch head with Verify, ACE JAMB E2E, and Cloudflare preview before considering PR #8 ready. No production deploy or schema/data changes.
+
+## ZIP study-plan regression coverage — 2026-10-26
+- Added E2E assertions for weekly subject plan and daily checklist rendering, plus local checklist persistence across reload. The state is local-device convenience only, not server-verified activity.
+- Recheck all CI and Cloudflare preview status against the latest head before considering PR #8 ready; earlier results are not evidence for newer commits.
