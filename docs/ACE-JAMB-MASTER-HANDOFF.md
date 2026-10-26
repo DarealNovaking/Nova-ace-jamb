@@ -8,7 +8,7 @@
 ## Current integration checkpoint — 2026-10-26 (verified current state)
 
 - **Active integration PR:** [#8](https://github.com/DarealNovaking/Nova-ace-jamb/pull/8), branch `feat/gemini-progress-analytics-integration`; PR remains open/unmerged.
-- **Exact current head:** `0183ada2f64f352ad4f8596ce42338e8c4f2958a`. `main` remains unchanged.
+- **Latest application-code/test-bearing commit verified:** `0183ada2f64f352ad4f8596ce42338e8c4f2958a`. Later branch commits are documentation-only (including the refreshed whole-product frontend readiness gate); `main` remains unchanged.
 - **GitHub Verify:** run #1079 (`40403690885`) **PASS** on the exact current head.
 - **ACE JAMB E2E:** run #1012 (`40403690913`) **PASS** on the exact current head, including typecheck/build and Playwright.
 - **Cloudflare preview:** Build and Deployment **SUCCESS** for commit `0183ada`, preview `https://896cde73-nova-ace-jamb.novaking5002.workers.dev`. Preview only; no production deploy.
@@ -16,6 +16,7 @@
 - **Fresh ZIP audit:** user-provided `ñøvã-ace-jamb.zip` was reviewed for selective integration. No app source copied because it is a conflicting full snapshot (alternate app shell/toolchain, empty `src/App.tsx`, and misleading UTME /400 and “Cloud Synced” claims). Existing Gemini branch already includes safe saved-attempt analytics, subject-scoped/timed practice, weekly rotation, and local daily checklist. Detailed compatibility decision is recorded in `docs/GEMINI-FRONTEND-INTEGRATION-ADDENDUM-2026-10-25.md`.
 - **Frontend readiness:** Frontend Phase 3 remains closed for repository/automated evidence. User-reported manual acceptance for keyboard, TalkBack, performance/recovery, PWA/offline, and Cloudflare source match is PASS; it is not independently witnessed by this agent. These results do not prove live backend/content/provider functionality. The open PR adds optional Gemini-derived frontend features and has passed CI and preview.
 - **Scope/safety:** No merge, production deployment, `main` change, backend/database/schema/data mutation, or secrets change.
+- **Whole-product frontend assessment:** UI supported by current contracts is ready for closeout pending PR review/merge. Published official content/questions, notification delivery, payment/referral verification, membership verification, grounded AI/audio, and expanded admin operations remain backend/provider/content dependencies. The detailed superseding matrix is recorded at the end of `docs/FRONTEND-COMPLETION-BATCH-2026-10-21.md`.
 - **Decision gate:** Review PR #8's 13-file diff. If its tested Gemini features are accepted, the next action is owner-approved merge; otherwise leave it open and proceed to the separately scoped backend work. Do not merge or deploy automatically.
 
 
