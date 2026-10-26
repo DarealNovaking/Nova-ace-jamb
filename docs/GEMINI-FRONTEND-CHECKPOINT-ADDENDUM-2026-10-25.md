@@ -9,3 +9,10 @@
 - Verification so far: changes accepted by GitHub API; database table/function contract checked against the existing persistent-CBT migration. Typecheck/build/Playwright/live authenticated flow remain UNVERIFIED pending PR CI and browser checks.
 - Related detailed record: `docs/GEMINI-FRONTEND-INTEGRATION-ADDENDUM-2026-10-25.md`.
 - Exact next action: inspect CI on the integration PR; fix any reproducible failure and verify the progress view's empty and populated states before merge.
+
+## ZIP compatibility audit update — 2026-10-26
+
+- The uploaded ZIP is a separate React/Vite app scaffold; it was not fully imported. The repository's existing auth, route guards, persistent CBT, admin/student workspaces, and deployment setup remain authoritative.
+- Kept compatible student analytics improvements only. The ZIP's unsubstantiated `/400` score projection, misleading online/offline sync labels, and duration-based pacing estimate were rejected. Its practice service's silent error swallowing was also rejected in favor of the PR's explicit error/retry state.
+- Approved syllabus topic counts are now included in subject progress summaries using the already-loaded workspace `topics`; no additional query or schema change is needed.
+- Latest CI must be checked against the final documentation head before considering the audit batch verified. PR #8 remains open and unmerged; `main` and production remain unchanged.
