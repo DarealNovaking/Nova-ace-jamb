@@ -1,0 +1,6 @@
+{
+  "name": "ÑØVÃ ACE JAMB",
+  "description": "Personalized JAMB preparation with ÑØVÃ ACE JAMB.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
