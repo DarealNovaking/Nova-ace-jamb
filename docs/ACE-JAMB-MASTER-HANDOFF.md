@@ -3797,3 +3797,16 @@ No database/schema/RPC/Edge Function changes, production-data writes, or deploym
 - No backend/schema/RPC/Edge Function change, deployment, or production-data write was made.
 - **Exact next action:** recheck E2E run 40419868321. If it remains stalled, inspect and resolve the browser-install/runner path using fresh evidence; then record the terminal E2E result before moving to the next frontend batch.
 
+
+
+## Frontend Batch 6 — due-first flashcard revision and history coverage — 2026-10-27
+
+- Follow-up implementation is on `main`, code/test commit `02930d58f3ed87942d11f6acc08c48e8f28b5b29`.
+- `StudentFlashcards.tsx` now randomizes cards within priority groups and presents cards with no/expired/invalid next-review dates before future-scheduled cards. Invalid stored dates fail safely into the due group.
+- Flashcards receive published syllabus topics from the student dashboard and show subject/topic/subtopic mapping when available. Each card exposes saved review count, recalled count, next-review date and a screen-reader-labelled deck progress bar.
+- `tests/e2e/smoke.spec.ts` now covers due-first ordering, topic mapping, future-scheduled review history, review saving, honest empty state and recoverable loading error/retry.
+- Verification on source/test commit `ff172394824e4a380f692da42ed5947536c5f737`: Verify [40421059429](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40421059429) PASS, including typecheck/build and repository verification. The latest date-parsing robustness patch was then committed as `02930d58f3ed87942d11f6acc08c48e8f28b5b29`; Verify [40421139598](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40421139598) and E2E [40421139647](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40421139647) were still running when this handoff update was prepared.
+- Read-only Supabase inspection remains unchanged: `ace.flashcards` and `ace.flashcard_reviews` have zero live rows. All browser cases mock Supabase requests; no live data was changed.
+- No backend/schema/RPC/Edge Function changes, deployment, or catalogue work.
+- **Batch 6 acceptance:** implementation and focused test coverage are present; final E2E acceptance remains pending the latest workflow's terminal result.
+- **Exact next action:** check runs 40421139598 and 40421139647, fix any reproducible failures, and only then mark Batch 6 accepted.
