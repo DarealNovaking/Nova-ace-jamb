@@ -885,6 +885,57 @@ test.describe('ACE JAMB preparation workspaces', () => {
     expect(savedReview?.correct_count).toBe(1)
   })
 
+  test('flashcards prioritize due cards, show syllabus mapping and saved review history', async ({ page }) => {
+    await mockPreparedStudent(page)
+    const topicId = '70000000-0000-4000-8000-000000000001'
+    const dueCardId = '50000000-0000-4000-8000-000000000011'
+    const scheduledCardId = '50000000-0000-4000-8000-000000000012'
+    const futureDate = new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString()
+
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/topics'), async (route) => {
+      await route.fulfill({ json: [{
+        id: topicId, subject_id: subjects[0].id, syllabus_version_id: null,
+        name: 'Verified comprehension fixture', description: 'Test-only topic.',
+        sort_order: 1, active: true,
+      }] })
+    })
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/subtopics'), async (route) => {
+      await route.fulfill({ json: [] })
+    })
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/flashcards'), async (route) => {
+      const url = new URL(route.request().url())
+      if ((url.searchParams.get('subject_id') ?? '').startsWith('in.')) {
+        await route.fulfill({ json: [
+          { id: scheduledCardId, subject_id: subjects[0].id, topic_id: null, subtopic_id: null, front: 'Scheduled card prompt', back: 'Scheduled card answer', source_type: 'platform', source_metadata: { review_status: 'approved' }, content_version: 1, created_at: '2026-01-02T00:00:00.000Z' },
+          { id: dueCardId, subject_id: subjects[0].id, topic_id: topicId, subtopic_id: null, front: 'Due card prompt', back: 'Due card answer', source_type: 'platform', source_metadata: { review_status: 'approved' }, content_version: 1, created_at: '2026-01-01T00:00:00.000Z' },
+        ] })
+      } else {
+        await route.fulfill({ json: [] })
+      }
+    })
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/flashcard_reviews'), async (route) => {
+      if (route.request().method() === 'GET') {
+        await route.fulfill({ json: [{
+          user_id: userId, flashcard_id: scheduledCardId, review_count: 2, correct_count: 1,
+          last_reviewed_at: new Date().toISOString(), next_review_at: futureDate, ease: 2.5, interval_days: 10,
+        }] })
+        return
+      }
+      await route.fulfill({ status: 201, contentType: 'application/json', json: route.request().postDataJSON() })
+    })
+
+    await page.goto('/?view=flashcards')
+    await expect(page.getByText('Due card prompt')).toBeVisible()
+    await expect(page.getByText(/Verified comprehension fixture/)).toBeVisible()
+    await expect(page.getByText('Due for review')).toBeVisible()
+    await page.getByRole('button', { name: 'Show answer' }).click()
+    await page.getByRole('button', { name: 'Needs more practice' }).click()
+    await expect(page.getByText('Scheduled card prompt')).toBeVisible()
+    await expect(page.getByText('Scheduled for later')).toBeVisible()
+    await expect(page.getByText('Reviewed 2 times · 1 recalled')).toBeVisible()
+    await expect(page.getByRole('progressbar', { name: 'Flashcard deck progress' })).toHaveAttribute('aria-valuenow', '2')
+  })
+
   test('flashcards show a recoverable error and retry to an honest empty state', async ({ page }) => {
     await mockPreparedStudent(page)
     let failOnce = true

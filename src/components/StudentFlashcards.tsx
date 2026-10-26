@@ -3,6 +3,7 @@ import { CheckCircle2, ChevronRight, Layers3, Loader2, RotateCcw } from 'lucide-
 import { getStudentFlashcards, saveStudentFlashcardReview, type StudentFlashcard, type StudentFlashcardReview } from '../lib/flashcardService'
 
 type Subject = { id: string; name: string; code: string }
+type Topic = { id: string; name: string; subjectName: string; subtopics?: Array<{ id: string; name: string }> }
 
 function shuffle<T>(items: T[]) {
   const result = [...items]
@@ -13,7 +14,20 @@ function shuffle<T>(items: T[]) {
   return result
 }
 
-export default function StudentFlashcards({ subjects }: { subjects: Subject[] }) {
+function orderForReview(cards: StudentFlashcard[], reviews: Record<string, StudentFlashcardReview>) {
+  const due: StudentFlashcard[] = []
+  const scheduled: StudentFlashcard[] = []
+  const now = Date.now()
+  for (const card of cards) {
+    const nextReviewAt = reviews[card.id]?.next_review_at
+    const nextReviewTime = nextReviewAt ? Date.parse(nextReviewAt) : Number.NaN
+    if (!Number.isFinite(nextReviewTime) || nextReviewTime <= now) due.push(card)
+    else scheduled.push(card)
+  }
+  return [...shuffle(due), ...shuffle(scheduled)]
+}
+
+export default function StudentFlashcards({ subjects, topics }: { subjects: Subject[]; topics: Topic[] }) {
   const [cards, setCards] = useState<StudentFlashcard[]>([])
   const [reviews, setReviews] = useState<Record<string, StudentFlashcardReview>>({})
   const [index, setIndex] = useState(0)
@@ -31,8 +45,9 @@ export default function StudentFlashcards({ subjects }: { subjects: Subject[] })
     setComplete(false)
     try {
       const result = await getStudentFlashcards(subjects.map((subject) => subject.id))
-      setCards(shuffle(result.cards))
-      setReviews(Object.fromEntries(result.reviews.map((review) => [review.flashcard_id, review])))
+      const reviewMap = Object.fromEntries(result.reviews.map((review) => [review.flashcard_id, review]))
+      setReviews(reviewMap)
+      setCards(orderForReview(result.cards, reviewMap))
       setIndex(0)
       setRevealed(false)
     } catch {
@@ -50,7 +65,9 @@ export default function StudentFlashcards({ subjects }: { subjects: Subject[] })
     return subjects.find((subject) => subject.id === card.subject_id)?.name ?? 'Selected subject'
   }, [card, subjects])
   const review = card ? reviews[card.id] : undefined
-  const due = review?.next_review_at ? new Date(review.next_review_at).getTime() <= Date.now() : true
+  const due = review?.next_review_at ? Date.parse(review.next_review_at) <= Date.now() : true
+  const topic = card?.topic_id ? topics.find((item) => item.id === card.topic_id) : undefined
+  const subtopic = topic && card?.subtopic_id ? topic.subtopics?.find((item) => item.id === card.subtopic_id) : undefined
 
   async function reviewCard(recalled: boolean) {
     if (!card || saving) return
@@ -88,10 +105,12 @@ export default function StudentFlashcards({ subjects }: { subjects: Subject[] })
 
       {!cards.length && !error && <div className="mt-6 rounded-2xl border border-dashed border-white/15 p-8 text-center"><Layers3 className="mx-auto text-white/35" size={30} aria-hidden="true" /><h3 className="mt-4 text-lg font-bold">No approved flashcards are available for your selected subjects yet.</h3><p className="mx-auto mt-2 max-w-md text-sm leading-6 text-white/45">Only active, reviewed cards are shown. Approved learning content must be published before a deck can appear; topic titles are never turned into made-up facts.</p></div>}
 
-      {cards.length > 0 && complete && <div className="mt-6 rounded-2xl border border-emerald-300/20 bg-emerald-500/[.06] p-8 text-center"><CheckCircle2 className="mx-auto text-emerald-200" size={32} aria-hidden="true" /><h3 className="mt-3 text-xl font-black">Deck complete</h3><p className="mt-2 text-sm text-white/55">Your review responses have been saved to your account.</p><button type="button" onClick={() => { setIndex(0); setRevealed(false); setComplete(false); setNotice(''); setCards(shuffle(cards)) }} className="mt-5 inline-flex min-h-11 items-center gap-2 rounded-xl bg-purple-300 px-4 py-2 text-sm font-bold text-[#120b1c]"><RotateCcw size={15} aria-hidden="true" /> Review again</button></div>}
+      {cards.length > 0 && complete && <div className="mt-6 rounded-2xl border border-emerald-300/20 bg-emerald-500/[.06] p-8 text-center"><CheckCircle2 className="mx-auto text-emerald-200" size={32} aria-hidden="true" /><h3 className="mt-3 text-xl font-black">Deck complete</h3><p className="mt-2 text-sm text-white/55">Your review responses have been saved to your account.</p><button type="button" onClick={() => { setIndex(0); setRevealed(false); setComplete(false); setNotice(''); setCards(orderForReview(cards, reviews)) }} className="mt-5 inline-flex min-h-11 items-center gap-2 rounded-xl bg-purple-300 px-4 py-2 text-sm font-bold text-[#120b1c]"><RotateCcw size={15} aria-hidden="true" /> Review again</button></div>}
 
       {card && !complete && <div className="mt-6">
-        <div className="mb-4 flex flex-wrap items-center justify-between gap-2 text-xs text-white/45"><span>{subjectName}</span><span>Card {index + 1} of {cards.length}</span><span>{due ? 'Due for review' : 'Scheduled for later'}</span></div>
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2 text-xs text-white/45"><span>{subjectName}{topic ? ` · ${topic.name}` : ''}{subtopic ? ` · ${subtopic.name}` : ''}</span><span>Card {index + 1} of {cards.length}</span><span>{due ? 'Due for review' : 'Scheduled for later'}</span></div>
+        <div role="progressbar" aria-label="Flashcard deck progress" aria-valuemin={0} aria-valuemax={cards.length} aria-valuenow={index + 1} className="mb-4 h-1.5 overflow-hidden rounded-full bg-white/10"><div className="h-full rounded-full bg-purple-300" style={{ width: `${((index + 1) / cards.length) * 100}%` }} /></div>
+        {review && <p className="mb-4 text-xs text-white/45">Reviewed {review.review_count} time{review.review_count === 1 ? '' : 's'} · {review.correct_count} recalled{review.next_review_at ? ` · Next review ${new Date(review.next_review_at).toLocaleDateString()}` : ''}</p>}
         <div className="min-h-52 rounded-2xl border border-purple-300/20 bg-black/20 p-6 sm:p-8"><p className="text-xs font-bold uppercase tracking-[.18em] text-purple-200/70">Prompt</p><p className="mt-4 whitespace-pre-wrap text-lg font-semibold leading-8">{card.front}</p>
           {revealed ? <div className="mt-7 border-t border-white/10 pt-5"><p className="text-xs font-bold uppercase tracking-[.18em] text-emerald-200/70">Answer</p><p className="mt-3 whitespace-pre-wrap text-base leading-7 text-white/80">{card.back}</p></div> : <button type="button" onClick={() => setRevealed(true)} className="mt-6 min-h-11 rounded-xl bg-white px-4 py-2 text-sm font-bold text-black">Show answer</button>}
         </div>
