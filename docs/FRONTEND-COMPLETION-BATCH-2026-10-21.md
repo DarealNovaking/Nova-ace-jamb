@@ -735,3 +735,54 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - Build still emits Vite's >500 kB minified chunk warning. A completed build from the same source family previously showed the main JS at **563.22 kB minified / 153.84 kB gzip**; no bundle splitting or dependency changes have been made. Build time in #733 was 3.80 seconds.
 - **Accessibility slice status:** implementation and automated regression coverage PASS. Manual keyboard-only and screen-reader verification remains unperformed; this CI is not a substitute for manual assistive-technology review.
 - **Next action:** inspect the app's static route imports and the existing build output to identify a minimal code-splitting opportunity that reduces initial student download without changing behavior. Keep backend/database/deploy/catalogue out of scope; verify the change with typecheck/build/E2E and update this checkpoint again.
+
+
+## Whole-product frontend scope audit — 2026-10-27
+
+**Decision: the entire frontend is NOT complete. Do not start the backend milestone yet.** This audit uses the retained mission in Sections 2 and 41, the canonical 16-batch plan, the full-product frontend batch, Phase 2/3 handoffs, the actual `main` source tree, CI on the audited SHA, and read-only live Supabase evidence. Phase 3 being closed means the bounded implementation/hardening sprint was closed; it does not override the explicit whole-product frontend scope.
+
+### Repository and automated verification
+- Audit base: `main` at `4283560e7af5174bc269a64f0b29f3ba79d3363b` (`docs: refresh checkpoint and clarify frontend completion`).
+- Verify run [40419060651](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40419060651): PASS on that exact SHA.
+- ACE JAMB E2E run [40419060619](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40419060619): PASS on that exact SHA.
+- These CI workflows verify repository contracts and mocked Playwright journeys, not the existence of real content or operational payment/AI/audio/notification providers.
+- Owner-reported acceptance remains PASS at the reported level for keyboard navigation, TalkBack smoke test, performance/recovery, PWA/offline/recovery, and Cloudflare deployment alignment. The deployed Cloudflare SHA has not been independently read back.
+
+### Whole-product frontend acceptance matrix
+
+| Capability / batch | Current evidence-based state | Verdict |
+|---|---|---|
+| Authentication, session restore, recovery, onboarding, profile and required subject selection (1) | Existing flows/components and mocked Playwright coverage; latest CI green. Live end-to-end account/provider delivery is not established by mocks. | Implemented; automated contracts pass; live acceptance partial |
+| Dashboard, workspace navigation, URL/history and account settings (2) | Existing student dashboard, account settings, query-backed workspace navigation, retry/empty/error handling. | Implemented; CI covered |
+| Syllabus browsing and lesson learning (3) | Syllabus/topic UI and truthful unpublished states exist, but lesson body/learning-content experience is a placeholder. | Partial |
+| Standard practice, weakness/speed/mistake/repeated-mistake/adaptive/readiness modes (4) | Practice shell and CBT entry exist. Specialized practice cards are informational placeholders rather than working mode-specific flows. No published questions exist. | Partial / content and behavior incomplete |
+| CBT/mock attempt flow (5) | Persistent CBT flow covers start/resume/save/expiry/retry/submission/result restoration in mocked tests. Live `ace.questions=0` and `ace.attempts=0`. | Flow implemented; real content/runtime acceptance blocked by absent data |
+| Quick revision and flashcards (6) | Quick revision lists topic metadata rather than reviewed revision materials. Flashcards screen is a static empty-state placeholder; no flashcard fetch/reveal/review UI or frontend service exists despite existing `ace.flashcards`/`ace.flashcard_reviews` contracts. | Incomplete |
+| Study schedule, saved stats, readiness and adaptive recommendations (7) | Current study-plan component saves daily minutes and preferred days only. It explicitly does not generate a schedule. No study plans/items or learning progress exist; no complete readiness/adaptive recommendation experience. | Partial / incomplete |
+| Audio learning and playback (8) | Student dashboard shows an unavailable-state card. No player, playback progress, transcript control, or audio service/content exists. | UI stub only; full UI depends on content/service |
+| Grounded AI tutor, diagnosis, explanations and generated practice (9) | Honest unavailable-state card only; no tutor conversation UI/service boundary. No knowledge sources/chunks or AI requests; no AI request Edge Function was found. | Incomplete; secure provider/retrieval dependency |
+| Community/channel (10) | Onboarding-to-channel CTA exists and does not falsely claim membership verification. No server-verifiable membership or approved group-mapping contract. | CTA implemented; verification/routing incomplete and contract-blocked |
+| Student notifications, announcements and push (11) | Student inbox/read-state/preferences UI exists. No delivery/scheduling/push function or admin announcement composer/scheduler exists. | Partial |
+| ACE Pass, payment, entitlement, referral qualification/rewards (12) | Read-only account status/history/referral UI exists; checkout is deliberately disabled. No payment/referral/entitlement activity or server verification workflow exists. | Partial; operational flow contract-blocked |
+| Admin command center (13) | Admin role gate and read-only operational metrics exist. The full student/account, moderation, rights/takedown, content/question review, media, payments, referrals, notifications, AI knowledge and audit operations are not implemented as a complete command center. | Partial |
+| Academic administration and content publication safeguards (14) | Academic workspace supports syllabus version/topic/subtopic authoring and rights/status safeguards. No full question authoring/review/publish workflow is evidenced. | Partial |
+| Shared design system, responsive mobile UX, accessibility and PWA/offline/cache safety (15) | Existing responsive UI, skip links/status semantics, PWA/service-worker tests and CI coverage. Owner-reported device checks passed; exact live source SHA and exhaustive device/screen-reader acceptance are not independently verified here. | Implementation/automated coverage present; manual evidence owner-reported |
+| Full route/role regression, Playwright, typecheck/build, integration/security and release readiness (16) | Verify and E2E pass on audit base SHA. Live provider/content integrations and deployed SHA remain outside those tests. | CI gate passes; whole-product release gate does not |
+
+### Read-only live Supabase evidence — 2026-10-27
+Project `nova-ace-jamb` (`uokiqlgmzprqfbzmedaz`). A read-only SQL query returned:
+- Academic content: subjects 25; exam seasons 2; exam configs 1; syllabus versions 50; topics 0; subtopics 0; questions 0; attempts 0.
+- Learning: flashcards 0; flashcard reviews 0; study plans 0; study-plan items 0; learning-progress rows 0.
+- Notifications and access: notifications 0; products 1; payment providers 1; payments 0; entitlements 0.
+- Referrals: referral codes 5; referrals 0; referral campaigns 0; referral rewards 0.
+- AI: providers 2; requests 0; knowledge sources 0; knowledge chunks 0.
+- Catalogue context only: institutions 791; programs 0; programme UTME rules 0. The catalogue/importer UI remains retired by explicit product direction; this finding does not reopen catalogue work.
+- Active Edge Functions listed: `catalog-import` and `ibass-catalog-stage` only. No dedicated AI request, payment verification/webhook, referral qualification, notification delivery, audio delivery, or channel-membership verification function was listed.
+
+No database/schema/RPC/Edge Function changes, production-data writes, or deployment occurred during this audit. All live checks above were read-only.
+
+### Scope and next action
+- Keep the project on `main`; do not switch to backend implementation yet.
+- Continue the canonical frontend batches with real existing contracts and truthful unavailable states; do not fabricate JAMB content or claim provider behavior.
+- **Next concrete action:** implement the missing functional flashcard deck/reveal/review UI against the existing `ace.flashcards` and self-scoped `ace.flashcard_reviews` tables, add mocked Playwright coverage for empty/error and successful review paths, and verify it with CI. Then continue the remaining frontend gaps in the canonical 16-batch order.
+- Backend milestone remains unauthorized until the whole-product frontend acceptance matrix is complete or the owner explicitly accepts named frontend items as backend-dependent exceptions.
