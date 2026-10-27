@@ -953,6 +953,77 @@ test.describe('ACE JAMB administrator question review visibility', () => {
   })
 })
 
+test.describe('ACE JAMB admin question review pagination', () => {
+  test('navigates server-backed 30-question pages without exposing publish actions', async ({ page }) => {
+    await mockPreparedStudent(page)
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/is_admin'), async (route) => {
+      await route.fulfill({ json: true })
+    })
+    const requestedOffsets: number[] = []
+    const records = Array.from({ length: 32 }, (_, index) => ({
+      id: `98000000-0000-4000-8000-${String(index + 1).padStart(12, '0')}`,
+      question_text: `Review item ${index + 1}`,
+      review_status: index % 2 === 0 ? 'draft' : 'pending',
+      active: false, subject_id: subjects[0].id, topic_id: null,
+    }))
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/questions'), async (route) => {
+      const search = new URL(route.request().url()).searchParams
+      const offset = Number(search.get('offset') ?? 0)
+      const limit = Number(search.get('limit') ?? 30)
+      requestedOffsets.push(offset)
+      await route.fulfill({ json: records.slice(offset, offset + limit) })
+    })
+    await page.goto('/admin')
+    const review = page.locator('section[aria-labelledby="admin-review-questions-heading"]')
+    await expect(review.getByText('Review item 1', { exact: true })).toBeVisible()
+    await expect(review.getByText('Review item 30', { exact: true })).toBeVisible()
+    await expect(review.getByText('Review item 31', { exact: true })).toHaveCount(0)
+    await expect(review.getByText('30 of 30 records on page 1 shown.')).toBeVisible()
+    await review.getByLabel('Filter review status').selectOption('draft')
+    await expect(review.getByText('15 of 30 records on page 1 shown.')).toBeVisible()
+    await review.getByRole('button', { name: 'Next questions' }).click()
+    await expect(review.getByText('Review item 31', { exact: true })).toBeVisible()
+    await expect(review.getByText('Review item 32', { exact: true })).toBeVisible()
+    await expect(review.getByText('2 of 2 records on page 2 shown.')).toBeVisible()
+    await expect(review.getByRole('button', { name: 'Next questions' })).toBeDisabled()
+    await review.getByRole('button', { name: 'Previous questions' }).click()
+    await expect(review.getByText('Review item 1', { exact: true })).toBeVisible()
+    await expect(review.getByRole('button', { name: /Publish question/ })).toHaveCount(0)
+    expect(requestedOffsets).toEqual([0, 30, 0])
+  })
+})
+
+test.describe('ACE JAMB admin operations count recovery', () => {
+  test('does not report unavailable counts as zero and recovers on refresh', async ({ page }) => {
+    await mockPreparedStudent(page)
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/is_admin'), async (route) => {
+      await route.fulfill({ json: true })
+    })
+    let allowRead = false
+    let metricReads = 0
+    await page.route((url) => new URL(url).pathname.startsWith('/rest/v1/'), async (route) => {
+      if (route.request().method() !== 'HEAD') return route.fallback()
+      metricReads += 1
+      if (!allowRead) {
+        await route.fulfill({ status: 503, contentType: 'application/json', json: { message: 'private database details' } })
+      } else {
+        await route.fulfill({ status: 200, headers: { 'content-range': '*/0', 'access-control-expose-headers': 'content-range' }, body: '' })
+      }
+    })
+    await page.goto('/admin')
+    const operations = page.locator('section[aria-labelledby="admin-operations-title"]')
+    await expect(operations.getByRole('alert')).toContainText('Operational counts could not be loaded')
+    await expect(operations.getByText('Unavailable', { exact: true })).toHaveCount(9)
+    await expect(operations.getByText('Last checked', { exact: false })).toHaveCount(0)
+    expect(metricReads).toBeGreaterThan(0)
+    allowRead = true
+    await operations.getByRole('button', { name: 'Refresh status' }).click()
+    await expect(operations.getByRole('alert')).toHaveCount(0)
+    await expect(operations.getByText('Unavailable', { exact: true })).toHaveCount(0)
+    await expect(operations.getByText(/Last checked/)).toBeVisible()
+  })
+})
+
 test.describe('ACE JAMB academic editor access', () => {
   test('announces academic workspace loading while the season list resolves', async ({ page }) => {
     await mockFirstTimeStudent(page)
