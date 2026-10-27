@@ -6,14 +6,14 @@ import StudentQuickRevision from './StudentQuickRevision'
 import { ArrowLeft, BookOpen, Brain, CalendarDays, CheckCircle2, Clock3, Layers3, ListChecks, Sparkles, Target, Trophy } from 'lucide-react'
 
 type Subject = { id: string; name: string; code: string }
-type Topic = { id: string; name: string; description: string | null; subjectName: string; sort_order: number; subtopics?: Array<{ id: string; name: string; description: string | null }> }
+type Topic = { id: string; subject_id?: string; name: string; description: string | null; subjectName: string; sort_order: number; subtopics?: Array<{ id: string; name: string; description: string | null }> }
 export type StudentWorkspaceMode = 'learn' | 'practice' | 'revision' | 'flashcards' | 'progress' | 'plan'
 type Props = {
   mode: StudentWorkspaceMode
   subjects: Subject[]
   topics: Topic[]
   onBack: () => void
-  onStartCbt: (mode?: 'cbt' | 'practice', focus?: 'mistakes' | 'repeated' | 'speed' | 'subject', subjectId?: string) => void
+  onStartCbt: (mode?: 'cbt' | 'practice', focus?: 'mistakes' | 'repeated' | 'speed' | 'subject' | 'topic' | 'subtopic', subjectId?: string, topicId?: string, subtopicId?: string) => void
 }
 
 const modes: { id: StudentWorkspaceMode; label: string; icon: typeof BookOpen }[] = [
@@ -30,6 +30,11 @@ export default function StudentStudyWorkspace({ mode, subjects, topics, onBack, 
   const [practiceSubjectId, setPracticeSubjectId] = useState(subjects[0]?.id ?? '')
   const selectedPracticeSubjectId = subjects.some((item) => item.id === practiceSubjectId) ? practiceSubjectId : subjects[0]?.id ?? ''
   const [selectedTopicId, setSelectedTopicId] = useState('')
+  const [practiceTopicId, setPracticeTopicId] = useState('')
+  const [practiceSubtopicId, setPracticeSubtopicId] = useState('')
+  const practiceTopics = useMemo(() => topics.filter((topic) => topic.subject_id ? topic.subject_id === selectedPracticeSubjectId : topic.subjectName === subjects.find((subject) => subject.id === selectedPracticeSubjectId)?.name), [topics, subjects, selectedPracticeSubjectId])
+  const practiceTopic = practiceTopics.find((topic) => topic.id === practiceTopicId)
+  const practiceSubtopics = practiceTopic?.subtopics ?? []
   const selectedTopic = topics.find((topic) => topic.id === selectedTopicId) ?? null
   const visibleTopics = useMemo(
     () => topics.filter((topic) => subjectFilter === 'all' || subjects.find((subject) => subject.name === topic.subjectName)?.id === subjectFilter),
@@ -83,11 +88,35 @@ export default function StudentStudyWorkspace({ mode, subjects, topics, onBack, 
             <p className="mt-2 text-sm leading-6 text-white/50">Choose one of your saved subjects. Only currently published, reviewed questions for that subject can appear.</p>
             <div className="mt-4 flex flex-wrap items-end gap-3">
               <label className="min-w-44 flex-1 text-sm font-semibold text-white/70">Practice subject
-                <select className="field mt-2" value={selectedPracticeSubjectId} onChange={(event) => setPracticeSubjectId(event.target.value)}><option value="" disabled>Select a saved subject</option>{subjects.map((subject) => <option key={subject.id} value={subject.id}>{subject.name}</option>)}</select>
+                <select className="field mt-2" value={selectedPracticeSubjectId} onChange={(event) => { setPracticeSubjectId(event.target.value); setPracticeTopicId(''); setPracticeSubtopicId('') }}><option value="" disabled>Select a saved subject</option>{subjects.map((subject) => <option key={subject.id} value={subject.id}>{subject.name}</option>)}</select>
               </label>
               <button type="button" onClick={() => onStartCbt('practice', 'subject', selectedPracticeSubjectId)} disabled={!selectedPracticeSubjectId} className="min-h-11 rounded-xl border border-white/20 px-4 py-3 text-sm font-bold disabled:opacity-40">Start subject practice</button>
             </div>
           </div></section>}
+
+        {mode === 'practice' && <section aria-labelledby="topic-practice-heading" className="glass-card mt-5 rounded-3xl p-6 sm:p-8">
+          <div className="flex items-center gap-3"><ListChecks className="text-purple-200" aria-hidden="true"/><h2 id="topic-practice-heading" className="text-xl font-black">Topic and subtopic practice</h2></div>
+          <p className="mt-3 text-sm leading-6 text-white/55">Choose an approved topic for your selected subject. Only its currently published, reviewed questions can be used. ACE never substitutes questions from another topic.</p>
+          <div className="mt-5 grid gap-4 sm:grid-cols-2">
+            <label className="text-sm font-semibold text-white/75">Practice topic
+              <select className="field mt-2" value={practiceTopic?.id ?? ''} disabled={!practiceTopics.length} onChange={(event) => { setPracticeTopicId(event.target.value); setPracticeSubtopicId('') }}>
+                <option value="">Choose an approved topic</option>
+                {practiceTopics.map((topic) => <option key={topic.id} value={topic.id}>{topic.name}</option>)}
+              </select>
+            </label>
+            <label className="text-sm font-semibold text-white/75">Practice subtopic
+              <select className="field mt-2" value={practiceSubtopicId} disabled={!practiceTopic || !practiceSubtopics.length} onChange={(event) => setPracticeSubtopicId(event.target.value)}>
+                <option value="">Choose a published subtopic</option>
+                {practiceSubtopics.map((part) => <option key={part.id} value={part.id}>{part.name}</option>)}
+              </select>
+            </label>
+          </div>
+          {!practiceTopics.length && <p className="mt-4 rounded-xl border border-dashed border-white/15 p-4 text-sm text-white/55">No approved syllabus topics are available for this subject yet.</p>}
+          <div className="mt-5 flex flex-wrap gap-3">
+            <button type="button" disabled={!selectedPracticeSubjectId || !practiceTopic} onClick={() => onStartCbt('practice', 'topic', selectedPracticeSubjectId, practiceTopic?.id)} className="min-h-11 rounded-xl bg-purple-300 px-4 py-3 text-sm font-bold text-[#120b1c] disabled:cursor-not-allowed disabled:opacity-40">Start topic practice</button>
+            <button type="button" disabled={!selectedPracticeSubjectId || !practiceTopic || !practiceSubtopicId} onClick={() => onStartCbt('practice', 'subtopic', selectedPracticeSubjectId, practiceTopic?.id, practiceSubtopicId)} className="min-h-11 rounded-xl border border-white/20 px-4 py-3 text-sm font-bold text-white disabled:cursor-not-allowed disabled:opacity-40">Start subtopic practice</button>
+          </div>
+        </section>}
 
         {mode === 'revision' && <StudentQuickRevision subjects={subjects} topics={topics} onStartPractice={() => onStartCbt('practice')} onReviewMistakes={() => onStartCbt('practice', 'mistakes')} onReviewRepeated={() => onStartCbt('practice', 'repeated')} />}
 

@@ -72,3 +72,24 @@ export async function fetchStudentAttempts(limit = 20): Promise<PastAttempt[]> {
   if (error) throw error
   return Array.isArray(data) ? (data as PastAttempt[]) : []
 }
+
+// Returns identifiers only: correct answers never enter this pre-flight query.
+// The server start_attempt RPC independently validates active published questions.
+export async function listPublishedTopicQuestionIds(subjectId: string, topicId: string, subtopicId?: string | null, limit = 20): Promise<string[]> {
+  const isUuid = (id: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id)
+  if (!isUuid(subjectId) || !isUuid(topicId) || (subtopicId != null && !isUuid(subtopicId))) return []
+  const { data: { user }, error: authError } = await supabase.auth.getUser()
+  if (authError) throw authError
+  if (!user) throw new Error('Sign in required')
+  let query = ace.from('questions').select('id')
+    .eq('subject_id', subjectId)
+    .eq('topic_id', topicId)
+    .eq('active', true)
+    .eq('review_status', 'published')
+    .order('id')
+    .limit(Math.max(1, Math.min(20, Math.floor(limit))))
+  if (subtopicId) query = query.eq('subtopic_id', subtopicId)
+  const { data, error } = await query
+  if (error) throw error
+  return [...new Set((data ?? []).map((row) => String(row.id)).filter(isUuid))]
+}

@@ -122,7 +122,7 @@ export default function StudentDashboard() {
     }
   }, [])
 
-  const startCbt = (mode: 'cbt' | 'practice' = 'cbt', focus?: 'mistakes' | 'repeated' | 'speed' | 'subject', subjectId?: string) => {
+  const startCbt = (mode: 'cbt' | 'practice' = 'cbt', focus?: 'mistakes' | 'repeated' | 'speed' | 'subject' | 'topic' | 'subtopic', subjectId?: string, topicId?: string, subtopicId?: string) => {
     const url = new URL(window.location.href)
     url.searchParams.set('cbt', '1')
     url.searchParams.delete('view')
@@ -130,8 +130,13 @@ export default function StudentDashboard() {
     else url.searchParams.delete('mode')
     if (mode === 'practice' && focus) url.searchParams.set('focus', focus)
     else url.searchParams.delete('focus')
-    if (mode === 'practice' && focus === 'subject' && subjectId && subjects.some((subject) => subject.id === subjectId)) url.searchParams.set('subject', subjectId)
+    if (mode === 'practice' && (focus === 'subject' || focus === 'topic' || focus === 'subtopic') && subjectId && subjects.some((subject) => subject.id === subjectId)) url.searchParams.set('subject', subjectId)
     else url.searchParams.delete('subject')
+    const approvedTopic = topics.find((topic) => topic.id === topicId && topic.subject_id === subjectId)
+    if (mode === 'practice' && (focus === 'topic' || focus === 'subtopic') && approvedTopic) url.searchParams.set('topic', approvedTopic.id)
+    else url.searchParams.delete('topic')
+    if (mode === 'practice' && focus === 'subtopic' && approvedTopic?.subtopics.some((part) => part.id === subtopicId)) url.searchParams.set('subtopic', subtopicId!)
+    else url.searchParams.delete('subtopic')
     window.history.pushState({}, '', url)
     window.dispatchEvent(new PopStateEvent('popstate'))
   }

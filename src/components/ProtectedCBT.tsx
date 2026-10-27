@@ -1,26 +1,37 @@
 import { FormEvent, useEffect, useState } from 'react'
 import PersistentCBT from './PersistentCBT'
 import { getCurrentUser, signInWithPassword } from '../lib/authService'
-import { fetchStudentMistakes } from '../lib/practiceService'
+import { fetchStudentMistakes, listPublishedTopicQuestionIds } from '../lib/practiceService'
 
 export default function ProtectedCBT() {
   const [checking, setChecking] = useState(true)
   const [signedIn, setSignedIn] = useState(false)
   const [storageKey, setStorageKey] = useState<string | null>(null)
   const [mode] = useState<'cbt' | 'practice'>(() => new URLSearchParams(window.location.search).get('mode') === 'practice' ? 'practice' : 'cbt')
-  const [focus] = useState<'mistakes' | 'repeated' | 'speed' | 'subject' | null>(() => {
+  const [focus] = useState<'mistakes' | 'repeated' | 'speed' | 'subject' | 'topic' | 'subtopic' | null>(() => {
     const params = new URLSearchParams(window.location.search)
     if (params.get('mode') !== 'practice') return null
     const requested = params.get('focus')
-    return requested === 'mistakes' || requested === 'repeated' || requested === 'speed' || requested === 'subject' ? requested : null
+    return requested === 'mistakes' || requested === 'repeated' || requested === 'speed' || requested === 'subject' || requested === 'topic' || requested === 'subtopic' ? requested : null
   })
   const [subjectId] = useState<string | null>(() => {
     const id = new URLSearchParams(window.location.search).get('subject')
     return id && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id) ? id : null
   })
-  const recoveryScope = focus === 'subject' ? `practice-subject-${subjectId ?? 'invalid'}` : focus ? `practice-${focus}` : mode
+  const [topicId] = useState<string | null>(() => {
+    const id = new URLSearchParams(window.location.search).get('topic')
+    return id && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id) ? id : null
+  })
+  const [subtopicId] = useState<string | null>(() => {
+    const id = new URLSearchParams(window.location.search).get('subtopic')
+    return id && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{12}$/i.test(id) ? id : null
+  })
+  const targetedTopic = focus === 'topic' || focus === 'subtopic'
+  const validTopicRequest = !targetedTopic || Boolean(subjectId && topicId && (focus !== 'subtopic' || subtopicId))
+  const recoveryScope = focus === 'subject' ? `practice-subject-${subjectId ?? 'invalid'}` :
+    targetedTopic ? `practice-${focus}-${subjectId ?? 'invalid'}-${topicId ?? 'invalid'}-${focus === 'subtopic' ? subtopicId ?? 'invalid' : 'all'}` : focus ? `practice-${focus}` : mode
   const [focusedQuestionIds, setFocusedQuestionIds] = useState<string[]>([])
-  const [focusLoading, setFocusLoading] = useState(focus === 'mistakes' || focus === 'repeated')
+  const [focusLoading, setFocusLoading] = useState(focus === 'mistakes' || focus === 'repeated' || targetedTopic)
   const [focusError, setFocusError] = useState('')
   const [focusRetry, setFocusRetry] = useState(0)
   const [email, setEmail] = useState('')
@@ -38,23 +49,25 @@ export default function ProtectedCBT() {
   // Only fetch the signed-in student's mistake IDs; server-side start_attempt
   // authoritatively filters the IDs again to published active questions.
   useEffect(() => {
-    if (!signedIn || (focus !== 'mistakes' && focus !== 'repeated')) return
+    if (!signedIn || !['mistakes', 'repeated', 'topic', 'subtopic'].includes(focus ?? '') || !validTopicRequest) return
     let active = true
     setFocusLoading(true)
     setFocusError('')
-    void fetchStudentMistakes(20).then((items) => {
+    const requestedIds = targetedTopic
+      ? listPublishedTopicQuestionIds(subjectId!, topicId!, focus === 'subtopic' ? subtopicId : null)
+      : fetchStudentMistakes(20).then((items) => items.filter((item) => focus !== 'repeated' || item.incorrect_count >= 2).map((item) => item.question_id))
+    void requestedIds.then((ids) => {
       if (!active) return
-      const validIds = [...new Set(items.filter((item) => focus !== 'repeated' || item.incorrect_count >= 2).map((item) => item.question_id).filter((id) =>
+      setFocusedQuestionIds([...new Set(ids.filter((id) =>
         /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id),
-      ))]
-      setFocusedQuestionIds(validIds)
+      ))])
     }).catch(() => {
       if (!active) return
       setFocusedQuestionIds([])
-      setFocusError('We could not load your mistake history. Check your connection and retry.')
+      setFocusError(targetedTopic ? 'We could not check published questions for this topic. Try again.' : 'We could not load your mistake history. Check your connection and retry.')
     }).finally(() => { if (active) setFocusLoading(false) })
     return () => { active = false }
-  }, [signedIn, focus, focusRetry])
+  }, [signedIn, focus, subjectId, topicId, subtopicId, validTopicRequest, targetedTopic, focusRetry])
 
   const signIn = async (event: FormEvent) => {
     event.preventDefault()
@@ -84,10 +97,11 @@ export default function ProtectedCBT() {
     </form>
   </section>
   if (focus === 'subject' && !subjectId) return <section className="glass-card mx-auto max-w-lg rounded-3xl p-6"><h1 className="text-2xl font-black">Select a saved subject first</h1><p className="mt-3 text-sm text-white/60">Start subject practice from your preparation workspace.</p><a href="/?view=practice" className="mt-4 inline-block rounded-xl bg-white px-4 py-3 font-bold text-black">Choose a subject</a></section>
-  if (focus === 'mistakes' || focus === 'repeated') {
-    if (focusLoading) return <section aria-busy="true" className="glass-card mx-auto max-w-lg rounded-3xl p-6"><p role="status" className="text-white/70">Loading your saved mistake questions…</p></section>
-    if (focusError) return <section className="glass-card mx-auto max-w-lg rounded-3xl p-6"><p role="alert" className="text-white/75">{focusError}</p><button type="button" className="mt-4 rounded-xl bg-white px-4 py-3 font-bold text-black" onClick={() => setFocusRetry((value) => value + 1)}>Retry mistake history</button></section>
-    if (!focusedQuestionIds.length) return <section className="glass-card mx-auto max-w-lg rounded-3xl p-6"><h1 className="text-2xl font-black">{focus === 'repeated' ? 'No repeated mistakes to practise yet' : 'No mistakes to practise yet'}</h1><p className="mt-3 text-sm text-white/60">{focus === 'repeated' ? 'No questions in your saved history have been missed more than once.' : 'There are no saved missed questions for this account. Complete approved practice first, or choose general practice.'}</p><a href="/?view=revision" className="mt-4 inline-block rounded-xl bg-white px-4 py-3 font-bold text-black">Return to revision</a></section>
+  if (targetedTopic && !validTopicRequest) return <section className="glass-card mx-auto max-w-lg rounded-3xl p-6"><h1 className="text-2xl font-black">Choose an approved topic first</h1><p className="mt-3 text-sm text-white/60">Return to Practice and choose a published syllabus topic or subtopic.</p><a href="/?view=practice" className="mt-4 inline-block rounded-xl bg-white px-4 py-3 font-bold text-black">Choose a topic</a></section>
+  if (focus === 'mistakes' || focus === 'repeated' || targetedTopic) {
+    if (focusLoading) return <section aria-busy="true" className="glass-card mx-auto max-w-lg rounded-3xl p-6"><p role="status" className="text-white/70">{targetedTopic ? 'Checking published topic questions…' : 'Loading your saved mistake questions…'}</p></section>
+    if (focusError) return <section className="glass-card mx-auto max-w-lg rounded-3xl p-6"><p role="alert" className="text-white/75">{focusError}</p><button type="button" className="mt-4 rounded-xl bg-white px-4 py-3 font-bold text-black" onClick={() => setFocusRetry((value) => value + 1)}>{targetedTopic ? 'Retry topic questions' : 'Retry mistake history'}</button></section>
+    if (!focusedQuestionIds.length) return <section className="glass-card mx-auto max-w-lg rounded-3xl p-6"><h1 className="text-2xl font-black">{targetedTopic ? 'No reviewed questions published for this topic yet' : focus === 'repeated' ? 'No repeated mistakes to practise yet' : 'No mistakes to practise yet'}</h1><p className="mt-3 text-sm text-white/60">{targetedTopic ? 'This topic or subtopic currently has no approved published questions. Other topics will not be substituted.' : focus === 'repeated' ? 'No questions in your saved history have been missed more than once.' : 'There are no saved missed questions for this account. Complete approved practice first, or choose general practice.'}</p><a href={targetedTopic ? '/?view=practice' : '/?view=revision'} className="mt-4 inline-block rounded-xl bg-white px-4 py-3 font-bold text-black">{targetedTopic ? 'Return to practice' : 'Return to revision'}</a></section>
   }
-  return <PersistentCBT storageKey={storageKey} mode={mode} questionIds={focus === 'mistakes' || focus === 'repeated' ? focusedQuestionIds : undefined} questionCount={focus === 'mistakes' || focus === 'repeated' ? focusedQuestionIds.length : focus === 'speed' ? 10 : undefined} durationSeconds={focus === 'speed' ? 600 : undefined} subjectId={focus === 'subject' ? subjectId : undefined} focus={focus} />
+  return <PersistentCBT storageKey={storageKey} mode={mode} questionIds={focus === 'mistakes' || focus === 'repeated' || targetedTopic ? focusedQuestionIds : undefined} questionCount={focus === 'mistakes' || focus === 'repeated' || targetedTopic ? focusedQuestionIds.length : focus === 'speed' ? 10 : undefined} durationSeconds={focus === 'speed' ? 600 : undefined} subjectId={focus === 'subject' || targetedTopic ? subjectId : undefined} focus={focus} />
 }
