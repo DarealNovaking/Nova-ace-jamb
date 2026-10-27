@@ -1709,7 +1709,7 @@ test.describe('ACE JAMB notification recovery and ownership', () => {
       } })
     })
     await page.getByRole('button', { name: 'Preferences', exact: true }).click()
-    await page.getByRole('button', { name: 'Refresh', exact: true }).click()
+    await page.locator('section[aria-labelledby="notifications-title"]').getByRole('button', { name: 'Refresh', exact: true }).click()
     await expect.poll(() => preferenceReads).toBeGreaterThan(0)
     await expect(page.getByRole('alert')).toContainText('We could not load your notifications')
     await expect(page.getByText('Saved preferences are unavailable. Retry notifications before editing.')).toBeVisible()
