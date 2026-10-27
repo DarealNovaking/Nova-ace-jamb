@@ -31,3 +31,7 @@ Run focused checks after each batch and relevant typecheck/build/Playwright/secu
 Every final report must state: completed work/files; actual verification evidence; blockers/unverified items; exact user action if required; and one next action. Continue automatically when the next safe action is clear.
 
 **Canonical detail:** `docs/AGENT-PROMPTS.md`. Do not create a competing roadmap or instruction hierarchy.
+
+
+## Active-scope update — 2026-10-27
+**The previous "frontend-only, do not reopen backend" restriction is superseded by the owner's final-batch direction.** Read the single canonical "FINAL MASTER COMPLETION BATCH — ALL REMAINING ACE JAMB WORK" in docs/ACE-JAMB-MASTER-HANDOFF.md. Complete FCB-01..FCB-12 by verified dependencies, never restart finished frontend components or reactivate retired catalogue programmes/IBASS import. Use the existing GitHub main and live Supabase evidence; backend/source implementation is in scope when safely authorized, but **production database/content changes, deployments and billable provider actions still need specific approval**. Next exact action is FCB-01 server/RLS/RPC migration contract audit and testable security remediation.

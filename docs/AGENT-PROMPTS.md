@@ -149,3 +149,10 @@ If asked to “continue,” continue from the latest verified checkpoint and tak
 - Current live counts verified with read-only SQL: ace.institutions=791, ace.programs=0, ace.program_utme_rules=0, ace.subjects=25.
 - Active deployed functions verified: catalog-import version 7 (verify_jwt=true) and ibass-catalog-stage version 4 (verify_jwt=true). Do not redeploy blindly; compare implementation, contract, schema and authorization first.
 - Current milestone remains Batch 2: catalogue programmes and UTME rules are absent; Batch 3 remains locked until Batch 2 acceptance criteria are met.
+
+
+## Latest authoritative scope override — Final Completion Batch (2026-10-27)
+- The project owner has authorized ONE unified final completion programme covering **all remaining frontend, backend, content, providers, QA and release work**, not a frontend-only or catalogue-import milestone. Follow the canonical FCB-01..FCB-12 backlog in docs/ACE-JAMB-MASTER-HANDOFF.md; no parallel roadmap.
+- Historical specialist priority mentioning "catalogue correctness" or "Batch 2 catalogue programmes" is **SUPERSEDED**. Active onboarding uses compulsory English plus any three other subjects and does not require catalogue. Supabase is accessible. Legacy IBASS paths are not an academic-content prerequisite.
+- Baseline source/test SHA 1b9b4e4d836335b59690752809bc9c8949eccc74: GitHub Verify 40519951445 PASS, E2E 40519951725 PASS (158). Do not restart or recode these completed frontend foundations without reproduced failure.
+- First action FCB-01: security/contract/migration audit (24 Supabase security advisor WARN notices require investigation; 2027 season/config inactive; 50 syllabus versions draft/pending and 0 approved topics/questions). Then source/rights-approved education content FCB-02/03 is the critical unlock. No production mutation/provider spend/deploy without explicit gate authorization.
