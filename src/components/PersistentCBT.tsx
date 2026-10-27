@@ -299,11 +299,11 @@ export default function PersistentCBT({ attemptId = null, questionCount = 20, du
     <div className="grid gap-5 lg:grid-cols-[1fr_230px]">
       <section className="glass-card rounded-3xl p-6">
         <div className="flex items-center justify-between text-xs text-white/40"><span>Question {current + 1} of {questions.length}</span><span>{attempt.answered_count} answered</span></div>
-        <h2 id="cbt-question-title" className="mt-5 text-xl font-bold leading-8">{question.text}</h2>
+        <h2 id="cbt-question-title" className="mt-5 whitespace-pre-wrap break-words text-xl font-bold leading-8">{question.text}</h2>
         <div role="group" aria-labelledby="cbt-question-title" className="mt-6 grid gap-3">{optionKeys.map((key) => {
           const option = optionsByKey.get(key)
           if (!option) return null
-          return <button key={key} type="button" aria-pressed={selected === key} aria-label={String.fromCharCode(65 + optionKeys.indexOf(key)) + '. ' + option.text} disabled={saving || submitting} onClick={() => void choose(key)} className={`rounded-xl border p-4 text-left transition ${selected === key ? 'border-purple-300/60 bg-purple-500/10' : 'border-white/10 bg-white/5 hover:bg-white/10'}`}><span aria-hidden="true" className="mr-3 font-bold">{String.fromCharCode(65 + optionKeys.indexOf(key))}.</span>{option.text}</button>
+          return <button key={key} type="button" aria-pressed={selected === key} aria-label={String.fromCharCode(65 + optionKeys.indexOf(key)) + '. ' + option.text} disabled={saving || submitting} onClick={() => void choose(key)} className={`min-h-11 rounded-xl border p-4 text-left break-words transition ${selected === key ? 'border-purple-300/60 bg-purple-500/10' : 'border-white/10 bg-white/5 hover:bg-white/10'}`}><span aria-hidden="true" className="mr-3 font-bold">{String.fromCharCode(65 + optionKeys.indexOf(key))}.</span><span className="whitespace-pre-wrap break-words align-middle">{option.text}</span></button>
         })}</div>
         <div className="mt-5 flex flex-wrap items-center gap-3">
           <button type="button" onClick={toggleReviewMark} aria-pressed={markedForReview.includes(question.id)} className="min-h-11 rounded-xl border border-purple-300/40 px-4 py-2 text-sm font-semibold text-purple-100">{markedForReview.includes(question.id) ? 'Remove review mark' : 'Mark for review'}</button>

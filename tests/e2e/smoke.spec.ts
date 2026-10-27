@@ -716,6 +716,8 @@ test.describe('ACE JAMB persistent CBT', () => {
     await expect(page.getByRole('heading', { name: 'JAMB simulation' })).toBeVisible()
     await expect(page.getByRole('timer', { name: 'Time remaining 00:30:00' })).toBeVisible()
     await expect(page.getByRole('group', { name: 'Which option is correct?' })).toBeVisible()
+    await expect(page.locator('#cbt-question-title')).toHaveCSS('white-space', 'pre-wrap')
+    await expect(page.getByRole('button', { name: 'B. First answer' }).locator('span').last()).toHaveCSS('white-space', 'pre-wrap')
     await expect(page.getByRole('button', { name: 'Go to question 1, unanswered' })).toHaveAttribute('aria-current', 'step')
     // The server-provided option order is B, A, so canonical option A is displayed second.
     const firstAnswer = page.getByRole('button', { name: 'B. First answer' })
