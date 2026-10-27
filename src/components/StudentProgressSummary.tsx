@@ -1,24 +1,30 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Trophy } from 'lucide-react'
-import { fetchStudentAttempts, fetchStudentMistakes } from '../lib/practiceService'
-import { summarizeAttempts, summarizeAccuracyTrend, suggestStudyFocus } from '../lib/progressSummary'
-import type { PastAttempt, StudentQuestionMistake } from '../lib/progressSummary'
+import { fetchStudentAttempts, fetchStudentMistakes, fetchStudentTopicEvidence } from '../lib/practiceService'
+import { summarizeAttempts, summarizeAccuracyTrend, suggestStudyFocus, summarizeTopicEvidence } from '../lib/progressSummary'
+import type { PastAttempt, StudentQuestionMistake, PublishedTopicMapping, QuestionReviewEvidence } from '../lib/progressSummary'
 
 type Subject = { id: string; name: string; code: string }
 type Props = {
   subjects: Subject[]
   topicCount: number
-  onStartCbt: (mode?: 'cbt' | 'practice', focus?: 'mistakes' | 'repeated' | 'speed' | 'subject', subjectId?: string) => void
+  topics: Array<{ id: string; name: string; subject_id?: string }>
+  onStartCbt: (mode?: 'cbt' | 'practice', focus?: 'mistakes' | 'repeated' | 'speed' | 'subject' | 'topic' | 'subtopic', subjectId?: string, topicId?: string, subtopicId?: string) => void
 }
 
 const MISTAKE_LIMIT = 20
 
-export default function StudentProgressSummary({ subjects, topicCount, onStartCbt }: Props) {
+export default function StudentProgressSummary({ subjects, topics, topicCount, onStartCbt }: Props) {
   const [attempts, setAttempts] = useState<PastAttempt[]>([])
   const [mistakes, setMistakes] = useState<StudentQuestionMistake[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [reload, setReload] = useState(0)
+  const [topicRecords, setTopicRecords] = useState<QuestionReviewEvidence[]>([])
+  const [publishedTopics, setPublishedTopics] = useState<PublishedTopicMapping[]>([])
+  const [topicLoading, setTopicLoading] = useState(topics.length > 0)
+  const [topicError, setTopicError] = useState('')
+  const [topicReload, setTopicReload] = useState(0)
 
   useEffect(() => {
     let active = true
@@ -37,9 +43,33 @@ export default function StudentProgressSummary({ subjects, topicCount, onStartCb
     return () => { active = false }
   }, [reload])
 
+  useEffect(() => {
+    if (!topics.length) {
+      setTopicRecords([])
+      setPublishedTopics([])
+      setTopicLoading(false)
+      return
+    }
+    let active = true
+    setTopicLoading(true)
+    setTopicError('')
+    void fetchStudentTopicEvidence().then(({ records, published }) => {
+      if (!active) return
+      setTopicRecords(records)
+      setPublishedTopics(published)
+    }).catch(() => {
+      if (!active) return
+      setTopicRecords([])
+      setPublishedTopics([])
+      setTopicError('Topic-level performance is temporarily unavailable. Please retry.')
+    }).finally(() => { if (active) setTopicLoading(false) })
+    return () => { active = false }
+  }, [topics, topicReload])
+
   const summary = useMemo(() => summarizeAttempts(attempts), [attempts])
   const trend = useMemo(() => summarizeAccuracyTrend(attempts), [attempts])
   const studyFocus = useMemo(() => suggestStudyFocus(attempts, subjects), [attempts, subjects])
+  const observedTopics = useMemo(() => summarizeTopicEvidence(topicRecords, publishedTopics, topics), [topicRecords, publishedTopics, topics])
   const subjectName = (id: string) => subjects.find((subject) => subject.id === id)?.name ?? 'Other subject'
   const hasData = summary.sessions > 0
   const recent = attempts.filter((attempt) => attempt.status === 'completed' && attempt.answered_count > 0).slice(0, 5)
@@ -68,6 +98,21 @@ export default function StudentProgressSummary({ subjects, topicCount, onStartCb
           </div>
         ))}
       </div>
+
+      <section aria-labelledby="topic-evidence-heading" className="mt-6 rounded-2xl border border-white/10 bg-white/[.025] p-5">
+        <h3 id="topic-evidence-heading" className="font-bold">Observed topic review priorities</h3>
+        <p className="mt-2 text-sm leading-6 text-white/50">Uses up to 80 recent saved question records mapped to currently published questions and approved syllabus topics. A topic needs at least five recorded answers; this is not a mastery certification or predicted JAMB result.</p>
+        {topicLoading && <p role="status" className="mt-3 text-sm text-white/60">Checking saved topic performance…</p>}
+        {!topicLoading && topicError && <div role="alert" className="mt-3 text-sm text-red-100">{topicError}<button type="button" className="ml-3 underline" onClick={() => setTopicReload((value) => value + 1)}>Retry topic performance</button></div>}
+        {!topicLoading && !topicError && !observedTopics.length && <p className="mt-4 text-sm text-white/55">Insufficient approved topic-level answer history to identify a review priority yet.</p>}
+        {!topicLoading && !topicError && observedTopics.length > 0 && <ol className="mt-4 space-y-3">{observedTopics.slice(0, 5).map((topic) => (
+          <li key={topic.topicId} className="rounded-xl border border-white/10 p-4">
+            <p className="font-semibold">{topic.topicName}</p>
+            <p className="mt-1 text-sm text-white/55">{topic.accuracy}% correct across {topic.answers} saved answers on {topic.trackedQuestions} tracked question{topic.trackedQuestions === 1 ? '' : 's'}.</p>
+            <button type="button" onClick={() => onStartCbt('practice', 'topic', topic.subjectId, topic.topicId)} className="mt-3 min-h-11 rounded-xl bg-purple-300 px-4 py-2 text-sm font-bold text-[#120b1c]">Practise {topic.topicName}</button>
+          </li>
+        ))}</ol>}
+      </section>
 
       {!loading && !error && !hasData && <p className="mt-5 text-sm leading-6 text-white/45">Attempt scores and mastery trends will appear when saved attempt data is available to the student analytics view.</p>}
 

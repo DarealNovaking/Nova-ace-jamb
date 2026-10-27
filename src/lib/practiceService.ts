@@ -93,3 +93,24 @@ export async function listPublishedTopicQuestionIds(subjectId: string, topicId: 
   if (error) throw error
   return [...new Set((data ?? []).map((row) => String(row.id)).filter(isUuid))]
 }
+
+// Read-only and self-scoped; only active published question metadata is joined.
+// Bounded requests protect low-bandwidth devices; this is an observation, not a full-life mastery score.
+export async function fetchStudentTopicEvidence(limit = 80): Promise<{ records: import('./progressSummary').QuestionReviewEvidence[]; published: import('./progressSummary').PublishedTopicMapping[] }> {
+  const { data: { user }, error: authError } = await supabase.auth.getUser()
+  if (authError) throw authError
+  if (!user) throw new Error('Sign in required')
+  const { data, error } = await ace.from('student_question_stats')
+    .select('question_id,attempts,correct_count,incorrect_count,last_answered_at')
+    .eq('user_id', user.id)
+    .order('last_answered_at', { ascending: false })
+    .limit(Math.max(1, Math.min(80, Math.floor(limit))))
+  if (error) throw error
+  const records = (data ?? []) as import('./progressSummary').QuestionReviewEvidence[]
+  const ids = [...new Set(records.map((item) => item.question_id))].filter((id) => /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id))
+  if (!ids.length) return { records, published: [] }
+  const { data: questions, error: questionError } = await ace.from('questions').select('id,subject_id,topic_id')
+    .in('id', ids).eq('active', true).eq('review_status', 'published')
+  if (questionError) throw questionError
+  return { records, published: (questions ?? []) as import('./progressSummary').PublishedTopicMapping[] }
+}

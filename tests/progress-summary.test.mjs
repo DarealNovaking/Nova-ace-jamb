@@ -1,7 +1,7 @@
 // Run with: node --experimental-strip-types --test tests/progress-summary.test.mjs
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { summarizeAttempts, summarizeAccuracyTrend, suggestStudyFocus } from '../src/lib/progressSummary.ts'
+import { summarizeAttempts, summarizeAccuracyTrend, suggestStudyFocus, summarizeTopicEvidence } from '../src/lib/progressSummary.ts'
 
 const base = { id: 'a', mode: 'cbt', started_at: '2026-10-01T10:00:00Z', completed_at: '2026-10-01T11:00:00Z', score: null }
 
@@ -59,4 +59,28 @@ test('subject focus prioritizes lower observed accuracy and respects minimum evi
   assert.equal(suggestStudyFocus([
     { ...base, status: 'completed', correct_count: 1, answered_count: 2, subject_id: 'eng' },
   ], [{ id: 'eng', name: 'Use of English' }]), null)
+})
+
+test('topic evidence combines observed answers only for approved, published matching topics', () => {
+  const topic = { id: 'topic-a', name: 'Comprehension', subject_id: 'english' }
+  const values = summarizeTopicEvidence([
+    { question_id: 'a', attempts: 8, correct_count: 2, incorrect_count: 6, last_answered_at: '2026-10-22' },
+    { question_id: 'b', attempts: 5, correct_count: 4, incorrect_count: 1, last_answered_at: '2026-10-23' },
+    { question_id: 'c', attempts: 100, correct_count: 0, incorrect_count: 100, last_answered_at: '2026-10-24' },
+  ], [
+    { id: 'a', subject_id: 'english', topic_id: 'topic-a' },
+    { id: 'b', subject_id: 'english', topic_id: 'topic-a' },
+  ], [topic])
+  assert.deepEqual(values, [{
+    topicId: 'topic-a', topicName: 'Comprehension', subjectId: 'english',
+    answers: 13, correct: 6, accuracy: 46, trackedQuestions: 2,
+  }])
+})
+
+test('topic suggestions omit small, unpublished and mismatched subject evidence', () => {
+  const rows = [{ question_id: 'a', attempts: 4, correct_count: 1, incorrect_count: 3, last_answered_at: '2026-10-22' }]
+  const topics = [{ id: 't', name: 'Topic', subject_id: 'eng' }]
+  assert.deepEqual(summarizeTopicEvidence(rows, [{ id: 'a', topic_id: 't', subject_id: 'eng' }], topics), [])
+  assert.deepEqual(summarizeTopicEvidence(rows, [{ id: 'a', topic_id: 't', subject_id: 'math' }], topics, 1), [])
+  assert.deepEqual(summarizeTopicEvidence(rows, [], topics, 1), [])
 })

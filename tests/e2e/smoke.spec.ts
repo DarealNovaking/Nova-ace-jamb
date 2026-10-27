@@ -1072,6 +1072,31 @@ test.describe('ACE JAMB preparation workspaces', () => {
     expect(params.get('subtopic_id')).toBe('eq.' + subtopicId)
   })
 
+  test('approved topic insight uses saved question history and starts topic-specific practice', async ({ page }) => {
+    await mockSyllabusPublicationState(page, 'approved')
+    const topicId = '70000000-0000-4000-8000-000000000001'
+    const questionId = '99000000-0000-4000-8000-000000000001'
+    let statsScoped = false
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/student_question_stats'), async (route) => {
+      statsScoped = new URL(route.request().url()).searchParams.get('user_id') === 'eq.' + userId
+      await route.fulfill({ json: [
+        { question_id: questionId, attempts: 10, correct_count: 3, incorrect_count: 7, last_answered_at: '2026-10-26T08:00:00Z' },
+      ] })
+    })
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/questions'), async (route) => {
+      const url = new URL(route.request().url())
+      await route.fulfill({ json: url.searchParams.has('topic_id') ? [] : [{ id: questionId, subject_id: subjects[0].id, topic_id: topicId }] })
+    })
+    await page.goto('/?view=progress')
+    await expect(page.getByRole('heading', { name: 'Observed topic review priorities' })).toBeVisible()
+    await expect(page.getByText('30% correct across 10 saved answers on 1 tracked question.')).toBeVisible()
+    expect(statsScoped).toBe(true)
+    await page.getByRole('button', { name: 'Practise Verified comprehension fixture' }).click()
+    await expect(page).toHaveURL(/[?&]focus=topic/)
+    await expect(page).toHaveURL(new RegExp('topic=' + topicId))
+    await expect(page.getByRole('heading', { name: 'No reviewed questions published for this topic yet' })).toBeVisible()
+  })
+
   test('flashcard review reveals verified content and persists a self-scoped review', async ({ page }) => {
     await mockPreparedStudent(page)
     let savedReview: Record<string, unknown> | null = null

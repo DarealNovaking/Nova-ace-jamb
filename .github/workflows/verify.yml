@@ -26,6 +26,12 @@ jobs:
         env:
           ANALYZE_BUNDLE: '1'
         run: npm run build
+      - name: Prepare modern Node for TypeScript-only frontend unit tests
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Run pure frontend progress and scheduling unit tests
+        run: node --experimental-strip-types --test tests/progress-summary.test.mjs tests/study-schedule.test.mjs
 
   utme-subject-choice-migration:
     runs-on: ubuntu-latest
