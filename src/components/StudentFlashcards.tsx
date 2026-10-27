@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { CheckCircle2, ChevronRight, Layers3, Loader2, RotateCcw } from 'lucide-react'
 import { getStudentFlashcards, saveStudentFlashcardReview, type StudentFlashcard, type StudentFlashcardReview } from '../lib/flashcardService'
 
@@ -28,6 +28,7 @@ function orderForReview(cards: StudentFlashcard[], reviews: Record<string, Stude
 }
 
 export default function StudentFlashcards({ subjects, topics }: { subjects: Subject[]; topics: Topic[] }) {
+  const loadSequence = useRef(0)
   const [cards, setCards] = useState<StudentFlashcard[]>([])
   const [reviews, setReviews] = useState<Record<string, StudentFlashcardReview>>({})
   const [index, setIndex] = useState(0)
@@ -42,21 +43,24 @@ export default function StudentFlashcards({ subjects, topics }: { subjects: Subj
   const subjectIdsKey = subjects.map((subject) => subject.id).join(',')
 
   const load = useCallback(async () => {
+    const sequence = ++loadSequence.current
     setLoading(true)
     setError('')
     setNotice('')
     setComplete(false)
     try {
       const result = await getStudentFlashcards(subjectIdsKey ? subjectIdsKey.split(',') : [])
+      if (sequence !== loadSequence.current) return
       const reviewMap = Object.fromEntries(result.reviews.map((review) => [review.flashcard_id, review]))
       setReviews(reviewMap)
       setCards(orderForReview(result.cards, reviewMap))
       setIndex(0)
       setRevealed(false)
     } catch {
+      if (sequence !== loadSequence.current) return
       setError('We could not load your flashcards. Check your connection and try again.')
     } finally {
-      setLoading(false)
+      if (sequence === loadSequence.current) setLoading(false)
     }
   }, [subjectIdsKey])
 
