@@ -34,7 +34,6 @@ begin
   for v_try in 0..5 loop
     v_code := case v_try
       when 0 then 'ACE-' || upper(substr(replace(new.id::text, '-', ''), 1, 8))
-      when 1 then 'ACE-' || upper(replace(new.id::text, '-', ''))
       else 'ACE-' || upper(replace(gen_random_uuid()::text, '-', ''))
     end;
     insert into ace.referral_codes(user_id,code) values(new.id,v_code)
