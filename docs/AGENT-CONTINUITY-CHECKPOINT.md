@@ -2346,3 +2346,12 @@ Next exact action: inspect the remaining advisor-listed SECURITY DEFINER functio
 - Active attempt RPCs inspected: start/resume/save/submit. Authenticated EXECUTE grants exist; no anon/PUBLIC EXECUTE appeared in the inspected grants. Owner checks visible in resume/save/submit. Full FCB-01 audit remains open.
 - No production changes. Master handoff updated in commit `26c966d3f85ffa7227d12f9f19406cd5bfec6982`.
 - **Next exact action:** search later migrations/tests for an existing safe answer-key-free question delivery API; if absent, implement one with regression tests and align the client DTO. Keep catalogue product work retired.
+
+
+## FCB-01 implementation checkpoint — safe CBT question delivery (2026-10-27)
+- Branch: `fix/cbt-safe-question-delivery`.
+- Added `supabase/migrations/20261027180000_safe_cbt_question_delivery.sql`: authenticated attempt-owner-checked RPC, fixed search_path, active/paused-only, ordered by server-owned `question_order`, output strips option objects to `key`/display text and excludes answer key/explanation.
+- Updated `src/lib/cbtService.ts` and `src/components/PersistentCBT.tsx` to load by attempt ID through the RPC; added `tests/sql/safe_cbt_question_delivery.test.sql` static privilege/contract regression checks.
+- Master handoff implementation note committed as `f84263fe62a4a49d68a734957af97381bee4de04`.
+- Verification status: repository changes written; no CI/test execution evidence yet. No production migration applied. FCB-01 remains open.
+- **Next exact action:** open a draft PR from this branch, inspect workflow/check results, and fix failures before considering merge or production migration.
