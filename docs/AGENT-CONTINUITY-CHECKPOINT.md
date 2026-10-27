@@ -2001,3 +2001,11 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - This is a frontend-only local preview, not persisted study-plan items, topic weakness analysis or adaptive scheduling. Batch 8 remains PARTIAL pending actual backend plan contracts and remaining acceptance criteria.
 - No live data writes, migrations, provider or production deployment changes.
 - Exact next action: inspect typecheck/build and scheduling test evidence for the new code; then implement the remaining Batch 7 mistake/revision interactions and Batch 8 integration dependencies without inventing question content; finish with full regression and real-device acceptance.
+
+
+## Batch 7 source implementation slice — 2026-10-27
+
+- Added StudentQuickRevision with approved syllabus topic selection/detail, read-only mistake history summary from the existing student_question_stats contract, explicit load/error/retry/empty states, and an honestly labeled generic practice action. Reused existing subject/topic props in StudentStudyWorkspace.
+- Added fetchStudentMistakes to practiceService for self-scoped mistake reads that throw failures instead of silently turning network/auth errors into false empty histories. Existing progress helper remains unchanged.
+- Important exceptions: live published topics/questions and study data were previously empty; per-question review, repeated-mistake drills, weakness/speed targeting and content-based quick revision remain incomplete, not simulated. Batch 7 is PARTIAL.
+- No backend, schema, content, payment, provider, deployment, or production-data operation. Exact next action: verify source typecheck/build and continue real approved-question review/mode contract implementation; full product regression at final frontend milestone.

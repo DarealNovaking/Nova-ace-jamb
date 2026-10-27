@@ -40,3 +40,20 @@ export async function listStudentMistakes(limit = 20): Promise<StudentQuestionMi
     return []
   }
 }
+
+// Revision history must distinguish truly empty data from a failed request.
+// Progress retains its older best-effort helper for backward compatibility.
+export async function fetchStudentMistakes(limit = 20): Promise<StudentQuestionMistake[]> {
+  const { data: { user }, error: authError } = await supabase.auth.getUser()
+  if (authError) throw authError
+  if (!user) throw new Error('Sign in required')
+  const { data, error } = await ace
+    .from('student_question_stats')
+    .select('question_id,attempts,correct_count,incorrect_count,last_answered_at')
+    .eq('user_id', user.id)
+    .gt('incorrect_count', 0)
+    .order('incorrect_count', { ascending: false })
+    .limit(Math.max(1, Math.min(20, limit)))
+  if (error) throw error
+  return Array.isArray(data) ? (data as StudentQuestionMistake[]) : []
+}
