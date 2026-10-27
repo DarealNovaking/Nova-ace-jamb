@@ -443,6 +443,103 @@ test.describe('ACE JAMB persistent CBT', () => {
     expect(startCalls).toBe(1)
   })
 
+  test('temporary resume failure retains the saved attempt and retry restores it without creating another', async ({ page }) => {
+    await mockPreparedStudent(page)
+    const attemptId = '40000000-0000-4000-8000-000000000041'
+    const questionId = '30000000-0000-4000-8000-000000000041'
+    const startedAt = new Date().toISOString()
+    let permitResume = false
+    let startCalls = 0
+    let resumeCalls = 0
+    await page.addInitScript(({ id, uid }) => {
+      localStorage.setItem('ace-cbt-active-attempt:' + uid, id)
+    }, { id: attemptId, uid: userId })
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/start_attempt'), async (route) => {
+      startCalls += 1
+      await route.fulfill({ status: 400, json: { code: 'P0001', message: 'A fresh attempt must not start during recovery' } })
+    })
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/resume_attempt'), async (route) => {
+      resumeCalls += 1
+      if (!permitResume) {
+        await route.fulfill({ status: 400, contentType: 'application/json', json: {
+          code: 'temporarily_unavailable', message: 'private server details are not for display',
+        } })
+        return
+      }
+      await route.fulfill({ json: {
+        attempt_id: attemptId, status: 'active', mode: 'cbt', subject_id: null,
+        started_at: startedAt, completed_at: null, duration_seconds: 1800,
+        remaining_seconds: 1700, random_seed: 41, question_order: [questionId],
+        option_order: { [questionId]: ['A'] }, answers: [], score: null,
+        correct_count: 0, answered_count: 0,
+      } })
+    })
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/questions'), async (route) => {
+      await route.fulfill({ json: [{
+        id: questionId, question_text: 'Recovered original CBT question',
+        options: [{ key: 'A', text: 'Answer A' }], subject_id: null, topic_id: null, difficulty: 'easy',
+      }] })
+    })
+    await page.goto('/?cbt=1')
+    await expect(page.getByText('CBT unavailable', { exact: true })).toBeVisible()
+    await expect(page.getByRole('alert')).toContainText('We could not load this CBT session')
+    await expect(page.getByText('private server details are not for display')).toHaveCount(0)
+    expect(startCalls).toBe(0)
+    expect(await page.evaluate((uid) => localStorage.getItem('ace-cbt-active-attempt:' + uid), userId)).toBe(attemptId)
+    permitResume = true
+    await page.getByRole('button', { name: 'Retry' }).click()
+    await expect(page.getByRole('heading', { name: 'Recovered original CBT question' })).toBeVisible()
+    expect(resumeCalls).toBeGreaterThanOrEqual(2)
+    expect(startCalls).toBe(0)
+    expect(await page.evaluate((uid) => localStorage.getItem('ace-cbt-active-attempt:' + uid), userId)).toBe(attemptId)
+  })
+
+  test('only a definitive missing-attempt response replaces an obsolete recovery pointer', async ({ page }) => {
+    await mockPreparedStudent(page)
+    const oldId = '40000000-0000-4000-8000-000000000042'
+    const newId = '40000000-0000-4000-8000-000000000043'
+    const questionId = '30000000-0000-4000-8000-000000000042'
+    const startedAt = new Date().toISOString()
+    let startCalls = 0
+    await page.addInitScript(({ id, uid }) => {
+      localStorage.setItem('ace-cbt-active-attempt:' + uid, id)
+    }, { id: oldId, uid: userId })
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/resume_attempt'), async (route) => {
+      const body = route.request().postDataJSON()
+      if (body.p_attempt_id === oldId) {
+        await route.fulfill({ status: 404, contentType: 'application/json', json: {
+          code: 'P0002', message: 'Attempt not found',
+        } })
+        return
+      }
+      await route.fulfill({ json: {
+        attempt_id: newId, status: 'active', mode: 'cbt', subject_id: null,
+        started_at: startedAt, completed_at: null, duration_seconds: 1800,
+        remaining_seconds: 1750, random_seed: 42, question_order: [questionId],
+        option_order: { [questionId]: ['A'] }, answers: [], score: null,
+        correct_count: 0, answered_count: 0,
+      } })
+    })
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/start_attempt'), async (route) => {
+      startCalls += 1
+      await route.fulfill({ json: {
+        attempt_id: newId, status: 'active', started_at: startedAt,
+        duration_seconds: 1800, random_seed: 42, question_order: [questionId],
+        option_order: { [questionId]: ['A'] }, question_count: 1,
+      } })
+    })
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/questions'), async (route) => {
+      await route.fulfill({ json: [{
+        id: questionId, question_text: 'Newly started CBT after obsolete pointer',
+        options: [{ key: 'A', text: 'Answer A' }], subject_id: null, topic_id: null, difficulty: 'easy',
+      }] })
+    })
+    await page.goto('/?cbt=1')
+    await expect(page.getByRole('heading', { name: 'Newly started CBT after obsolete pointer' })).toBeVisible()
+    expect(startCalls).toBe(1)
+    expect(await page.evaluate((uid) => localStorage.getItem('ace-cbt-active-attempt:' + uid), userId)).toBe(newId)
+  })
+
   test('review marks survive CBT reload and clear after submission without changing answers', async ({ page }) => {
     await mockPreparedStudent(page)
     const questionIds = ['30000000-0000-4000-8000-000000000021', '30000000-0000-4000-8000-000000000022']

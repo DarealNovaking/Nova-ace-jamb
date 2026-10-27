@@ -88,8 +88,12 @@ export default function PersistentCBT({ attemptId = null, questionCount = 20, du
         try {
           state = await resumeCbt(storedAttemptId)
         } catch (resumeError) {
-          // An explicit attempt ID must fail visibly; a stale local recovery pointer may be replaced.
-          if (attemptToResume || !storageKey) throw resumeError
+          // Do not discard a recoverable student attempt on a network, auth or server failure.
+          // Only a definitive, server-reported "Attempt not found" (P0002) proves
+          // that a local recovery pointer is stale. No other error creates a new attempt.
+          const code = typeof resumeError === 'object' && resumeError !== null && 'code' in resumeError
+            ? resumeError.code : null
+          if (attemptToResume || !storageKey || code !== 'P0002') throw resumeError
           window.localStorage.removeItem(storageKey)
           const started = await startCbt({ mode, questionCount, durationSeconds, questionIds, subjectId })
           window.localStorage.setItem(storageKey, started.attempt_id)
