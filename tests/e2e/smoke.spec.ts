@@ -927,7 +927,7 @@ test.describe('ACE JAMB preparation workspaces', () => {
 
   test('flashcards show a recoverable error and retry to an honest empty state', async ({ page }) => {
     await mockPreparedStudent(page)
-    let allowFlashcardSuccess = false
+    let allowFlashcardSuccess = true
     let flashcardRequests = 0
     let failedFlashcardRequests = 0
     await page.route((requestUrl) => new URL(requestUrl).pathname.endsWith('/rest/v1/flashcards'), async (route) => {
@@ -940,17 +940,22 @@ test.describe('ACE JAMB preparation workspaces', () => {
       await route.fulfill({ json: [] })
     })
 
-    // Enter through the authenticated dashboard and workspace so the saved subject
-    // selection is hydrated before the test injects a flashcard-service failure.
+    // First load a stable empty deck. Then force a failure on the explicit Refresh
+    // action so startup/profile hydration cannot race the error-state assertion.
     await page.goto('/')
     await expect(page.getByRole('heading', { name: 'Welcome back, Test Futarian.' })).toBeVisible()
     await page.getByRole('button', { name: /Learn Approved syllabus topics/ }).click()
     await expect(page.getByRole('heading', { name: 'Learn', exact: true })).toBeVisible()
     await page.getByRole('button', { name: 'Flashcards', exact: true }).click()
+    await expect(page.getByText('No approved flashcards are available for your selected subjects yet.')).toBeVisible()
     await expect.poll(() => flashcardRequests).toBeGreaterThan(0)
+
+    allowFlashcardSuccess = false
+    await page.getByRole('button', { name: 'Refresh deck' }).click()
     await expect.poll(() => failedFlashcardRequests).toBeGreaterThan(0)
     await expect(page.getByRole('alert')).toContainText('We could not load your flashcards.')
     await expect(page.getByText(/private database host/)).toHaveCount(0)
+
     allowFlashcardSuccess = true
     await page.getByRole('button', { name: 'Try again' }).click()
     await expect(page.getByText('No approved flashcards are available for your selected subjects yet.')).toBeVisible()
