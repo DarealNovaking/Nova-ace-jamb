@@ -93,3 +93,44 @@ jobs:
         env:
           PGPASSWORD: postgres
         run: psql -h 127.0.0.1 -U postgres -d postgres -v ON_ERROR_STOP=1 -f tests/sql/fcb_01_attempt_delivery.test.sql
+
+  recovered-schema-baseline:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: pgvector/pgvector:0.8.7-pg17
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      PGHOST: 127.0.0.1
+      PGUSER: postgres
+      PGDATABASE: postgres
+      PGPASSWORD: postgres
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install PostgreSQL client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+      - name: Verify deterministic baseline rendering
+        run: |
+          python3 scripts/render-ace-schema-baseline.py
+          git diff --exit-code -- supabase/schema/ace-2026-10-27.sql
+      - name: Replay recovered schema and test real auth trigger
+        run: psql -X -v ON_ERROR_STOP=1 -f tests/sql/fcb_01_schema_baseline.test.sql
+      - name: Verify every recovered catalog definition and API privilege
+        run: python3 tests/sql/fcb_01_schema_parity.py
+      - name: Verify recovery refuses an existing schema
+        run: |
+          if psql -X -v ON_ERROR_STOP=1 -f supabase/schema/ace-2026-10-27.sql > /tmp/ace-replay-refusal.log 2>&1; then
+            echo 'Recovery unexpectedly accepted existing schema'
+            exit 1
+          fi
+          grep -F 'schema "ace" already exists' /tmp/ace-replay-refusal.log
+          python3 tests/sql/fcb_01_schema_parity.py
