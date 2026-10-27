@@ -81,7 +81,8 @@ export default function AdminQuestionReviewQueue() {
         {visible.length === 0 && <p role="status" className="mt-3 text-sm text-white/55">No questions on this page match the selected review status. Choose all statuses to show the loaded records.</p>}
         <ul className="mt-4 space-y-3">{visible.map((item) => <li key={item.id} className="rounded-xl border border-white/10 p-4">
           <div className="flex flex-wrap gap-2 text-xs font-semibold text-white/55"><span className="rounded-lg border border-white/15 px-2 py-1">{item.review_status.replaceAll('_', ' ')}</span><span>{item.active ? 'Active record' : 'Inactive record'}</span></div>
-          <p className="mt-3 whitespace-pre-wrap break-words text-sm leading-6 text-white/75">{item.question_text?.slice(0, 360) || 'Question text unavailable'}</p>
+          <p className="mt-3 whitespace-pre-wrap break-words text-sm leading-6 text-white/75">{item.question_text?.slice(0, 360) || 'Question text unavailable'}{item.question_text?.length > 360 ? '…' : ''}</p>
+          {item.question_text?.length > 360 && <details className="mt-3 rounded-lg border border-white/10 p-3"><summary className="cursor-pointer text-sm font-semibold text-purple-200">Read full question text</summary><p className="mt-3 whitespace-pre-wrap break-words text-sm leading-6 text-white/75">{item.question_text}</p></details>}
           <p className="mt-2 text-xs text-white/35">Question ID: {item.id}</p>
         </li>)}</ul>
       </>}

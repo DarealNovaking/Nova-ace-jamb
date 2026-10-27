@@ -1027,6 +1027,30 @@ test.describe('ACE JAMB admin operations count recovery', () => {
   })
 })
 
+test.describe('ACE JAMB administrator review full text', () => {
+  test('offers accessible full-question disclosure without publication actions', async ({ page }) => {
+    await mockPreparedStudent(page)
+    const fullQuestion = 'Verified question context. '.repeat(20) + 'Important final source detail.'
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/is_admin'), async (route) => {
+      await route.fulfill({ json: true })
+    })
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/questions'), async (route) => {
+      await route.fulfill({ json: [{
+        id: '98000000-0000-4000-8000-000000000098',
+        question_text: fullQuestion, review_status: 'draft', active: false,
+        subject_id: subjects[0].id, topic_id: null,
+      }] })
+    })
+    await page.goto('/admin')
+    const review = page.locator('section[aria-labelledby="admin-review-questions-heading"]')
+    await expect(review.getByText('Read full question text')).toBeVisible()
+    await expect(review.getByText(fullQuestion, { exact: true })).not.toBeVisible()
+    await review.getByText('Read full question text').click()
+    await expect(review.getByText(fullQuestion, { exact: true })).toBeVisible()
+    await expect(review.getByRole('button', { name: /Publish question/ })).toHaveCount(0)
+  })
+})
+
 test.describe('ACE JAMB academic editor access', () => {
   test('announces academic workspace loading while the season list resolves', async ({ page }) => {
     await mockFirstTimeStudent(page)
@@ -1072,6 +1096,30 @@ test.describe('ACE JAMB academic editor access', () => {
     await expect(page.getByText('No syllabus versions found')).toBeVisible()
     await expect(page.getByRole('heading', { name: 'Create a draft syllabus version' })).toBeVisible()
     expect(versionReads).toBeGreaterThan(1)
+  })
+
+  test('temporary role-check failure can be retried without bypassing denied roles', async ({ page }) => {
+    await mockFirstTimeStudent(page)
+    let allowRole = false
+    let checks = 0
+    await page.route(`${projectUrl}/rest/v1/rpc/is_admin_or_editor`, async (route) => {
+      checks += 1
+      if (!allowRole) {
+        await route.fulfill({ status: 503, contentType: 'application/json', json: {
+          code: 'temporary_database_error', message: 'private database host',
+        } })
+      } else {
+        await route.fulfill({ json: true })
+      }
+    })
+    await page.goto('/admin-academic')
+    await expect(page.getByRole('heading', { name: 'Academic editor access required' })).toBeVisible()
+    await expect(page.getByText('private database host')).toHaveCount(0)
+    await expect(page.getByRole('heading', { name: 'Academic Structure' })).toHaveCount(0)
+    allowRole = true
+    await page.getByRole('button', { name: 'Retry academic editor verification' }).click()
+    await expect(page.getByRole('heading', { name: 'Academic Structure' })).toBeVisible()
+    expect(checks).toBeGreaterThan(1)
   })
 
   test('authorized content editor reaches the separate academic workspace', async ({ page }) => {
