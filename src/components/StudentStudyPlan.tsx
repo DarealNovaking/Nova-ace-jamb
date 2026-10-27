@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from 'react'
 import { CalendarDays, CheckCircle2, Loader2, Save } from 'lucide-react'
 import { getStudentPreferences, updateStudentPreferences } from '../lib/studentService'
 import { buildStudySchedule } from '../lib/studySchedule'
+import { fetchStudentAttempts } from '../lib/practiceService'
+import { suggestStudyFocus, type PastAttempt } from '../lib/progressSummary'
 
 type Subject = { id: string; name: string; code: string }
 
@@ -22,7 +24,12 @@ export default function StudentStudyPlan({ subjects }: { subjects: Subject[] }) 
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
+  const [history, setHistory] = useState<PastAttempt[]>([])
+  const [focusLoading, setFocusLoading] = useState(true)
+  const [focusError, setFocusError] = useState('')
+  const [focusRetry, setFocusRetry] = useState(0)
   const previewSessions = useMemo(() => buildStudySchedule(subjects, selectedDays, dailyMinutes), [subjects, selectedDays, dailyMinutes])
+  const focus = useMemo(() => suggestStudyFocus(history, subjects), [history, subjects])
 
   useEffect(() => {
     let cancelled = false
@@ -48,6 +55,20 @@ export default function StudentStudyPlan({ subjects }: { subjects: Subject[] }) 
     void load()
     return () => { cancelled = true }
   }, [])
+
+  useEffect(() => {
+    let active = true
+    setFocusLoading(true)
+    setFocusError('')
+    void fetchStudentAttempts(20).then((items) => {
+      if (active) setHistory(items)
+    }).catch(() => {
+      if (!active) return
+      setHistory([])
+      setFocusError('We could not load your saved practice history for suggestions.')
+    }).finally(() => { if (active) setFocusLoading(false) })
+    return () => { active = false }
+  }, [focusRetry])
 
   function toggleDay(day: string) {
     setSelectedDays((current) => current.includes(day) ? current.filter((item) => item !== day) : [...current, day])
@@ -101,6 +122,16 @@ export default function StudentStudyPlan({ subjects }: { subjects: Subject[] }) 
         {subjects.length ? <p className="mt-2 text-sm leading-6 text-white/55">{subjects.map((subject) => subject.name).join(' · ')}</p> : <p className="mt-2 text-sm text-white/45">No saved subjects were found. You can update your preparation profile from onboarding.</p>}
       </div>
 
+
+      <section aria-labelledby="study-focus-heading" className="mt-6 rounded-2xl border border-white/10 bg-black/15 p-5">
+        <h3 id="study-focus-heading" className="font-bold">Performance-informed focus</h3>
+        <p className="mt-2 text-sm leading-6 text-white/50">A suggested subject based on up to 20 real saved completed sessions. Only subject-specific answers count; it does not predict your JAMB score or replace a verified syllabus lesson.</p>
+        {focusLoading && <p role="status" className="mt-3 text-sm text-white/60">Checking your saved practice history…</p>}
+        {!focusLoading && focusError && <div role="alert" className="mt-3 text-sm text-red-100">{focusError}<button type="button" className="ml-3 underline" onClick={() => setFocusRetry((count) => count + 1)}>Retry suggestions</button></div>}
+        {!focusLoading && !focusError && (focus
+          ? <p className="mt-3 text-sm text-white/70"><strong className="text-purple-100">{focus.subjectName}</strong> is a useful starting point: {focus.accuracy}% correct across {focus.answered} saved subject-specific answers. The suggested routine below continues rotating all your saved subjects.</p>
+          : <p className="mt-3 text-sm text-white/55">Not enough subject-specific practice history yet. Your routine will rotate your chosen subjects without making up weaknesses.</p>)}
+      </section>
 
       <section aria-labelledby="study-preview-heading" className="mt-6 rounded-2xl border border-white/10 bg-black/15 p-5">
         <h3 id="study-preview-heading" className="font-bold">Your next two weeks — suggested routine</h3>

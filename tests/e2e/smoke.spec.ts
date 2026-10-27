@@ -904,6 +904,26 @@ test.describe('ACE JAMB preparation workspaces', () => {
     await expect(page.getByText('predicted JAMB score', { exact: false })).toBeVisible()
   })
 
+  test('study plan suggests a subject only from real saved subject-tagged attempts', async ({ page }) => {
+    await mockPreparedStudent(page)
+    let ownerScoped = false
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/attempts'), async (route) => {
+      ownerScoped = new URL(route.request().url()).searchParams.get('user_id') === 'eq.' + userId
+      await route.fulfill({ json: [
+        { id: '94000000-0000-4000-8000-000000000001', mode: 'practice', status: 'completed', started_at: '2026-10-24T09:00:00Z', completed_at: '2026-10-24T10:00:00Z', score: 30, correct_count: 3, answered_count: 10, subject_id: subjects[0].id },
+        { id: '94000000-0000-4000-8000-000000000002', mode: 'practice', status: 'completed', started_at: '2026-10-24T09:00:00Z', completed_at: '2026-10-24T10:00:00Z', score: 80, correct_count: 8, answered_count: 10, subject_id: subjects[1].id },
+      ] })
+    })
+    await page.goto('/')
+    await expect(page.getByRole('heading', { name: 'Welcome back, Test Futarian.' })).toBeVisible()
+    await page.getByRole('button', { name: /Study plan/ }).click()
+    const panel = page.locator('section[aria-labelledby="study-focus-heading"]')
+    await expect(panel).toContainText('Use of English')
+    await expect(panel).toContainText('30% correct across 10 saved')
+    expect(ownerScoped).toBe(true)
+    await expect(panel).toContainText('does not predict your JAMB score')
+  })
+
   test('flashcard review reveals verified content and persists a self-scoped review', async ({ page }) => {
     await mockPreparedStudent(page)
     let savedReview: Record<string, unknown> | null = null

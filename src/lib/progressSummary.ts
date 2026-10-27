@@ -106,3 +106,27 @@ export function summarizeAccuracyTrend(attempts: PastAttempt[], maxSessions = 5)
   const recent = points.slice(0, Math.max(0, Math.min(20, Math.floor(maxSessions))))
   return { recent, changePoints: recent.length < 2 ? null : recent[0].accuracy - recent[1].accuracy }
 }
+
+export type StudyFocus = {
+  subjectId: string
+  subjectName: string
+  answered: number
+  accuracy: number
+}
+
+// Recommendation only from completed subject-tagged work, never a JAMB score forecast.
+// The minimum observation count is caller-configurable for product governance.
+export function suggestStudyFocus(
+  attempts: PastAttempt[],
+  subjects: Array<{ id: string; name: string }>,
+  minAnswered = 5,
+): StudyFocus | null {
+  const minimum = Math.max(1, Math.floor(minAnswered))
+  const bySubject = summarizeAttempts(attempts).bySubject
+  const candidates = bySubject.filter((row) => row.answered >= minimum).flatMap((row) => {
+    const subject = subjects.find((item) => item.id === row.subjectId)
+    return subject ? [{ subjectId: row.subjectId, subjectName: subject.name, answered: row.answered, accuracy: row.accuracy }] : []
+  })
+  candidates.sort((a,b)=>a.accuracy-b.accuracy || b.answered-a.answered || a.subjectName.localeCompare(b.subjectName))
+  return candidates[0] ?? null
+}
