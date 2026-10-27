@@ -6,6 +6,7 @@ import { getStudentPreferences, getStudentProfile, updateStudentPreferences, upd
 export default function StudentAccountSettings() {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [loaded, setLoaded] = useState(false)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
@@ -17,6 +18,7 @@ export default function StudentAccountSettings() {
 
   async function load() {
     setLoading(true)
+    setLoaded(false)
     setError('')
     try {
       const [profile, preferences] = await Promise.all([getStudentProfile(), getStudentPreferences()])
@@ -25,6 +27,7 @@ export default function StudentAccountSettings() {
       setInstitution(profile.institution ?? '')
       setCourse(profile.course ?? '')
       setDailyMinutes(preferences.daily_minutes === null ? '' : String(preferences.daily_minutes))
+      setLoaded(true)
     } catch {
       setError('We could not load your account settings. Check your connection and try again.')
     } finally {
@@ -36,6 +39,9 @@ export default function StudentAccountSettings() {
 
   async function save(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
+    // Do not let a failed profile/preference read overwrite saved fields with
+    // component defaults, even if the form is submitted programmatically.
+    if (!loaded || loading || saving) return
     setSaving(true)
     setError('')
     setNotice('')
@@ -65,7 +71,7 @@ export default function StudentAccountSettings() {
         <div><p className="text-xs uppercase tracking-[.18em] text-purple-200/50">Your account</p><h2 className="mt-1 text-xl font-black">Account settings</h2><p className="mt-1 text-sm text-white/45">Update your preparation profile and daily study time.</p></div>
         <button type="button" onClick={() => setOpen((value) => !value)} aria-expanded={open} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/10 px-4 py-2 text-sm font-semibold hover:bg-white/5"><Settings2 size={16} aria-hidden="true" /> {open ? 'Close settings' : 'Edit settings'}</button>
       </div>
-      {open && (loading ? <div role="status" aria-live="polite" aria-atomic="true" className="grid min-h-24 place-items-center text-white/45"><Loader2 size={20} className="animate-spin" aria-hidden="true" /><span>Loading account settings…</span></div> : <form onSubmit={save} className="mt-5 grid gap-4 sm:grid-cols-2">
+      {open && (loading ? <div role="status" aria-live="polite" aria-atomic="true" className="grid min-h-24 place-items-center text-white/45"><Loader2 size={20} className="animate-spin" aria-hidden="true" /><span>Loading account settings…</span></div> : !loaded ? <div role="alert" className="mt-5 rounded-xl border border-red-400/20 bg-red-500/10 p-4 text-sm text-red-100"><p>{error || 'Account settings are unavailable.'}</p><p className="mt-2 text-xs text-red-100/70">Editing is disabled until your saved account details can be loaded. No changes have been sent.</p><button type="button" className="mt-3 min-h-11 rounded-xl border border-white/25 px-4 py-2 font-semibold" onClick={() => void load()}>Retry loading account settings</button></div> : <form onSubmit={save} className="mt-5 grid gap-4 sm:grid-cols-2">
         <label className="text-sm font-semibold">Display name<input required minLength={1} maxLength={80} value={displayName} onChange={(event) => setDisplayName(event.target.value)} className="mt-2 min-h-11 w-full rounded-xl border border-white/10 bg-black/20 px-3 text-white outline-none focus:border-purple-300/50" /></label>
         <label className="text-sm font-semibold">Target JAMB score<input required type="number" min={0} max={400} step={1} value={targetScore} onChange={(event) => setTargetScore(event.target.value)} className="mt-2 min-h-11 w-full rounded-xl border border-white/10 bg-black/20 px-3 text-white outline-none focus:border-purple-300/50" /></label>
         <label className="text-sm font-semibold">Intended institution <span className="font-normal text-white/35">(optional)</span><input maxLength={160} value={institution} onChange={(event) => setInstitution(event.target.value)} className="mt-2 min-h-11 w-full rounded-xl border border-white/10 bg-black/20 px-3 text-white outline-none focus:border-purple-300/50" /></label>

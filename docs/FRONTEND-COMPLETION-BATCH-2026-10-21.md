@@ -934,3 +934,13 @@ No database/schema/RPC/Edge Function changes, production-data writes, or deploym
 - **Previous app verification:** recovery pointer fix `7c5c778fd1442ff0f30639731f5204a51c637660` passed Verify [40472126194](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40472126194) and ACE JAMB E2E [40472126205](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40472126205). Monotonic CBT timer code `58be8f44553402ae3c66fb1d5a6dba9367c8fffb` passed Verify [40472442407](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40472442407), while E2E [40472442404](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40472442404) was still running when inspected.
 - **Acceptance:** front-end data-integrity guard implemented, but code/test SHA terminal Verify/E2E still pending at time of handoff. Persisted daily schedule/adaptive planning remains a separate backend dependency. No whole-product frontend completion is claimed.
 - **Exact next action:** inspect latest main SHA-matched Verify/E2E and resolve any reproduced failure, then move to the next safely implementable frontend acceptance criterion.
+
+
+## Batch 1 saved-account field integrity on settings load error — 2026-10-27
+
+- **Issue:** `StudentAccountSettings` rendered a writable form containing empty component defaults when either saved profile or study preferences failed to load, risking overwriting real fields on a later Save.
+- **Fix:** only show editable account fields after both authenticated reads succeed; otherwise display a safe error and retry. Also block programmatic Save while account data has not loaded. Does not change how successful profile/preference updates are saved.
+- **Fixture test:** failed initial GET blocks form and writes, no raw provider message; retry restores the saved display name and 75-minute study preference and enables editing. Existing successful account-settings test remains in the suite.
+- **Changed:** `src/components/StudentAccountSettings.tsx`, `tests/e2e/smoke.spec.ts`, three handoffs. No database/migration/publishing/provider/deployment actions. The previous study-plan guard lives on `207282917e1a289ba922e62b5a53dff693781c2a`.
+- **Verification:** new SHA CI is pending and must be checked; no live authenticated device test is claimed.
+- **Next safe step:** inspect newest Verify and E2E results and fix only reproducible failures, then continue the remaining frontend acceptance work.

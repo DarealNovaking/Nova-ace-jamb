@@ -1814,6 +1814,45 @@ test.describe('ACE JAMB installable shell', () => {
   })
 })
 
+test.describe('ACE JAMB account settings recovery safety', () => {
+  test('a failed account read disables edits until saved fields are restored', async ({ page }) => {
+    await mockPreparedStudent(page)
+    let allowRead = false
+    let writes = 0
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/student_preferences'), async (route) => {
+      if (route.request().method() !== 'GET') {
+        writes += 1
+        await route.fulfill({ status: 200, json: [] })
+        return
+      }
+      if (!allowRead) {
+        await route.fulfill({ status: 400, contentType: 'application/json', json: {
+          code: 'temporary_unavailable', message: 'private provider account details',
+        } })
+        return
+      }
+      await route.fulfill({ json: {
+        user_id: userId, daily_minutes: 75, preferred_study_days: ['friday'],
+        learning_style: null, timezone: null, preferences: {},
+      } })
+    })
+    await page.goto('/')
+    await expect(page.getByRole('heading', { name: 'Welcome back, Test Futarian.' })).toBeVisible()
+    await page.getByRole('button', { name: 'Edit settings' }).click()
+    await expect(page.getByRole('alert')).toContainText('We could not load your account settings')
+    await expect(page.getByText('private provider account details')).toHaveCount(0)
+    await expect(page.getByRole('button', { name: 'Save account settings' })).toHaveCount(0)
+    expect(writes).toBe(0)
+
+    allowRead = true
+    await page.getByRole('button', { name: 'Retry loading account settings' }).click()
+    await expect(page.getByLabel('Display name')).toHaveValue('Test Futarian')
+    await expect(page.getByLabel('Daily study time (minutes)')).toHaveValue('75')
+    await expect(page.getByRole('button', { name: 'Save account settings' })).toBeEnabled()
+    expect(writes).toBe(0)
+  })
+})
+
 test.describe('ACE JAMB account settings first-use regression', () => {
   test('settings load and save when the student preferences row does not exist yet', async ({ page }) => {
     await mockPreparedStudent(page)
