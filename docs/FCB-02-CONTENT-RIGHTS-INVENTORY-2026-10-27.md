@@ -61,3 +61,7 @@ All 50 rows remain withheld. Exact document/version, lawful use basis and public
 
 Required at the content gate: identify the first authorized syllabus/question files or source URLs with their reuse authority, select initial launch coverage, and approve any later live publication separately. This missing content authority does not justify fabricating sample production material. Source-only security/contract work continues through PR #10; full education-content acceptance remains blocked.
 
+
+
+### Official-source follow-up — 27 October 2026
+A live rendered retrieval of https://ibass.jamb.gov.ng/e-syllabus returned HTTP 200 and the first twelve subject cards. The rendered output did not expose document-specific PDF URLs, edition dates, explicit reuse permission or a 2027 exam configuration. It improves the portal-level provenance beyond a homepage reference, but does not establish document rights or authorize ingestion/publication. No syllabus text, question material, programme eligibility or catalogue data was imported. All fifty stored syllabus versions remain pending their individual document/rights review.
