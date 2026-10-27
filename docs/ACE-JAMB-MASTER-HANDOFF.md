@@ -4257,3 +4257,13 @@ Open hardening / not yet fully verified:
 - No live schema changes, data writes, grants, migrations, or deployments were performed. No regression tests were added in this pass; connected tool access did not provide a local checkout/test runner. The failed assumed-column count query remains a documented no-op.
 
 Next exact action: inspect the remaining advisor-listed SECURITY DEFINER function definitions and their repository migration history/call sites; verify the exposed-schema/function grants and `public` schema CREATE privileges. Then add a focused migration/test proposal on a feature branch, run available checks, and request/confirm the production gate before applying anything.
+
+
+## FCB-01 live CBT question-delivery contract finding — 2026-10-27
+- Read-only live Supabase checks confirm `ace.questions` columns include `stem`, `options`, and sensitive `correct_option_key`; there is no `question_text` column.
+- Current frontend `src/lib/cbtService.ts` `loadCbtQuestions()` queries `id,question_text,options,subject_id,topic_id,difficulty`. This query does not match the live schema.
+- Live `has_table_privilege` / `has_column_privilege` checks confirm `authenticated` has no SELECT privilege on `ace.questions`; the RLS policies alone do not grant table access. Thus the current direct-read path is blocked by both schema mismatch and grants.
+- Security constraint: do **not** solve this by granting direct student SELECT on the entire question row, which includes `correct_option_key` and `explanation`. Implement a reviewed, answer-key-free question delivery RPC/view or equivalent server-side contract, preserving server-authoritative answer validation/scoring; align the client DTO with the live schema.
+- Active CBT RPCs inspected read-only: `start_attempt`, `resume_attempt`, `save_attempt_answer`, `submit_attempt`. Their EXECUTE grants are to `authenticated` and `postgres`; no anon/PUBLIC EXECUTE appeared in the queried grants. Owner checks were visible in resume/save/submit. This is a targeted review, not complete FCB-01 acceptance.
+- No production grants, schema, data, migration, or deployment changed. A query using the stale `question_text` column failed as expected; it was read-only.
+- **Next action:** inspect all later migrations and tests for an existing safe question-delivery contract; if none exists, implement a focused migration/RPC and regression tests on a reviewable branch, then align `cbtService.ts` and verify with disposable-Postgres plus CI. Do not reopen catalogue product work.
