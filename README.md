@@ -27,7 +27,7 @@ The GitHub repository is the source of truth. The current frontend uses React, T
 
 **ONE final completion batch, FCB-01 through FCB-12, is active.** The canonical remaining work and dependencies are in `docs/ACE-JAMB-MASTER-HANDOFF.md` under “FINAL MASTER COMPLETION BATCH — ALL REMAINING ACE JAMB WORK”. FCB-01 is the security, migration and backend-contract audit. Preserve the existing frontend baseline (158 mocked desktop/mobile Playwright tests), compulsory English plus three subjects, and catalogue-independent onboarding. The security remediation is reviewed source until separately authorized and verified in production; no full-product completion is claimed. Current audit evidence: `docs/FCB-01-SECURITY-CONTRACT-AUDIT-2026-10-27.md`.
 
-The user has explicitly kept app deployment out of scope. Deployment workflows/configuration and the legacy AppDeploy entrypoint were removed; do not recreate or deploy the app unless the user explicitly reverses that instruction.
+Production migrations, content publication, deployments and billable provider activation require explicit approval at their documented FCB gates. Legacy deployment assets were removed; no production deployment workflow is currently enabled in this repository.
 
 ## Local development
 

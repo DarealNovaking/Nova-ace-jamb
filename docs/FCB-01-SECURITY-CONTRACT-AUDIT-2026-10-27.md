@@ -1,5 +1,11 @@
 # FCB-01 security and backend-contract evidence
 
+Current verified source/test: `ecbc0127906a4af8f2a3f1f4e915f2635ab86004`, PR #10.
+Verify [40535097721](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40535097721) PASS;
+Playwright [40535098147](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40535098147) PASS **164 tests, zero failures**.
+Native concurrent administrator demotions pass READ COMMITTED and REPEATABLE READ.
+Production application and FCB-01 acceptance remain OPEN.
+
 This is an audit record under the existing final completion batch, not another backlog.
 Baseline: GitHub main `3a24fca5a9f63b9111d5d89ff6c0b0fd1bb22d9a`.
 Work branch: `security/fcb-01-contract-audit`. Production project: `uokiqlgmzprqfbzmedaz`.
@@ -142,3 +148,13 @@ It is wired after the RPC fixture before later suites replace schemas. CI execut
 - Also found/fixed the same real `question_text`/`stem` schema mismatch in AdminQuestionReviewQueue; exact-projection pagination/fulltext mocks now reject invalid requests. Legacy dataAdapter.loadBootstrap has no callers/imports and remains untouched.
 - Added metadata-only incident rollback snapshot at `docs/rollback/fcb-01-before.sql`: 10 exact original RPC definitions/hashes, four original policies, removal of three new triggers/guard. Independent review found no omission; forward+rollback DDL compiled against catalog-derived column fixture on PGlite. This is not a production backup or full-history replay; rollback deliberately restores known security gaps and requires incident approval.
 - Next exact action: inspect final PR head's full 164-test browser result and Verify; fix any reproduced failure, then record the concrete production authorization/content gates. Main and production remain unchanged; final batch remains OPEN.
+
+
+## FCB-01 verified review milestone — 2026-10-27 (current checkpoint)
+- **Review PR:** https://github.com/DarealNovaking/Nova-ace-jamb/pull/10. Latest verified source/test SHA **ecbc0127906a4af8f2a3f1f4e915f2635ab86004**. GitHub **Verify 40535097721 PASS** (Deno, unit/contract, typecheck/build, all five SQL suites and native two-session admin-demotion tests). GitHub **E2E 40535098147 PASS: 164 desktop/mobile Playwright tests, zero failures**, actual job logs inspected. This supersedes earlier pending/failed browser entries; no failing test skipped.
+- **Fixed in source, NOT yet in production:** owner-scoped entitlement RPC, draft metadata/validation audience guards, admin-only direct approval policies, English+3 legacy save guards/order, concurrent last-admin protection, syllabus rights/publication trigger/audit, question rights and NULL attempt bounds, CBT/admin question stem aliases and role-aware academic UI. Main remains `3a24fca5a9f63b9111d5d89ff6c0b0fd1bb22d9a`; PR not merged to avoid unapproved release activity.
+- **Content inventory:** `docs/FCB-02-CONTENT-RIGHTS-INVENTORY-2026-10-27.md` individually lists all 50 versions (25 subjects across two seasons); 0 approved rights. No lawful question/syllabus/audio corpus exists in the repository. FCB-02 publication and dependent content packages cannot pass without identified sources, rights and official season configuration. No content was invented or published.
+- **Evidence / rollback:** `docs/FCB-01-SECURITY-CONTRACT-AUDIT-2026-10-27.md` and `docs/rollback/fcb-01-before.sql`. Rollback is reviewed metadata restoration, not a data backup; it restores known weaknesses and is incident-only. Full historical migration replay remains blocked by the documented 12 missing-source counterparts/timestamp divergence. Never blindly db-push or grant client score/answer writes.
+- **Status:** FCB-01 audit/remediation source is reviewed and regression-verified; **FCB-01 acceptance and the unified FCB-01..12 batch remain OPEN**. Production security remediation is not applied, live service flows/deployed SHA are unverified, and approved content/providers are missing. FCB-08/09 source integrations remain gated by the audited foundation and undecided provider/business settings; no provider or cost enabled.
+- **Exact next action / required owner authorization:** review PR #10, then obtain explicit authorization for only its three targeted production security migrations after current-definition preflight and backup/rollback review. Do not merge/deploy, publish content or enable providers implicitly. Independently recover a safe schema-only migration baseline and identify the first authorized syllabus/question sources for FCB-02. A new agent must resume PR #10 and this verified SHA, not restart the 158-test frontend baseline or retired catalogue.
+- No production database/content writes, deployment, paid upgrade or billable provider activation occurred. The following handoff-only commit changes no verified source/test files; PR checks may run again for documentation alone.
