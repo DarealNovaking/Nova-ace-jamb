@@ -1010,6 +1010,64 @@ test.describe('ACE JAMB academic editor access', () => {
 })
 
 
+test.describe('ACE JAMB academic syllabus-version race safety', () => {
+  test('late response for another version cannot replace the selected version tree', async ({ page }) => {
+    await mockFirstTimeStudent(page)
+    const versionA = 'a0000000-0000-4000-8000-000000000001'
+    const versionB = 'a0000000-0000-4000-8000-000000000002'
+    const seasonId = 'a0000000-0000-4000-8000-000000000003'
+    const subjectId = subjects[0].id
+    const versionRow = (id: string, title: string, version: number) => ({
+      id, title, version, season_id: seasonId, subject_id: subjectId, status: 'draft',
+      rights_status: 'pending', source_title: 'Official syllabus', source_url: 'https://example.test/syllabus',
+      provenance: {}, updated_at: '2026-10-27T00:00:00.000Z',
+    })
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/syllabus_versions'), async (route) => {
+      await route.fulfill({ json: [versionRow(versionA, 'Version A', 1), versionRow(versionB, 'Version B', 2)] })
+    })
+    let releaseB: () => void = () => undefined
+    let finishB: () => void = () => undefined
+    const bGate = new Promise<void>((resolve) => { releaseB = resolve })
+    const bDone = new Promise<void>((resolve) => { finishB = resolve })
+    let bStarted = 0
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/topics'), async (route) => {
+      const requested = new URL(route.request().url()).searchParams.get('syllabus_version_id') ?? ''
+      const isB = requested.endsWith(versionB)
+      if (isB) {
+        bStarted += 1
+        await bGate
+      }
+      try {
+        await route.fulfill({ json: [{
+          id: isB ? 'b0000000-0000-4000-8000-000000000002' : 'b0000000-0000-4000-8000-000000000001',
+          subject_id: subjectId, syllabus_version_id: isB ? versionB : versionA,
+          name: isB ? 'Topic from B' : 'Topic from A', description: null, sort_order: 10, active: false,
+        }] })
+      } finally {
+        if (isB) finishB()
+      }
+    })
+    await page.route(`${projectUrl}/rest/v1/rpc/is_admin_or_editor`, async (route) => {
+      await route.fulfill({ json: true })
+    })
+    await page.goto('/admin-academic')
+    await expect(page.getByText('Topic from A', { exact: true })).toBeVisible()
+    const selector = page.getByLabel('Syllabus version')
+    await selector.selectOption(versionB)
+    await expect.poll(() => bStarted).toBe(1)
+    await expect(page.getByText('Loading selected syllabus topics…')).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Add inactive topic' })).toBeDisabled()
+    await expect(page.getByText('Topic from A', { exact: true })).toHaveCount(0)
+    await selector.selectOption(versionA)
+    await expect(page.getByText('Topic from A', { exact: true })).toBeVisible()
+    releaseB()
+    await bDone
+    await expect(page.getByText('Topic from A', { exact: true })).toBeVisible()
+    await expect(page.getByText('Topic from B', { exact: true })).toHaveCount(0)
+    await expect(page.getByRole('button', { name: 'Add inactive topic' })).toBeEnabled()
+  })
+})
+
 test.describe('ACE JAMB preparation workspaces', () => {
   test('student tools navigate and show honest empty states without inventing content', async ({ page }) => {
     await mockPreparedStudent(page)
