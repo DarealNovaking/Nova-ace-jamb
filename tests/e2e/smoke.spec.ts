@@ -1724,6 +1724,37 @@ test.describe('ACE JAMB notification recovery and ownership', () => {
     expect(writes).toBe(0)
   })
 
+  test('mark-read failure keeps the sent inbox visible and allows a retry', async ({ page }) => {
+    await mockPreparedStudent(page)
+    const notificationId = '95000000-0000-4000-8000-000000000004'
+    let updates = 0
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/notifications'), async (route) => {
+      if (route.request().method() === 'PATCH') {
+        updates += 1
+        if (updates === 1) {
+          await route.fulfill({ status: 400, contentType: 'application/json', json: { code: 'retryable_error', message: 'private row details' } })
+        } else {
+          await route.fulfill({ status: 204, body: '' })
+        }
+        return
+      }
+      await route.fulfill({ json: [{
+        id: notificationId, type: 'account', title: 'Your notification', body: 'Keep this notice visible',
+        data: {}, scheduled_at: null, sent_at: '2026-10-27T00:00:00Z', read_at: null, created_at: '2026-10-27T00:00:00Z',
+      }] })
+    })
+    await page.goto('/')
+    await expect(page.getByText('Keep this notice visible')).toBeVisible()
+    await page.getByRole('button', { name: 'Mark read' }).click()
+    await expect(page.getByRole('alert')).toContainText('We could not mark that notification as read')
+    await expect(page.getByText('Keep this notice visible')).toBeVisible()
+    await expect(page.getByText('private row details')).toHaveCount(0)
+    await page.getByRole('button', { name: 'Mark read' }).click()
+    await expect(page.getByRole('alert')).toHaveCount(0)
+    await expect(page.getByRole('button', { name: 'Mark read' })).toHaveCount(0)
+    expect(updates).toBe(2)
+  })
+
   test('mark read constrains updates to the authenticated user', async ({ page }) => {
     await mockPreparedStudent(page)
     const notificationId = '95000000-0000-4000-8000-000000000001'
