@@ -43,6 +43,7 @@ export default function StudentNotifications() {
   const [saving, setSaving] = useState(false)
   const [markingId, setMarkingId] = useState<string | null>(null)
   const [error, setError] = useState('')
+  const [actionError, setActionError] = useState('')
   const [notice, setNotice] = useState('')
   const [showSettings, setShowSettings] = useState(false)
   const loadRun = useRef(0)
@@ -52,6 +53,7 @@ export default function StudentNotifications() {
     setLoading(true)
     setPreferencesReady(false)
     setError('')
+    setActionError('')
     setNotice('')
     try {
       const { data: auth, error: authError } = await supabase.auth.getUser()
@@ -88,7 +90,7 @@ export default function StudentNotifications() {
   async function markRead(item: NotificationRow) {
     if (item.read_at) return
     setMarkingId(item.id)
-    setError('')
+    setActionError('')
     setNotice('')
     try {
       const { data: auth, error: authError } = await supabase.auth.getUser()
@@ -101,7 +103,7 @@ export default function StudentNotifications() {
       if (updateError) throw updateError
       setItems((current) => current.map((row) => row.id === item.id ? { ...row, read_at: readAt } : row))
     } catch {
-      setError('We could not mark that notification as read. Please try again.')
+      setActionError('We could not mark that notification as read. Please try again.')
     } finally {
       setMarkingId(null)
     }
@@ -110,7 +112,7 @@ export default function StudentNotifications() {
   async function savePreferences() {
     if (!preferencesReady || loading || saving) return
     setSaving(true)
-    setError('')
+    setActionError('')
     setNotice('')
     try {
       const { data: auth, error: authError } = await supabase.auth.getUser()
@@ -128,7 +130,7 @@ export default function StudentNotifications() {
       if (saveError) throw saveError
       setNotice('Your notification preferences were saved.')
     } catch {
-      setError('We could not save your notification preferences. Please try again.')
+      setActionError('We could not save your notification preferences. Please try again.')
     } finally {
       setSaving(false)
     }
@@ -153,6 +155,7 @@ export default function StudentNotifications() {
       </div>
 
       {error && <div role="alert" className="mt-4 rounded-xl border border-red-400/20 bg-red-500/10 p-3 text-sm text-red-100">{error}<button type="button" className="ml-3 underline" onClick={() => void load()}>Retry notifications</button></div>}
+      {actionError && <p role="alert" className="mt-4 rounded-xl border border-red-400/20 bg-red-500/10 p-3 text-sm text-red-100">{actionError}</p>}
       {notice && <p role="status" className="mt-4 rounded-xl border border-emerald-300/20 bg-emerald-500/10 p-3 text-sm text-emerald-100">{notice}</p>}
 
       {showSettings && <div className="mt-5 rounded-2xl border border-white/10 bg-black/20 p-4 sm:p-5">
