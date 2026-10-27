@@ -81,7 +81,7 @@ export async function loadCbtQuestions(attemptId: string): Promise<CbtQuestion[]
   if (!Array.isArray(data)) throw new Error('Invalid question payload returned for this attempt')
   return data.map((q: any) => ({
     id: String(q.id),
-    text: String(q.text ?? ''),
+    text: String(q.question_text ?? ''),
     options: (Array.isArray(q.options) ? q.options : []).map((o: any) => ({
       key: String(o.key),
       text: String(o.text ?? ''),
