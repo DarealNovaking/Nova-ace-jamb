@@ -59,6 +59,7 @@ insert into ace.questions(id,stem,options,correct_option_key,explanation,rights_
 \i supabase/migrations/20261027180000_cbt_attempt_question_delivery.sql
 
 grant usage on schema ace, auth to authenticated;
+grant usage on schema ace to anon;
 grant execute on function auth.uid() to authenticated;
 set role authenticated;
 select set_config('test.user_id','aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',false);
