@@ -4032,3 +4032,9 @@ No database/schema/RPC/Edge Function changes, production-data writes, or deploym
 - Added mocked Playwright test in `tests/e2e/smoke.spec.ts`, code commit `2c030652ea3918ecf8492a62fe6c57982d63234f`: a failing `notification_preferences` read disables save and editing with zero writes; retry returns persisted settings (marketing enabled, email disabled), restores controls without writing defaults. Complements source guard `f62b55b9b3426066fb0a3786ec4465bc008b0cd7`.
 - Verification status: source/test committed; latest SHA CI/typecheck/build/E2E UNVERIFIED. Batch 13 remains PARTIAL; push and email delivery not implemented or claimed. No backend/database/deployment changes.
 - Next concrete action: verify latest SHA via runner-backed CI and fix any failures, then continue independently implementable frontend acceptance gaps.
+
+
+## Batch 12 referral count scope accuracy — 2026-10-27
+- Source commit `b1a44e581ad9d24b89395016829a37c54bfe94f9` updates `src/components/StudentAccountAccess.tsx` to explicitly label referral/qualified counts as based on at most the 100 most recent referral records (matching `.limit(100)`), not lifetime totals. Test commit `47eaa3821add4176cfea702530098491f32c595c` asserts the labels in `tests/e2e/smoke.spec.ts`.
+- Verification: commits inspected/written; latest SHA typecheck/build/E2E UNVERIFIED. Batch 12 remains PARTIAL (payment and referral qualification provider-dependent). No backend, database or deployment changes.
+- Next: runner-backed Verify/E2E on latest main, fix failures, continue independent frontend acceptance items.
