@@ -934,7 +934,11 @@ test.describe('ACE JAMB preparation workspaces', () => {
       flashcardRequests += 1
       if (!allowFlashcardSuccess) {
         failedFlashcardRequests += 1
-        await route.abort('failed')
+        await route.fulfill({
+          status: 503,
+          contentType: 'application/json',
+          json: { code: 'flashcards_unavailable', details: '', hint: '', message: 'private database host should not be shown' },
+        })
         return
       }
       await route.fulfill({ json: [] })
@@ -953,7 +957,6 @@ test.describe('ACE JAMB preparation workspaces', () => {
     allowFlashcardSuccess = false
     await page.getByRole('button', { name: 'Refresh deck' }).click()
     await expect.poll(() => failedFlashcardRequests).toBeGreaterThan(0)
-    console.log('FLASHCARD ERROR TEST UI:', (await page.locator('#workspace-content').innerText()).slice(0, 1200))
     await expect(page.getByRole('alert')).toContainText('We could not load your flashcards.')
     await expect(page.getByText(/private database host/)).toHaveCount(0)
 
