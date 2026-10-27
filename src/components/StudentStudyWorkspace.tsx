@@ -13,7 +13,7 @@ type Props = {
   subjects: Subject[]
   topics: Topic[]
   onBack: () => void
-  onStartCbt: (mode?: 'cbt' | 'practice', focus?: 'mistakes' | 'speed' | 'subject', subjectId?: string) => void
+  onStartCbt: (mode?: 'cbt' | 'practice', focus?: 'mistakes' | 'repeated' | 'speed' | 'subject', subjectId?: string) => void
 }
 
 const modes: { id: StudentWorkspaceMode; label: string; icon: typeof BookOpen }[] = [
@@ -89,7 +89,7 @@ export default function StudentStudyWorkspace({ mode, subjects, topics, onBack, 
             </div>
           </div></section>}
 
-        {mode === 'revision' && <StudentQuickRevision subjects={subjects} topics={topics} onStartPractice={() => onStartCbt('practice')} onReviewMistakes={() => onStartCbt('practice', 'mistakes')} />}
+        {mode === 'revision' && <StudentQuickRevision subjects={subjects} topics={topics} onStartPractice={() => onStartCbt('practice')} onReviewMistakes={() => onStartCbt('practice', 'mistakes')} onReviewRepeated={() => onStartCbt('practice', 'repeated')} />}
 
         {mode === 'flashcards' && <StudentFlashcards subjects={subjects} topics={topics} />}
 

@@ -958,6 +958,30 @@ test.describe('ACE JAMB preparation workspaces', () => {
     await expect(page.getByText('No reviewed questions are published for this session yet.', { exact: false })).toBeVisible()
   })
 
+  test('repeated mistake practice excludes questions missed only once', async ({ page }) => {
+    await mockPreparedStudent(page)
+    const repeatedId = '96000000-0000-4000-8000-000000000001'
+    const onceId = '96000000-0000-4000-8000-000000000002'
+    let startPayload: Record<string, unknown> | null = null
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/student_question_stats'), async (route) => {
+      await route.fulfill({ json: [
+        { question_id: repeatedId, attempts: 3, correct_count: 1, incorrect_count: 2, last_answered_at: '2026-10-25T12:00:00Z' },
+        { question_id: onceId, attempts: 1, correct_count: 0, incorrect_count: 1, last_answered_at: '2026-10-24T12:00:00Z' },
+      ] })
+    })
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/start_attempt'), async (route) => {
+      startPayload = route.request().postDataJSON()
+      await route.fulfill({ status: 400, contentType: 'application/json', json: { code: 'P0001', message: 'No published questions available for this attempt' } })
+    })
+    await page.goto('/?view=revision')
+    await expect(page.getByRole('heading', { level: 1, name: 'Quick revision', exact: true })).toBeVisible()
+    await page.getByRole('button', { name: 'Practise repeated mistakes' }).click()
+    await expect(page).toHaveURL(/[?&]focus=repeated/)
+    await expect.poll(() => startPayload).not.toBeNull()
+    expect(startPayload).toMatchObject({ p_mode: 'practice', p_question_ids: [repeatedId], p_question_count: 1 })
+    await expect(page.getByText('No reviewed questions are published for this session yet.', { exact: false })).toBeVisible()
+  })
+
   test('flashcard review reveals verified content and persists a self-scoped review', async ({ page }) => {
     await mockPreparedStudent(page)
     let savedReview: Record<string, unknown> | null = null

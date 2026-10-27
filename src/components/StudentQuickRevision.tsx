@@ -6,7 +6,7 @@ import type { StudentQuestionMistake } from '../lib/progressSummary'
 type Subject = { id: string; name: string; code: string }
 type Topic = { id: string; name: string; description: string | null; subjectName: string; sort_order: number; subtopics?: Array<{ id: string; name: string; description: string | null }> }
 
-export default function StudentQuickRevision({ subjects, topics, onStartPractice, onReviewMistakes }: { subjects: Subject[]; topics: Topic[]; onStartPractice: () => void; onReviewMistakes: () => void }) {
+export default function StudentQuickRevision({ subjects, topics, onStartPractice, onReviewMistakes, onReviewRepeated }: { subjects: Subject[]; topics: Topic[]; onStartPractice: () => void; onReviewMistakes: () => void; onReviewRepeated: () => void }) {
   const [subjectId, setSubjectId] = useState('all')
   const [topicId, setTopicId] = useState('')
   const [mistakes, setMistakes] = useState<StudentQuestionMistake[]>([])
@@ -56,6 +56,7 @@ export default function StudentQuickRevision({ subjects, topics, onStartPractice
         {mistakes.length > 0 && !loading && !error && <p className="mt-4 text-xs leading-5 text-white/45">Mistake review uses your own saved question history. The server will include only questions that are still approved and published; it may find none.</p>}
         <div className="mt-5 flex flex-wrap gap-3">
           {mistakes.length > 0 && !loading && !error && <button type="button" onClick={onReviewMistakes} className="min-h-11 rounded-xl bg-purple-300 px-4 py-2 text-sm font-bold text-[#120b1c]">Practise missed questions</button>}
+          {repeatedCount > 0 && !loading && !error && <button type="button" onClick={onReviewRepeated} className="min-h-11 rounded-xl border border-purple-300/35 px-4 py-2 text-sm font-bold text-purple-100">Practise repeated mistakes</button>}
           <button type="button" onClick={onStartPractice} className="min-h-11 rounded-xl border border-white/15 px-4 py-2 text-sm font-bold text-white">Start general practice</button>
         </div>
       </aside>
