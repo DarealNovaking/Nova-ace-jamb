@@ -2338,3 +2338,11 @@ Open hardening / not yet fully verified:
 - No live schema changes, data writes, grants, migrations, or deployments were performed. No regression tests were added in this pass; connected tool access did not provide a local checkout/test runner. The failed assumed-column count query remains a documented no-op.
 
 Next exact action: inspect the remaining advisor-listed SECURITY DEFINER function definitions and their repository migration history/call sites; verify the exposed-schema/function grants and `public` schema CREATE privileges. Then add a focused migration/test proposal on a feature branch, run available checks, and request/confirm the production gate before applying anything.
+
+
+## Current FCB-01 blocker — safe CBT question delivery (2026-10-27)
+- Live `ace.questions` uses `stem`, not `question_text`; the frontend `src/lib/cbtService.ts` requests the nonexistent `question_text` field.
+- Live privilege checks: `authenticated` has no SELECT on `ace.questions`. RLS policies do not grant privileges. Do not grant direct whole-row SELECT because the row includes `correct_option_key` and `explanation`.
+- Active attempt RPCs inspected: start/resume/save/submit. Authenticated EXECUTE grants exist; no anon/PUBLIC EXECUTE appeared in the inspected grants. Owner checks visible in resume/save/submit. Full FCB-01 audit remains open.
+- No production changes. Master handoff updated in commit `26c966d3f85ffa7227d12f9f19406cd5bfec6982`.
+- **Next exact action:** search later migrations/tests for an existing safe answer-key-free question delivery API; if absent, implement one with regression tests and align the client DTO. Keep catalogue product work retired.
