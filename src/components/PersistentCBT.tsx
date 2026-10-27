@@ -59,6 +59,7 @@ export default function PersistentCBT({ attemptId = null, questionCount = 20, du
   const [error, setError] = useState('')
   const [result, setResult] = useState<Awaited<ReturnType<typeof submitCbt>> | null>(null)
   const [markedForReview, setMarkedForReview] = useState<string[]>([])
+  const [confirmSubmit, setConfirmSubmit] = useState(false)
   const finishing = useRef(false)
 
   const answers = useMemo(() => {
@@ -74,6 +75,7 @@ export default function PersistentCBT({ attemptId = null, questionCount = 20, du
     setLoading(true)
     setError('')
     setResult(null)
+    setConfirmSubmit(false)
     try {
       let state: CbtAttemptState
       const storedAttemptId = attemptToResume ?? (storageKey ? window.localStorage.getItem(storageKey) : null)
@@ -179,6 +181,7 @@ export default function PersistentCBT({ attemptId = null, questionCount = 20, du
       // Older idempotent submit responses may omit total_questions; the saved attempt order is authoritative.
       const completed = { ...submitted, total_questions: submitted.total_questions ?? attempt.question_order.length }
       setResult(completed)
+      setConfirmSubmit(false)
       if (storageKey) window.localStorage.removeItem(storageKey)
       try { window.localStorage.removeItem('ace-cbt-review-flags:' + attempt.attempt_id) } catch { /* Optional local storage. */ }
       setMarkedForReview([])
@@ -213,9 +216,38 @@ export default function PersistentCBT({ attemptId = null, questionCount = 20, du
     }
   }
 
+  function submitRequested() {
+    if (saving || submitting || !attempt || attempt.status !== 'active') return
+    const unanswered = questions.filter((item) => answers[item.id] == null).length
+    if (remaining > 0 && (unanswered > 0 || markedForReview.length > 0)) {
+      setConfirmSubmit(true)
+      return
+    }
+    void finish()
+  }
+
+  function reviewBeforeSubmit() {
+    const firstMarked = questions.findIndex((item) => markedForReview.includes(item.id))
+    const firstUnanswered = questions.findIndex((item) => answers[item.id] == null)
+    setCurrent(firstMarked >= 0 ? firstMarked : firstUnanswered >= 0 ? firstUnanswered : current)
+    setConfirmSubmit(false)
+  }
+
   if (loading) return <div aria-busy="true" className="glass-card rounded-3xl p-8 text-center"><div role="status" aria-live="polite" aria-atomic="true"><Loader2 aria-hidden="true" className="mx-auto animate-spin"/><p className="mt-3 text-sm text-white/50">Restoring CBT session…</p></div></div>
   if (error && !attempt) return <div className="glass-card rounded-3xl p-6"><p className="font-semibold">CBT unavailable</p><p role="alert" className="mt-2 text-sm text-white/50">{error}</p><button type="button" className="mt-5 rounded-xl bg-white px-4 py-3 font-bold text-black" onClick={() => void load(attemptId ?? undefined)}>Retry</button></div>
-  if (result) return <div className="glass-card mx-auto max-w-md rounded-3xl p-8 text-center"><Trophy className="mx-auto"/><p className="mt-4 text-5xl font-black">{result.score}%</p><p className="mt-2 text-white/50">{result.correct_count}/{result.total_questions} correct</p><p className="mt-4 text-xs text-white/30">Saved server-side as attempt {result.attempt_id}</p></div>
+  if (result) return <section aria-labelledby="cbt-result-title" className="glass-card mx-auto max-w-lg rounded-3xl p-8 text-center">
+    <Trophy className="mx-auto text-purple-200" aria-hidden="true"/>
+    <h1 id="cbt-result-title" className="mt-3 text-xl font-bold">Session completed</h1>
+    <p className="mt-4 text-5xl font-black">{result.score}%</p>
+    <p className="mt-2 text-white/60">{result.correct_count}/{result.total_questions} correct</p>
+    <div className="mt-5 rounded-xl border border-white/10 p-4 text-left text-sm text-white/70">
+      <h2 className="font-bold">Saved answer summary</h2>
+      <p className="mt-2">{result.answered_count} answered · {Math.max(0, result.total_questions - result.answered_count)} unanswered</p>
+      <p className="mt-2 text-xs text-white/45">Server-scored result from this attempt. This is not a predicted JAMB score.</p>
+    </div>
+    <a href="/?view=progress" className="mt-5 inline-flex min-h-11 items-center justify-center rounded-xl bg-purple-300 px-5 py-3 text-sm font-bold text-[#120b1c]">View progress history</a>
+    <p className="mt-4 break-all text-xs text-white/30">Saved server-side as attempt {result.attempt_id}</p>
+  </section>
   if (attempt && attempt.status !== 'active') return <div className="glass-card rounded-3xl p-6"><p className="font-semibold">This CBT attempt is no longer active.</p><p className="mt-2 text-sm text-white/50">Your saved result remains attached to your account when the attempt is completed. You can start a new attempt when published questions are available.</p><button type="button" onClick={() => void load()} className="mt-5 rounded-xl bg-white px-4 py-3 font-bold text-black">Start a new CBT</button></div>
   if (!attempt || !question) return <div className="glass-card rounded-3xl p-6">No CBT questions are currently available.</div>
 
@@ -231,6 +263,14 @@ export default function PersistentCBT({ attemptId = null, questionCount = 20, du
       <div role="timer" aria-label={`Time remaining ${formatTime(remaining)}`} className={`rounded-xl px-4 py-2 font-mono ${remaining < 60 ? 'bg-red-500/20 text-red-200' : 'bg-white/5'}`}><Clock3 aria-hidden="true" className="mr-2 inline" size={16}/>{formatTime(remaining)}</div>
     </div>
     {error && <div role="alert" className="rounded-xl border border-red-400/20 bg-red-500/10 p-3 text-sm text-red-100">{error}</div>}
+    {confirmSubmit && <section aria-labelledby="cbt-submission-confirm" className="rounded-2xl border border-amber-200/30 bg-amber-300/[.06] p-5">
+      <h2 id="cbt-submission-confirm" className="text-lg font-bold">Review before submitting</h2>
+      <p className="mt-2 text-sm leading-6 text-white/70">{pendingCount} unanswered and {markedCount} marked for review. Submission ends this attempt, and your saved answers will be scored by the server.</p>
+      <div className="mt-4 flex flex-wrap gap-3">
+        <button type="button" onClick={reviewBeforeSubmit} className="min-h-11 rounded-xl border border-white/20 px-4 py-3 text-sm font-semibold">Review questions</button>
+        <button type="button" disabled={saving || submitting} onClick={() => void finish()} className="min-h-11 rounded-xl bg-purple-300 px-4 py-3 text-sm font-bold text-[#120b1c] disabled:opacity-40">Submit anyway</button>
+      </div>
+    </section>}
     <p role="status" aria-live="polite" aria-atomic="true" className="min-h-5 text-sm text-purple-200/80">{saving ? 'Saving your answer…' : submitting ? 'Submitting your CBT…' : ''}</p>
     <div className="grid gap-5 lg:grid-cols-[1fr_230px]">
       <section className="glass-card rounded-3xl p-6">
@@ -245,7 +285,7 @@ export default function PersistentCBT({ attemptId = null, questionCount = 20, du
           <button type="button" onClick={toggleReviewMark} aria-pressed={markedForReview.includes(question.id)} className="min-h-11 rounded-xl border border-purple-300/40 px-4 py-2 text-sm font-semibold text-purple-100">{markedForReview.includes(question.id) ? 'Remove review mark' : 'Mark for review'}</button>
           <button type="button" onClick={nextUnanswered} disabled={pendingCount === 0} className="min-h-11 rounded-xl border border-white/15 px-4 py-2 text-sm font-semibold disabled:opacity-40">Next unanswered</button>
         </div>
-        <div className="mt-5 flex gap-3"><button type="button" disabled={current === 0} onClick={() => setCurrent((v) => Math.max(0, v - 1))} className="flex-1 rounded-xl border border-white/10 py-3 disabled:opacity-30">Previous</button>{current < questions.length - 1 ? <button type="button" onClick={() => setCurrent((v) => Math.min(questions.length - 1, v + 1))} className="flex-1 rounded-xl bg-white py-3 font-bold text-black">Next</button> : <button type="button" disabled={submitting} onClick={() => void finish()} className="flex-1 rounded-xl bg-purple-500 py-3 font-bold">{submitting ? 'Submitting…' : 'Submit CBT'}</button>}</div>
+        <div className="mt-5 flex gap-3"><button type="button" disabled={current === 0} onClick={() => setCurrent((v) => Math.max(0, v - 1))} className="flex-1 rounded-xl border border-white/10 py-3 disabled:opacity-30">Previous</button>{current < questions.length - 1 ? <button type="button" onClick={() => setCurrent((v) => Math.min(questions.length - 1, v + 1))} className="flex-1 rounded-xl bg-white py-3 font-bold text-black">Next</button> : <button type="button" disabled={submitting || saving} onClick={submitRequested} className="flex-1 rounded-xl bg-purple-500 py-3 font-bold disabled:opacity-40">{submitting ? 'Submitting…' : 'Submit CBT'}</button>}</div>
       </section>
       <aside aria-label="Question navigation" className="glass-card h-fit rounded-2xl p-4"><p id="cbt-question-map-label" className="text-xs text-white/40">Question map</p><p className="mt-2 text-xs text-white/60">{answeredCount} answered · {pendingCount} unanswered · {markedCount} marked for review</p><p className="mt-2 text-xs text-white/40">Review marks remain on this device during an active attempt; answers are saved separately on the server.</p><div role="group" aria-labelledby="cbt-question-map-label" className="mt-3 grid grid-cols-4 gap-2">{questions.map((item, index) => <button key={item.id} type="button" aria-label={`Go to question ${index + 1}, ${answers[item.id] != null ? 'answered' : 'unanswered'}${markedForReview.includes(item.id) ? ', marked for review' : ''}`} aria-current={index === current ? 'step' : undefined} onClick={() => setCurrent(index)} className={`h-9 rounded-lg text-xs ${index === current ? 'bg-white text-black' : markedForReview.includes(item.id) ? 'border border-purple-300 bg-purple-500/20 text-purple-100' : answers[item.id] != null ? 'bg-purple-500/25' : 'bg-white/5'}`}>{index + 1}</button>)}</div></aside>
     </div>
