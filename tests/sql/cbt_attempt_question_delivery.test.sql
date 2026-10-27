@@ -58,6 +58,29 @@ insert into ace.questions(id,stem,options,correct_option_key,explanation,rights_
 
 \i supabase/migrations/20261027180000_cbt_attempt_question_delivery.sql
 
+do $privileges$
+declare
+  v_proc oid := to_regprocedure('ace.get_attempt_questions(uuid)');
+begin
+  if not has_function_privilege('authenticated', v_proc, 'EXECUTE') then
+    raise exception 'authenticated must be able to execute question delivery';
+  end if;
+  if has_function_privilege('anon', v_proc, 'EXECUTE') then
+    raise exception 'anon must not be able to execute question delivery';
+  end if;
+  if exists (
+    select 1
+    from pg_proc p
+    cross join lateral aclexplode(coalesce(p.proacl, acldefault('f', p.proowner))) acl
+    where p.oid = v_proc
+      and acl.grantee = 0
+      and acl.privilege_type = 'EXECUTE'
+  ) then
+    raise exception 'PUBLIC must not have EXECUTE on question delivery';
+  end if;
+end
+$privileges$;
+
 grant usage on schema ace, auth to authenticated;
 grant usage on schema ace to anon;
 grant execute on function auth.uid() to authenticated;
