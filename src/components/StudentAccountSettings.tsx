@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import { Loader2, Settings2 } from 'lucide-react'
 import { getStudentPreferences, getStudentProfile, updateStudentPreferences, updateStudentProfile } from '../lib/studentService'
 
 export default function StudentAccountSettings() {
   const [open, setOpen] = useState(false)
+  const loadRun = useRef(0)
   const [loading, setLoading] = useState(false)
   const [loaded, setLoaded] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -17,11 +18,13 @@ export default function StudentAccountSettings() {
   const [dailyMinutes, setDailyMinutes] = useState('')
 
   async function load() {
+    const run = ++loadRun.current
     setLoading(true)
     setLoaded(false)
     setError('')
     try {
       const [profile, preferences] = await Promise.all([getStudentProfile(), getStudentPreferences()])
+      if (run !== loadRun.current) return
       setDisplayName(profile.display_name ?? '')
       setTargetScore(profile.target_score === null ? '' : String(profile.target_score))
       setInstitution(profile.institution ?? '')
@@ -29,13 +32,16 @@ export default function StudentAccountSettings() {
       setDailyMinutes(preferences.daily_minutes === null ? '' : String(preferences.daily_minutes))
       setLoaded(true)
     } catch {
-      setError('We could not load your account settings. Check your connection and try again.')
+      if (run === loadRun.current) setError('We could not load your account settings. Check your connection and try again.')
     } finally {
-      setLoading(false)
+      if (run === loadRun.current) setLoading(false)
     }
   }
 
-  useEffect(() => { if (open) void load() }, [open])
+  useEffect(() => {
+    if (open) void load()
+    return () => { loadRun.current += 1 }
+  }, [open])
 
   async function save(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
