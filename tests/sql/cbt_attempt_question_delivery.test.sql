@@ -43,7 +43,7 @@ create table ace.questions (
 
 insert into ace.attempts(id,user_id,status,question_order) values
  ('10000000-0000-4000-8000-000000000001','aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa','active',
-  '["20000000-0000-4000-8000-000000000002","20000000-0000-4000-8000-000000000001"]'),
+  '["20000000-0000-4000-8000-000000000002","20000000-0000-4000-8000-000000000001","20000000-0000-4000-8000-000000000004"]'),
  ('10000000-0000-4000-8000-000000000002','bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb','active',
   '["20000000-0000-4000-8000-000000000001"]');
 insert into ace.questions(id,stem,options,correct_option_key,explanation,rights_status,active,review_status) values
@@ -52,7 +52,9 @@ insert into ace.questions(id,stem,options,correct_option_key,explanation,rights_
  ('20000000-0000-4000-8000-000000000002','Question two',
   '[{"key":"C","text":"Gamma"},{"key":"D","text":"Delta"}]','D','Secret explanation two','licensed',true,'published'),
  ('20000000-0000-4000-8000-000000000003','Draft question',
-  '[{"key":"X","text":"Hidden"}]','X','Draft explanation','owned',true,'draft');
+  '[{"key":"X","text":"Hidden"}]','X','Draft explanation','owned',true,'draft'),
+ ('20000000-0000-4000-8000-000000000004','Restricted question',
+  '[{"key":"Y","text":"Not licensed"}]','Y','Restricted explanation','restricted',true,'published');
 
 \i supabase/migrations/20261027180000_cbt_attempt_question_delivery.sql
 
