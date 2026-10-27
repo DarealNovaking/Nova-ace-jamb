@@ -1002,6 +1002,9 @@ test.describe('ACE JAMB admin operations count recovery', () => {
     await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/is_admin'), async (route) => {
       await route.fulfill({ json: true })
     })
+    await page.goto('/admin')
+    const operations = page.locator('section[aria-labelledby="admin-operations-title"]')
+    await expect(operations.getByRole('button', { name: 'Refresh status' })).toBeEnabled()
     let allowRead = false
     let metricReads = 0
     await page.route((url) => new URL(url).pathname.startsWith('/rest/v1/'), async (route) => {
@@ -1013,8 +1016,8 @@ test.describe('ACE JAMB admin operations count recovery', () => {
         await route.fulfill({ status: 200, headers: { 'content-range': '*/0', 'access-control-expose-headers': 'content-range' }, body: '' })
       }
     })
-    await page.goto('/admin')
-    const operations = page.locator('section[aria-labelledby="admin-operations-title"]')
+    await operations.getByRole('button', { name: 'Refresh status' }).click()
+    await expect.poll(() => metricReads).toBeGreaterThan(0)
     await expect(operations.getByRole('alert')).toContainText('Operational counts could not be loaded')
     await expect(operations.getByText('Unavailable', { exact: true })).toHaveCount(9)
     await expect(operations.getByText('Last checked', { exact: false })).toHaveCount(0)
@@ -1075,6 +1078,8 @@ test.describe('ACE JAMB academic editor access', () => {
     await page.route(`${projectUrl}/rest/v1/rpc/is_admin_or_editor`, async (route) => {
       await route.fulfill({ json: true })
     })
+    await page.goto('/admin-academic')
+    await expect(page.getByText('No syllabus versions found')).toBeVisible()
     let allowRead = false
     let versionReads = 0
     await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/syllabus_versions'), async (route) => {
@@ -1087,7 +1092,8 @@ test.describe('ACE JAMB academic editor access', () => {
         await route.fulfill({ json: [] })
       }
     })
-    await page.goto('/admin-academic')
+    await page.getByRole('button', { name: 'Refresh', exact: true }).click()
+    await expect.poll(() => versionReads).toBeGreaterThan(0)
     await expect(page.getByRole('alert')).toContainText('Academic structure could not be loaded')
     await expect(page.getByText('Create a draft syllabus version')).toHaveCount(0)
     await expect(page.getByText(/private database host|private_database_code/)).toHaveCount(0)
