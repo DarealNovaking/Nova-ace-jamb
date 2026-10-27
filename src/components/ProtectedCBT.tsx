@@ -8,13 +8,17 @@ export default function ProtectedCBT() {
   const [signedIn, setSignedIn] = useState(false)
   const [storageKey, setStorageKey] = useState<string | null>(null)
   const [mode] = useState<'cbt' | 'practice'>(() => new URLSearchParams(window.location.search).get('mode') === 'practice' ? 'practice' : 'cbt')
-  const [focus] = useState<'mistakes' | 'speed' | null>(() => {
+  const [focus] = useState<'mistakes' | 'speed' | 'subject' | null>(() => {
     const params = new URLSearchParams(window.location.search)
     if (params.get('mode') !== 'practice') return null
     const requested = params.get('focus')
-    return requested === 'mistakes' || requested === 'speed' ? requested : null
+    return requested === 'mistakes' || requested === 'speed' || requested === 'subject' ? requested : null
   })
-  const recoveryScope = focus ? `practice-${focus}` : mode
+  const [subjectId] = useState<string | null>(() => {
+    const id = new URLSearchParams(window.location.search).get('subject')
+    return id && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id) ? id : null
+  })
+  const recoveryScope = focus === 'subject' ? `practice-subject-${subjectId ?? 'invalid'}` : focus ? `practice-${focus}` : mode
   const [focusedQuestionIds, setFocusedQuestionIds] = useState<string[]>([])
   const [focusLoading, setFocusLoading] = useState(focus === 'mistakes')
   const [focusError, setFocusError] = useState('')
@@ -79,10 +83,11 @@ export default function ProtectedCBT() {
       <button type="submit" disabled={busy} className="w-full rounded-xl bg-white py-3 font-bold text-black disabled:opacity-50">{busy ? 'Signing in…' : 'Sign in'}</button>
     </form>
   </section>
+  if (focus === 'subject' && !subjectId) return <section className="glass-card mx-auto max-w-lg rounded-3xl p-6"><h1 className="text-2xl font-black">Select a saved subject first</h1><p className="mt-3 text-sm text-white/60">Start subject practice from your preparation workspace.</p><a href="/?view=practice" className="mt-4 inline-block rounded-xl bg-white px-4 py-3 font-bold text-black">Choose a subject</a></section>
   if (focus === 'mistakes') {
     if (focusLoading) return <section aria-busy="true" className="glass-card mx-auto max-w-lg rounded-3xl p-6"><p role="status" className="text-white/70">Loading your saved mistake questions…</p></section>
     if (focusError) return <section className="glass-card mx-auto max-w-lg rounded-3xl p-6"><p role="alert" className="text-white/75">{focusError}</p><button type="button" className="mt-4 rounded-xl bg-white px-4 py-3 font-bold text-black" onClick={() => setFocusRetry((value) => value + 1)}>Retry mistake history</button></section>
     if (!focusedQuestionIds.length) return <section className="glass-card mx-auto max-w-lg rounded-3xl p-6"><h1 className="text-2xl font-black">No mistakes to practise yet</h1><p className="mt-3 text-sm text-white/60">There are no saved missed questions for this account. Complete approved practice first, or choose general practice.</p><a href="/?view=revision" className="mt-4 inline-block rounded-xl bg-white px-4 py-3 font-bold text-black">Return to revision</a></section>
   }
-  return <PersistentCBT storageKey={storageKey} mode={mode} questionIds={focus === 'mistakes' ? focusedQuestionIds : undefined} questionCount={focus === 'mistakes' ? focusedQuestionIds.length : focus === 'speed' ? 10 : undefined} durationSeconds={focus === 'speed' ? 600 : undefined} focus={focus} />
+  return <PersistentCBT storageKey={storageKey} mode={mode} questionIds={focus === 'mistakes' ? focusedQuestionIds : undefined} questionCount={focus === 'mistakes' ? focusedQuestionIds.length : focus === 'speed' ? 10 : undefined} durationSeconds={focus === 'speed' ? 600 : undefined} subjectId={focus === 'subject' ? subjectId : undefined} focus={focus} />
 }

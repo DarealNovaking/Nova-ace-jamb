@@ -122,7 +122,7 @@ export default function StudentDashboard() {
     }
   }, [])
 
-  const startCbt = (mode: 'cbt' | 'practice' = 'cbt', focus?: 'mistakes' | 'speed') => {
+  const startCbt = (mode: 'cbt' | 'practice' = 'cbt', focus?: 'mistakes' | 'speed' | 'subject', subjectId?: string) => {
     const url = new URL(window.location.href)
     url.searchParams.set('cbt', '1')
     url.searchParams.delete('view')
@@ -130,6 +130,8 @@ export default function StudentDashboard() {
     else url.searchParams.delete('mode')
     if (mode === 'practice' && focus) url.searchParams.set('focus', focus)
     else url.searchParams.delete('focus')
+    if (mode === 'practice' && focus === 'subject' && subjectId && subjects.some((subject) => subject.id === subjectId)) url.searchParams.set('subject', subjectId)
+    else url.searchParams.delete('subject')
     window.history.pushState({}, '', url)
     window.dispatchEvent(new PopStateEvent('popstate'))
   }
