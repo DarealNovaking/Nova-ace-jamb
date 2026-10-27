@@ -923,3 +923,14 @@ No database/schema/RPC/Edge Function changes, production-data writes, or deploym
 - Source: `src/components/PersistentCBT.tsx`. Tests: `tests/e2e/smoke.spec.ts`. No schema, data, deployment, catalogue or payment change.
 - **Status:** code change recorded; new code/test SHA's Verify/E2E remains **UNVERIFIED** until terminal green. Full CBT mock composition and whole-product frontend acceptance remain open.
 - **Exact next action:** inspect the freshest GitHub Verify and ACE JAMB E2E terminal result; fix reproducible timer/recovery failures; continue remaining frontend acceptance gaps while respecting missing education/service contracts.
+
+
+## Batch 8 saved-preferences load-failure guard — 2026-10-27
+
+- **Found from source:** `StudentStudyPlan` had fallback UI defaults (60 minutes, weekdays) and kept Save enabled even after `getStudentPreferences` failed. A student saving during a temporary outage could overwrite real account preferences with those defaults.
+- **Frontend fix:** track unsuccessful initial/retry loads explicitly, disable time/day inputs and Save until account preferences have loaded successfully, and offer an accessible retry. Saving remains enabled after a save-specific failure if the original account read succeeded. `savePlan` also enforces the guard in code.
+- **Fixture regression:** `tests/e2e/smoke.spec.ts` injects a failed preferences GET and checks Save blocked/no write; retry returns 75 minutes + Friday and the UI restores those saved values before enabling Save. This test does not touch real student data.
+- **Files:** `src/components/StudentStudyPlan.tsx`, `tests/e2e/smoke.spec.ts`, three continuity documents. No SQL/provider/deploy/payment/content writes.
+- **Previous app verification:** recovery pointer fix `7c5c778fd1442ff0f30639731f5204a51c637660` passed Verify [40472126194](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40472126194) and ACE JAMB E2E [40472126205](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40472126205). Monotonic CBT timer code `58be8f44553402ae3c66fb1d5a6dba9367c8fffb` passed Verify [40472442407](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40472442407), while E2E [40472442404](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40472442404) was still running when inspected.
+- **Acceptance:** front-end data-integrity guard implemented, but code/test SHA terminal Verify/E2E still pending at time of handoff. Persisted daily schedule/adaptive planning remains a separate backend dependency. No whole-product frontend completion is claimed.
+- **Exact next action:** inspect latest main SHA-matched Verify/E2E and resolve any reproduced failure, then move to the next safely implementable frontend acceptance criterion.

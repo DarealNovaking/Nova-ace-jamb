@@ -1719,6 +1719,46 @@ test.describe('ACE JAMB dashboard recovery states', () => {
   })
 })
 
+test.describe('ACE JAMB study-preference loading safety', () => {
+  test('does not save default preferences after a failed account read; retry restores real saved choices', async ({ page }) => {
+    await mockPreparedStudent(page)
+    let allowRead = false
+    let writes = 0
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/student_preferences'), async (route) => {
+      if (route.request().method() === 'POST') {
+        writes += 1
+        await route.fulfill({ status: 201, json: [] })
+        return
+      }
+      if (!allowRead) {
+        await route.fulfill({ status: 400, contentType: 'application/json', json: {
+          code: 'temporary_database_error', message: 'private user preferences details',
+        } })
+        return
+      }
+      await route.fulfill({ json: {
+        user_id: userId, daily_minutes: 75, preferred_study_days: ['friday'],
+        learning_style: null, timezone: null, preferences: {},
+      } })
+    })
+    await page.goto('/?view=plan')
+    await expect(page.getByRole('heading', { name: 'Build your study routine' })).toBeVisible()
+    await expect(page.getByRole('alert')).toContainText('We could not load your saved study preferences')
+    await expect(page.getByText('private user preferences details')).toHaveCount(0)
+    await expect(page.getByRole('button', { name: 'Save study preferences' })).toBeDisabled()
+    expect(writes).toBe(0)
+
+    allowRead = true
+    await page.getByRole('button', { name: 'Retry loading study preferences' }).click()
+    await expect(page.getByLabel('Daily study time')).toHaveValue('75')
+    await expect(page.getByLabel('Fri', { exact: true })).toBeChecked()
+    await expect(page.getByLabel('Mon', { exact: true })).not.toBeChecked()
+    await expect(page.getByRole('alert')).toHaveCount(0)
+    await expect(page.getByRole('button', { name: 'Save study preferences' })).toBeEnabled()
+    expect(writes).toBe(0)
+  })
+})
+
 test.describe('ACE JAMB study-plan recovery', () => {
   test('does not expose provider details when saving study preferences fails', async ({ page }) => {
     await mockPreparedStudent(page)
