@@ -45,6 +45,7 @@ export default function StudentAccountSettings() {
     setSaving(true)
     setError('')
     setNotice('')
+    let profileCommitted = false
     try {
       const score = Number(targetScore)
       const minutes = Number(dailyMinutes)
@@ -56,10 +57,18 @@ export default function StudentAccountSettings() {
         institution,
         course,
       })
+      profileCommitted = true
       await updateStudentPreferences({ daily_minutes: minutes })
       setNotice('Your account settings were saved.')
     } catch (caught) {
-      setError(caught instanceof Error && /target score|daily study time/i.test(caught.message) ? caught.message : 'We could not save your account settings. Check your entries and try again.')
+      if (profileCommitted) {
+        // The two existing endpoints are not an atomic transaction. Never
+        // pretend both writes failed or let the student blindly resubmit stale fields.
+        setLoaded(false)
+        setError('Your profile may have saved, but we could not confirm your study-time update. Reload saved account settings before making more changes.')
+      } else {
+        setError(caught instanceof Error && /target score|daily study time/i.test(caught.message) ? caught.message : 'We could not save your account settings. Check your entries and try again.')
+      }
     } finally {
       setSaving(false)
     }

@@ -2120,3 +2120,13 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - **Changed:** `src/components/StudentAccountSettings.tsx`, `tests/e2e/smoke.spec.ts`, three handoffs. No database/migration/publishing/provider/deployment actions. The previous study-plan guard lives on `207282917e1a289ba922e62b5a53dff693781c2a`.
 - **Verification:** new SHA CI is pending and must be checked; no live authenticated device test is claimed.
 - **Next safe step:** inspect newest Verify and E2E results and fix only reproducible failures, then continue the remaining frontend acceptance work.
+
+
+## Account settings split-update safety — 2026-10-27
+
+- The existing account save uses `updateStudentProfile` and `updateStudentPreferences` as two separate authorized writes, **not** an atomic backend transaction. If the profile write succeeds and the preference write fails, the earlier generic failure copy misleadingly suggests no settings saved while the form still allows blind resubmission.
+- **Frontend-only correction:** track successful profile write; when the second call fails, explicitly disclose partial-commit uncertainty, hide editing until saved values are reloaded, and offer Retry loading account settings. No attempt at client-side rollback, user data inference or new database contract. Earlier failure of the first write remains retryable within the loaded form.
+- **Mocked E2E:** first profile PATCH success, second preferences POST error; assert no combined success claim, reload shows updated profile and unchanged 60-minute preference, no automatic duplicate writes.
+- Files: `src/components/StudentAccountSettings.tsx`, `tests/e2e/smoke.spec.ts`, and continuity docs. Existing tests for successful dual updates and initial read errors remain. No backend/schema, deployment or production data write.
+- **Verification:** CI on the new commit must be inspected before acceptance. Atomic account saves remain a backend contract gap, not claimed complete.
+- **Next action:** inspect terminal Verify and E2E and repair any reproductions; continue remaining frontend-only acceptance tasks.

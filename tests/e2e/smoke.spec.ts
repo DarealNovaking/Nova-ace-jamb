@@ -1853,6 +1853,57 @@ test.describe('ACE JAMB account settings recovery safety', () => {
   })
 })
 
+test.describe('ACE JAMB account settings partial-update recovery', () => {
+  test('a failed second write never claims the combined save succeeded and requires a refresh', async ({ page }) => {
+    await mockPreparedStudent(page)
+    let savedName = 'Test Futarian'
+    let profilePatches = 0
+    let preferenceWrites = 0
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/profiles'), async (route) => {
+      const method = route.request().method()
+      if (method === 'PATCH') {
+        profilePatches += 1
+        savedName = route.request().postDataJSON().display_name
+      }
+      await route.fulfill({ json: {
+        id: userId, email: 'student@example.test', display_name: savedName, target_score: 300,
+        institution: null, course: null, institution_id: null, program_id: null, prep_time_minutes: null,
+        exam_season: null, created_at: '2026-01-01T00:00:00.000Z', updated_at: '2026-10-27T00:00:00.000Z',
+      } })
+    })
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/student_preferences'), async (route) => {
+      if (route.request().method() === 'POST') {
+        preferenceWrites += 1
+        await route.fulfill({ status: 400, contentType: 'application/json', json: {
+          code: 'temporary_error', message: 'private failed write details',
+        } })
+        return
+      }
+      await route.fulfill({ json: {
+        user_id: userId, learning_style: null, daily_minutes: 60,
+        preferred_study_days: [], timezone: null, preferences: {},
+      } })
+    })
+    await page.goto('/')
+    await expect(page.getByRole('heading', { name: 'Welcome back, Test Futarian.' })).toBeVisible()
+    await page.getByRole('button', { name: 'Edit settings' }).click()
+    await expect(page.getByLabel('Display name')).toHaveValue('Test Futarian')
+    await page.getByLabel('Display name').fill('Profile was saved')
+    await page.getByRole('button', { name: 'Save account settings' }).click()
+    await expect(page.getByRole('alert')).toContainText('Your profile may have saved')
+    await expect(page.getByText('private failed write details')).toHaveCount(0)
+    await expect(page.getByRole('button', { name: 'Save account settings' })).toHaveCount(0)
+    expect(profilePatches).toBe(1)
+    expect(preferenceWrites).toBe(1)
+
+    await page.getByRole('button', { name: 'Retry loading account settings' }).click()
+    await expect(page.getByLabel('Display name')).toHaveValue('Profile was saved')
+    await expect(page.getByLabel('Daily study time (minutes)')).toHaveValue('60')
+    expect(profilePatches).toBe(1)
+    expect(preferenceWrites).toBe(1)
+  })
+})
+
 test.describe('ACE JAMB account settings first-use regression', () => {
   test('settings load and save when the student preferences row does not exist yet', async ({ page }) => {
     await mockPreparedStudent(page)
