@@ -1,7 +1,25 @@
 -- Source review proposal only; NOT applied to production.
 -- Authenticated owner operations replace unsafe direct API table mutation.
--- Content/version immutability, official mock configuration and quotas remain release gates.
+-- Private immutable question versions are captured at start.
+-- Official mock configuration, quotas and entitlement remain separate release gates.
 begin;
+
+alter table ace.attempts add column if not exists question_snapshot jsonb not null default '[]'::jsonb;
+create or replace function ace.guard_attempt_snapshot() returns trigger
+language plpgsql set search_path=pg_catalog,ace as $$
+begin
+ if new.question_snapshot is distinct from old.question_snapshot
+    or new.question_order is distinct from old.question_order
+    or new.option_order is distinct from old.option_order then
+  raise exception 'Attempt paper is immutable' using errcode='23514';
+ end if;
+ return new;
+end;
+$$;
+revoke all on function ace.guard_attempt_snapshot() from public,anon,authenticated;
+drop trigger if exists guard_attempt_snapshot on ace.attempts;
+create trigger guard_attempt_snapshot before update of question_snapshot,question_order,option_order
+on ace.attempts for each row execute function ace.guard_attempt_snapshot();
 
 CREATE OR REPLACE FUNCTION ace.start_attempt(p_mode text, p_subject_id uuid DEFAULT NULL::uuid, p_question_count integer DEFAULT 20, p_duration_seconds integer DEFAULT 1800, p_question_ids uuid[] DEFAULT NULL::uuid[])
  RETURNS jsonb
@@ -19,6 +37,7 @@ declare
   v_q uuid;
   v_opts jsonb;
   v_opt_keys jsonb;
+  v_snapshot jsonb;
 begin
   if v_user is null then raise exception 'Authentication required' using errcode='28000'; end if;
   if p_mode is null or p_mode not in ('practice','cbt','mock','learning','revision','ai_practice') then raise exception 'Unsupported attempt mode' using errcode='22023'; end if;
@@ -57,8 +76,23 @@ begin
   select jsonb_agg(to_jsonb(qid) order by ord) into v_order
   from unnest(v_ids) with ordinality u(qid,ord);
 
+  -- Lock before copying so concurrent authoring cannot mix paper versions/options.
+  perform q.id from ace.questions q where q.id=any(v_ids)
+    and q.active=true and q.review_status='published'
+    and q.rights_status in ('owned','licensed','permitted') order by q.id for share;
+  select jsonb_agg(jsonb_build_object('id',q.id,'content_version',q.content_version,
+    'stem',q.stem,'options',q.options,'correct_option_key',q.correct_option_key,
+    'subject_id',q.subject_id,'topic_id',q.topic_id,'difficulty',q.difficulty)
+    order by array_position(v_ids,q.id)) into v_snapshot
+  from ace.questions q where q.id=any(v_ids)
+    and q.active=true and q.review_status='published'
+    and q.rights_status in ('owned','licensed','permitted');
+  if v_snapshot is null or jsonb_array_length(v_snapshot)<>cardinality(v_ids) then
+    raise exception 'Attempt questions unavailable' using errcode='P0002';
+  end if;
+
   foreach v_q in array v_ids loop
-    select options into v_opts from ace.questions where id = v_q;
+    select item->'options' into v_opts from jsonb_array_elements(v_snapshot) item where item->>'id'=v_q::text;
     select jsonb_agg(e.value->>'key' order by md5(v_seed::text || ':' || v_q::text || ':' || (e.value->>'key')))
       into v_opt_keys
     from jsonb_array_elements(v_opts) e(value)
@@ -66,8 +100,8 @@ begin
     v_options := v_options || jsonb_build_object(v_q::text, coalesce(v_opt_keys,'[]'::jsonb));
   end loop;
 
-  insert into ace.attempts(user_id,mode,subject_id,started_at,duration_seconds,random_seed,question_order,option_order,status)
-  values(v_user,p_mode,p_subject_id,now(),p_duration_seconds,v_seed,v_order,v_options,'active')
+  insert into ace.attempts(user_id,mode,subject_id,started_at,duration_seconds,random_seed,question_order,option_order,status,question_snapshot)
+  values(v_user,p_mode,p_subject_id,now(),p_duration_seconds,v_seed,v_order,v_options,'active',v_snapshot)
   returning id into v_attempt;
 
   return jsonb_build_object('attempt_id',v_attempt,'status','active','started_at',now(),
@@ -104,7 +138,7 @@ create or replace function ace.save_attempt_answer(p_attempt_id uuid,p_question_
 returns jsonb language plpgsql security definer set search_path=pg_catalog,ace
 as $$
 declare a ace.attempts%rowtype; q ace.questions%rowtype;
- v_selected text:=nullif(trim(p_selected_option_key),''); v_answered integer; v_when timestamptz;
+ v_selected text:=nullif(trim(p_selected_option_key),''); v_frozen jsonb; v_answered integer; v_when timestamptz;
 begin
  if auth.uid() is null then raise exception 'Authentication required' using errcode='28000'; end if;
  if p_attempt_id is null or p_question_id is null then raise exception 'Attempt and question required' using errcode='22023'; end if;
@@ -124,7 +158,9 @@ begin
  select * into q from ace.questions where id=p_question_id and active=true
   and review_status='published' and rights_status in ('owned','licensed','permitted') for share;
  if not found then raise exception 'Question unavailable' using errcode='P0002'; end if;
- if v_selected is not null and not exists(select 1 from jsonb_array_elements(q.options) o where o->>'key'=v_selected) then
+ select item into v_frozen from jsonb_array_elements(a.question_snapshot) item where item->>'id'=p_question_id::text;
+ if not found then raise exception 'Attempt paper unavailable' using errcode='P0002'; end if;
+ if v_selected is not null and not exists(select 1 from jsonb_array_elements(v_frozen->'options') o where o->>'key'=v_selected) then
   raise exception 'Invalid option' using errcode='22023';
  end if;
  v_when:=clock_timestamp();
@@ -160,6 +196,14 @@ begin
  if a.status<>'active' or v_total not between 1 and 500 then
   raise exception 'Attempt cannot be submitted' using errcode='22023';
  end if;
+ if jsonb_typeof(a.question_snapshot) is distinct from 'array'
+    or jsonb_array_length(a.question_snapshot)<>v_total
+    or (select count(distinct value) from jsonb_array_elements_text(a.question_order))<>v_total
+    or (select count(distinct item->>'id') from jsonb_array_elements(a.question_snapshot) item)<>v_total
+    or exists(select 1 from jsonb_array_elements_text(a.question_order) wanted(id)
+       where not exists(select 1 from jsonb_array_elements(a.question_snapshot) item where item->>'id'=wanted.id)) then
+  raise exception 'Attempt paper unavailable' using errcode='P0002';
+ end if;
  -- Lock assigned content while scoring, excluding unrelated or withdrawn questions.
  perform q.id from ace.questions q
   where exists(select 1 from jsonb_array_elements_text(a.question_order) wanted(id) where wanted.id=q.id::text)
@@ -167,9 +211,8 @@ begin
   order by q.id for share;
  get diagnostics v_available=row_count;
  if v_available<>v_total then raise exception 'Attempt questions unavailable' using errcode='P0002'; end if;
- update ace.attempt_answers ans set is_correct=(ans.selected_option_key is not null and ans.selected_option_key=q.correct_option_key)
- from ace.questions q where ans.attempt_id=a.id and ans.question_id=q.id
-  and exists(select 1 from jsonb_array_elements_text(a.question_order) wanted(id) where wanted.id=q.id::text);
+ update ace.attempt_answers ans set is_correct=(ans.selected_option_key is not null and ans.selected_option_key=frozen->>'correct_option_key')
+ from jsonb_array_elements(a.question_snapshot) frozen where ans.attempt_id=a.id and ans.question_id::text=frozen->>'id';
  select count(*) filter(where ans.selected_option_key is not null),count(*) filter(where ans.is_correct=true)
  into v_answered,v_correct from ace.attempt_answers ans
  where ans.attempt_id=a.id

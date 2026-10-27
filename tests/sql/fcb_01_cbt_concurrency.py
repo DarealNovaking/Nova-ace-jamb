@@ -19,8 +19,7 @@ def fixture(args, env):
       then 'synthetic-recovered-fixture' else 'refused' end;""")
     if shape != 'synthetic-recovered-fixture':
         raise RuntimeError('Refusing database: exact empty synthetic auth/recovered schema required')
-    sql = Path('tests/sql/fcb_01_cbt_mutations.test.sql').read_text()
-    seed = sql[sql.index('begin;'):sql.index('set local role authenticated;')]
+    seed = Path('tests/sql/fixtures/fcb_01_cbt_content.sql').read_text()
     query(args, env, seed + '\ncommit;')
 
 def as_user(sql):

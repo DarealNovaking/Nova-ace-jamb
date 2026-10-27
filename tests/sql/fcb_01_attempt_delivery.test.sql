@@ -6,7 +6,7 @@ create schema auth;
 do $$ begin create role authenticated; exception when duplicate_object then null; end $$;
 do $$ begin create role anon; exception when duplicate_object then null; end $$;
 create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$;
-create table ace.attempts(id uuid primary key,user_id uuid,status text,started_at timestamptz,duration_seconds integer,question_order jsonb);
+create table ace.attempts(id uuid primary key,user_id uuid,status text,started_at timestamptz,duration_seconds integer,question_order jsonb,question_snapshot jsonb not null default '[]');
 create table ace.questions(id uuid primary key,stem text,options jsonb,subject_id uuid,topic_id uuid,difficulty text,active boolean,review_status text,rights_status text,correct_option_key text,explanation text);
 alter table ace.attempts enable row level security;
 alter table ace.questions enable row level security;
@@ -16,9 +16,11 @@ create policy synthetic_questions_read on ace.questions for select to authentica
 insert into ace.questions values
  ('10000000-0000-4000-8000-000000000001','Synthetic Q1','[{"key":"A","text":"First","is_correct":true,"explanation":"secret"},{"key":"B","label":"Second"}]',null,null,'medium',true,'published','owned','A','secret'),
  ('10000000-0000-4000-8000-000000000002','Synthetic Q2','[{"key":"A","text":"Other"}]',null,null,'easy',true,'published','licensed','A','secret');
-insert into ace.attempts values
+insert into ace.attempts(id,user_id,status,started_at,duration_seconds,question_order) values
  ('20000000-0000-4000-8000-000000000001','30000000-0000-4000-8000-000000000001','active',now(),600,'["10000000-0000-4000-8000-000000000002","10000000-0000-4000-8000-000000000001"]');
 \i supabase/proposals/fcb_01_attempt_question_delivery.sql
+update ace.attempts a set question_snapshot=(select jsonb_agg(jsonb_build_object('id',q.id,'stem',q.stem,'options',q.options,'correct_option_key',q.correct_option_key,'subject_id',q.subject_id,'topic_id',q.topic_id,'difficulty',q.difficulty) order by wanted.ord)
+from jsonb_array_elements_text(a.question_order) with ordinality wanted(id,ord) join ace.questions q on q.id=wanted.id::uuid);
 -- RED before implementation: endpoint must exist, have narrow ACLs and no direct grants.
 do $$ begin
  if to_regprocedure('ace.get_attempt_questions(uuid)') is null then raise exception 'safe attempt question delivery endpoint missing'; end if;
