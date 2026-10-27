@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Activity, AudioLines, BellRing, BrainCircuit, CreditCard, Database, Gift, RefreshCw, Smartphone } from 'lucide-react'
 import { ace } from '../lib/supabase'
 
@@ -44,9 +44,13 @@ export default function AdminOperationsOverview() {
   const [metrics, setMetrics] = useState<Metrics>(emptyMetrics)
   const [loading, setLoading] = useState(true)
   const [lastUpdated, setLastUpdated] = useState<string | null>(null)
+  const [loadError, setLoadError] = useState('')
+  const loadRun = useRef(0)
 
   const load = useCallback(async () => {
+    const run = ++loadRun.current
     setLoading(true)
+    setLoadError('')
     const [
       activeProducts, enabledPaymentProviders, pendingPayments, notificationRecords,
       activeReferralCampaigns, approvedKnowledgeSources, enabledAiProviders,
@@ -62,12 +66,19 @@ export default function AdminOperationsOverview() {
       countRows(ace.from('flashcards').select('id', { count: 'exact', head: true }).eq('active', true)),
       countRows(ace.from('devices').select('id', { count: 'exact', head: true })),
     ])
-    setMetrics({ activeProducts, enabledPaymentProviders, pendingPayments, notificationRecords, activeReferralCampaigns, approvedKnowledgeSources, enabledAiProviders, activeFlashcards, registeredDevices })
-    setLastUpdated(new Date().toISOString())
+    if (run !== loadRun.current) return
+    const next = { activeProducts, enabledPaymentProviders, pendingPayments, notificationRecords, activeReferralCampaigns, approvedKnowledgeSources, enabledAiProviders, activeFlashcards, registeredDevices }
+    setMetrics(next)
+    const anyAvailable = Object.values(next).some((value) => value !== null)
+    setLastUpdated(anyAvailable ? new Date().toISOString() : null)
+    if (!anyAvailable) setLoadError('Operational counts could not be loaded. Check your access and retry.')
     setLoading(false)
   }, [])
 
-  useEffect(() => { void load() }, [load])
+  useEffect(() => {
+    void load()
+    return () => { loadRun.current += 1 }
+  }, [load])
 
   const cards = [
     { label: 'Active products', value: metrics.activeProducts, detail: 'Products currently listed', icon: Database },
@@ -88,6 +99,7 @@ export default function AdminOperationsOverview() {
         <div><p className="text-xs uppercase tracking-[.2em] text-purple-200/60">Operational readiness</p><h2 id="admin-operations-title" className="mt-2 text-2xl font-black">Operations command center</h2><p className="mt-2 max-w-2xl text-sm leading-6 text-white/45">Read-only counts from existing ACE tables. These indicators do not send notifications, verify payments, qualify referrals, or enable AI services.</p></div>
         <button type="button" onClick={() => void load()} disabled={loading} className="inline-flex min-h-10 w-fit items-center gap-2 rounded-xl border border-white/10 px-3 py-2 text-sm font-semibold hover:bg-white/5 disabled:opacity-50"><RefreshCw size={15} className={loading ? 'animate-spin' : ''} aria-hidden="true" /> Refresh status</button>
       </div>
+      {loadError && <p role="alert" className="mt-4 rounded-xl border border-amber-300/20 bg-amber-300/5 p-3 text-sm text-amber-100">{loadError}</p>}
       <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
         {cards.map((card) => { const Icon = card.icon; return <article key={card.label} className="rounded-2xl border border-white/10 bg-black/20 p-4"><div className="flex items-center justify-between gap-3"><p className="text-sm font-semibold text-white/75">{card.label}</p><Icon size={17} className="shrink-0 text-purple-200/70" aria-hidden="true" /></div><p className="mt-3 text-2xl font-black">{loading ? '…' : metricText(card.value)}</p><p className="mt-1 text-xs leading-5 text-white/40">{card.detail}</p></article> })}
       </div>
