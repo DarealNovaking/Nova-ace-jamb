@@ -847,6 +847,38 @@ test.describe('ACE JAMB syllabus publication states', () => {
     await expect(page.getByText('No approved topics available yet')).toHaveCount(0)
   })
 
+  test('searches approved subtopics and opens scoped practice without fake lessons', async ({ page }) => {
+    await mockSyllabusPublicationState(page, 'approved')
+    const subtopicId = '80000000-0000-4000-8000-000000000017'
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/subtopics'), async (route) => {
+      await route.fulfill({ json: [{ id: subtopicId, topic_id: '70000000-0000-4000-8000-000000000001',
+        name: 'Inference', description: 'Draw conclusions from a given passage.', sort_order: 1, active: true }] })
+    })
+    let starts = 0
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/start_attempt'), async (route) => {
+      starts += 1
+      await route.fulfill({ status: 400, json: { code: 'P0001', message: 'No published questions available' } })
+    })
+    await page.goto('/')
+    await page.getByRole('button', { name: /Learn Approved syllabus topics/ }).click()
+    const search = page.getByRole('searchbox', { name: 'Search approved topics or subtopics' })
+    await search.fill('absent-topic-fixture')
+    await expect(page.getByText('No topics match your search')).toBeVisible()
+    await expect(page.getByText('No approved topics available yet')).toHaveCount(0)
+    await page.getByRole('button', { name: 'Clear topic filters' }).click()
+    await search.fill('inference')
+    await expect(page.getByText('1 approved topic found')).toBeVisible()
+    await page.getByRole('button', { name: /Verified comprehension fixture/ }).click()
+    await expect(page.getByText(/This approved outline is not a full lesson/)).toBeVisible()
+    await page.getByRole('button', { name: 'Inference' }).click()
+    await expect(page.getByText('Draw conclusions from a given passage.')).toBeVisible()
+    await page.getByRole('button', { name: 'Practise this subtopic' }).click()
+    await expect(page).toHaveURL(/[?&]focus=subtopic/)
+    await expect(page).toHaveURL(/[?&]subtopic=80000000-0000-4000-8000-000000000017/)
+    await expect(page.getByRole('heading', { name: 'No reviewed questions published for this topic yet' })).toBeVisible()
+    expect(starts).toBe(0)
+  })
+
   test('does not expose syllabus topics while rights review is pending', async ({ page }) => {
     const fixture = await mockSyllabusPublicationState(page, 'pending')
     await page.goto('/')

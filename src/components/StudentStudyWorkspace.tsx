@@ -30,16 +30,26 @@ export default function StudentStudyWorkspace({ mode, subjects, topics, onBack, 
   const [practiceSubjectId, setPracticeSubjectId] = useState(subjects[0]?.id ?? '')
   const selectedPracticeSubjectId = subjects.some((item) => item.id === practiceSubjectId) ? practiceSubjectId : subjects[0]?.id ?? ''
   const [selectedTopicId, setSelectedTopicId] = useState('')
+  const [selectedSubtopicId, setSelectedSubtopicId] = useState('')
+  const [topicSearch, setTopicSearch] = useState('')
   const [practiceTopicId, setPracticeTopicId] = useState('')
   const [practiceSubtopicId, setPracticeSubtopicId] = useState('')
   const practiceTopics = useMemo(() => topics.filter((topic) => topic.subject_id ? topic.subject_id === selectedPracticeSubjectId : topic.subjectName === subjects.find((subject) => subject.id === selectedPracticeSubjectId)?.name), [topics, subjects, selectedPracticeSubjectId])
   const practiceTopic = practiceTopics.find((topic) => topic.id === practiceTopicId)
   const practiceSubtopics = practiceTopic?.subtopics ?? []
-  const selectedTopic = topics.find((topic) => topic.id === selectedTopicId) ?? null
+  const normalizedSearch = topicSearch.trim().toLocaleLowerCase()
   const visibleTopics = useMemo(
-    () => topics.filter((topic) => subjectFilter === 'all' || subjects.find((subject) => subject.name === topic.subjectName)?.id === subjectFilter),
-    [topics, subjects, subjectFilter],
+    () => topics.filter((topic) => {
+      const subjectMatches = subjectFilter === 'all' || topic.subject_id === subjectFilter ||
+        (!topic.subject_id && subjects.some((subject) => subject.id === subjectFilter && subject.name === topic.subjectName))
+      return subjectMatches && (!normalizedSearch || [topic.name, topic.description ?? '', topic.subjectName,
+        ...(topic.subtopics ?? []).flatMap((part) => [part.name, part.description ?? ''])]
+        .some((value) => value.toLocaleLowerCase().includes(normalizedSearch)))
+    }),
+    [topics, subjects, subjectFilter, normalizedSearch],
   )
+  const selectedTopic = visibleTopics.find((topic) => topic.id === selectedTopicId) ?? null
+  const selectedSubtopic = selectedTopic?.subtopics?.find((part) => part.id === selectedSubtopicId) ?? null
   const activeMode = modes.find((item) => item.id === mode) ?? modes[0]
   const Icon = activeMode.icon
   const headingRef = useRef<HTMLHeadingElement>(null)
@@ -72,17 +82,60 @@ export default function StudentStudyWorkspace({ mode, subjects, topics, onBack, 
         <div id="workspace-content" tabIndex={-1} className="outline-none">
         {mode === 'learn' && <section className="grid gap-5 lg:grid-cols-[.85fr_1.15fr]">
           <div className="glass-card rounded-3xl p-5 sm:p-6">
-            <div className="flex items-center gap-3"><BookOpen className="text-purple-200"/><h2 className="text-xl font-black">Verified topics</h2></div>
-            <label className="mt-5 block text-sm text-white/60">Filter by subject<select className="field mt-2" value={subjectFilter} onChange={(e) => { setSubjectFilter(e.target.value); setSelectedTopicId('') }}><option value="all">All selected subjects</option>{subjects.map((subject) => <option key={subject.id} value={subject.id}>{subject.name}</option>)}</select></label>
-            <div className="mt-4 space-y-2">{visibleTopics.map((topic) => <button key={topic.id} type="button" aria-pressed={selectedTopicId === topic.id} onClick={() => setSelectedTopicId(topic.id)} className={`w-full rounded-xl border p-4 text-left ${selectedTopicId === topic.id ? 'border-purple-300/40 bg-purple-500/10' : 'border-white/5 bg-white/[.025] hover:bg-white/[.05]'}`}><span className="block text-xs text-purple-200/70">{topic.subjectName}</span><span className="mt-1 block font-semibold">{topic.name}</span></button>)}</div>
-            {!visibleTopics.length && <div className="mt-4 rounded-2xl border border-dashed border-white/15 p-5"><p className="font-semibold">No approved topics available yet</p><p className="mt-2 text-sm leading-6 text-white/45">The academic team must publish source-verified syllabus content before lessons appear here.</p></div>}
+            <div className="flex items-center gap-3"><BookOpen className="text-purple-200" aria-hidden="true"/><h2 className="text-xl font-black">Verified topics</h2></div>
+            <p className="mt-3 text-sm leading-6 text-white/50">Explore rights-approved syllabus outlines. An outline is not a complete lesson.</p>
+            <label className="mt-5 block text-sm text-white/70">Filter by subject
+              <select className="field mt-2" value={subjectFilter} onChange={(e) => { setSubjectFilter(e.target.value); setSelectedTopicId(''); setSelectedSubtopicId('') }}>
+                <option value="all">All selected subjects</option>{subjects.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+              </select>
+            </label>
+            <label className="mt-4 block text-sm text-white/70">Search approved topics or subtopics
+              <input type="search" className="field mt-2" placeholder="Search by topic or subtopic" value={topicSearch} onChange={(e) => { setTopicSearch(e.target.value); setSelectedTopicId(''); setSelectedSubtopicId('') }} />
+            </label>
+            <p role="status" className="mt-4 text-xs text-white/50">{visibleTopics.length} approved topic{visibleTopics.length === 1 ? '' : 's'} found</p>
+            {visibleTopics.length > 0 && <ul className="mt-4 max-h-[32rem] space-y-2 overflow-y-auto pr-1">{visibleTopics.map((topic) => <li key={topic.id}>
+              <button type="button" aria-pressed={selectedTopicId === topic.id} onClick={() => { setSelectedTopicId(topic.id); setSelectedSubtopicId('') }} className={`w-full min-h-11 rounded-xl border p-4 text-left ${selectedTopicId === topic.id ? 'border-purple-300/40 bg-purple-500/10' : 'border-white/5 bg-white/[.025] hover:bg-white/[.05]'}`}>
+                <span className="block text-xs text-purple-200/70">{topic.subjectName}</span><span className="mt-1 block font-semibold">{topic.name}</span><span className="mt-2 block text-xs text-white/45">{topic.subtopics?.length ?? 0} approved subtopics</span>
+              </button>
+            </li>)}</ul>}
+            {!topics.length && <div className="mt-4 rounded-2xl border border-dashed border-white/15 p-5"><p className="font-semibold">No approved topics available yet</p><p className="mt-2 text-sm leading-6 text-white/45">The academic team must publish source-verified syllabus content before lessons appear here.</p></div>}
+            {topics.length > 0 && !visibleTopics.length && <div className="mt-4 rounded-2xl border border-dashed border-white/15 p-5"><p className="font-semibold">No topics match your search</p><p className="mt-2 text-sm text-white/50">Try another approved topic or subject.</p><button type="button" className="mt-3 min-h-11 rounded-xl border border-white/20 px-4 py-2 text-sm font-semibold" onClick={() => { setTopicSearch(''); setSubjectFilter('all') }}>Clear topic filters</button></div>}
           </div>
           <div className="glass-card min-h-72 rounded-3xl p-5 sm:p-7">
-            {selectedTopic ? <><p className="text-xs uppercase tracking-[.2em] text-purple-200/70">{selectedTopic.subjectName}</p><h2 className="mt-3 text-2xl font-black">{selectedTopic.name}</h2>{selectedTopic.description && <p className="mt-4 leading-7 text-white/65">{selectedTopic.description}</p>}{selectedTopic.subtopics && selectedTopic.subtopics.length > 0 && <section className="mt-6"><h3 className="font-bold">Subtopics</h3><ul className="mt-3 space-y-2">{selectedTopic.subtopics.map((subtopic) => <li key={subtopic.id} className="rounded-xl border border-white/10 bg-white/[.025] p-3"><p className="font-semibold">{subtopic.name}</p>{subtopic.description && <p className="mt-1 text-sm leading-5 text-white/45">{subtopic.description}</p>}</li>)}</ul></section>}<div className="mt-6 rounded-2xl border border-white/10 bg-black/20 p-5"><div className="flex items-center gap-2 font-semibold"><BookOpen size={18} className="text-purple-200"/> Lesson content</div><p className="mt-3 text-sm leading-6 text-white/50">This syllabus topic is available, but a reviewed lesson and linked questions are not yet published. This page will show the lesson when approved content is connected.</p></div></> : <div className="grid min-h-64 place-items-center text-center"><div><Sparkles className="mx-auto text-purple-200" size={28}/><h2 className="mt-4 text-xl font-bold">Choose a topic to begin</h2><p className="mt-2 max-w-sm text-sm leading-6 text-white/45">Your selected subjects and approved syllabus topics will guide your learning.</p></div></div>}
+            {selectedTopic ? <>
+              <p className="text-xs uppercase tracking-[.2em] text-purple-200/70">{selectedTopic.subjectName} · Approved syllabus outline</p>
+              <h2 className="mt-3 text-2xl font-black">{selectedTopic.name}</h2>
+              <p className="mt-4 whitespace-pre-wrap leading-7 text-white/65">{selectedTopic.description || 'No approved topic description is published yet.'}</p>
+              <button type="button" onClick={() => {
+                const s = subjects.find((s) => s.id === selectedTopic.subject_id || s.name === selectedTopic.subjectName)
+                if (s) onStartCbt('practice', 'topic', s.id, selectedTopic.id)
+              }} className="mt-5 min-h-11 rounded-xl border border-purple-300/40 px-4 py-2 text-sm font-semibold text-purple-100">Practise this topic</button>
+              {selectedTopic.subtopics && selectedTopic.subtopics.length > 0 && <section aria-labelledby="approved-subtopics-heading" className="mt-6">
+                <h3 id="approved-subtopics-heading" className="font-bold">Approved subtopics</h3>
+                <p className="mt-2 text-xs text-white/45">Choose a subtopic to view its published outline and practise its own reviewed questions.</p>
+                <ul className="mt-3 space-y-2">{selectedTopic.subtopics.map((part) => <li key={part.id}>
+                  <button type="button" aria-pressed={part.id === selectedSubtopicId} onClick={() => setSelectedSubtopicId(part.id)} className={`w-full min-h-11 rounded-xl border p-3 text-left ${part.id === selectedSubtopicId ? 'border-purple-300/40 bg-purple-500/10' : 'border-white/10 bg-white/[.025]'}`}>{part.name}</button>
+                </li>)}</ul>
+                {selectedSubtopic && <article className="mt-4 rounded-2xl border border-purple-300/20 bg-purple-500/[.06] p-4">
+                  <h4 className="font-bold">{selectedSubtopic.name}</h4>
+                  <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-white/60">{selectedSubtopic.description || 'No approved subtopic description is published yet.'}</p>
+                  <button type="button" className="mt-4 min-h-11 rounded-xl bg-purple-300 px-4 py-2 text-sm font-bold text-[#120b1c]" onClick={() => {
+                    const s = subjects.find((s) => s.id === selectedTopic.subject_id || s.name === selectedTopic.subjectName)
+                    if (s) onStartCbt('practice', 'subtopic', s.id, selectedTopic.id, selectedSubtopic.id)
+                  }}>Practise this subtopic</button>
+                </article>}
+              </section>}
+              <div className="mt-6 rounded-2xl border border-white/10 bg-black/20 p-5"><div className="flex items-center gap-2 font-semibold"><BookOpen size={18} className="text-purple-200" aria-hidden="true"/> Lesson content</div><p className="mt-3 text-sm leading-6 text-white/50">This approved outline is not a full lesson. Reviewed lesson text and linked questions will appear when published; we never substitute unverified material.</p></div>
+            </> : <div className="grid min-h-64 place-items-center text-center"><div><Sparkles className="mx-auto text-purple-200" size={28} aria-hidden="true"/><h2 className="mt-4 text-xl font-bold">Choose a topic to begin</h2><p className="mt-2 max-w-sm text-sm leading-6 text-white/45">Your selected subjects and approved syllabus topics will guide your learning.</p></div></div>}
           </div>
-        </section>}
+        </section>
 
-        {mode === 'practice' && <section className="glass-card rounded-3xl p-6 sm:p-8"><div className="flex items-center gap-3"><Target className="text-purple-200"/><h2 className="text-2xl font-black">Practice with purpose</h2></div><p className="mt-3 max-w-2xl text-sm leading-6 text-white/55">Practice sessions require reviewed questions with verified answers. We will not generate fake questions or claim an empty question bank is ready.</p><div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{['Topic practice','Weakness practice','Mistake review'].map((label) => <div key={label} className="rounded-2xl border border-white/10 bg-white/[.025] p-5"><ListChecks className="text-purple-200"/><h3 className="mt-3 font-bold">{label}</h3><p className="mt-2 text-sm leading-6 text-white/45">Available when the required reviewed question and attempt data is published.</p></div>)}</div><div className="mt-6 rounded-2xl border border-amber-300/15 bg-amber-300/[.05] p-5"><p className="font-semibold">Question availability</p><p className="mt-2 text-sm leading-6 text-white/50">Question availability is checked when you start a session. If approved questions are not published for your selected subjects, ACE will tell you instead of inventing questions or recording a fake attempt.</p><div className="mt-4 flex flex-wrap gap-3"><button type="button" onClick={() => onStartCbt('practice')} className="rounded-xl bg-white px-4 py-3 text-sm font-bold text-black">Start a practice session</button><button type="button" onClick={() => onStartCbt('practice', 'speed')} className="rounded-xl border border-white/20 px-4 py-3 text-sm font-bold text-white">Start speed practice · up to 10 questions in 10 minutes</button></div></div>
+        {mode === 'practice' && <section className="glass-card rounded-3xl p-6 sm:p-8"><div className="flex items-center gap-3"><Target className="text-purple-200"/><h2 className="text-2xl font-black">Practice with purpose</h2></div><p className="mt-3 max-w-2xl text-sm leading-6 text-white/55">Practice sessions require reviewed questions with verified answers. We will not generate fake questions or claim an empty question bank is ready.</p><div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{[
+            { title: 'Topic practice', detail: 'Choose an approved topic below.', action: 'Choose a topic', go: () => document.getElementById('topic-practice-heading')?.scrollIntoView() },
+            { title: 'Observed weaknesses', detail: 'See review priorities backed by your real saved answers.', action: 'Review my progress', go: () => window.dispatchEvent(new CustomEvent('ace-workspace-navigate', { detail: 'progress' })) },
+            { title: 'Missed questions', detail: 'Retry questions you actually missed in saved attempts.', action: 'Practise missed questions', go: () => onStartCbt('practice', 'mistakes') },
+            { title: 'Repeated mistakes', detail: 'Focus on saved questions you missed more than once.', action: 'Practise repeated mistakes', go: () => onStartCbt('practice', 'repeated') },
+          ].map((item) => <article key={item.title} className="rounded-2xl border border-white/10 bg-white/[.025] p-5"><ListChecks className="text-purple-200" aria-hidden="true"/><h3 className="mt-3 font-bold">{item.title}</h3><p className="mt-2 text-sm leading-6 text-white/45">{item.detail}</p><button type="button" className="mt-4 min-h-11 rounded-xl border border-purple-300/30 px-3 py-2 text-sm font-semibold text-purple-100" onClick={item.go}>{item.action}</button></article>)}</div><div className="mt-6 rounded-2xl border border-amber-300/15 bg-amber-300/[.05] p-5"><p className="font-semibold">Question availability</p><p className="mt-2 text-sm leading-6 text-white/50">Question availability is checked when you start a session. If approved questions are not published for your selected subjects, ACE will tell you instead of inventing questions or recording a fake attempt.</p><div className="mt-4 flex flex-wrap gap-3"><button type="button" onClick={() => onStartCbt('practice')} className="rounded-xl bg-white px-4 py-3 text-sm font-bold text-black">Start a practice session</button><button type="button" onClick={() => onStartCbt('practice', 'speed')} className="rounded-xl border border-white/20 px-4 py-3 text-sm font-bold text-white">Start speed practice · up to 10 questions in 10 minutes</button></div></div>
           <div className="mt-6 border-t border-white/10 pt-5">
             <h3 className="font-bold">Subject-specific practice</h3>
             <p className="mt-2 text-sm leading-6 text-white/50">Choose one of your saved subjects. Only currently published, reviewed questions for that subject can appear.</p>
