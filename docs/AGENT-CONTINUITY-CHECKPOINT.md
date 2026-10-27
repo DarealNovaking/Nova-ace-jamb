@@ -2160,3 +2160,11 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - Files: `src/components/StudentStudyPlan.tsx`, `src/components/StudentStudyWorkspace.tsx`, `tests/e2e/smoke.spec.ts`, canonical handoff, checkpoint and batch tracker.
 - **Verification:** new code/test SHA CI is pending at commit time. Previous subtopic progress feature on `4bde63821ad8f50c715169afc51b321894ff1efc` had Verify [40473989897](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40473989897) PASS; E2E [40473989835](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40473989835) still running when inspected. Do not claim full Study Plan or whole-product completion.
 - **Next action:** inspect newest Verify and E2E results; fix a reproduced integration regression; continue with the next frontend acceptance criterion respecting server/content dependencies.
+
+
+## Batch 8 study-preview integrity follow-up — 2026-10-27
+
+- Commit `73094564ddc43fdedebada657d8bcdd6d400de52` on `main` updates `src/components/StudentStudyPlan.tsx` so the two-week routine preview does not show fallback/default preferences while the saved account preferences are loading or after a failed read. It instead displays loading/retry guidance, preventing a misleading preview.
+- No backend, schema, production data, catalogue, deployment or provider changes.
+- Verification: source edit committed; new SHA typecheck/build and Playwright E2E NOT YET VERIFIED. Previous Batch 9 `4bde638` Verify run 40473989897 and E2E run 40473989835 both completed successfully (checked through GitHub jobs API). Do not claim the current commit is green.
+- Next action: check SHA-matched Verify and E2E on `main`, repair any reproduced regression, then continue remaining frontend acceptance gaps under the 16-batch matrix.
