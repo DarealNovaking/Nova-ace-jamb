@@ -4279,3 +4279,11 @@ Next exact action: inspect the remaining advisor-listed SECURITY DEFINER functio
 - Updated `src/lib/cbtService.ts` to call the RPC and updated `src/components/PersistentCBT.tsx` to pass the attempt ID rather than a client-supplied list of question IDs.
 - Added `tests/sql/cbt_attempt_question_delivery.test.sql` covering question order, live `stem` mapping, option sanitization, answer/explanation omission, cross-user attempt denial, and anon execution denial.
 - Verification status: repository changes committed on the feature branch; no local checkout/test runner available through the connected tools in this session, so SQL regression test, TypeScript typecheck, build, and E2E are **not yet run**. Do not describe as passing. Next run CI/typecheck/build and disposable PostgreSQL regression; review SECURITY DEFINER ownership/search-path/privileges, then request review before merge/deploy. No live Supabase migration or production grant changes made.
+
+
+## FCB-01 validation update — PR #11 (2026-10-27)
+- Draft PR: https://github.com/DarealNovaking/Nova-ace-jamb/pull/11
+- Finalized the delivery RPC filter to include only `rights_status IN ('owned','licensed','permitted')`, matching the public question policy; added a restricted-rights fixture to the SQL regression.
+- Added the SQL regression to the disposable PostgreSQL job in `.github/workflows/verify.yml`.
+- Latest observed GitHub Actions runs were queued/pending; no passing test result has been observed yet. Treat SQL regression, typecheck, build and E2E as pending until run conclusions are fetched.
+- No production migration or permissions applied. The draft PR is review-only.
