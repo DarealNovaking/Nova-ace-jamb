@@ -4278,3 +4278,12 @@ Next exact action: inspect the remaining advisor-listed SECURITY DEFINER functio
 - Not yet applied to Supabase production. No live grants/schema/data changed. Tests have not been executed because no local checkout/Postgres runner is available through the current connector tools. Must run CI and SQL regression against a disposable/test database before merge. Keep FCB-01 open until verified.
 - This implementation supersedes the prior “next action: inspect for existing API” note above; an initial implementation now exists and needs validation.
 - **Next exact action:** verify branch file contents, open a draft PR, inspect CI results, and fix any failures. Do not apply the migration to production before review/verification.
+
+
+## FCB-01 implementation: safe CBT question delivery — 2026-10-27
+- Implemented on branch `fix/cbt-safe-question-delivery`; not merged and not applied to production.
+- Added `supabase/migrations/20261027180000_cbt_attempt_question_delivery.sql`, defining `ace.get_attempt_questions(uuid)`. The SECURITY DEFINER RPC checks authentication and attempt ownership, rejects abandoned attempts, follows the stored attempt question order, returns only active/published attempt questions, maps live `stem` to the stable `question_text` response field, and explicitly projects only option key/text plus non-sensitive question metadata. It does not return `correct_option_key`, `explanation`, or arbitrary option JSON properties.
+- Revokes function execution from PUBLIC and anon; grants authenticated execution. It intentionally does not grant direct SELECT on `ace.questions`.
+- Updated `src/lib/cbtService.ts` to call the RPC and updated `src/components/PersistentCBT.tsx` to pass the attempt ID rather than a client-supplied list of question IDs.
+- Added `tests/sql/cbt_attempt_question_delivery.test.sql` covering question order, live `stem` mapping, option sanitization, answer/explanation omission, cross-user attempt denial, and anon execution denial.
+- Verification status: repository changes committed on the feature branch; no local checkout/test runner available through the connected tools in this session, so SQL regression test, TypeScript typecheck, build, and E2E are **not yet run**. Do not describe as passing. Next run CI/typecheck/build and disposable PostgreSQL regression; review SECURITY DEFINER ownership/search-path/privileges, then request review before merge/deploy. No live Supabase migration or production grant changes made.
