@@ -1,4 +1,5 @@
--- Source review proposal only; NOT applied to production.
+-- Applied with specific owner authorization on 2026-10-27.
+-- Preserve existing referral codes; resolve short-prefix signup collisions.
 begin;
 CREATE OR REPLACE FUNCTION ace.handle_new_user()
  RETURNS trigger

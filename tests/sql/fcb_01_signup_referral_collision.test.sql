@@ -1,5 +1,5 @@
 -- Disposable recovered schema only. Both IDs deliberately share first eight hex characters.
-\i supabase/proposals/fcb_01_signup_referral_collision.sql
+\i supabase/migrations/20261027220044_fcb_01_signup_referral_collision.sql
 begin;
 insert into auth.users(id,email,raw_user_meta_data) values
  ('91000000-0000-4000-8000-000000000001','collision-one@example.invalid','{"role":"admin"}'),
