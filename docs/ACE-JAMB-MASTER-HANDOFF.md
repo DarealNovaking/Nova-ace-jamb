@@ -4267,3 +4267,23 @@ Next exact action: inspect the remaining advisor-listed SECURITY DEFINER functio
 - Active CBT RPCs inspected read-only: `start_attempt`, `resume_attempt`, `save_attempt_answer`, `submit_attempt`. Their EXECUTE grants are to `authenticated` and `postgres`; no anon/PUBLIC EXECUTE appeared in the queried grants. Owner checks were visible in resume/save/submit. This is a targeted review, not complete FCB-01 acceptance.
 - No production grants, schema, data, migration, or deployment changed. A query using the stale `question_text` column failed as expected; it was read-only.
 - **Next action:** inspect all later migrations and tests for an existing safe question-delivery contract; if none exists, implement a focused migration/RPC and regression tests on a reviewable branch, then align `cbtService.ts` and verify with disposable-Postgres plus CI. Do not reopen catalogue product work.
+
+
+
+> The initial API/test filenames recorded below were superseded during implementation. The authoritative implementation and validation status are in the following “FCB-01 implementation: safe CBT question delivery” section.
+
+## FCB-01 implementation: safe CBT question delivery — 2026-10-27
+- Implemented on branch `fix/cbt-safe-question-delivery`; not merged and not applied to production.
+- Added `supabase/migrations/20261027180000_cbt_attempt_question_delivery.sql`, defining `ace.get_attempt_questions(uuid)`. The SECURITY DEFINER RPC checks authentication and attempt ownership, rejects abandoned attempts, follows the stored attempt question order, returns only active/published attempt questions, maps live `stem` to the stable `question_text` response field, and explicitly projects only option key/text plus non-sensitive question metadata. It does not return `correct_option_key`, `explanation`, or arbitrary option JSON properties.
+- Revokes function execution from PUBLIC and anon; grants authenticated execution. It intentionally does not grant direct SELECT on `ace.questions`.
+- Updated `src/lib/cbtService.ts` to call the RPC and updated `src/components/PersistentCBT.tsx` to pass the attempt ID rather than a client-supplied list of question IDs.
+- Added `tests/sql/cbt_attempt_question_delivery.test.sql` covering question order, live `stem` mapping, option sanitization, answer/explanation omission, cross-user attempt denial, and anon execution denial.
+- Verification status: repository changes committed on the feature branch; no local checkout/test runner available through the connected tools in this session, so SQL regression test, TypeScript typecheck, build, and E2E are **not yet run**. Do not describe as passing. Next run CI/typecheck/build and disposable PostgreSQL regression; review SECURITY DEFINER ownership/search-path/privileges, then request review before merge/deploy. No live Supabase migration or production grant changes made.
+
+
+## FCB-01 validation update — PR #11 (2026-10-27)
+- Draft PR: https://github.com/DarealNovaking/Nova-ace-jamb/pull/11
+- Finalized the delivery RPC filter to include only `rights_status IN ('owned','licensed','permitted')`, matching the public question policy; added a restricted-rights fixture to the SQL regression.
+- Added the SQL regression to the disposable PostgreSQL job in `.github/workflows/verify.yml`.
+- Latest observed GitHub Actions runs were queued/pending; no passing test result has been observed yet. Treat SQL regression, typecheck, build and E2E as pending until run conclusions are fetched.
+- No production migration or permissions applied. The draft PR is review-only.

@@ -70,27 +70,26 @@ export async function resumeCbt(attemptId: string) {
   return data as CbtAttemptState
 }
 
-export async function loadCbtQuestions(questionIds: string[]) {
-  if (!questionIds.length) return [] as CbtQuestion[]
-  const { data, error } = await ace
-    .from('questions')
-    .select('id,question_text,options,subject_id,topic_id,difficulty')
-    .in('id', questionIds)
-  if (error) throw error
-  const byId = new Map((data ?? []).map((q: any) => [q.id, q]))
-  return questionIds.flatMap((id) => {
-    const q: any = byId.get(id)
-    if (!q) return []
-    const options = Array.isArray(q.options) ? q.options : []
-    return [{
-      id: q.id,
-      text: q.question_text ?? '',
-      options: options.map((o: any) => ({ key: String(o.key), text: String(o.text ?? o.label ?? '') })),
-      subject_id: q.subject_id ?? null,
-      topic_id: q.topic_id ?? null,
-      difficulty: q.difficulty ?? null,
-    }]
+export async function loadCbtQuestions(attemptId: string): Promise<CbtQuestion[]> {
+  if (!attemptId) return []
+  // The RPC scopes results to the authenticated user's attempt and deliberately
+  // omits correct_option_key and explanation from the client payload.
+  const { data, error } = await ace.rpc('get_attempt_questions', {
+    p_attempt_id: attemptId,
   })
+  if (error) throw error
+  if (!Array.isArray(data)) throw new Error('Invalid question payload returned for this attempt')
+  return data.map((q: any) => ({
+    id: String(q.id),
+    text: String(q.question_text ?? ''),
+    options: (Array.isArray(q.options) ? q.options : []).map((o: any) => ({
+      key: String(o.key),
+      text: String(o.text ?? ''),
+    })),
+    subject_id: q.subject_id ?? null,
+    topic_id: q.topic_id ?? null,
+    difficulty: q.difficulty ?? null,
+  }))
 }
 
 export async function saveCbtAnswer(
