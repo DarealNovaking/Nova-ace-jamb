@@ -924,6 +924,22 @@ test.describe('ACE JAMB preparation workspaces', () => {
     await expect(panel).toContainText('does not predict your JAMB score')
   })
 
+  test('speed practice sends an authoritative ten-question ten-minute configuration', async ({ page }) => {
+    await mockPreparedStudent(page)
+    let request: Record<string, unknown> | null = null
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/start_attempt'), async (route) => {
+      request = route.request().postDataJSON()
+      await route.fulfill({ status: 400, contentType: 'application/json', json: { code: 'P0001', message: 'No published questions available for this attempt' } })
+    })
+    await page.goto('/?view=practice')
+    await expect(page.getByRole('heading', { level: 1, name: 'Practice', exact: true })).toBeVisible()
+    await page.getByRole('button', { name: /Start speed practice/ }).click()
+    await expect(page).toHaveURL(/[?&]focus=speed/)
+    await expect.poll(() => request).not.toBeNull()
+    expect(request).toMatchObject({ p_mode: 'practice', p_question_count: 10, p_duration_seconds: 600, p_question_ids: null })
+    await expect(page.getByText('No reviewed questions are published for this session yet.', { exact: false })).toBeVisible()
+  })
+
   test('flashcard review reveals verified content and persists a self-scoped review', async ({ page }) => {
     await mockPreparedStudent(page)
     let savedReview: Record<string, unknown> | null = null
