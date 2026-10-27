@@ -2359,3 +2359,11 @@ Next exact action: inspect the remaining advisor-listed SECURITY DEFINER functio
 - Master handoff implementation entry committed as `1f965faaad6d459943088a627ae893a312824bdf`.
 - Verification: **not run yet** — no local repository/test runner was available via connected tools. SQL test, typecheck, build and E2E remain pending. Nothing was applied to live Supabase and no production permissions changed.
 - Next exact action: inspect current feature branch diff; fix any SQL/test issues; run GitHub Actions/available CI checks; only then open/review PR. Keep catalogue retired.
+
+
+## FCB-01 validation update — PR #11 (2026-10-27)
+- PR #11 is open as draft: https://github.com/DarealNovaking/Nova-ace-jamb/pull/11
+- Delivery RPC now filters question rights to `owned`, `licensed`, or `permitted`; SQL test includes a published-but-restricted question and expects it to be excluded.
+- Disposable PostgreSQL CI now includes `tests/sql/cbt_attempt_question_delivery.test.sql`.
+- Latest GitHub Actions runs were queued/pending at checkpoint time; no test/build/typecheck/E2E result is yet verified.
+- Production remains untouched. Next exact action: fetch the latest workflow run conclusions, inspect any failed job logs, fix issues, and keep the PR unmerged until all relevant checks pass.
