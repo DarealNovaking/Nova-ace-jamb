@@ -1046,6 +1046,34 @@ test.describe('ACE JAMB academic editor access', () => {
     await expect(page.getByText('No syllabus versions found')).toBeVisible()
   })
 
+  test('failed academic version read blocks authoring until retry succeeds without leaking errors', async ({ page }) => {
+    await mockFirstTimeStudent(page)
+    await page.route(`${projectUrl}/rest/v1/rpc/is_admin_or_editor`, async (route) => {
+      await route.fulfill({ json: true })
+    })
+    let allowRead = false
+    let versionReads = 0
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/syllabus_versions'), async (route) => {
+      versionReads += 1
+      if (!allowRead) {
+        await route.fulfill({ status: 503, contentType: 'application/json', json: {
+          code: 'private_database_code', message: 'private database host and rights information',
+        } })
+      } else {
+        await route.fulfill({ json: [] })
+      }
+    })
+    await page.goto('/admin-academic')
+    await expect(page.getByRole('alert')).toContainText('Academic structure could not be loaded')
+    await expect(page.getByText('Create a draft syllabus version')).toHaveCount(0)
+    await expect(page.getByText(/private database host|private_database_code/)).toHaveCount(0)
+    allowRead = true
+    await page.getByRole('button', { name: 'Retry loading academic structure' }).click()
+    await expect(page.getByText('No syllabus versions found')).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Create a draft syllabus version' })).toBeVisible()
+    expect(versionReads).toBeGreaterThan(1)
+  })
+
   test('authorized content editor reaches the separate academic workspace', async ({ page }) => {
     await mockFirstTimeStudent(page)
     await page.route(`${projectUrl}/rest/v1/rpc/is_admin_or_editor`, async (route) => {
