@@ -1724,6 +1724,10 @@ test.describe('ACE JAMB study-preference loading safety', () => {
     await mockPreparedStudent(page)
     let allowRead = false
     let writes = 0
+    // Let foundational onboarding/profile reads complete before injecting a failure
+    // restricted to this component's study-preferences request.
+    await page.goto('/')
+    await expect(page.getByRole('heading', { name: 'Welcome back, Test Futarian.' })).toBeVisible()
     await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/student_preferences'), async (route) => {
       if (route.request().method() === 'POST') {
         writes += 1
@@ -1741,7 +1745,7 @@ test.describe('ACE JAMB study-preference loading safety', () => {
         learning_style: null, timezone: null, preferences: {},
       } })
     })
-    await page.goto('/?view=plan')
+    await page.getByRole('button', { name: /Study plan/ }).click()
     await expect(page.getByRole('heading', { name: 'Build your study routine' })).toBeVisible()
     await expect(page.getByRole('alert')).toContainText('We could not load your saved study preferences')
     await expect(page.getByText('private user preferences details')).toHaveCount(0)
@@ -1819,6 +1823,10 @@ test.describe('ACE JAMB account settings recovery safety', () => {
     await mockPreparedStudent(page)
     let allowRead = false
     let writes = 0
+    // Startup itself reads student preferences; inject the failure only after
+    // a valid dashboard session exists so the component-specific retry is tested.
+    await page.goto('/')
+    await expect(page.getByRole('heading', { name: 'Welcome back, Test Futarian.' })).toBeVisible()
     await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/student_preferences'), async (route) => {
       if (route.request().method() !== 'GET') {
         writes += 1
@@ -1836,8 +1844,6 @@ test.describe('ACE JAMB account settings recovery safety', () => {
         learning_style: null, timezone: null, preferences: {},
       } })
     })
-    await page.goto('/')
-    await expect(page.getByRole('heading', { name: 'Welcome back, Test Futarian.' })).toBeVisible()
     await page.getByRole('button', { name: 'Edit settings' }).click()
     await expect(page.getByRole('alert')).toContainText('We could not load your account settings')
     await expect(page.getByText('private provider account details')).toHaveCount(0)

@@ -3976,3 +3976,13 @@ No database/schema/RPC/Edge Function changes, production-data writes, or deploym
 - Files: `src/components/StudentAccountSettings.tsx`, `tests/e2e/smoke.spec.ts`, and continuity docs. Existing tests for successful dual updates and initial read errors remain. No backend/schema, deployment or production data write.
 - **Verification:** CI on the new commit must be inspected before acceptance. Atomic account saves remain a backend contract gap, not claimed complete.
 - **Next action:** inspect terminal Verify and E2E and repair any reproductions; continue remaining frontend-only acceptance tasks.
+
+
+## CBT/account safety QA: isolate failed account-read fixture from onboarding — 2026-10-27
+
+- **Observed terminal E2E failure:** run [40472721589](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40472721589), SHA `207282917e1a289ba922e62b5a53dff693781c2a`, **122 PASS / 2 FAIL**, both versions of `study-preference loading safety` in Chromium desktop/mobile.
+- **Diagnosed from actual Playwright log:** test injected a failure on every `student_preferences` GET before the page mounted. The app's foundational onboarding/profile gate also reads that table; it blocked access to the study-plan workspace before the component under test loaded. The failed assertion was the missing `Build your study routine` heading, not a study-plan crash.
+- **Fix:** in the study-plan recovery fixture, wait for the authenticated prepared dashboard to load, then inject the simulated preferences failure and navigate to Study Plan. Applied the same isolation to the account-settings read-error fixture, which would otherwise block initial student foundation setup. Tests still assert saved-data loading error, no write until retry, and recovery of real values.
+- No source behavior change: test-only `tests/e2e/smoke.spec.ts` plus required handoffs. No production/student data writes.
+- Earlier [40472442404](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40472442404) E2E and [40472442407](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40472442407) Verify **PASS** for the monotonic CBT timer. `2072829` Verify [40472721667](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40472721667) PASS. Do not claim latest additional account tests passed until SHA-matched rerun completes.
+- **Next exact action:** check freshest Verify and Playwright E2E, fix only reproduced failures; then continue frontend acceptance while service/content dependent modules remain explicitly partial.
