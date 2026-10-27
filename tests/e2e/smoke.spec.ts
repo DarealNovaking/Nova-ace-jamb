@@ -2237,6 +2237,38 @@ test.describe('ACE JAMB admin authorization recovery', () => {
   })
 })
 
+test.describe('ACE JAMB admin verification retry', () => {
+  test('recovers from temporary role service failure without bypassing admin authorization', async ({ page }) => {
+    await mockPreparedStudent(page)
+    let checks = 0
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/is_admin'), async (route) => {
+      checks += 1
+      if (checks === 1) {
+        await route.fulfill({ status: 503, contentType: 'application/json', json: {
+          code: 'temporary_service_error', message: 'private database details',
+        } })
+      } else {
+        await route.fulfill({ json: true })
+      }
+    })
+    await page.goto('/admin')
+    await expect(page.getByRole('heading', { name: 'Admin access required' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Admin Dashboard' })).toHaveCount(0)
+    await expect(page.getByText('private database details')).toHaveCount(0)
+    await page.getByRole('button', { name: 'Retry administrator verification' }).click()
+    await expect(page.getByRole('heading', { name: 'Admin Dashboard' })).toBeVisible()
+    expect(checks).toBe(2)
+  })
+
+  test('role rejection never provides a client-only retry bypass', async ({ page }) => {
+    await mockPreparedStudent(page)
+    await page.goto('/admin')
+    await expect(page.getByRole('heading', { name: 'Admin access required' })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Retry administrator verification' })).toHaveCount(0)
+    await expect(page.getByRole('heading', { name: 'Admin Dashboard' })).toHaveCount(0)
+  })
+})
+
 test.describe('ACE JAMB reduced-motion accessibility', () => {
   test('respects the operating system reduced-motion preference', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' })
