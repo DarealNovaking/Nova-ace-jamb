@@ -58,6 +58,7 @@ export default function PersistentCBT({ attemptId = null, questionCount = 20, du
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
   const [result, setResult] = useState<Awaited<ReturnType<typeof submitCbt>> | null>(null)
+  const [markedForReview, setMarkedForReview] = useState<string[]>([])
   const finishing = useRef(false)
 
   const answers = useMemo(() => {
@@ -94,6 +95,20 @@ export default function PersistentCBT({ attemptId = null, questionCount = 20, du
       }
       if (state.status === 'completed' && storageKey) window.localStorage.removeItem(storageKey)
       const loadedQuestions = state.status === 'completed' ? [] : await loadCbtQuestions(state.question_order)
+      // Local review marks help navigation but never affect authoritative answers.
+      // Ignore flags for questions not on this server-owned attempt.
+      const reviewKey = 'ace-cbt-review-flags:' + state.attempt_id
+      if (state.status === 'completed') {
+        try { window.localStorage.removeItem(reviewKey) } catch { /* Optional local storage. */ }
+        setMarkedForReview([])
+      } else {
+        try {
+          const value: unknown = JSON.parse(window.localStorage.getItem(reviewKey) ?? '[]')
+          setMarkedForReview(Array.isArray(value)
+            ? [...new Set(value.filter((id): id is string => typeof id === 'string' && state.question_order.includes(id)))]
+            : [])
+        } catch { setMarkedForReview([]) }
+      }
       setAttempt(state)
       setQuestions(loadedQuestions)
       setRemaining(state.remaining_seconds ?? getRemainingSeconds(state.started_at, state.duration_seconds))
@@ -165,6 +180,8 @@ export default function PersistentCBT({ attemptId = null, questionCount = 20, du
       const completed = { ...submitted, total_questions: submitted.total_questions ?? attempt.question_order.length }
       setResult(completed)
       if (storageKey) window.localStorage.removeItem(storageKey)
+      try { window.localStorage.removeItem('ace-cbt-review-flags:' + attempt.attempt_id) } catch { /* Optional local storage. */ }
+      setMarkedForReview([])
       setAttempt((currentAttempt) => currentAttempt ? { ...currentAttempt, status: 'completed', score: completed.score, correct_count: completed.correct_count, answered_count: completed.answered_count, completed_at: completed.completed_at, remaining_seconds: 0 } : currentAttempt)
       onComplete?.(completed)
     } catch (e: any) {
@@ -172,6 +189,27 @@ export default function PersistentCBT({ attemptId = null, questionCount = 20, du
     } finally {
       finishing.current = false
       setSubmitting(false)
+    }
+  }
+
+  function toggleReviewMark() {
+    if (!attempt || attempt.status !== 'active' || !question) return
+    const next = markedForReview.includes(question.id)
+      ? markedForReview.filter((id) => id !== question.id)
+      : [...markedForReview, question.id]
+    setMarkedForReview(next)
+    try { window.localStorage.setItem('ace-cbt-review-flags:' + attempt.attempt_id, JSON.stringify(next)) }
+    catch { /* Review works without persistent local storage. */ }
+  }
+
+  function nextUnanswered() {
+    if (!questions.length) return
+    for (let offset = 1; offset <= questions.length; offset += 1) {
+      const index = (current + offset) % questions.length
+      if (answers[questions[index].id] == null) {
+        setCurrent(index)
+        return
+      }
     }
   }
 
@@ -183,6 +221,9 @@ export default function PersistentCBT({ attemptId = null, questionCount = 20, du
 
   const optionKeys = attempt.option_order[question.id] ?? question.options.map((o) => o.key)
   const optionsByKey = new Map(question.options.map((o) => [o.key, o]))
+  const answeredCount = questions.filter((item) => answers[item.id] != null).length
+  const pendingCount = questions.length - answeredCount
+  const markedCount = questions.filter((item) => markedForReview.includes(item.id)).length
 
   return <div className="space-y-5">
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -200,9 +241,13 @@ export default function PersistentCBT({ attemptId = null, questionCount = 20, du
           if (!option) return null
           return <button key={key} type="button" aria-pressed={selected === key} aria-label={String.fromCharCode(65 + optionKeys.indexOf(key)) + '. ' + option.text} disabled={saving || submitting} onClick={() => void choose(key)} className={`rounded-xl border p-4 text-left transition ${selected === key ? 'border-purple-300/60 bg-purple-500/10' : 'border-white/10 bg-white/5 hover:bg-white/10'}`}><span aria-hidden="true" className="mr-3 font-bold">{String.fromCharCode(65 + optionKeys.indexOf(key))}.</span>{option.text}</button>
         })}</div>
+        <div className="mt-5 flex flex-wrap items-center gap-3">
+          <button type="button" onClick={toggleReviewMark} aria-pressed={markedForReview.includes(question.id)} className="min-h-11 rounded-xl border border-purple-300/40 px-4 py-2 text-sm font-semibold text-purple-100">{markedForReview.includes(question.id) ? 'Remove review mark' : 'Mark for review'}</button>
+          <button type="button" onClick={nextUnanswered} disabled={pendingCount === 0} className="min-h-11 rounded-xl border border-white/15 px-4 py-2 text-sm font-semibold disabled:opacity-40">Next unanswered</button>
+        </div>
         <div className="mt-5 flex gap-3"><button type="button" disabled={current === 0} onClick={() => setCurrent((v) => Math.max(0, v - 1))} className="flex-1 rounded-xl border border-white/10 py-3 disabled:opacity-30">Previous</button>{current < questions.length - 1 ? <button type="button" onClick={() => setCurrent((v) => Math.min(questions.length - 1, v + 1))} className="flex-1 rounded-xl bg-white py-3 font-bold text-black">Next</button> : <button type="button" disabled={submitting} onClick={() => void finish()} className="flex-1 rounded-xl bg-purple-500 py-3 font-bold">{submitting ? 'Submitting…' : 'Submit CBT'}</button>}</div>
       </section>
-      <aside aria-label="Question navigation" className="glass-card h-fit rounded-2xl p-4"><p id="cbt-question-map-label" className="text-xs text-white/40">Question map</p><div role="group" aria-labelledby="cbt-question-map-label" className="mt-3 grid grid-cols-4 gap-2">{questions.map((item, index) => <button key={item.id} type="button" aria-label={`Go to question ${index + 1}, ${answers[item.id] != null ? 'answered' : 'unanswered'}`} aria-current={index === current ? 'step' : undefined} onClick={() => setCurrent(index)} className={`h-9 rounded-lg text-xs ${index === current ? 'bg-white text-black' : answers[item.id] != null ? 'bg-purple-500/25' : 'bg-white/5'}`}>{index + 1}</button>)}</div></aside>
+      <aside aria-label="Question navigation" className="glass-card h-fit rounded-2xl p-4"><p id="cbt-question-map-label" className="text-xs text-white/40">Question map</p><p className="mt-2 text-xs text-white/60">{answeredCount} answered · {pendingCount} unanswered · {markedCount} marked for review</p><p className="mt-2 text-xs text-white/40">Review marks remain on this device during an active attempt; answers are saved separately on the server.</p><div role="group" aria-labelledby="cbt-question-map-label" className="mt-3 grid grid-cols-4 gap-2">{questions.map((item, index) => <button key={item.id} type="button" aria-label={`Go to question ${index + 1}, ${answers[item.id] != null ? 'answered' : 'unanswered'}${markedForReview.includes(item.id) ? ', marked for review' : ''}`} aria-current={index === current ? 'step' : undefined} onClick={() => setCurrent(index)} className={`h-9 rounded-lg text-xs ${index === current ? 'bg-white text-black' : markedForReview.includes(item.id) ? 'border border-purple-300 bg-purple-500/20 text-purple-100' : answers[item.id] != null ? 'bg-purple-500/25' : 'bg-white/5'}`}>{index + 1}</button>)}</div></aside>
     </div>
   </div>
 }
