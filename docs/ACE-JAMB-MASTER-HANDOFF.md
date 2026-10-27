@@ -3829,3 +3829,11 @@ No database/schema/RPC/Edge Function changes, production-data writes, or deploym
 - Latest code/test commit: `5e50ad3911dca56752486889b78ae1b3815edbfa`. Verify [40422034609](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40422034609) and E2E [40422034652](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40422034652) were queued when this update was prepared.
 - No production data, schema, backend functions or deployment changed.
 - **Exact next action:** wait for the latest CI result, inspect any new E2E failure evidence, and close Batch 6 only when the complete Playwright suite passes.
+
+
+## Batch 6 continuation — stale flashcard request guard — 2026-10-27
+
+- Previous `main` E2E run [40426918661](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40426918661) finished **FAIL**: 80 passed, 2 failed, both the flashcard error/retry scenario on desktop and mobile. Browser-test logs show `getByRole('alert')` absent after the forced 503 response. Previous Verify [40426918635](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40426918635) passed.
+- Application change committed as `9370c52a8ce5420a8568885253e200aa9d1baf26` (`src/components/StudentFlashcards.tsx`): track each load sequence and ignore superseded load successes, failures, and loading-finalizers so an older request cannot overwrite a newer result.
+- Fresh Verify [40432192708](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40432192708) and E2E [40432192662](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40432192662) were **queued** at inspection; neither is claimed passed. No deployment, backend, schema, or live-data change.
+- **Batch 6 remains open** until latest E2E is green. Exact next action: inspect both terminal CI results, investigate remaining error/retry failures if any, then close Batch 6 with evidence.
