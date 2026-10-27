@@ -1598,6 +1598,8 @@ test.describe('ACE JAMB account access surfaces', () => {
     await expect(page.getByRole('button', { name: 'Checkout unavailable' })).toBeDisabled()
     await expect(page.getByText('No active ACE Pass entitlement found.')).toBeVisible()
     await expect(page.getByText('A referral code has not been issued to your account yet.')).toBeVisible()
+    await expect(page.getByText('Recent referrals (up to 100)')).toBeVisible()
+    await expect(page.getByText('Qualified in recent 100')).toBeVisible()
     await expect(page.getByText(/No active referral campaign is configured/)).toBeVisible()
   })
 })
