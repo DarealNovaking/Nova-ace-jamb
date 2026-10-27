@@ -4014,3 +4014,9 @@ No database/schema/RPC/Edge Function changes, production-data writes, or deploym
 - No backend, schema, production data, catalogue, deployment or provider changes.
 - Verification: source edit committed; new SHA typecheck/build and Playwright E2E NOT YET VERIFIED. Previous Batch 9 `4bde638` Verify run 40473989897 and E2E run 40473989835 both completed successfully (checked through GitHub jobs API). Do not claim the current commit is green.
 - Next action: check SHA-matched Verify and E2E on `main`, repair any reproduced regression, then continue remaining frontend acceptance gaps under the 16-batch matrix.
+
+
+## Batch 8 study preview regression coverage — 2026-10-27
+- Added Playwright assertions to existing study-preference loading safety test in `tests/e2e/smoke.spec.ts`, commit `43ebad346be4dec52fc7c733000ce8ba15f0dfb6`. On failed account preference GET, preview must show reload guidance and not display an invented 75-minute session; after retry it must remove guidance and restore saved 75-minute preference. Complements UI guard commit `73094564ddc43fdedebada657d8bcdd6d400de52`.
+- New SHA typecheck/build/E2E: UNVERIFIED; no tests were executed locally. No backend or live data changes.
+- Next action: inspect latest main SHA-matched GitHub Verify and E2E; fix reproduced failures, then continue frontend acceptance matrix.
