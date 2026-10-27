@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { CheckCircle2, ChevronRight, Layers3, Loader2, RotateCcw } from 'lucide-react'
 import { getStudentFlashcards, saveStudentFlashcardReview, type StudentFlashcard, type StudentFlashcardReview } from '../lib/flashcardService'
 
@@ -37,33 +37,26 @@ export default function StudentFlashcards({ subjects, topics }: { subjects: Subj
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
   const [complete, setComplete] = useState(false)
-  const loadSequence = useRef(0)
-  // The dashboard can recreate its subjects array during unrelated renders.
-  // Key the load effect to the selected IDs, not the array identity, so a saved
-  // review/error is not immediately cleared by an unnecessary automatic reload.
+  // Key the load effect to selected IDs rather than the parent's array identity,
+  // so unrelated dashboard renders do not silently clear an error or restart a load.
   const subjectIdsKey = subjects.map((subject) => subject.id).join(',')
 
   const load = useCallback(async () => {
-    const requestId = ++loadSequence.current
     setLoading(true)
     setError('')
     setNotice('')
     setComplete(false)
     try {
       const result = await getStudentFlashcards(subjectIdsKey ? subjectIdsKey.split(',') : [])
-      // Ignore stale responses when the actual selected subject IDs change.
-      if (requestId !== loadSequence.current) return
       const reviewMap = Object.fromEntries(result.reviews.map((review) => [review.flashcard_id, review]))
       setReviews(reviewMap)
       setCards(orderForReview(result.cards, reviewMap))
       setIndex(0)
       setRevealed(false)
     } catch {
-      if (requestId === loadSequence.current) {
-        setError('We could not load your flashcards. Check your connection and try again.')
-      }
+      setError('We could not load your flashcards. Check your connection and try again.')
     } finally {
-      if (requestId === loadSequence.current) setLoading(false)
+      setLoading(false)
     }
   }, [subjectIdsKey])
 
