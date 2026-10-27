@@ -2,10 +2,12 @@ import { useEffect, useMemo, useState } from 'react'
 import { CalendarDays, CheckCircle2, Loader2, Save } from 'lucide-react'
 import { getStudentPreferences, updateStudentPreferences } from '../lib/studentService'
 import { buildStudySchedule } from '../lib/studySchedule'
-import { fetchStudentAttempts } from '../lib/practiceService'
-import { suggestStudyFocus, type PastAttempt } from '../lib/progressSummary'
+import { fetchStudentAttempts, fetchStudentTopicEvidence } from '../lib/practiceService'
+import { suggestStudyFocus, summarizeSubtopicEvidence, type PastAttempt, type PublishedTopicMapping, type QuestionReviewEvidence } from '../lib/progressSummary'
 
 type Subject = { id: string; name: string; code: string }
+type Topic = { id: string; name: string; subject_id?: string; subtopics?: Array<{ id: string; name: string }> }
+type Props = { subjects: Subject[]; topics: Topic[]; onReviewSubtopic: (subjectId: string, topicId: string, subtopicId: string) => void }
 
 const days = [
   { id: 'monday', label: 'Mon' },
@@ -17,7 +19,7 @@ const days = [
   { id: 'sunday', label: 'Sun' },
 ]
 
-export default function StudentStudyPlan({ subjects }: { subjects: Subject[] }) {
+export default function StudentStudyPlan({ subjects, topics, onReviewSubtopic }: Props) {
   const [dailyMinutes, setDailyMinutes] = useState(60)
   const [selectedDays, setSelectedDays] = useState<string[]>(['monday', 'tuesday', 'wednesday', 'thursday', 'friday'])
   const [loading, setLoading] = useState(true)
@@ -30,8 +32,14 @@ export default function StudentStudyPlan({ subjects }: { subjects: Subject[] }) 
   const [focusLoading, setFocusLoading] = useState(true)
   const [focusError, setFocusError] = useState('')
   const [focusRetry, setFocusRetry] = useState(0)
+  const [subtopicRecords, setSubtopicRecords] = useState<QuestionReviewEvidence[]>([])
+  const [publishedSubtopics, setPublishedSubtopics] = useState<PublishedTopicMapping[]>([])
+  const [subtopicLoading, setSubtopicLoading] = useState(topics.length > 0)
+  const [subtopicError, setSubtopicError] = useState('')
+  const [subtopicRetry, setSubtopicRetry] = useState(0)
   const previewSessions = useMemo(() => buildStudySchedule(subjects, selectedDays, dailyMinutes), [subjects, selectedDays, dailyMinutes])
   const focus = useMemo(() => suggestStudyFocus(history, subjects), [history, subjects])
+  const subtopicFocus = useMemo(() => summarizeSubtopicEvidence(subtopicRecords, publishedSubtopics, topics)[0] ?? null, [subtopicRecords, publishedSubtopics, topics])
 
   useEffect(() => {
     let cancelled = false
@@ -75,6 +83,30 @@ export default function StudentStudyPlan({ subjects }: { subjects: Subject[] }) 
     }).finally(() => { if (active) setFocusLoading(false) })
     return () => { active = false }
   }, [focusRetry])
+
+  useEffect(() => {
+    if (!topics.length) {
+      setSubtopicRecords([])
+      setPublishedSubtopics([])
+      setSubtopicLoading(false)
+      setSubtopicError('')
+      return
+    }
+    let active = true
+    setSubtopicLoading(true)
+    setSubtopicError('')
+    void fetchStudentTopicEvidence().then(({ records, published }) => {
+      if (!active) return
+      setSubtopicRecords(records)
+      setPublishedSubtopics(published)
+    }).catch(() => {
+      if (!active) return
+      setSubtopicRecords([])
+      setPublishedSubtopics([])
+      setSubtopicError('Subtopic suggestions could not be loaded. Retry when your connection is available.')
+    }).finally(() => { if (active) setSubtopicLoading(false) })
+    return () => { active = false }
+  }, [topics, subtopicRetry])
 
   function toggleDay(day: string) {
     setSelectedDays((current) => current.includes(day) ? current.filter((item) => item !== day) : [...current, day])
@@ -140,6 +172,18 @@ export default function StudentStudyPlan({ subjects }: { subjects: Subject[] }) 
         {!focusLoading && !focusError && (focus
           ? <p className="mt-3 text-sm text-white/70"><strong className="text-purple-100">{focus.subjectName}</strong> is a useful starting point: {focus.accuracy}% correct across {focus.answered} saved subject-specific answers. The suggested routine below continues rotating all your saved subjects.</p>
           : <p className="mt-3 text-sm text-white/55">Not enough subject-specific practice history yet. Your routine will rotate your chosen subjects without making up weaknesses.</p>)}
+        <div className="mt-5 border-t border-white/10 pt-4">
+          <h4 className="font-semibold">Suggested approved subtopic to revisit</h4>
+          <p className="mt-2 text-xs leading-5 text-white/45">Drawn from real saved question results and rights-approved syllabus material only. This is a study suggestion, not a persisted adaptive plan or a JAMB score prediction.</p>
+          {subtopicLoading && <p role="status" className="mt-3 text-sm text-white/55">Checking approved subtopic history…</p>}
+          {!subtopicLoading && subtopicError && <div role="alert" className="mt-3 text-sm text-red-100">{subtopicError}<button type="button" className="ml-3 underline" onClick={() => setSubtopicRetry((value) => value + 1)}>Retry subtopic suggestion</button></div>}
+          {!subtopicLoading && !subtopicError && (subtopicFocus ? <div className="mt-3 rounded-xl border border-purple-300/20 p-4">
+            <p className="text-xs text-purple-200/70">{subtopicFocus.topicName}</p>
+            <p className="mt-1 font-bold">{subtopicFocus.subtopicName}</p>
+            <p className="mt-2 text-sm text-white/55">{subtopicFocus.accuracy}% correct across {subtopicFocus.answers} recorded answers.</p>
+            <button type="button" onClick={() => onReviewSubtopic(subtopicFocus.subjectId, subtopicFocus.topicId, subtopicFocus.subtopicId)} className="mt-3 min-h-11 rounded-xl border border-purple-300/40 px-4 py-2 text-sm font-semibold text-purple-100">Practise suggested subtopic</button>
+          </div> : <p className="mt-3 text-sm text-white/55">Not enough approved subtopic answer history is available for a specific suggestion.</p>)}
+        </div>
       </section>
 
       <section aria-labelledby="study-preview-heading" className="mt-6 rounded-2xl border border-white/10 bg-black/15 p-5">

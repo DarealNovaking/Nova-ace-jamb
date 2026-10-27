@@ -3997,3 +3997,12 @@ No database/schema/RPC/Edge Function changes, production-data writes, or deploym
 - **Verification:** current commit CI pending. The earlier account/settings fixture setup correction `30a3f928bcc7dc32193429500c51253e1e603271` passed Verify [40473461390](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40473461390); E2E [40473461413](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40473461413) was still running at this checkpoint and must not be assumed green.
 - **Acceptance:** Batch 9 remains PARTIAL (readiness, speed analytics, deeper mastery and live content/provider contracts not satisfied). Frontend-wide 16-batch completion and deployment are not claimed. No schema, provider, payment or production write.
 - **Next action:** verify new main source SHA typecheck/build and Playwright across desktop/mobile; fix any regression from grounded evidence and continue remaining frontend scope.
+
+
+## Batch 8 evidence-based subtopic next-step recommendation — 2026-10-27
+
+- Extended the study-routine frontend to show a specific approved subtopic worth revisiting when the current user's saved published-question answer history contains at least five relevant decisions. Reuses `fetchStudentTopicEvidence` and `summarizeSubtopicEvidence`; no new database schema or speculative content. The student can launch the existing published-question-filtered subtopic practice contract from Study Plan.
+- With no approved topics, no supported subtopic history, network failure or insufficient answers, the view says so instead of suggesting fake weaknesses. Study routine still rotates all selected subjects; no persisted AI/adaptive plan is claimed. Bounded additional read only runs when approved topics exist.
+- Files: `src/components/StudentStudyPlan.tsx`, `src/components/StudentStudyWorkspace.tsx`, `tests/e2e/smoke.spec.ts`, canonical handoff, checkpoint and batch tracker.
+- **Verification:** new code/test SHA CI is pending at commit time. Previous subtopic progress feature on `4bde63821ad8f50c715169afc51b321894ff1efc` had Verify [40473989897](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40473989897) PASS; E2E [40473989835](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40473989835) still running when inspected. Do not claim full Study Plan or whole-product completion.
+- **Next action:** inspect newest Verify and E2E results; fix a reproduced integration regression; continue with the next frontend acceptance criterion respecting server/content dependencies.

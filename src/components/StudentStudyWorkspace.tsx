@@ -124,7 +124,7 @@ export default function StudentStudyWorkspace({ mode, subjects, topics, onBack, 
 
         {mode === 'progress' && <StudentProgressSummary subjects={subjects} topics={topics} topicCount={topics.length} onStartCbt={onStartCbt} />}
 
-        {mode === 'plan' && <StudentStudyPlan subjects={subjects} />}
+        {mode === 'plan' && <StudentStudyPlan subjects={subjects} topics={topics} onReviewSubtopic={(subjectId, topicId, subtopicId) => onStartCbt('practice', 'subtopic', subjectId, topicId, subtopicId)} />}
         </div>
 
       </div>
