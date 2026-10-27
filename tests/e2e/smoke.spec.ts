@@ -953,6 +953,7 @@ test.describe('ACE JAMB preparation workspaces', () => {
     allowFlashcardSuccess = false
     await page.getByRole('button', { name: 'Refresh deck' }).click()
     await expect.poll(() => failedFlashcardRequests).toBeGreaterThan(0)
+    console.log('FLASHCARD ERROR TEST UI:', (await page.locator('#workspace-content').innerText()).slice(0, 1200))
     await expect(page.getByRole('alert')).toContainText('We could not load your flashcards.')
     await expect(page.getByText(/private database host/)).toHaveCount(0)
 
