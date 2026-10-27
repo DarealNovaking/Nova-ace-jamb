@@ -56,7 +56,8 @@ begin
   where a.id = p_attempt_id
     and a.user_id = v_user_id
     and q.active = true
-    and q.review_status = 'published';
+    and q.review_status = 'published'
+    and q.rights_status = any (array['owned', 'licensed', 'permitted']);
 
   return v_questions;
 end;
