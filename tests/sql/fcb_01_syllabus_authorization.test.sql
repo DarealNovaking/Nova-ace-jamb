@@ -49,7 +49,7 @@ insert into ace.subtopics values
  ('60000000-0000-4000-8000-000000000001','50000000-0000-4000-8000-000000000001','20000000-0000-4000-8000-000000000001','Draft subtopic',false),
  ('60000000-0000-4000-8000-000000000002','50000000-0000-4000-8000-000000000002','20000000-0000-4000-8000-000000000002','Active subtopic',true);
 
-\i supabase/migrations/20261027152101_fcb_01_syllabus_authorization.sql
+\i supabase/migrations/20261027164455_fcb_01_syllabus_authorization.sql
 
 -- Executes arbitrary fixture actions as the current non-owner role. A missing
 -- permission must raise 42501; a zero-row RLS no-op is asserted separately below.

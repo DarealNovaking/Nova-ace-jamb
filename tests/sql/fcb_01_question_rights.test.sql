@@ -88,7 +88,7 @@ insert into ace.questions(id,active,review_status,rights_status,options,correct_
  ('10000000-0000-4000-8000-000000000004',true,'published','restricted','[{"key":"A","text":"A"}]'::jsonb,'A'),
  ('10000000-0000-4000-8000-000000000005',true,'published','unknown','[{"key":"A","text":"A"}]'::jsonb,'A');
 
-\i supabase/migrations/20261027152507_fcb_01_question_rights_gate.sql
+\i supabase/migrations/20261027164518_fcb_01_question_rights_gate.sql
 
 set role anon;
 do $assert$

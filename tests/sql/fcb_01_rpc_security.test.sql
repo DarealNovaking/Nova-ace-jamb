@@ -54,7 +54,7 @@ insert into ace.catalog_import_rows values ('60000000-0000-4000-8000-00000000000
 insert into ace.subjects select ('50000000-0000-4000-8000-'||lpad(i::text,12,'0'))::uuid,case when i=1 then 'ENG' else 'SUB'||i end,true,i from generate_series(1,5) i;
 
 -- CI applies the remediation here. For RED reproduction, omit this include.
-\i supabase/migrations/20261027151954_fcb_01_rpc_security_boundaries.sql
+\i supabase/migrations/20261027164433_fcb_01_rpc_security_boundaries.sql
 
 set role authenticated;
 select set_config('request.jwt.claim.sub','00000000-0000-4000-8000-000000000001',false);

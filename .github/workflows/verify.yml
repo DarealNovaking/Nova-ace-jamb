@@ -89,3 +89,7 @@ jobs:
         env:
           PGPASSWORD: postgres
         run: psql -h 127.0.0.1 -U postgres -d postgres -v ON_ERROR_STOP=1 -f tests/sql/fcb_01_question_rights.test.sql
+      - name: Test proposed owner-scoped answer-key-free question delivery
+        env:
+          PGPASSWORD: postgres
+        run: psql -h 127.0.0.1 -U postgres -d postgres -v ON_ERROR_STOP=1 -f tests/sql/fcb_01_attempt_delivery.test.sql

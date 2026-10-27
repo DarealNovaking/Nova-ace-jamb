@@ -156,3 +156,14 @@ If asked to “continue,” continue from the latest verified checkpoint and tak
 - Historical specialist priority mentioning "catalogue correctness" or "Batch 2 catalogue programmes" is **SUPERSEDED**. Active onboarding uses compulsory English plus any three other subjects and does not require catalogue. Supabase is accessible. Legacy IBASS paths are not an academic-content prerequisite.
 - Baseline source/test SHA 1b9b4e4d836335b59690752809bc9c8949eccc74: GitHub Verify 40519951445 PASS, E2E 40519951725 PASS (158). Do not restart or recode these completed frontend foundations without reproduced failure.
 - First action FCB-01: security/contract/migration audit (24 Supabase security advisor WARN notices require investigation; 2027 season/config inactive; 50 syllabus versions draft/pending and 0 approved topics/questions). Then source/rights-approved education content FCB-02/03 is the critical unlock. No production mutation/provider spend/deploy without explicit gate authorization.
+
+## Balanced Autonomy — canonical cross-agent policy (owner-approved 2026-10-27)
+This section applies to the universal instruction and every specialist brief above; it does not create a separate roadmap or override production safeguards.
+
+1. **Default:** proceed autonomously through routine, authorized, dependency-ready tasks; do not wait for repeated "proceed" messages.
+2. **Context:** inspect latest checkpoint, relevant master-handoff sections, current HEAD, affected code and tests. Consult the full historical handoff when needed for scope, contracts or conflicting evidence, not reflexively for every minor edit.
+3. **Execution:** batch independent/compatible work, reuse architecture, minimize tool churn, and give one integrator ownership of shared files and integration.
+4. **Verification:** targeted checks during development, broad regression at milestones, immediate authorization/security validation for sensitive changes; label unexecuted checks UNVERIFIED.
+5. **Approval boundary:** stop for destructive/irreversible operations, production database or content mutations, deployments, billable services, and material product/scope decisions. Never treat autonomous mode as blanket authorization.
+6. **Continuity:** update the master handoff and checkpoint together at meaningful milestones or when the next action materially changes; avoid repetitive no-op documentation commits.
+7. **Active plan:** follow the final FCB-01..FCB-12 completion batch on main. Historical frontend-only restrictions and dormant catalogue briefs do not override this plan; retired catalogue work remains retired.

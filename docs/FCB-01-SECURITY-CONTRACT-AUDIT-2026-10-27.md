@@ -24,9 +24,9 @@ All production inspection was read-only. No migration, content change, deploymen
 | High before content/API enablement | Question publication and attempt queries omit rights checks; NULL attempt count bypasses its upper bound. Current missing table grants fail closed, so this is not evidence that live students can currently retrieve these rows. | Recover historical reviewed rights gate as a new forward migration, require owned/licensed/permitted rights, reject NULL mode/count/duration. No table privileges added. | Rights leakage and NULL bound failures reproduced; SQL tests pass after fix. |
 | Runtime defect | `loadCbtQuestions` selects nonexistent `question_text`; production stores `stem`. | PostgREST alias `question_text:stem`, exact safe projection tested. | Typecheck/build and service-contract regression pass; full browser run pending CI. |
 
-The new migrations are `20261027151954_fcb_01_rpc_security_boundaries.sql`,
-`20261027152101_fcb_01_syllabus_authorization.sql`, and
-`20261027152507_fcb_01_question_rights_gate.sql`.
+The new migrations are `20261027164433_fcb_01_rpc_security_boundaries.sql`,
+`20261027164455_fcb_01_syllabus_authorization.sql`, and
+`20261027164518_fcb_01_question_rights_gate.sql`.
 
 ## Complete live function audience audit
 
@@ -158,3 +158,29 @@ It is wired after the RPC fixture before later suites replace schemas. CI execut
 - **Status:** FCB-01 audit/remediation source is reviewed and regression-verified; **FCB-01 acceptance and the unified FCB-01..12 batch remain OPEN**. Production security remediation is not applied, live service flows/deployed SHA are unverified, and approved content/providers are missing. FCB-08/09 source integrations remain gated by the audited foundation and undecided provider/business settings; no provider or cost enabled.
 - **Exact next action / required owner authorization:** review PR #10, then obtain explicit authorization for only its three targeted production security migrations after current-definition preflight and backup/rollback review. Do not merge/deploy, publish content or enable providers implicitly. Independently recover a safe schema-only migration baseline and identify the first authorized syllabus/question sources for FCB-02. A new agent must resume PR #10 and this verified SHA, not restart the 158-test frontend baseline or retired catalogue.
 - No production database/content writes, deployment, paid upgrade or billable provider activation occurred. The following handoff-only commit changes no verified source/test files; PR checks may run again for documentation alone.
+
+
+## FCB-01 targeted production remediation verified — 2026-10-27 (current checkpoint)
+- Owner's repeated “Proceed keep working” followed the concrete request to apply only the three reviewed security migrations. That authorization was used only for those migrations; no release, content publication, provider activation or extra production changes are implied.
+- Applied successfully through connected Supabase to project `uokiqlgmzprqfbzmedaz`: `20261027164433_fcb_01_rpc_security_boundaries.sql`, `20261027164455_fcb_01_syllabus_authorization.sql`, `20261027164518_fcb_01_question_rights_gate.sql`. Source files were renamed to the actual tool-assigned ledger IDs; SQL bodies are unchanged. Earlier filenames in historical entries are superseded. Ledger now has 44 entries.
+- Preflight: ten existing function definitions matched the reviewed rollback hashes; four policies matched the prior snapshot. Forward/rollback DDL compilation passed on a disposable catalog-column fixture. The rollback is metadata restoration, not a production data backup, and deliberately restores known weaknesses.
+- Live postflight PASS: all eleven changed/new function definitions exactly match independently compiled reviewed source; three syllabus triggers and four expected policies exist; all 48 ace tables retain RLS. Questions/versions/topics/attempts counts stayed 0/50/0/0. A READ ONLY transaction using synthetic JWT claims verified owner/audience denial, NULL argument rejection, revoked trigger/anon execution and absent client score/answer write privileges, then rolled back. No production test fixture or student data mutation was performed.
+- The first migration request expired; read-only ledger/function inspection proved it had not applied before the successful retry. No duplicate application. Security advisors remain 24 previously classified warnings; this is not a zero-vulnerability claim.
+- Prior source verification remains Verify 40535097721 PASS and E2E 40535098147 PASS (164 tests). Renamed-file references require focused replay verification; frontend code is unchanged. PR #10 remains the review branch; main was not merged and no frontend/services were deployed.
+- FCB-01 and the unified final batch remain OPEN: clean schema reproduction, secure CBT server contracts, approved educational content and provider/release gates remain unresolved. Do not blindly replay historical migrations or add broad client mutation grants.
+- Exact next action: recover and validate a schema-only baseline from catalog metadata in a disposable database, preserving current ACLs/RLS without extracting ledger SQL, user rows or secrets; then continue the canonical FCB dependencies. No further owner action is required for this source audit work.
+
+
+### Schema recovery publication restriction — 2026-10-27
+- Local schema-only recovery replay and exact catalog comparison passed, including real pgvector, signup-role isolation and existing-schema refusal. The full catalog snapshot, recovered SQL and recovery-only CI artifacts remain local on `local/fcb-01-schema-recovery`; they are not included in this review branch.
+- Automatic approval review rejected publishing that production-derived snapshot to GitHub because it contains live schema definitions, ACLs and security metadata whose export was not specifically authorized. No alternate tool or indirect upload was used. Specific owner approval is needed to publish the full snapshot; generic new source contracts/synthetic tests and previously reviewed migration renames can continue independently.
+- Main documentation `17f29e137a483066789e0242f20637c89beeae08` was merged into this review branch, preserving Balanced Autonomy and the safe CBT delivery finding. No main application source changed.
+- Exact next action: implement/test an owner-scoped answer-key-free CBT delivery proposal with synthetic fixtures; no new production application is authorized. FCB-01 and the final batch remain OPEN.
+
+
+### FCB-01 safe CBT delivery proposal — 2026-10-27
+- Added `supabase/proposals/fcb_01_attempt_question_delivery.sql`, deliberately outside automatic migrations: authenticated owner-only active/unexpired attempt delivery, fixed pg_catalog-first search path, current publication/rights checks, exact attempt order, all-or-nothing withdrawal and a nested option key/text whitelist. No explanation, answer key, correctness or whole-row table grant is returned. No admin/editor bypass.
+- Synthetic disposable PostgreSQL test first failed because the endpoint was missing, then passed after implementation. It covers ordered delivery, nested secret stripping, label compatibility, NULL/anonymous/cross-owner/missing attempts, no direct table grant, draft/inactive/rights withdrawal, missing questions, expiry/completion and duplicate IDs. Added this sixth SQL suite to native Verify CI.
+- This proposal is NOT applied or connected to the current client. Existing start/resume/save/submit invoker/grant and correctness-oracle gaps still require a coordinated secure mutation redesign; enabling only delivery would not make CBT operational. Existing frontend journeys are preserved.
+- Only reviewed pre-existing migration filename alignment, concise evidence, this new source proposal and synthetic tests are published; the blocked full live snapshot is excluded from branch history. Native CI result is PENDING until actual logs are inspected.
+- Exact next action: inspect PR #10 Verify including the new SQL suite, then implement secure CBT mutation contracts without exposing answer correctness before submission. Full snapshot export requires specific owner authorization due automatic approval review; no additional production deployment or schema change is authorized.
