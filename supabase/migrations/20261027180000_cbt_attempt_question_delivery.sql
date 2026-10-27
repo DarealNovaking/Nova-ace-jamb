@@ -4,7 +4,7 @@ create or replace function ace.get_attempt_questions(p_attempt_id uuid)
 returns jsonb
 language plpgsql
 security definer
-set search_path = pg_catalog, ace, auth
+set search_path = pg_catalog, ace
 as $function$
 declare
   v_user_id uuid := auth.uid();
