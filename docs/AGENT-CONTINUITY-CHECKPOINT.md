@@ -2355,3 +2355,13 @@ Next exact action: inspect the remaining advisor-listed SECURITY DEFINER functio
 - Master handoff implementation note committed as `f84263fe62a4a49d68a734957af97381bee4de04`.
 - Verification status: repository changes written; no CI/test execution evidence yet. No production migration applied. FCB-01 remains open.
 - **Next exact action:** open a draft PR from this branch, inspect workflow/check results, and fix failures before considering merge or production migration.
+
+
+## FCB-01 implementation progress — safe CBT question delivery (2026-10-27)
+- Feature branch: `fix/cbt-safe-question-delivery`.
+- Added migration `supabase/migrations/20261027180000_cbt_attempt_question_delivery.sql`: authenticated, attempt-owner-scoped SECURITY DEFINER RPC; ordered questions; safe field allowlist; options reduced to key/text; no answer key or explanation returned; anon/PUBLIC EXECUTE revoked; authenticated EXECUTE granted.
+- Updated `src/lib/cbtService.ts` and `src/components/PersistentCBT.tsx` to fetch questions by attempt ID through that RPC.
+- Added `tests/sql/cbt_attempt_question_delivery.test.sql` for ownership, order, schema mapping, option sanitization, secret-field omission, and anon denial.
+- Master handoff implementation entry committed as `1f965faaad6d459943088a627ae893a312824bdf`.
+- Verification: **not run yet** — no local repository/test runner was available via connected tools. SQL test, typecheck, build and E2E remain pending. Nothing was applied to live Supabase and no production permissions changed.
+- Next exact action: inspect current feature branch diff; fix any SQL/test issues; run GitHub Actions/available CI checks; only then open/review PR. Keep catalogue retired.
