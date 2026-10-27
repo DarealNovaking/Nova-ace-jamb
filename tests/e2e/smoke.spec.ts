@@ -1033,7 +1033,13 @@ test.describe('ACE JAMB admin question review pagination', () => {
       active: false, subject_id: subjects[0].id, topic_id: null,
     }))
     await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/questions'), async (route) => {
+      if (route.request().method() === 'HEAD') return route.fallback()
       const search = new URL(route.request().url()).searchParams
+      const projection = search.get('select')
+      if (projection !== 'id,question_text:stem,review_status,active,subject_id,topic_id') {
+        await route.fulfill({ status: 400, json: { code: '42703', message: 'Invalid question review projection; prompt column is stem' } })
+        return
+      }
       const offset = Number(search.get('offset') ?? 0)
       const limit = Number(search.get('limit') ?? 30)
       requestedOffsets.push(offset)
@@ -1100,10 +1106,17 @@ test.describe('ACE JAMB administrator review full text', () => {
   test('offers accessible full-question disclosure without publication actions', async ({ page }) => {
     await mockPreparedStudent(page)
     const fullQuestion = 'Verified question context. '.repeat(20) + 'Important final source detail.'
+    let questionProjection = ''
     await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/is_admin'), async (route) => {
       await route.fulfill({ json: true })
     })
     await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/questions'), async (route) => {
+      if (route.request().method() === 'HEAD') return route.fallback()
+      questionProjection = new URL(route.request().url()).searchParams.get('select') ?? ''
+      if (questionProjection !== 'id,question_text:stem,review_status,active,subject_id,topic_id') {
+        await route.fulfill({ status: 400, json: { code: '42703', message: 'Invalid question review projection; prompt column is stem' } })
+        return
+      }
       await route.fulfill({ json: [{
         id: '98000000-0000-4000-8000-000000000098',
         question_text: fullQuestion, review_status: 'draft', active: false,
@@ -1116,6 +1129,7 @@ test.describe('ACE JAMB administrator review full text', () => {
     await expect(review.getByText(fullQuestion, { exact: true })).not.toBeVisible()
     await review.getByText('Read full question text').click()
     await expect(review.getByText(fullQuestion, { exact: true })).toBeVisible()
+    expect(questionProjection).toBe('id,question_text:stem,review_status,active,subject_id,topic_id')
     await expect(review.getByRole('button', { name: /Publish question/ })).toHaveCount(0)
   })
 })
@@ -1165,7 +1179,7 @@ test.describe('ACE JAMB academic editor access', () => {
     const { versions, writes } = await mockAcademicReview(page, false)
     await page.goto('/admin-academic')
     await expect(page.getByRole('heading', { name: 'Academic Structure' })).toBeVisible()
-    await expect(page.getByLabel('Rights review', { exact: true })).toHaveCount(0)
+    await expect(page.getByRole('combobox', { name: 'Rights review', exact: true })).toHaveCount(0)
     await expect(page.getByRole('button', { name: 'Activate version' })).toHaveCount(0)
     await page.getByLabel('Topic name', { exact: true }).fill('Source-backed draft topic')
     await page.getByRole('button', { name: 'Add inactive topic' }).click()
@@ -1176,7 +1190,7 @@ test.describe('ACE JAMB academic editor access', () => {
       await expect(page.getByText('Existing review topic', { exact: true })).toHaveCount(0)
       await expect(page.getByRole('button', { name: 'Add inactive topic' })).toHaveCount(0)
       await expect(page.getByRole('button', { name: 'Add inactive subtopic' })).toHaveCount(0)
-      await expect(page.getByLabel('Rights review', { exact: true })).toHaveCount(0)
+      await expect(page.getByRole('combobox', { name: 'Rights review', exact: true })).toHaveCount(0)
       await expect(page.getByRole('button', { name: 'Activate version' })).toHaveCount(0)
     }
     expect(writes).toHaveLength(1)
@@ -1185,10 +1199,10 @@ test.describe('ACE JAMB academic editor access', () => {
   test('administrator can review rights and activate approved draft content', async ({ page }) => {
     const { versions, writes } = await mockAcademicReview(page, true)
     await page.goto('/admin-academic')
-    await expect(page.getByLabel('Rights review', { exact: true })).toBeVisible()
+    await expect(page.getByRole('combobox', { name: 'Rights review', exact: true })).toBeVisible()
     await expect(page.getByRole('button', { name: 'Activate version' })).toBeDisabled()
     page.on('dialog', (dialog) => dialog.accept())
-    await page.getByLabel('Rights review', { exact: true }).selectOption('approved')
+    await page.getByRole('combobox', { name: 'Rights review', exact: true }).selectOption('approved')
     await expect(page.getByRole('status')).toContainText('Rights status updated to approved')
     expect(writes[0]).toEqual({ path: 'syllabus_versions', payload: expect.objectContaining({ rights_status: 'approved' }) })
     await page.getByLabel('Syllabus version').selectOption(versions[1].id)
@@ -1214,7 +1228,7 @@ test.describe('ACE JAMB academic editor access', () => {
     failAdminCheck = false
     await page.getByRole('button', { name: 'Retry academic editor verification' }).click()
     await expect(page.getByRole('heading', { name: 'Academic Structure' })).toBeVisible()
-    await expect(page.getByLabel('Rights review', { exact: true })).toHaveCount(0)
+    await expect(page.getByRole('combobox', { name: 'Rights review', exact: true })).toHaveCount(0)
   })
 
   test('announces academic workspace loading while the season list resolves', async ({ page }) => {
