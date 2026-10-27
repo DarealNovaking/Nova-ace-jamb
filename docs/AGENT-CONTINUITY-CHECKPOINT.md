@@ -1983,3 +1983,11 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - No frontend code, backend, database, production data, deployment, or catalogue was changed during this reconciliation.
 - The checkpoint's prior HEAD reference was stale. Update it to the actual HEAD above and do not use older checkpoint entries to overrule the newer master-handoff status.
 - **Exact next action:** keep speculative frontend implementation closed; determine whether the project owner explicitly authorizes the next backend milestone. Do not start backend/database/production changes solely from a mistaken claim that the entire frontend product is complete.
+
+
+## Batch 6 continuation — stale flashcard request guard — 2026-10-27
+
+- Previous `main` E2E run [40426918661](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40426918661) finished **FAIL**: 80 passed, 2 failed, both the flashcard error/retry scenario on desktop and mobile. Browser-test logs show `getByRole('alert')` absent after the forced 503 response. Previous Verify [40426918635](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40426918635) passed.
+- Application change committed as `9370c52a8ce5420a8568885253e200aa9d1baf26` (`src/components/StudentFlashcards.tsx`): track each load sequence and ignore superseded load successes, failures, and loading-finalizers so an older request cannot overwrite a newer result.
+- Fresh Verify [40432192708](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40432192708) and E2E [40432192662](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40432192662) were **queued** at inspection; neither is claimed passed. No deployment, backend, schema, or live-data change.
+- **Batch 6 remains open** until latest E2E is green. Exact next action: inspect both terminal CI results, investigate remaining error/retry failures if any, then close Batch 6 with evidence.
