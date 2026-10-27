@@ -140,6 +140,8 @@ jobs:
         run: psql -X -v ON_ERROR_STOP=1 -f tests/sql/fcb_01_signup_referral_collision.test.sql
       - name: Test immutable CBT paper versions and rights withdrawal
         run: psql -X -v ON_ERROR_STOP=1 -f tests/sql/fcb_01_cbt_snapshots.test.sql
+      - name: Test syllabus version identity and parent-child consistency
+        run: psql -X -v ON_ERROR_STOP=1 -f tests/sql/fcb_01_syllabus_version_identity.test.sql
       - name: Test administrator approval and English-plus-three configuration boundaries
         run: psql -X -v ON_ERROR_STOP=1 -f tests/sql/fcb_01_exam_config_security.test.sql
       - name: Test native configuration and season approval races

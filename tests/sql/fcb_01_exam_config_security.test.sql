@@ -75,6 +75,19 @@ insert into ace.syllabus_versions(season_id,subject_id,title,status,rights_statu
 select '83000000-0000-4000-8000-000000000001',id,'Synthetic approved tree','active','approved' from ace.subjects;
 insert into ace.topics(subject_id,syllabus_version_id,name) select subject_id,id,'Synthetic topic' from ace.syllabus_versions;
 insert into ace.subtopics(topic_id,syllabus_version_id,name) select id,syllabus_version_id,'Synthetic subtopic' from ace.topics;
+do $$ declare kind text; begin
+ foreach kind in array array['topic','subtopic'] loop
+  begin
+   if kind='topic' then update ace.topics set active=false where subject_id='84000000-0000-4000-8000-000000000001';
+   else update ace.subtopics set active=false where topic_id in(select id from ace.topics where subject_id='84000000-0000-4000-8000-000000000001'); end if;
+   set local role authenticated;
+   begin perform ace.activate_exam_season('83000000-0000-4000-8000-000000000001'); raise exception 'season accepted unpublished %',kind; exception when sqlstate '22023' then null; end;
+   reset role;
+   raise exception using errcode='Z0001',message='restore synthetic publication flags';
+  exception when sqlstate 'Z0001' then null;
+  end;
+ end loop;
+end $$;
 set local role authenticated;
 select ace.activate_exam_season('83000000-0000-4000-8000-000000000001');
 select ace.activate_exam_season('83000000-0000-4000-8000-000000000001');

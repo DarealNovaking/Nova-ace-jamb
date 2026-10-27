@@ -163,7 +163,7 @@ begin
    and not exists(select 1 from ace.syllabus_versions v where v.season_id=p_season_id
      and v.subject_id=cs.subject_id and v.status='active' and v.rights_status='approved'
      and exists(select 1 from ace.topics t join ace.subtopics st on st.topic_id=t.id
-       where t.syllabus_version_id=v.id and st.syllabus_version_id=v.id))) then
+       where t.syllabus_version_id=v.id and st.syllabus_version_id=v.id and t.active and st.active))) then
   raise exception 'Configured subjects require approved published syllabus trees' using errcode='22023';
  end if;
  select coalesce(jsonb_agg(id order by id),'[]'::jsonb) into v_prior from ace.exam_seasons where status='active';
