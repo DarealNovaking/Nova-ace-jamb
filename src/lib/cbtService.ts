@@ -74,7 +74,7 @@ export async function loadCbtQuestions(questionIds: string[]) {
   if (!questionIds.length) return [] as CbtQuestion[]
   const { data, error } = await ace
     .from('questions')
-    .select('id,question_text,options,subject_id,topic_id,difficulty')
+    .select('id,question_text:stem,options,subject_id,topic_id,difficulty')
     .in('id', questionIds)
   if (error) throw error
   const byId = new Map((data ?? []).map((q: any) => [q.id, q]))

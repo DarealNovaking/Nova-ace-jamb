@@ -24,8 +24,8 @@ jobs:
         with:
           node-version: 20
           cache: npm
-          cache-dependency-path: package.json
-      - run: npm install
+          cache-dependency-path: package-lock.json
+      - run: npm ci
       - run: node --test tests/catalog-parser.test.mjs tests/review-only-stage.test.mjs tests/catalog-import-contract.test.mjs tests/pwa-contract.test.mjs tests/pwa-runtime.test.mjs
       - uses: denoland/setup-deno@v2
       - run: deno check --no-check=remote supabase/functions/ibass-catalog-stage/index.ts
@@ -69,3 +69,15 @@ jobs:
         env:
           PGPASSWORD: postgres
         run: psql -h 127.0.0.1 -U postgres -d postgres -v ON_ERROR_STOP=1 -f tests/sql/syllabus_publication_visibility.test.sql
+      - name: Test FCB-01 RPC owner and approval boundaries
+        env:
+          PGPASSWORD: postgres
+        run: psql -h 127.0.0.1 -U postgres -d postgres -v ON_ERROR_STOP=1 -f tests/sql/fcb_01_rpc_security.test.sql
+      - name: Test FCB-01 syllabus authoring authorization
+        env:
+          PGPASSWORD: postgres
+        run: psql -h 127.0.0.1 -U postgres -d postgres -v ON_ERROR_STOP=1 -f tests/sql/fcb_01_syllabus_authorization.test.sql
+      - name: Test FCB-01 question rights and attempt bounds
+        env:
+          PGPASSWORD: postgres
+        run: psql -h 127.0.0.1 -U postgres -d postgres -v ON_ERROR_STOP=1 -f tests/sql/fcb_01_question_rights.test.sql
