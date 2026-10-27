@@ -2174,3 +2174,9 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - Added Playwright assertions to existing study-preference loading safety test in `tests/e2e/smoke.spec.ts`, commit `43ebad346be4dec52fc7c733000ce8ba15f0dfb6`. On failed account preference GET, preview must show reload guidance and not display an invented 75-minute session; after retry it must remove guidance and restore saved 75-minute preference. Complements UI guard commit `73094564ddc43fdedebada657d8bcdd6d400de52`.
 - New SHA typecheck/build/E2E: UNVERIFIED; no tests were executed locally. No backend or live data changes.
 - Next action: inspect latest main SHA-matched GitHub Verify and E2E; fix reproduced failures, then continue frontend acceptance matrix.
+
+
+## Batch 13 notification preference load-integrity guard — 2026-10-27
+- Frontend code commit `f62b55b9b3426066fb0a3786ec4465bc008b0cd7` changes `src/components/StudentNotifications.tsx`: settings are read-only until the authenticated notification+preference fetch succeeds, and save is blocked during failed/incomplete reads. Prevents saving component defaults over existing notification preferences after an API failure. Retry reloads from the existing read path.
+- No backend, schema, delivery provider, deployment or production-data action. Push delivery remains unavailable; Batch 13 remains PARTIAL.
+- Verification: source committed, latest SHA typecheck/build/Playwright UNVERIFIED. Next: add mocked regression coverage for failed preferences read → no write → retry restored values; then run SHA-matched CI and continue other independent frontend gaps.
