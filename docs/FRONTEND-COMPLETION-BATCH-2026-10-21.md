@@ -913,3 +913,13 @@ No database/schema/RPC/Edge Function changes, production-data writes, or deploym
 - **Affected files:** `src/components/PersistentCBT.tsx`, `tests/e2e/smoke.spec.ts`, and continuity docs. No schema/Edge Function/deployment/production student-data action.
 - **Verification status at edit:** latest commit's fresh GitHub Verify and E2E are **NOT YET VERIFIED**. Do not close Batch 5 or full product acceptance based solely on the code change. Browser mocks are not proof of real server configuration or published content.
 - **Exact next action:** inspect the new SHA-matched GitHub Verify and E2E results, repair a reproduced failure if found; then continue the next safe frontend-only acceptance gap under the retained 16-batch product matrix.
+
+
+## CBT countdown safety follow-up — 2026-10-27
+
+- The prior recovery-pointer safety correction is committed as `7c5c778fd1442ff0f30639731f5204a51c637660`; Verify [40472126194](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40472126194) and E2E [40472126205](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40472126205) were running at this edit, not assumed green.
+- **Source defect found:** despite receiving `resume_attempt.remaining_seconds` from the server, `PersistentCBT` recomputed remaining time each second using the device's wall clock and `started_at`. A wrong handset date/time could show instant expiry or extra time, even for a valid server-active attempt.
+- **Fix:** anchor the visible countdown to the server-reported remaining time and elapsed `performance.now()` (monotonic); clamp to the session duration. Server-side answer/save/submit authorization remains authoritative. A new browser fixture intentionally supplies a wildly skewed `started_at` and verifies that a server report of 90 seconds does not auto-submit after ~1 second.
+- Source: `src/components/PersistentCBT.tsx`. Tests: `tests/e2e/smoke.spec.ts`. No schema, data, deployment, catalogue or payment change.
+- **Status:** code change recorded; new code/test SHA's Verify/E2E remains **UNVERIFIED** until terminal green. Full CBT mock composition and whole-product frontend acceptance remain open.
+- **Exact next action:** inspect the freshest GitHub Verify and ACE JAMB E2E terminal result; fix reproducible timer/recovery failures; continue remaining frontend acceptance gaps while respecting missing education/service contracts.

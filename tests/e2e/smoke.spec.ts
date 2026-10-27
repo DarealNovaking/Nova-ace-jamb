@@ -540,6 +540,46 @@ test.describe('ACE JAMB persistent CBT', () => {
     expect(await page.evaluate((uid) => localStorage.getItem('ace-cbt-active-attempt:' + uid), userId)).toBe(newId)
   })
 
+  test('CBT countdown respects server remaining time even when device wall time is skewed', async ({ page }) => {
+    await mockPreparedStudent(page)
+    const attemptId = '40000000-0000-4000-8000-000000000044'
+    const questionId = '30000000-0000-4000-8000-000000000044'
+    const deviceSkewedStart = '2024-01-01T00:00:00.000Z'
+    let submissionCalls = 0
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/start_attempt'), async (route) => {
+      await route.fulfill({ json: {
+        attempt_id: attemptId, status: 'active', started_at: deviceSkewedStart,
+        duration_seconds: 1800, random_seed: 44, question_order: [questionId],
+        option_order: { [questionId]: ['A'] }, question_count: 1,
+      } })
+    })
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/resume_attempt'), async (route) => {
+      await route.fulfill({ json: {
+        attempt_id: attemptId, status: 'active', mode: 'cbt', subject_id: null,
+        started_at: deviceSkewedStart, completed_at: null, duration_seconds: 1800,
+        remaining_seconds: 90, random_seed: 44, question_order: [questionId],
+        option_order: { [questionId]: ['A'] }, answers: [], score: null,
+        correct_count: 0, answered_count: 0,
+      } })
+    })
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/questions'), async (route) => {
+      await route.fulfill({ json: [{
+        id: questionId, question_text: 'Monotonic countdown test question',
+        options: [{ key: 'A', text: 'Answer A' }], subject_id: null, topic_id: null, difficulty: 'easy',
+      }] })
+    })
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/submit_attempt'), async (route) => {
+      submissionCalls += 1
+      await route.fulfill({ status: 400, json: { code: 'timer_test', message: 'Unexpected automatic submission' } })
+    })
+    await page.goto('/?cbt=1')
+    await expect(page.getByRole('heading', { name: 'Monotonic countdown test question' })).toBeVisible()
+    await expect(page.getByRole('timer')).toContainText(/00:01:(29|30)/)
+    await page.waitForTimeout(1200)
+    expect(submissionCalls).toBe(0)
+    await expect(page.getByRole('heading', { name: 'Monotonic countdown test question' })).toBeVisible()
+  })
+
   test('review marks survive CBT reload and clear after submission without changing answers', async ({ page }) => {
     await mockPreparedStudent(page)
     const questionIds = ['30000000-0000-4000-8000-000000000021', '30000000-0000-4000-8000-000000000022']

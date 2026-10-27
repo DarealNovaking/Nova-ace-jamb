@@ -62,6 +62,7 @@ export default function PersistentCBT({ attemptId = null, questionCount = 20, du
   const [confirmSubmit, setConfirmSubmit] = useState(false)
   const finishing = useRef(false)
   const questionPresentedAt = useRef<{ id: string; at: number } | null>(null)
+  const serverDeadline = useRef<number | null>(null)
 
   const answers = useMemo(() => {
     const map: Record<string, string | null> = {}
@@ -81,6 +82,7 @@ export default function PersistentCBT({ attemptId = null, questionCount = 20, du
     setError('')
     setResult(null)
     setConfirmSubmit(false)
+    serverDeadline.current = null
     try {
       let state: CbtAttemptState
       const storedAttemptId = attemptToResume ?? (storageKey ? window.localStorage.getItem(storageKey) : null)
@@ -122,7 +124,15 @@ export default function PersistentCBT({ attemptId = null, questionCount = 20, du
       }
       setAttempt(state)
       setQuestions(loadedQuestions)
-      setRemaining(state.remaining_seconds ?? getRemainingSeconds(state.started_at, state.duration_seconds))
+      // Start a monotonic client countdown from the server's remaining time.
+      // Local phone clock errors must not make a server-active attempt appear expired
+      // or give a student more time than the server allows.
+      const reported = state.remaining_seconds ?? getRemainingSeconds(state.started_at, state.duration_seconds)
+      const seconds = Number.isFinite(reported) && Number.isFinite(state.duration_seconds)
+        ? Math.max(0, Math.min(state.duration_seconds, Math.ceil(reported)))
+        : 0
+      serverDeadline.current = performance.now() + seconds * 1000
+      setRemaining(seconds)
       if (state.status === 'completed' && state.score !== null && state.completed_at) {
         setResult({
           attempt_id: state.attempt_id,
@@ -148,7 +158,8 @@ export default function PersistentCBT({ attemptId = null, questionCount = 20, du
   useEffect(() => {
     if (!attempt || attempt.status !== 'active') return
     const timer = window.setInterval(() => {
-      const next = getRemainingSeconds(attempt.started_at, attempt.duration_seconds)
+      const deadline = serverDeadline.current
+      const next = deadline === null ? 0 : Math.max(0, Math.ceil((deadline - performance.now()) / 1000))
       setRemaining(next)
       if (next <= 0) {
         window.clearInterval(timer)
