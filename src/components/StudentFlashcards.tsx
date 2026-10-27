@@ -38,6 +38,10 @@ export default function StudentFlashcards({ subjects, topics }: { subjects: Subj
   const [notice, setNotice] = useState('')
   const [complete, setComplete] = useState(false)
   const loadSequence = useRef(0)
+  // The dashboard can recreate its subjects array during unrelated renders.
+  // Key the load effect to the selected IDs, not the array identity, so a saved
+  // review/error is not immediately cleared by an unnecessary automatic reload.
+  const subjectIdsKey = subjects.map((subject) => subject.id).join(',')
 
   const load = useCallback(async () => {
     const requestId = ++loadSequence.current
@@ -46,9 +50,8 @@ export default function StudentFlashcards({ subjects, topics }: { subjects: Subj
     setNotice('')
     setComplete(false)
     try {
-      const result = await getStudentFlashcards(subjects.map((subject) => subject.id))
-      // Subject/profile hydration can trigger a newer load while an earlier empty
-      // request is still settling. Only the newest request may update the view.
+      const result = await getStudentFlashcards(subjectIdsKey ? subjectIdsKey.split(',') : [])
+      // Ignore stale responses when the actual selected subject IDs change.
       if (requestId !== loadSequence.current) return
       const reviewMap = Object.fromEntries(result.reviews.map((review) => [review.flashcard_id, review]))
       setReviews(reviewMap)
@@ -62,7 +65,7 @@ export default function StudentFlashcards({ subjects, topics }: { subjects: Subj
     } finally {
       if (requestId === loadSequence.current) setLoading(false)
     }
-  }, [subjects])
+  }, [subjectIdsKey])
 
   useEffect(() => { void load() }, [load])
 
