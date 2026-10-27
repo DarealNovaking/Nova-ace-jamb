@@ -107,7 +107,7 @@ export default function PersistentCBT({ attemptId = null, questionCount = 20, du
         state = await resumeCbt(started.attempt_id)
       }
       if (state.status === 'completed' && storageKey) window.localStorage.removeItem(storageKey)
-      const loadedQuestions = state.status === 'completed' ? [] : await loadCbtQuestions(state.question_order)
+      const loadedQuestions = state.status === 'completed' ? [] : await loadCbtQuestions(state.attempt_id)
       // Local review marks help navigation but never affect authoritative answers.
       // Ignore flags for questions not on this server-owned attempt.
       const reviewKey = 'ace-cbt-review-flags:' + state.attempt_id
