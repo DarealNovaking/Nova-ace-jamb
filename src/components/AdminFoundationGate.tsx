@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { ace, supabase } from '../lib/supabase'
 import { getCurrentUser } from '../lib/authService'
 import AdminOperationsOverview from './AdminOperationsOverview'
+import AdminQuestionReviewQueue from './AdminQuestionReviewQueue'
 
 export default function AdminFoundationGate() {
   const [checking, setChecking] = useState(true)
@@ -88,6 +89,7 @@ export default function AdminFoundationGate() {
         </div>
 
         <AdminOperationsOverview />
+        <AdminQuestionReviewQueue />
       </div>
     </main>
   )

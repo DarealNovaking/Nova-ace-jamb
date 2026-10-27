@@ -721,6 +721,41 @@ test.describe('ACE JAMB admin operations command center', () => {
 })
 
 
+test.describe('ACE JAMB administrator question review visibility', () => {
+  test('only the verified administrator sees review statuses without publishing actions', async ({ page }) => {
+    await mockPreparedStudent(page)
+    const reviewedId = '98000000-0000-4000-8000-000000000018'
+    let questionReads = 0
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/is_admin'), async (route) => {
+      await route.fulfill({ json: true })
+    })
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/questions'), async (route) => {
+      questionReads += 1
+      await route.fulfill({ json: [{ id: reviewedId, question_text: 'Rights review sample', review_status: 'draft', active: false, subject_id: subjects[0].id, topic_id: null }] })
+    })
+    await page.goto('/admin')
+    await expect(page.getByRole('heading', { name: 'Admin Dashboard' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Question publication review' })).toBeVisible()
+    await expect(page.getByText('Rights review sample')).toBeVisible()
+    await expect(page.getByText('Inactive record')).toBeVisible()
+    await expect(page.getByRole('button', { name: /Publish question/ })).toHaveCount(0)
+    expect(questionReads).toBeGreaterThan(0)
+  })
+
+  test('non-admin students never request the protected question review queue', async ({ page }) => {
+    await mockPreparedStudent(page)
+    let questionReads = 0
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/questions'), async (route) => {
+      questionReads += 1
+      await route.fulfill({ json: [] })
+    })
+    await page.goto('/admin')
+    await expect(page.getByRole('heading', { name: 'Admin access required' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Question publication review' })).toHaveCount(0)
+    expect(questionReads).toBe(0)
+  })
+})
+
 test.describe('ACE JAMB academic editor access', () => {
   test('announces academic workspace loading while the season list resolves', async ({ page }) => {
     await mockFirstTimeStudent(page)
