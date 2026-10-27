@@ -940,6 +940,8 @@ test.describe('ACE JAMB preparation workspaces', () => {
     // before the test injects a flashcard-service failure.
     await page.goto('/')
     await expect(page.getByRole('heading', { name: 'Welcome back, Test Futarian.' })).toBeVisible()
+    await page.getByRole('button', { name: /Learn Approved syllabus topics/ }).click()
+    await expect(page.getByRole('heading', { name: 'Learn', exact: true })).toBeVisible()
     await page.getByRole('button', { name: 'Flashcards', exact: true }).click()
     await expect(page.getByRole('alert')).toContainText('We could not load your flashcards.')
     await expect(page.getByText(/private database host/)).toHaveCount(0)
