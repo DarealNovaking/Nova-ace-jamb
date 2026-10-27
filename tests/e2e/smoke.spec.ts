@@ -1003,6 +1003,75 @@ test.describe('ACE JAMB preparation workspaces', () => {
     await expect(page.getByText('No reviewed questions are published for this session yet.', { exact: false })).toBeVisible()
   })
 
+  test('topic practice only requests reviewed question IDs for the approved topic', async ({ page }) => {
+    await mockSyllabusPublicationState(page, 'approved')
+    const topicId = '70000000-0000-4000-8000-000000000001'
+    const questionId = '98000000-0000-4000-8000-000000000001'
+    let questionQuery = ''
+    let payload: Record<string, unknown> | null = null
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/questions'), async (route) => {
+      questionQuery = new URL(route.request().url()).search
+      await route.fulfill({ json: [{ id: questionId }] })
+    })
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/start_attempt'), async (route) => {
+      payload = route.request().postDataJSON()
+      await route.fulfill({ status: 400, contentType: 'application/json', json: { code: 'P0001', message: 'No published questions available for this attempt' } })
+    })
+
+    await page.goto('/?view=practice')
+    await expect(page.getByRole('heading', { level: 1, name: 'Practice', exact: true })).toBeVisible()
+    await page.getByLabel('Practice topic').selectOption(topicId)
+    await page.getByRole('button', { name: 'Start topic practice' }).click()
+    await expect(page).toHaveURL(/[?&]focus=topic/)
+    await expect(page).toHaveURL(new RegExp('topic=' + topicId))
+    await expect.poll(() => payload).not.toBeNull()
+    const params = new URLSearchParams(questionQuery)
+    expect(params.get('subject_id')).toBe('eq.' + subjects[0].id)
+    expect(params.get('topic_id')).toBe('eq.' + topicId)
+    expect(params.get('active')).toBe('eq.true')
+    expect(params.get('review_status')).toBe('eq.published')
+    expect(payload).toMatchObject({
+      p_mode: 'practice', p_subject_id: subjects[0].id,
+      p_question_count: 1, p_question_ids: [questionId],
+    })
+    await expect(page.getByText('No reviewed questions are published for this session yet.', { exact: false })).toBeVisible()
+  })
+
+  test('subtopic practice does not substitute random questions when no reviewed questions exist', async ({ page }) => {
+    await mockSyllabusPublicationState(page, 'approved')
+    const topicId = '70000000-0000-4000-8000-000000000001'
+    const subtopicId = '79000000-0000-4000-8000-000000000001'
+    let questionQuery = ''
+    let attemptsStarted = 0
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/subtopics'), async (route) => {
+      await route.fulfill({ json: [{
+        id: subtopicId, topic_id: topicId,
+        syllabus_version_id: '60000000-0000-4000-8000-000000000001',
+        name: 'Reading details', description: 'Test-only', sort_order: 1, active: true,
+      }] })
+    })
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/questions'), async (route) => {
+      questionQuery = new URL(route.request().url()).search
+      await route.fulfill({ json: [] })
+    })
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/start_attempt'), async (route) => {
+      attemptsStarted += 1
+      await route.fulfill({ json: {} })
+    })
+
+    await page.goto('/?view=practice')
+    await expect(page.getByRole('heading', { level: 1, name: 'Practice', exact: true })).toBeVisible()
+    await page.getByLabel('Practice topic').selectOption(topicId)
+    await page.getByLabel('Practice subtopic').selectOption(subtopicId)
+    await page.getByRole('button', { name: 'Start subtopic practice' }).click()
+    await expect(page).toHaveURL(/[?&]focus=subtopic/)
+    await expect(page.getByRole('heading', { name: 'No reviewed questions published for this topic yet' })).toBeVisible()
+    expect(attemptsStarted).toBe(0)
+    const params = new URLSearchParams(questionQuery)
+    expect(params.get('topic_id')).toBe('eq.' + topicId)
+    expect(params.get('subtopic_id')).toBe('eq.' + subtopicId)
+  })
+
   test('flashcard review reveals verified content and persists a self-scoped review', async ({ page }) => {
     await mockPreparedStudent(page)
     let savedReview: Record<string, unknown> | null = null
