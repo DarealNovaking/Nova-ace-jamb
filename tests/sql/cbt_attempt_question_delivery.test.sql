@@ -36,6 +36,7 @@ create table ace.questions (
   difficulty text,
   correct_option_key text not null,
   explanation text,
+  rights_status text not null,
   active boolean not null,
   review_status text not null
 );
@@ -45,13 +46,13 @@ insert into ace.attempts(id,user_id,status,question_order) values
   '["20000000-0000-4000-8000-000000000002","20000000-0000-4000-8000-000000000001"]'),
  ('10000000-0000-4000-8000-000000000002','bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb','active',
   '["20000000-0000-4000-8000-000000000001"]');
-insert into ace.questions(id,stem,options,correct_option_key,explanation,active,review_status) values
+insert into ace.questions(id,stem,options,correct_option_key,explanation,rights_status,active,review_status) values
  ('20000000-0000-4000-8000-000000000001','Question one',
-  '[{"key":"A","text":"Alpha","internal_note":"must not leak"},{"key":"B","label":"Beta"}]','B','Secret explanation one',true,'published'),
+  '[{"key":"A","text":"Alpha","internal_note":"must not leak"},{"key":"B","label":"Beta"}]','B','Secret explanation one','owned',true,'published'),
  ('20000000-0000-4000-8000-000000000002','Question two',
-  '[{"key":"C","text":"Gamma"},{"key":"D","text":"Delta"}]','D','Secret explanation two',true,'published'),
+  '[{"key":"C","text":"Gamma"},{"key":"D","text":"Delta"}]','D','Secret explanation two','licensed',true,'published'),
  ('20000000-0000-4000-8000-000000000003','Draft question',
-  '[{"key":"X","text":"Hidden"}]','X','Draft explanation',true,'draft');
+  '[{"key":"X","text":"Hidden"}]','X','Draft explanation','owned',true,'draft');
 
 \i supabase/migrations/20261027180000_cbt_attempt_question_delivery.sql
 
