@@ -6,6 +6,7 @@ import AdminQuestionReviewQueue from './AdminQuestionReviewQueue'
 
 export default function AdminFoundationGate() {
   const [checking, setChecking] = useState(true)
+  const [retryCount, setRetryCount] = useState(0)
   const [allowed, setAllowed] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -13,6 +14,9 @@ export default function AdminFoundationGate() {
     let active = true
 
     const check = async () => {
+      setChecking(true)
+      setAllowed(false)
+      setError(null)
       try {
         const user = await getCurrentUser()
         if (!user) {
@@ -46,7 +50,7 @@ export default function AdminFoundationGate() {
     return () => {
       active = false
     }
-  }, [])
+  }, [retryCount])
 
   const signOut = async () => {
     await supabase.auth.signOut()
@@ -64,7 +68,8 @@ export default function AdminFoundationGate() {
           <p className="text-xs uppercase tracking-[.2em] text-purple-300">ÑØVÃ · ACE JAMB</p>
           <h1 className="mt-3 text-2xl font-black">Admin access required</h1>
           <p className="mt-3 text-sm text-white/50">{error ?? 'Sign in with an administrator account to continue.'}</p>
-          <button type="button" onClick={() => window.location.assign('/')} className="mt-6 rounded-xl bg-white px-5 py-3 font-bold text-black">Back to ACE JAMB</button>
+          {error === 'Unable to verify administrator access. Please try again.' && <button type="button" onClick={() => setRetryCount((value) => value + 1)} className="mt-6 rounded-xl border border-purple-300/30 px-5 py-3 font-bold text-purple-100">Retry administrator verification</button>}
+          <button type="button" onClick={() => window.location.assign('/')} className="mt-6 ml-2 rounded-xl bg-white px-5 py-3 font-bold text-black">Back to ACE JAMB</button>
         </section>
       </main>
     )
