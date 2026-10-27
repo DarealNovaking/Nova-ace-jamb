@@ -39,6 +39,7 @@ export default function StudentNotifications() {
   const [items, setItems] = useState<NotificationRow[]>([])
   const [preferences, setPreferences] = useState<Preferences>(defaultPreferences)
   const [loading, setLoading] = useState(true)
+  const [preferencesReady, setPreferencesReady] = useState(false)
   const [saving, setSaving] = useState(false)
   const [markingId, setMarkingId] = useState<string | null>(null)
   const [error, setError] = useState('')
@@ -49,6 +50,7 @@ export default function StudentNotifications() {
   const load = useCallback(async () => {
     const run = ++loadRun.current
     setLoading(true)
+    setPreferencesReady(false)
     setError('')
     setNotice('')
     try {
@@ -73,6 +75,7 @@ export default function StudentNotifications() {
       if (run !== loadRun.current) return
       setItems((notificationResult.data ?? []) as NotificationRow[])
       setPreferences(preferenceResult.data ? { ...defaultPreferences, ...preferenceResult.data } as Preferences : defaultPreferences)
+      setPreferencesReady(true)
     } catch {
       if (run === loadRun.current) setError('We could not load your notifications. Check your connection and try again.')
     } finally {
@@ -105,6 +108,7 @@ export default function StudentNotifications() {
   }
 
   async function savePreferences() {
+    if (!preferencesReady || loading || saving) return
     setSaving(true)
     setError('')
     setNotice('')
@@ -154,7 +158,8 @@ export default function StudentNotifications() {
       {showSettings && <div className="mt-5 rounded-2xl border border-white/10 bg-black/20 p-4 sm:p-5">
         <h3 className="font-bold">Notification preferences</h3>
         <p className="mt-1 text-xs leading-5 text-white/45">These preferences are saved to your account. Email and push delivery depend on server-side integrations being configured.</p>
-        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        {!preferencesReady && <p role="status" className="mt-3 text-sm text-amber-100">{loading ? 'Loading your saved notification preferences…' : 'Saved preferences are unavailable. Retry notifications before editing.'}</p>}
+        <fieldset disabled={!preferencesReady || loading || saving} className="mt-4 grid gap-3 sm:grid-cols-2">
           {([
             ['in_app', 'In-app notifications', 'Show updates in your ACE inbox.'],
             ['email', 'Email notifications', 'Allow eligible account emails.'],
@@ -167,8 +172,8 @@ export default function StudentNotifications() {
             <input type="checkbox" checked={preferences.push} disabled aria-label="Push notifications unavailable" className="mt-1 accent-purple-300" />
             <span><span className="block text-sm font-semibold">Push notifications</span><span className="mt-1 block text-xs leading-5 text-white/40">Push delivery is not configured yet; this saved preference does not enable device push.</span></span>
           </div>
-        </div>
-        <button type="button" onClick={() => void savePreferences()} disabled={saving} className="mt-4 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-purple-300 px-4 py-2 text-sm font-bold text-[#120b1c] disabled:opacity-50">{saving && <Loader2 size={15} className="animate-spin" />} Save preferences</button>
+        </fieldset>
+        <button type="button" onClick={() => void savePreferences()} disabled={!preferencesReady || loading || saving} className="mt-4 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-purple-300 px-4 py-2 text-sm font-bold text-[#120b1c] disabled:opacity-50">{saving && <Loader2 size={15} className="animate-spin" />} Save preferences</button>
       </div>}
 
       {loading ? <div role="status" aria-live="polite" aria-atomic="true" className="grid min-h-24 place-items-center text-sm text-white/45"><Loader2 className="animate-spin" size={20} aria-hidden="true" /><span>Loading notifications…</span></div>
