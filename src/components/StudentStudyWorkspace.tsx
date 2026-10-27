@@ -13,7 +13,7 @@ type Props = {
   subjects: Subject[]
   topics: Topic[]
   onBack: () => void
-  onStartCbt: (mode?: 'cbt' | 'practice') => void
+  onStartCbt: (mode?: 'cbt' | 'practice', focus?: 'mistakes') => void
 }
 
 const modes: { id: StudentWorkspaceMode; label: string; icon: typeof BookOpen }[] = [
@@ -77,7 +77,7 @@ export default function StudentStudyWorkspace({ mode, subjects, topics, onBack, 
 
         {mode === 'practice' && <section className="glass-card rounded-3xl p-6 sm:p-8"><div className="flex items-center gap-3"><Target className="text-purple-200"/><h2 className="text-2xl font-black">Practice with purpose</h2></div><p className="mt-3 max-w-2xl text-sm leading-6 text-white/55">Practice sessions require reviewed questions with verified answers. We will not generate fake questions or claim an empty question bank is ready.</p><div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{['Topic practice','Weakness practice','Mistake review'].map((label) => <div key={label} className="rounded-2xl border border-white/10 bg-white/[.025] p-5"><ListChecks className="text-purple-200"/><h3 className="mt-3 font-bold">{label}</h3><p className="mt-2 text-sm leading-6 text-white/45">Available when the required reviewed question and attempt data is published.</p></div>)}</div><div className="mt-6 rounded-2xl border border-amber-300/15 bg-amber-300/[.05] p-5"><p className="font-semibold">Question availability</p><p className="mt-2 text-sm leading-6 text-white/50">Question availability is checked when you start a session. If approved questions are not published for your selected subjects, ACE will tell you instead of inventing questions or recording a fake attempt.</p><button type="button" onClick={() => onStartCbt('practice')} className="mt-4 rounded-xl bg-white px-4 py-3 text-sm font-bold text-black">Start a practice session</button></div></section>}
 
-        {mode === 'revision' && <StudentQuickRevision subjects={subjects} topics={topics} onStartPractice={() => onStartCbt('practice')} />}
+        {mode === 'revision' && <StudentQuickRevision subjects={subjects} topics={topics} onStartPractice={() => onStartCbt('practice')} onReviewMistakes={() => onStartCbt('practice', 'mistakes')} />}
 
         {mode === 'flashcards' && <StudentFlashcards subjects={subjects} topics={topics} />}
 

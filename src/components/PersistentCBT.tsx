@@ -19,6 +19,8 @@ type Props = {
   onComplete?: (result: Awaited<ReturnType<typeof submitCbt>>) => void
   storageKey?: string | null
   mode?: CbtMode
+  questionIds?: string[]
+  focus?: 'mistakes' | null
 }
 
 function safeCbtMessage(error: unknown, fallback: string) {
@@ -45,7 +47,7 @@ function formatTime(seconds: number) {
   return [h, m, s].map((v) => String(v).padStart(2, '0')).join(':')
 }
 
-export default function PersistentCBT({ attemptId = null, questionCount = 20, durationSeconds = 1800, onComplete, storageKey = null, mode = 'cbt' }: Props) {
+export default function PersistentCBT({ attemptId = null, questionCount = 20, durationSeconds = 1800, onComplete, storageKey = null, mode = 'cbt', questionIds, focus = null }: Props) {
   const [attempt, setAttempt] = useState<CbtAttemptState | null>(null)
   const [questions, setQuestions] = useState<CbtQuestion[]>([])
   const [current, setCurrent] = useState(0)
@@ -80,12 +82,12 @@ export default function PersistentCBT({ attemptId = null, questionCount = 20, du
           // An explicit attempt ID must fail visibly; a stale local recovery pointer may be replaced.
           if (attemptToResume || !storageKey) throw resumeError
           window.localStorage.removeItem(storageKey)
-          const started = await startCbt({ mode, questionCount, durationSeconds })
+          const started = await startCbt({ mode, questionCount, durationSeconds, questionIds })
           window.localStorage.setItem(storageKey, started.attempt_id)
           state = await resumeCbt(started.attempt_id)
         }
       } else {
-        const started = await startCbt({ mode, questionCount, durationSeconds })
+        const started = await startCbt({ mode, questionCount, durationSeconds, questionIds })
         if (storageKey) window.localStorage.setItem(storageKey, started.attempt_id)
         state = await resumeCbt(started.attempt_id)
       }
@@ -183,7 +185,7 @@ export default function PersistentCBT({ attemptId = null, questionCount = 20, du
 
   return <div className="space-y-5">
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-      <div><p className="text-xs uppercase tracking-[.2em] text-purple-300/70">Persistent CBT</p><h1 className="mt-1 text-3xl font-black">JAMB simulation</h1></div>
+      <div><p className="text-xs uppercase tracking-[.2em] text-purple-300/70">Persistent CBT</p><h1 className="mt-1 text-3xl font-black">{focus === 'mistakes' ? 'Mistake review practice' : 'JAMB simulation'}</h1></div>
       <div role="timer" aria-label={`Time remaining ${formatTime(remaining)}`} className={`rounded-xl px-4 py-2 font-mono ${remaining < 60 ? 'bg-red-500/20 text-red-200' : 'bg-white/5'}`}><Clock3 aria-hidden="true" className="mr-2 inline" size={16}/>{formatTime(remaining)}</div>
     </div>
     {error && <div role="alert" className="rounded-xl border border-red-400/20 bg-red-500/10 p-3 text-sm text-red-100">{error}</div>}

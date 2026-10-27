@@ -1,12 +1,19 @@
 import { FormEvent, useEffect, useState } from 'react'
 import PersistentCBT from './PersistentCBT'
 import { getCurrentUser, signInWithPassword } from '../lib/authService'
+import { fetchStudentMistakes } from '../lib/practiceService'
 
 export default function ProtectedCBT() {
   const [checking, setChecking] = useState(true)
   const [signedIn, setSignedIn] = useState(false)
   const [storageKey, setStorageKey] = useState<string | null>(null)
   const [mode] = useState<'cbt' | 'practice'>(() => new URLSearchParams(window.location.search).get('mode') === 'practice' ? 'practice' : 'cbt')
+  const [focus] = useState<'mistakes' | null>(() => new URLSearchParams(window.location.search).get('focus') === 'mistakes' && new URLSearchParams(window.location.search).get('mode') === 'practice' ? 'mistakes' : null)
+  const recoveryScope = focus === 'mistakes' ? 'practice-mistakes' : mode
+  const [focusedQuestionIds, setFocusedQuestionIds] = useState<string[]>([])
+  const [focusLoading, setFocusLoading] = useState(focus === 'mistakes')
+  const [focusError, setFocusError] = useState('')
+  const [focusRetry, setFocusRetry] = useState(0)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [message, setMessage] = useState('')
@@ -15,9 +22,30 @@ export default function ProtectedCBT() {
   useEffect(() => {
     getCurrentUser().then((user) => {
       setSignedIn(Boolean(user))
-      setStorageKey(user ? `ace-${mode}-active-attempt:${user.id}` : null)
+      setStorageKey(user ? `ace-${recoveryScope}-active-attempt:${user.id}` : null)
     }).catch(() => setSignedIn(false)).finally(() => setChecking(false))
-  }, [])
+  }, [recoveryScope])
+
+  // Only fetch the signed-in student's mistake IDs; server-side start_attempt
+  // authoritatively filters the IDs again to published active questions.
+  useEffect(() => {
+    if (!signedIn || focus !== 'mistakes') return
+    let active = true
+    setFocusLoading(true)
+    setFocusError('')
+    void fetchStudentMistakes(20).then((items) => {
+      if (!active) return
+      const validIds = [...new Set(items.map((item) => item.question_id).filter((id) =>
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id),
+      ))]
+      setFocusedQuestionIds(validIds)
+    }).catch(() => {
+      if (!active) return
+      setFocusedQuestionIds([])
+      setFocusError('We could not load your mistake history. Check your connection and retry.')
+    }).finally(() => { if (active) setFocusLoading(false) })
+    return () => { active = false }
+  }, [signedIn, focus, focusRetry])
 
   const signIn = async (event: FormEvent) => {
     event.preventDefault()
@@ -25,7 +53,7 @@ export default function ProtectedCBT() {
     setBusy(true)
     try {
       const data = await signInWithPassword(email, password)
-      setStorageKey(data.user ? `ace-${mode}-active-attempt:${data.user.id}` : null)
+      setStorageKey(data.user ? `ace-${recoveryScope}-active-attempt:${data.user.id}` : null)
       setSignedIn(Boolean(data.user))
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Could not sign in. Check your email and password.')
@@ -46,5 +74,10 @@ export default function ProtectedCBT() {
       <button type="submit" disabled={busy} className="w-full rounded-xl bg-white py-3 font-bold text-black disabled:opacity-50">{busy ? 'Signing in…' : 'Sign in'}</button>
     </form>
   </section>
-  return <PersistentCBT storageKey={storageKey} mode={mode} />
+  if (focus === 'mistakes') {
+    if (focusLoading) return <section aria-busy="true" className="glass-card mx-auto max-w-lg rounded-3xl p-6"><p role="status" className="text-white/70">Loading your saved mistake questions…</p></section>
+    if (focusError) return <section className="glass-card mx-auto max-w-lg rounded-3xl p-6"><p role="alert" className="text-white/75">{focusError}</p><button type="button" className="mt-4 rounded-xl bg-white px-4 py-3 font-bold text-black" onClick={() => setFocusRetry((value) => value + 1)}>Retry mistake history</button></section>
+    if (!focusedQuestionIds.length) return <section className="glass-card mx-auto max-w-lg rounded-3xl p-6"><h1 className="text-2xl font-black">No mistakes to practise yet</h1><p className="mt-3 text-sm text-white/60">There are no saved missed questions for this account. Complete approved practice first, or choose general practice.</p><a href="/?view=revision" className="mt-4 inline-block rounded-xl bg-white px-4 py-3 font-bold text-black">Return to revision</a></section>
+  }
+  return <PersistentCBT storageKey={storageKey} mode={mode} questionIds={focus === 'mistakes' ? focusedQuestionIds : undefined} questionCount={focus === 'mistakes' ? focusedQuestionIds.length : undefined} focus={focus} />
 }

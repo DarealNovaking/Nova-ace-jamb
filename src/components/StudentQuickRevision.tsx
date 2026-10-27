@@ -6,7 +6,7 @@ import type { StudentQuestionMistake } from '../lib/progressSummary'
 type Subject = { id: string; name: string; code: string }
 type Topic = { id: string; name: string; description: string | null; subjectName: string; sort_order: number; subtopics?: Array<{ id: string; name: string; description: string | null }> }
 
-export default function StudentQuickRevision({ subjects, topics, onStartPractice }: { subjects: Subject[]; topics: Topic[]; onStartPractice: () => void }) {
+export default function StudentQuickRevision({ subjects, topics, onStartPractice, onReviewMistakes }: { subjects: Subject[]; topics: Topic[]; onStartPractice: () => void; onReviewMistakes: () => void }) {
   const [subjectId, setSubjectId] = useState('all')
   const [topicId, setTopicId] = useState('')
   const [mistakes, setMistakes] = useState<StudentQuestionMistake[]>([])
@@ -53,8 +53,11 @@ export default function StudentQuickRevision({ subjects, topics, onStartPractice
         {loading && <p role="status" className="mt-5 flex items-center gap-2 text-sm text-white/65"><Loader2 size={16} className="animate-spin" aria-hidden="true"/>Loading your mistake history…</p>}
         {error && <div role="alert" className="mt-5 rounded-xl border border-red-400/20 p-4 text-sm text-red-100"><p>{error}</p><button type="button" className="mt-3 underline" onClick={() => setRefresh((current) => current + 1)}>Try again</button></div>}
         {!loading && !error && (mistakes.length ? <div className="mt-5 grid grid-cols-2 gap-3"><div className="rounded-xl border border-white/10 p-4"><p className="text-xs text-white/50">Questions missed</p><p className="mt-2 text-2xl font-black">{mistakes.length}{mistakes.length === 20 ? '+' : ''}</p></div><div className="rounded-xl border border-white/10 p-4"><p className="text-xs text-white/50">Missed repeatedly</p><p className="mt-2 text-2xl font-black">{repeatedCount}</p></div></div> : <p className="mt-5 rounded-xl border border-dashed border-white/15 p-4 text-sm leading-6 text-white/60">No saved incorrect-answer records are available yet. Your mistake history builds from real practice attempts.</p>)}
-        {mistakes.length > 0 && !loading && !error && <p className="mt-4 text-xs leading-5 text-white/45">Question text and topic-level targeting need access to approved question records. This is not yet a mistake-only practice session.</p>}
-        <button type="button" onClick={onStartPractice} className="mt-5 min-h-11 rounded-xl bg-purple-300 px-4 py-2 text-sm font-bold text-[#120b1c]">Start general practice</button>
+        {mistakes.length > 0 && !loading && !error && <p className="mt-4 text-xs leading-5 text-white/45">Mistake review uses your own saved question history. The server will include only questions that are still approved and published; it may find none.</p>}
+        <div className="mt-5 flex flex-wrap gap-3">
+          {mistakes.length > 0 && !loading && !error && <button type="button" onClick={onReviewMistakes} className="min-h-11 rounded-xl bg-purple-300 px-4 py-2 text-sm font-bold text-[#120b1c]">Practise missed questions</button>}
+          <button type="button" onClick={onStartPractice} className="min-h-11 rounded-xl border border-white/15 px-4 py-2 text-sm font-bold text-white">Start general practice</button>
+        </div>
       </aside>
     </section>
   )

@@ -815,7 +815,7 @@ test.describe('ACE JAMB preparation workspaces', () => {
 
     await page.getByRole('button', { name: 'Quick revision', exact: true }).click()
     await expect(page.getByRole('heading', { level: 1, name: 'Quick revision', exact: true })).toBeVisible()
-    await expect(page.getByText('Revision materials are not published yet')).toBeVisible()
+    await expect(page.getByText('No published revision topics yet')).toBeVisible()
 
     await page.getByRole('button', { name: 'Flashcards', exact: true }).click()
     await expect(page.getByText('No approved flashcards are available for your selected subjects yet.')).toBeVisible()
@@ -827,13 +827,62 @@ test.describe('ACE JAMB preparation workspaces', () => {
     await page.getByRole('button', { name: /Study plan/ }).click()
     await expect(page.getByRole('heading', { level: 1, name: 'Study plan', exact: true })).toBeVisible()
     await expect(page.getByRole('heading', { name: 'Build your study routine' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Your next two weeks — suggested routine' })).toBeVisible()
+    await expect(page.getByText('Select a study day, valid daily study time and preparation subjects to preview a routine.')).toBeVisible()
     await page.getByLabel('Daily study time').fill('90')
     await page.getByLabel('Tue', { exact: true }).check()
+    await expect(page.getByText('90 min').first()).toBeVisible()
     await page.getByRole('button', { name: 'Save study preferences' }).click()
     await expect(page.getByRole('status')).toContainText('saved to your account')
 
     await page.getByRole('button', { name: 'Dashboard', exact: true }).click()
     await expect(page.getByRole('heading', { name: 'Welcome back, Test Futarian.' })).toBeVisible()
+  })
+
+  test('mistake review uses only saved student stats and passes IDs to the published-question RPC', async ({ page }) => {
+    await mockPreparedStudent(page)
+    const missedQuestionId = '90000000-0000-4000-8000-000000000001'
+    const repeatedQuestionId = '90000000-0000-4000-8000-000000000002'
+    let requestBody: Record<string, unknown> | null = null
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/student_question_stats'), async (route) => {
+      await route.fulfill({ json: [
+        { question_id: missedQuestionId, attempts: 3, correct_count: 1, incorrect_count: 2, last_answered_at: '2026-10-25T12:00:00Z' },
+        { question_id: repeatedQuestionId, attempts: 1, correct_count: 0, incorrect_count: 1, last_answered_at: '2026-10-24T12:00:00Z' },
+      ] })
+    })
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/start_attempt'), async (route) => {
+      requestBody = route.request().postDataJSON()
+      await route.fulfill({ status: 400, contentType: 'application/json', json: {
+        code: 'P0001', message: 'No published questions available for this attempt',
+      } })
+    })
+
+    await page.goto('/')
+    await expect(page.getByRole('heading', { name: 'Welcome back, Test Futarian.' })).toBeVisible()
+    await page.getByRole('button', { name: 'Quick revision', exact: true }).click()
+    await expect(page.getByText('Missed repeatedly')).toBeVisible()
+    await expect(page.getByText('No published revision topics yet')).toBeVisible()
+    await page.getByRole('button', { name: 'Practise missed questions' }).click()
+    await expect(page).toHaveURL(/[?&]cbt=1/)
+    await expect(page).toHaveURL(/[?&]focus=mistakes/)
+    await expect.poll(() => requestBody).not.toBeNull()
+    expect(requestBody).toMatchObject({
+      p_mode: 'practice', p_question_count: 2,
+      p_question_ids: [missedQuestionId, repeatedQuestionId],
+    })
+    await expect(page.getByText('No reviewed questions are published for this session yet.', { exact: false })).toBeVisible()
+  })
+
+  test('a new student cannot start targeted practice without any saved mistakes', async ({ page }) => {
+    await mockPreparedStudent(page)
+    let startCount = 0
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/start_attempt'), async (route) => {
+      startCount += 1
+      await route.fulfill({ status: 400, json: { message: 'No published questions available' } })
+    })
+    await page.goto('/?cbt=1&mode=practice&focus=mistakes')
+    await expect(page.getByRole('heading', { name: 'No mistakes to practise yet' })).toBeVisible()
+    expect(startCount).toBe(0)
   })
 
   test('flashcard review reveals verified content and persists a self-scoped review', async ({ page }) => {
