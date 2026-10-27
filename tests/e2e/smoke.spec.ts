@@ -1011,7 +1011,7 @@ test.describe('ACE JAMB admin operations count recovery', () => {
       if (route.request().method() !== 'HEAD') return route.fallback()
       metricReads += 1
       if (!allowRead) {
-        await route.fulfill({ status: 503, contentType: 'application/json', json: { message: 'private database details' } })
+        await route.fulfill({ status: 400, body: '' })
       } else {
         await route.fulfill({ status: 200, headers: { 'content-range': '*/0', 'access-control-expose-headers': 'content-range' }, body: '' })
       }
@@ -1085,7 +1085,7 @@ test.describe('ACE JAMB academic editor access', () => {
     await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/syllabus_versions'), async (route) => {
       versionReads += 1
       if (!allowRead) {
-        await route.fulfill({ status: 503, contentType: 'application/json', json: {
+        await route.fulfill({ status: 400, contentType: 'application/json', json: {
           code: 'private_database_code', message: 'private database host and rights information',
         } })
       } else {
