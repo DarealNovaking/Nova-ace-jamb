@@ -13,9 +13,13 @@ import './index.css';
 
 function AppShell() {
   const [cbt, setCbt] = useState(() => new URLSearchParams(window.location.search).get('cbt') === '1');
+  const [routeSearch, setRouteSearch] = useState(() => window.location.search);
 
   useEffect(() => {
-    const onPopState = () => setCbt(new URLSearchParams(window.location.search).get('cbt') === '1');
+    const onPopState = () => {
+      setRouteSearch(window.location.search);
+      setCbt(new URLSearchParams(window.location.search).get('cbt') === '1');
+    };
     window.addEventListener('popstate', onPopState);
     return () => window.removeEventListener('popstate', onPopState);
   }, []);
@@ -41,7 +45,7 @@ function AppShell() {
             ← Back to ACE JAMB
           </button>
           <div id="cbt-content" tabIndex={-1}>
-            <Suspense fallback={<WorkspaceLoading label="Loading CBT session…" />}><ProtectedCBT /></Suspense>
+            <Suspense fallback={<WorkspaceLoading label="Loading CBT session…" />}><ProtectedCBT key={routeSearch} /></Suspense>
           </div>
         </div>
       </main>

@@ -7,25 +7,18 @@ export default function ProtectedCBT() {
   const [checking, setChecking] = useState(true)
   const [signedIn, setSignedIn] = useState(false)
   const [storageKey, setStorageKey] = useState<string | null>(null)
-  const [mode] = useState<'cbt' | 'practice'>(() => new URLSearchParams(window.location.search).get('mode') === 'practice' ? 'practice' : 'cbt')
-  const [focus] = useState<'mistakes' | 'repeated' | 'speed' | 'subject' | 'topic' | 'subtopic' | null>(() => {
-    const params = new URLSearchParams(window.location.search)
-    if (params.get('mode') !== 'practice') return null
-    const requested = params.get('focus')
-    return requested === 'mistakes' || requested === 'repeated' || requested === 'speed' || requested === 'subject' || requested === 'topic' || requested === 'subtopic' ? requested : null
-  })
-  const [subjectId] = useState<string | null>(() => {
-    const id = new URLSearchParams(window.location.search).get('subject')
-    return id && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id) ? id : null
-  })
-  const [topicId] = useState<string | null>(() => {
-    const id = new URLSearchParams(window.location.search).get('topic')
-    return id && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id) ? id : null
-  })
-  const [subtopicId] = useState<string | null>(() => {
-    const id = new URLSearchParams(window.location.search).get('subtopic')
-    return id && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{12}$/i.test(id) ? id : null
-  })
+  // Parse the current route together rather than caching individual parameters in
+  // React state. Practice navigation updates the URL before mounting this screen.
+  const params = new URLSearchParams(window.location.search)
+  const mode: 'cbt' | 'practice' = params.get('mode') === 'practice' ? 'practice' : 'cbt'
+  const requestedFocus = params.get('focus')
+  const focus: 'mistakes' | 'repeated' | 'speed' | 'subject' | 'topic' | 'subtopic' | null =
+    mode === 'practice' && (requestedFocus === 'mistakes' || requestedFocus === 'repeated' || requestedFocus === 'speed' ||
+      requestedFocus === 'subject' || requestedFocus === 'topic' || requestedFocus === 'subtopic') ? requestedFocus : null
+  const validUuid = (id: string | null) => id && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id) ? id : null
+  const subjectId = validUuid(params.get('subject'))
+  const topicId = validUuid(params.get('topic'))
+  const subtopicId = validUuid(params.get('subtopic'))
   const targetedTopic = focus === 'topic' || focus === 'subtopic'
   const validTopicRequest = !targetedTopic || Boolean(subjectId && topicId && (focus !== 'subtopic' || subtopicId))
   const recoveryScope = focus === 'subject' ? `practice-subject-${subjectId ?? 'invalid'}` :
