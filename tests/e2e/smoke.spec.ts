@@ -904,6 +904,27 @@ test.describe('ACE JAMB preparation workspaces', () => {
     await expect(page.getByText('predicted JAMB score', { exact: false })).toBeVisible()
   })
 
+  test('performance-based subject practice requests only the observed subject', async ({ page }) => {
+    await mockPreparedStudent(page)
+    let payload: Record<string, unknown> | null = null
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/attempts'), async (route) => {
+      await route.fulfill({ json: [
+        { id: '97000000-0000-4000-8000-000000000001', mode: 'practice', status: 'completed', started_at: '2026-10-24T10:00:00Z', completed_at: '2026-10-24T10:30:00Z', score: 30, correct_count: 3, answered_count: 10, subject_id: subjects[0].id },
+        { id: '97000000-0000-4000-8000-000000000002', mode: 'practice', status: 'completed', started_at: '2026-10-24T10:00:00Z', completed_at: '2026-10-24T10:30:00Z', score: 80, correct_count: 8, answered_count: 10, subject_id: subjects[1].id },
+      ] })
+    })
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/start_attempt'), async (route) => {
+      payload = route.request().postDataJSON()
+      await route.fulfill({ status: 400, contentType: 'application/json', json: { code: 'P0001', message: 'No published questions available for this attempt' } })
+    })
+    await page.goto('/?view=progress')
+    await expect(page.getByRole('heading', { name: 'Practice your observed lower-accuracy subject' })).toBeVisible()
+    await page.getByRole('button', { name: 'Practise Use of English' }).click()
+    await expect.poll(() => payload).not.toBeNull()
+    expect(payload).toMatchObject({ p_mode: 'practice', p_subject_id: subjects[0].id })
+    await expect(page).toHaveURL(/[?&]focus=subject/)
+  })
+
   test('study plan suggests a subject only from real saved subject-tagged attempts', async ({ page }) => {
     await mockPreparedStudent(page)
     let ownerScoped = false

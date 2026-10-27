@@ -1,14 +1,14 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Trophy } from 'lucide-react'
 import { fetchStudentAttempts, fetchStudentMistakes } from '../lib/practiceService'
-import { summarizeAttempts, summarizeAccuracyTrend } from '../lib/progressSummary'
+import { summarizeAttempts, summarizeAccuracyTrend, suggestStudyFocus } from '../lib/progressSummary'
 import type { PastAttempt, StudentQuestionMistake } from '../lib/progressSummary'
 
 type Subject = { id: string; name: string; code: string }
 type Props = {
   subjects: Subject[]
   topicCount: number
-  onStartCbt: (mode?: 'cbt' | 'practice') => void
+  onStartCbt: (mode?: 'cbt' | 'practice', focus?: 'mistakes' | 'repeated' | 'speed' | 'subject', subjectId?: string) => void
 }
 
 const MISTAKE_LIMIT = 20
@@ -39,6 +39,7 @@ export default function StudentProgressSummary({ subjects, topicCount, onStartCb
 
   const summary = useMemo(() => summarizeAttempts(attempts), [attempts])
   const trend = useMemo(() => summarizeAccuracyTrend(attempts), [attempts])
+  const studyFocus = useMemo(() => suggestStudyFocus(attempts, subjects), [attempts, subjects])
   const subjectName = (id: string) => subjects.find((subject) => subject.id === id)?.name ?? 'Other subject'
   const hasData = summary.sessions > 0
   const recent = attempts.filter((attempt) => attempt.status === 'completed' && attempt.answered_count > 0).slice(0, 5)
@@ -107,6 +108,14 @@ export default function StudentProgressSummary({ subjects, topicCount, onStartCb
             </ul>
           </div>
 
+
+          {studyFocus && (
+            <section className="rounded-2xl border border-purple-300/20 bg-purple-500/[.06] p-5" aria-labelledby="subject-focus-heading">
+              <h3 id="subject-focus-heading" className="font-bold">Practice your observed lower-accuracy subject</h3>
+              <p className="mt-2 text-sm leading-6 text-white/60">From your saved subject-specific answers, {studyFocus.subjectName} has {studyFocus.accuracy}% accuracy across {studyFocus.answered} answers. This is not a guaranteed score prediction or a topic-level diagnosis.</p>
+              <button type="button" onClick={() => onStartCbt('practice', 'subject', studyFocus.subjectId)} className="mt-4 min-h-11 rounded-xl bg-purple-300 px-4 py-2 text-sm font-bold text-[#120b1c]">Practise {studyFocus.subjectName}</button>
+            </section>
+          )}
 
           {trend.recent.length > 0 && (
             <section aria-labelledby="recent-accuracy-heading" className="rounded-2xl border border-white/10 bg-white/[.025] p-5">
