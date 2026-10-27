@@ -2180,3 +2180,9 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - Frontend code commit `f62b55b9b3426066fb0a3786ec4465bc008b0cd7` changes `src/components/StudentNotifications.tsx`: settings are read-only until the authenticated notification+preference fetch succeeds, and save is blocked during failed/incomplete reads. Prevents saving component defaults over existing notification preferences after an API failure. Retry reloads from the existing read path.
 - No backend, schema, delivery provider, deployment or production-data action. Push delivery remains unavailable; Batch 13 remains PARTIAL.
 - Verification: source committed, latest SHA typecheck/build/Playwright UNVERIFIED. Next: add mocked regression coverage for failed preferences read → no write → retry restored values; then run SHA-matched CI and continue other independent frontend gaps.
+
+
+## Batch 13 notification preferences Playwright regression — 2026-10-27
+- Added mocked Playwright test in `tests/e2e/smoke.spec.ts`, code commit `2c030652ea3918ecf8492a62fe6c57982d63234f`: a failing `notification_preferences` read disables save and editing with zero writes; retry returns persisted settings (marketing enabled, email disabled), restores controls without writing defaults. Complements source guard `f62b55b9b3426066fb0a3786ec4465bc008b0cd7`.
+- Verification status: source/test committed; latest SHA CI/typecheck/build/E2E UNVERIFIED. Batch 13 remains PARTIAL; push and email delivery not implemented or claimed. No backend/database/deployment changes.
+- Next concrete action: verify latest SHA via runner-backed CI and fix any failures, then continue independently implementable frontend acceptance gaps.
