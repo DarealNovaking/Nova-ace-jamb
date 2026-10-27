@@ -3837,3 +3837,13 @@ No database/schema/RPC/Edge Function changes, production-data writes, or deploym
 - Application change committed as `9370c52a8ce5420a8568885253e200aa9d1baf26` (`src/components/StudentFlashcards.tsx`): track each load sequence and ignore superseded load successes, failures, and loading-finalizers so an older request cannot overwrite a newer result.
 - Fresh Verify [40432192708](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40432192708) and E2E [40432192662](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40432192662) were **queued** at inspection; neither is claimed passed. No deployment, backend, schema, or live-data change.
 - **Batch 6 remains open** until latest E2E is green. Exact next action: inspect both terminal CI results, investigate remaining error/retry failures if any, then close Batch 6 with evidence.
+
+
+## Frontend Batch 6 completion and accelerated batch execution — 2026-10-27
+
+- Batch 6 on main code/test SHA 1b42b24b8e258500b77fe4163b1b0db80ebd53eb is **accepted for mocked frontend flows**: GitHub Verify run 40432802473 PASS; ACE JAMB E2E run 40432802273 PASS on the exact same SHA. This does not prove production flashcard content exists; previous live flashcard count was zero.
+- Owner requests completing remaining frontend capabilities in larger continuous batches, delaying full regression until the final milestone. Focused validation/security checks are still required after material slices; GitHub Actions may run automatically on commits. No backend, database or deployment authorization implied.
+- Batch 8 incremental implementation: src/lib/studySchedule.ts generates an honest, deterministic upcoming two-week study-routine preview rotating saved student subjects on selected weekdays using preferred daily study minutes; src/components/StudentStudyPlan.tsx displays the preview. Pure tests are in tests/study-schedule.test.mjs.
+- This is a frontend-only local preview, not persisted study-plan items, topic weakness analysis or adaptive scheduling. Batch 8 remains PARTIAL pending actual backend plan contracts and remaining acceptance criteria.
+- No live data writes, migrations, provider or production deployment changes.
+- Exact next action: inspect typecheck/build and scheduling test evidence for the new code; then implement the remaining Batch 7 mistake/revision interactions and Batch 8 integration dependencies without inventing question content; finish with full regression and real-device acceptance.

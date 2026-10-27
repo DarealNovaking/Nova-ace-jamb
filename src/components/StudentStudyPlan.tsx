@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { CalendarDays, CheckCircle2, Loader2, Save } from 'lucide-react'
 import { getStudentPreferences, updateStudentPreferences } from '../lib/studentService'
+import { buildStudySchedule } from '../lib/studySchedule'
 
 type Subject = { id: string; name: string; code: string }
 
@@ -21,6 +22,7 @@ export default function StudentStudyPlan({ subjects }: { subjects: Subject[] }) 
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
+  const previewSessions = useMemo(() => buildStudySchedule(subjects, selectedDays, dailyMinutes), [subjects, selectedDays, dailyMinutes])
 
   useEffect(() => {
     let cancelled = false
@@ -98,6 +100,13 @@ export default function StudentStudyPlan({ subjects }: { subjects: Subject[] }) 
         <h3 className="font-bold">Your preparation subjects</h3>
         {subjects.length ? <p className="mt-2 text-sm leading-6 text-white/55">{subjects.map((subject) => subject.name).join(' · ')}</p> : <p className="mt-2 text-sm text-white/45">No saved subjects were found. You can update your preparation profile from onboarding.</p>}
       </div>
+
+
+      <section aria-labelledby="study-preview-heading" className="mt-6 rounded-2xl border border-white/10 bg-black/15 p-5">
+        <h3 id="study-preview-heading" className="font-bold">Your next two weeks — suggested routine</h3>
+        <p className="mt-2 text-sm leading-6 text-white/50">A preview based on your selected study days, minutes and saved subjects. Subjects rotate in order; this is not a persisted lesson timetable or an adaptive recommendation.</p>
+        {previewSessions.length ? <ol className="mt-4 grid gap-2 sm:grid-cols-2">{previewSessions.map((session) => <li key={session.date} className="flex items-center justify-between gap-3 rounded-xl border border-white/10 p-3 text-sm"><span><span className="block font-semibold">{session.label}</span><span className="text-white/60">{session.subjectName}</span></span><span className="shrink-0 text-xs text-white/55">{session.minutes} min</span></li>)}</ol> : <p className="mt-4 text-sm text-white/55">Select a study day, valid daily study time and preparation subjects to preview a routine.</p>}
+      </section>
 
       <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-xs text-white/35">{selectedDays.length} study day{selectedDays.length === 1 ? '' : 's'} selected · {dailyMinutes || 0} minutes per selected day</p>
