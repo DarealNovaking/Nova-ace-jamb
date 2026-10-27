@@ -936,7 +936,11 @@ test.describe('ACE JAMB preparation workspaces', () => {
       await route.fulfill({ json: [] })
     })
 
-    await page.goto('/?view=flashcards')
+    // Enter through the authenticated dashboard so the saved subject selection is hydrated
+    // before the test injects a flashcard-service failure.
+    await page.goto('/')
+    await expect(page.getByRole('heading', { name: 'Welcome back, Test Futarian.' })).toBeVisible()
+    await page.getByRole('button', { name: 'Flashcards', exact: true }).click()
     await expect(page.getByRole('alert')).toContainText('We could not load your flashcards.')
     await expect(page.getByText(/private database host/)).toHaveCount(0)
     allowFlashcardSuccess = true
