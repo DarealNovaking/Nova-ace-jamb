@@ -1680,6 +1680,39 @@ test.describe('ACE JAMB notification recovery and ownership', () => {
     await expect(page.getByText('No sent notifications are available for your account yet.')).toBeVisible()
   })
 
+  test('failed preference read prevents default overwrite until retry restores saved settings', async ({ page }) => {
+    await mockPreparedStudent(page)
+    let allowRead = false
+    let writes = 0
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/notification_preferences'), async (route) => {
+      if (route.request().method() === 'POST') {
+        writes += 1
+        await route.fulfill({ status: 204, body: '' })
+        return
+      }
+      if (!allowRead) {
+        await route.fulfill({ status: 503, contentType: 'application/json', json: { code: 'unavailable', message: 'private settings error' } })
+        return
+      }
+      await route.fulfill({ status: 200, contentType: 'application/json', json: {
+        in_app: false, push: false, email: false, marketing: true, categories: {},
+      } })
+    })
+    await page.goto('/')
+    await expect(page.getByRole('heading', { name: 'Notifications', exact: true })).toBeVisible()
+    await page.getByRole('button', { name: 'Preferences' }).click()
+    await expect(page.getByText('Saved preferences are unavailable. Retry notifications before editing.')).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Save preferences' })).toBeDisabled()
+    await expect(page.getByRole('checkbox', { name: /Product announcements/ })).toBeDisabled()
+    expect(writes).toBe(0)
+    allowRead = true
+    await page.getByRole('button', { name: 'Retry notifications' }).click()
+    await expect(page.getByRole('checkbox', { name: /Product announcements/ })).toBeChecked()
+    await expect(page.getByRole('checkbox', { name: /Email notifications/ })).not.toBeChecked()
+    await expect(page.getByRole('button', { name: 'Save preferences' })).toBeEnabled()
+    expect(writes).toBe(0)
+  })
+
   test('mark read constrains updates to the authenticated user', async ({ page }) => {
     await mockPreparedStudent(page)
     const notificationId = '95000000-0000-4000-8000-000000000001'
