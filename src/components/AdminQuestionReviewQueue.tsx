@@ -88,7 +88,7 @@ export default function AdminQuestionReviewQueue() {
       {!loading && !error && (page > 0 || hasNextPage) && <nav aria-label="Question review pages" className="mt-5 flex flex-wrap items-center gap-3">
         <button type="button" className="min-h-11 rounded-xl border border-white/15 px-4 py-2 text-sm font-semibold disabled:opacity-40" disabled={page === 0} onClick={() => setPage((current) => Math.max(0, current - 1))}>Previous questions</button>
         <span className="text-sm text-white/55">Page {page + 1}</span>
-        <button type="button" className="min-h-11 rounded-xl border border-white/15 px-4 py-2 text-sm font-semibold disabled={!hasNextPage} onClick={() => setPage((current) => current + 1)}>Next questions</button>
+        <button type="button" className="min-h-11 rounded-xl border border-white/15 px-4 py-2 text-sm font-semibold disabled:opacity-40" disabled={!hasNextPage} onClick={() => setPage((current) => current + 1)}>Next questions</button>
       </nav>}
     </section>
   )
