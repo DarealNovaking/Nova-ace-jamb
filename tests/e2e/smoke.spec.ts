@@ -2009,6 +2009,48 @@ test.describe('ACE JAMB account settings recovery safety', () => {
   })
 })
 
+test.describe('ACE JAMB account settings stale-load safety', () => {
+  test('closing and reopening settings ignores an earlier unfinished profile read', async ({ page }) => {
+    await mockPreparedStudent(page)
+    await page.goto('/')
+    await expect(page.getByRole('heading', { name: 'Welcome back, Test Futarian.' })).toBeVisible()
+
+    let reads = 0
+    let releaseOldRead: () => void = () => undefined
+    let oldReadCompleted: () => void = () => undefined
+    const oldReadGate = new Promise<void>((resolve) => { releaseOldRead = resolve })
+    const oldReadDone = new Promise<void>((resolve) => { oldReadCompleted = resolve })
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/profiles'), async (route) => {
+      if (route.request().method() !== 'GET') {
+        await route.fallback()
+        return
+      }
+      const readIndex = ++reads
+      if (readIndex === 1) await oldReadGate
+      try {
+        await route.fulfill({ json: {
+          id: userId, email: 'student@example.test',
+          display_name: readIndex === 1 ? 'Outdated Futarian' : 'Latest Futarian',
+          target_score: 300, institution: null, course: null, institution_id: null,
+          program_id: null, prep_time_minutes: null, exam_season: null,
+          created_at: '2026-01-01T00:00:00.000Z', updated_at: '2026-10-27T00:00:00.000Z',
+        } })
+      } finally {
+        if (readIndex === 1) oldReadCompleted()
+      }
+    })
+    await page.getByRole('button', { name: 'Edit settings' }).click()
+    await expect.poll(() => reads).toBe(1)
+    await page.getByRole('button', { name: 'Close settings' }).click()
+    await page.getByRole('button', { name: 'Edit settings' }).click()
+    await expect.poll(() => reads).toBe(2)
+    await expect(page.getByLabel('Display name')).toHaveValue('Latest Futarian')
+    releaseOldRead()
+    await oldReadDone
+    await expect(page.getByLabel('Display name')).toHaveValue('Latest Futarian')
+  })
+})
+
 test.describe('ACE JAMB account settings partial-update recovery', () => {
   test('a failed second write never claims the combined save succeeded and requires a refresh', async ({ page }) => {
     await mockPreparedStudent(page)
