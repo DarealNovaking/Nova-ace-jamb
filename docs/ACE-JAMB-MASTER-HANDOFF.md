@@ -4269,16 +4269,8 @@ Next exact action: inspect the remaining advisor-listed SECURITY DEFINER functio
 - **Next action:** inspect all later migrations and tests for an existing safe question-delivery contract; if none exists, implement a focused migration/RPC and regression tests on a reviewable branch, then align `cbtService.ts` and verify with disposable-Postgres plus CI. Do not reopen catalogue product work.
 
 
-## FCB-01 implementation — safe CBT question delivery API (2026-10-27)
-- Implemented on branch `fix/cbt-safe-question-delivery`; not merged or deployed.
-- Added migration `supabase/migrations/20261027180000_safe_cbt_question_delivery.sql` defining `ace.get_attempt_questions(uuid)`. It requires `auth.uid()`, verifies the attempt belongs to that user, permits only active/paused attempts, returns questions in the stored attempt order, reads the live `stem` field, and projects each option to only `key` and display text. It does not return answer keys or explanations.
-- The function uses `SECURITY DEFINER` with fixed `search_path = pg_catalog, ace`, schema-qualified `auth.uid()`, explicit ownership checks, revokes PUBLIC/anon execution and grants EXECUTE only to authenticated.
-- Updated `src/lib/cbtService.ts` to call the RPC and map the returned `text` DTO; updated `src/components/PersistentCBT.tsx` to request by attempt ID rather than client-supplied question IDs.
-- Added `tests/sql/safe_cbt_question_delivery.test.sql` metadata regression checks for owner-check presence, live stem field, absence of sensitive field references, and authenticated-vs-anonymous EXECUTE.
-- Not yet applied to Supabase production. No live grants/schema/data changed. Tests have not been executed because no local checkout/Postgres runner is available through the current connector tools. Must run CI and SQL regression against a disposable/test database before merge. Keep FCB-01 open until verified.
-- This implementation supersedes the prior “next action: inspect for existing API” note above; an initial implementation now exists and needs validation.
-- **Next exact action:** verify branch file contents, open a draft PR, inspect CI results, and fix any failures. Do not apply the migration to production before review/verification.
 
+> The initial API/test filenames recorded below were superseded during implementation. The authoritative implementation and validation status are in the following “FCB-01 implementation: safe CBT question delivery” section.
 
 ## FCB-01 implementation: safe CBT question delivery — 2026-10-27
 - Implemented on branch `fix/cbt-safe-question-delivery`; not merged and not applied to production.
