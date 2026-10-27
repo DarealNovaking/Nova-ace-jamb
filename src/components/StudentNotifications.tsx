@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Bell, CheckCheck, Loader2, RefreshCw, Settings2 } from 'lucide-react'
 import { ace, supabase } from '../lib/supabase'
 
@@ -44,8 +44,10 @@ export default function StudentNotifications() {
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
   const [showSettings, setShowSettings] = useState(false)
+  const loadRun = useRef(0)
 
   const load = useCallback(async () => {
+    const run = ++loadRun.current
     setLoading(true)
     setError('')
     setNotice('')
@@ -68,16 +70,17 @@ export default function StudentNotifications() {
       ])
       if (notificationResult.error) throw notificationResult.error
       if (preferenceResult.error) throw preferenceResult.error
+      if (run !== loadRun.current) return
       setItems((notificationResult.data ?? []) as NotificationRow[])
       setPreferences(preferenceResult.data ? { ...defaultPreferences, ...preferenceResult.data } as Preferences : defaultPreferences)
     } catch {
-      setError('We could not load your notifications. Check your connection and try again.')
+      if (run === loadRun.current) setError('We could not load your notifications. Check your connection and try again.')
     } finally {
-      setLoading(false)
+      if (run === loadRun.current) setLoading(false)
     }
   }, [])
 
-  useEffect(() => { void load() }, [load])
+  useEffect(() => { void load(); return () => { loadRun.current += 1 } }, [load])
 
   async function markRead(item: NotificationRow) {
     if (item.read_at) return
@@ -85,10 +88,13 @@ export default function StudentNotifications() {
     setError('')
     setNotice('')
     try {
+      const { data: auth, error: authError } = await supabase.auth.getUser()
+      if (authError || !auth.user) throw authError ?? new Error('Authentication required')
       const readAt = new Date().toISOString()
       const { error: updateError } = await ace.from('notifications')
         .update({ read_at: readAt })
         .eq('id', item.id)
+        .eq('user_id', auth.user.id)
       if (updateError) throw updateError
       setItems((current) => current.map((row) => row.id === item.id ? { ...row, read_at: readAt } : row))
     } catch {
@@ -142,7 +148,7 @@ export default function StudentNotifications() {
         </div>
       </div>
 
-      {error && <p role="alert" className="mt-4 rounded-xl border border-red-400/20 bg-red-500/10 p-3 text-sm text-red-100">{error}</p>}
+      {error && <div role="alert" className="mt-4 rounded-xl border border-red-400/20 bg-red-500/10 p-3 text-sm text-red-100">{error}<button type="button" className="ml-3 underline" onClick={() => void load()}>Retry notifications</button></div>}
       {notice && <p role="status" className="mt-4 rounded-xl border border-emerald-300/20 bg-emerald-500/10 p-3 text-sm text-emerald-100">{notice}</p>}
 
       {showSettings && <div className="mt-5 rounded-2xl border border-white/10 bg-black/20 p-4 sm:p-5">
@@ -166,6 +172,7 @@ export default function StudentNotifications() {
       </div>}
 
       {loading ? <div role="status" aria-live="polite" aria-atomic="true" className="grid min-h-24 place-items-center text-sm text-white/45"><Loader2 className="animate-spin" size={20} aria-hidden="true" /><span>Loading notifications…</span></div>
+        : error ? null
         : items.length ? <ul className="mt-5 space-y-3">{items.map((item) => <li key={item.id} className={`rounded-2xl border p-4 ${item.read_at ? 'border-white/5 bg-white/[.02]' : 'border-purple-300/20 bg-purple-500/[.06]'}`}>
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0"><div className="flex flex-wrap items-center gap-2"><h3 className="font-bold">{item.title}</h3>{!item.read_at && <span className="rounded-full bg-purple-300/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-purple-100">New</span>}</div><p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-white/60">{item.body}</p><p className="mt-2 text-xs text-white/35">{friendlyDate(item.sent_at ?? item.created_at)}</p></div>

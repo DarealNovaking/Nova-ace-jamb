@@ -1159,6 +1159,52 @@ test.describe('ACE JAMB notification inbox', () => {
 })
 
 
+test.describe('ACE JAMB notification recovery and ownership', () => {
+  test('failed inbox reads do not report an empty inbox and can be retried', async ({ page }) => {
+    await mockPreparedStudent(page)
+    let allowSuccess = false
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/notifications'), async (route) => {
+      if (!allowSuccess) {
+        await route.fulfill({ status: 400, contentType: 'application/json', json: { code: 'unavailable', message: 'private database details' } })
+        return
+      }
+      await route.fulfill({ json: [] })
+    })
+    await page.goto('/')
+    await expect(page.getByRole('heading', { name: 'Notifications', exact: true })).toBeVisible()
+    await expect(page.getByRole('alert')).toContainText('We could not load your notifications')
+    await expect(page.getByText('No sent notifications are available for your account yet.')).toHaveCount(0)
+    await expect(page.getByText('private database details')).toHaveCount(0)
+    allowSuccess = true
+    await page.getByRole('button', { name: 'Retry notifications' }).click()
+    await expect(page.getByText('No sent notifications are available for your account yet.')).toBeVisible()
+  })
+
+  test('mark read constrains updates to the authenticated user', async ({ page }) => {
+    await mockPreparedStudent(page)
+    const notificationId = '95000000-0000-4000-8000-000000000001'
+    let patchQuery = ''
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/notifications'), async (route) => {
+      if (route.request().method() === 'PATCH') {
+        patchQuery = new URL(route.request().url()).search
+        await route.fulfill({ status: 204, body: '' })
+        return
+      }
+      await route.fulfill({ json: [{
+        id: notificationId, type: 'account', title: 'Account update', body: 'Verified test notice',
+        data: {}, scheduled_at: null, sent_at: '2026-10-27T00:00:00Z', read_at: null, created_at: '2026-10-27T00:00:00Z',
+      }] })
+    })
+    await page.goto('/')
+    await expect(page.getByText('Verified test notice')).toBeVisible()
+    await page.getByRole('button', { name: 'Mark read' }).click()
+    await expect.poll(() => patchQuery).not.toBe('')
+    expect(new URLSearchParams(patchQuery).get('user_id')).toBe('eq.' + userId)
+    expect(new URLSearchParams(patchQuery).get('id')).toBe('eq.' + notificationId)
+    await expect(page.getByRole('button', { name: 'Mark read' })).toHaveCount(0)
+  })
+})
+
 test.describe('ACE JAMB onboarding save contract', () => {
   test('saves English plus exactly three selected subjects and can continue past the optional community welcome', async ({ page }) => {
     await mockFirstTimeStudent(page)
