@@ -1126,6 +1126,29 @@ test.describe('ACE JAMB account access surfaces', () => {
 })
 
 
+test.describe('ACE JAMB access recovery', () => {
+  test('failed product reads do not impersonate empty payment or referral histories', async ({ page }) => {
+    await mockPreparedStudent(page)
+    let allow = false
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/products'), async (route) => {
+      if (!allow) {
+        await route.fulfill({ status: 400, contentType: 'application/json', json: { code: 'error', message: 'private provider details' } })
+        return
+      }
+      await route.fulfill({ json: [] })
+    })
+    await page.goto('/')
+    await expect(page.getByRole('alert')).toContainText('We could not load your ACE Pass and referral details')
+    await expect(page.getByText('A referral code has not been issued to your account yet.')).toHaveCount(0)
+    await expect(page.getByText('No active ACE Pass entitlement found.')).toHaveCount(0)
+    await expect(page.getByText('private provider details')).toHaveCount(0)
+    allow = true
+    await page.getByRole('button', { name: 'Retry access details' }).click()
+    await expect(page.getByText('No active ACE Pass entitlement found.')).toBeVisible()
+    await expect(page.getByText('A referral code has not been issued to your account yet.')).toBeVisible()
+  })
+})
+
 test.describe('ACE JAMB notification inbox', () => {
   test('shows an honest empty inbox and saves account-scoped preferences', async ({ page }) => {
     await mockPreparedStudent(page)
