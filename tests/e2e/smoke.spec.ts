@@ -879,6 +879,29 @@ test.describe('ACE JAMB syllabus publication states', () => {
     expect(starts).toBe(0)
   })
 
+  test('quick revision filters approved subtopics and opens scoped practice without inventing notes', async ({ page }) => {
+    await mockSyllabusPublicationState(page, 'approved')
+    const subtopicId = '80000000-0000-4000-8000-000000000018'
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/subtopics'), async (route) => {
+      await route.fulfill({ json: [{ id: subtopicId, topic_id: '70000000-0000-4000-8000-000000000001',
+        name: 'Context clues', description: 'Approved outline only.', sort_order: 1, active: true }] })
+    })
+    await page.goto('/?view=revision')
+    const search = page.getByRole('searchbox', { name: 'Search revision outlines' })
+    await search.fill('no-matching-syllabus-topic')
+    await expect(page.getByText('No revision topics match your search')).toBeVisible()
+    await page.getByRole('button', { name: 'Clear revision filters' }).click()
+    await search.fill('context clues')
+    await expect(page.getByText('1 approved revision topic found')).toBeVisible()
+    await page.getByRole('button', { name: /Verified comprehension fixture/ }).click()
+    await page.getByRole('button', { name: 'Context clues' }).click()
+    await expect(page.getByText('Approved outline only.')).toBeVisible()
+    await page.getByRole('button', { name: 'Practise selected revision subtopic' }).click()
+    await expect(page).toHaveURL(/[?&]focus=subtopic/)
+    await expect(page).toHaveURL(/[?&]subtopic=80000000-0000-4000-8000-000000000018/)
+    await expect(page.getByRole('heading', { name: 'No reviewed questions published for this topic yet' })).toBeVisible()
+  })
+
   test('does not expose syllabus topics while rights review is pending', async ({ page }) => {
     const fixture = await mockSyllabusPublicationState(page, 'pending')
     await page.goto('/')

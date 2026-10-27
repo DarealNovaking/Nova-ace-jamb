@@ -171,7 +171,7 @@ export default function StudentStudyWorkspace({ mode, subjects, topics, onBack, 
           </div>
         </section>}
 
-        {mode === 'revision' && <StudentQuickRevision subjects={subjects} topics={topics} onStartPractice={() => onStartCbt('practice')} onReviewMistakes={() => onStartCbt('practice', 'mistakes')} onReviewRepeated={() => onStartCbt('practice', 'repeated')} />}
+        {mode === 'revision' && <StudentQuickRevision subjects={subjects} topics={topics} onStartPractice={() => onStartCbt('practice')} onReviewMistakes={() => onStartCbt('practice', 'mistakes')} onReviewRepeated={() => onStartCbt('practice', 'repeated')} onStartTopicPractice={(subjectId, topicId) => onStartCbt('practice', 'topic', subjectId, topicId)} onStartSubtopicPractice={(subjectId, topicId, subtopicId) => onStartCbt('practice', 'subtopic', subjectId, topicId, subtopicId)} />}
 
         {mode === 'flashcards' && <StudentFlashcards subjects={subjects} topics={topics} />}
 
