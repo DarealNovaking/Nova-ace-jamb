@@ -928,21 +928,27 @@ test.describe('ACE JAMB preparation workspaces', () => {
   test('flashcards show a recoverable error and retry to an honest empty state', async ({ page }) => {
     await mockPreparedStudent(page)
     let allowFlashcardSuccess = false
+    let flashcardRequests = 0
+    let failedFlashcardRequests = 0
     await page.route((requestUrl) => new URL(requestUrl).pathname.endsWith('/rest/v1/flashcards'), async (route) => {
+      flashcardRequests += 1
       if (!allowFlashcardSuccess) {
-        await route.fulfill({ status: 503, contentType: 'application/json', json: { message: 'private database host should not be shown' } })
+        failedFlashcardRequests += 1
+        await route.abort('failed')
         return
       }
       await route.fulfill({ json: [] })
     })
 
-    // Enter through the authenticated dashboard so the saved subject selection is hydrated
-    // before the test injects a flashcard-service failure.
+    // Enter through the authenticated dashboard and workspace so the saved subject
+    // selection is hydrated before the test injects a flashcard-service failure.
     await page.goto('/')
     await expect(page.getByRole('heading', { name: 'Welcome back, Test Futarian.' })).toBeVisible()
     await page.getByRole('button', { name: /Learn Approved syllabus topics/ }).click()
     await expect(page.getByRole('heading', { name: 'Learn', exact: true })).toBeVisible()
     await page.getByRole('button', { name: 'Flashcards', exact: true }).click()
+    await expect.poll(() => flashcardRequests).toBeGreaterThan(0)
+    await expect.poll(() => failedFlashcardRequests).toBeGreaterThan(0)
     await expect(page.getByRole('alert')).toContainText('We could not load your flashcards.')
     await expect(page.getByText(/private database host/)).toHaveCount(0)
     allowFlashcardSuccess = true
