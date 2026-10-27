@@ -61,6 +61,7 @@ export default function PersistentCBT({ attemptId = null, questionCount = 20, du
   const [markedForReview, setMarkedForReview] = useState<string[]>([])
   const [confirmSubmit, setConfirmSubmit] = useState(false)
   const finishing = useRef(false)
+  const questionPresentedAt = useRef<{ id: string; at: number } | null>(null)
 
   const answers = useMemo(() => {
     const map: Record<string, string | null> = {}
@@ -70,6 +71,10 @@ export default function PersistentCBT({ attemptId = null, questionCount = 20, du
 
   const question = questions[current]
   const selected = question ? answers[question.id] ?? null : null
+
+  useEffect(() => {
+    questionPresentedAt.current = question ? { id: question.id, at: performance.now() } : null
+  }, [attempt?.attempt_id, question?.id])
 
   async function load(attemptToResume?: string) {
     setLoading(true)
@@ -154,8 +159,12 @@ export default function PersistentCBT({ attemptId = null, questionCount = 20, du
     setSaving(true)
     setError('')
     try {
-      const startedAt = attempt.answers.find((a) => a.question_id === question.id)?.answered_at
-      const responseMs = startedAt ? Math.max(0, Date.now() - new Date(startedAt).getTime()) : null
+      // Measure time from when this question became visible, including the first answer.
+      // Prior code used the previous answer timestamp, making first-answer speeds null.
+      const shown = questionPresentedAt.current
+      const responseMs = shown?.id === question.id
+        ? Math.max(0, Math.round(performance.now() - shown.at))
+        : null
       const saved = await saveCbtAnswer(attempt.attempt_id, question.id, optionKey, responseMs)
       setAttempt((currentAttempt) => currentAttempt ? {
         ...currentAttempt,

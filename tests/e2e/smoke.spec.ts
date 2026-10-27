@@ -533,6 +533,7 @@ test.describe('ACE JAMB persistent CBT', () => {
     const questionId = '30000000-0000-4000-8000-000000000001'
     const attemptId = '40000000-0000-4000-8000-000000000001'
     const startedAt = new Date().toISOString()
+    let observedResponseMs: number | null = null
 
     await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/start_attempt'), async (route) => {
       await route.fulfill({ json: {
@@ -558,6 +559,7 @@ test.describe('ACE JAMB persistent CBT', () => {
       }] })
     })
     await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/save_attempt_answer'), async (route) => {
+      observedResponseMs = route.request().postDataJSON().p_response_ms
       await new Promise((resolve) => setTimeout(resolve, 250))
       await route.fulfill({ json: {
         attempt_id: attemptId, question_id: questionId, selected_option_key: 'A',
@@ -587,6 +589,8 @@ test.describe('ACE JAMB persistent CBT', () => {
     await expect(page.getByRole('button', { name: 'B. First answer' })).toHaveAttribute('aria-pressed', 'true')
     await expect(page.getByRole('status')).toHaveText('')
     await expect(page.getByRole('button', { name: 'Go to question 1, answered' })).toHaveAttribute('aria-current', 'step')
+    expect(typeof observedResponseMs).toBe('number')
+    expect(observedResponseMs).toBeGreaterThan(0)
     await page.getByRole('button', { name: 'Submit CBT' }).click()
     await expect(page.getByText('100%', { exact: true })).toBeVisible()
     await expect(page.getByText('1/1 correct')).toBeVisible()
