@@ -128,7 +128,7 @@ export default function StudentStudyWorkspace({ mode, subjects, topics, onBack, 
               <div className="mt-6 rounded-2xl border border-white/10 bg-black/20 p-5"><div className="flex items-center gap-2 font-semibold"><BookOpen size={18} className="text-purple-200" aria-hidden="true"/> Lesson content</div><p className="mt-3 text-sm leading-6 text-white/50">This approved outline is not a full lesson. Reviewed lesson text and linked questions will appear when published; we never substitute unverified material.</p></div>
             </> : <div className="grid min-h-64 place-items-center text-center"><div><Sparkles className="mx-auto text-purple-200" size={28} aria-hidden="true"/><h2 className="mt-4 text-xl font-bold">Choose a topic to begin</h2><p className="mt-2 max-w-sm text-sm leading-6 text-white/45">Your selected subjects and approved syllabus topics will guide your learning.</p></div></div>}
           </div>
-        </section>
+        </section>}
 
         {mode === 'practice' && <section className="glass-card rounded-3xl p-6 sm:p-8"><div className="flex items-center gap-3"><Target className="text-purple-200"/><h2 className="text-2xl font-black">Practice with purpose</h2></div><p className="mt-3 max-w-2xl text-sm leading-6 text-white/55">Practice sessions require reviewed questions with verified answers. We will not generate fake questions or claim an empty question bank is ready.</p><div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{[
             { title: 'Topic practice', detail: 'Choose an approved topic below.', action: 'Choose a topic', go: () => document.getElementById('topic-practice-heading')?.scrollIntoView() },
