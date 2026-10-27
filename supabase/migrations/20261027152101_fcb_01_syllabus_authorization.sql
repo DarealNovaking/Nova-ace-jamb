@@ -50,7 +50,7 @@ begin
         jsonb_build_object('status',new.status,'rights_status',new.rights_status));
     end if;
 
-        if tg_op='UPDATE' and (
+    if tg_op='UPDATE' and (
       new.status is distinct from old.status
       or new.rights_status is distinct from old.rights_status
       or new.activated_at is distinct from old.activated_at

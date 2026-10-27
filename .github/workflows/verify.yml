@@ -73,6 +73,14 @@ jobs:
         env:
           PGPASSWORD: postgres
         run: psql -h 127.0.0.1 -U postgres -d postgres -v ON_ERROR_STOP=1 -f tests/sql/fcb_01_rpc_security.test.sql
+      - name: Test competing administrator demotions in native PostgreSQL
+        env:
+          PGHOST: 127.0.0.1
+          PGPORT: '5432'
+          PGUSER: postgres
+          PGDATABASE: postgres
+          PGPASSWORD: postgres
+        run: python3 tests/sql/fcb_01_role_concurrency.py
       - name: Test FCB-01 syllabus authoring authorization
         env:
           PGPASSWORD: postgres

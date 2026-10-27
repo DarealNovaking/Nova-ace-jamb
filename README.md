@@ -25,7 +25,7 @@ The GitHub repository is the source of truth. The current frontend uses React, T
 
 ## Current milestone status
 
-**Phase 1 (frontend acceptance batches 1–5) and Frontend Phase 2 are closed for their verified/authorized scopes. Frontend Phase 3 is now in progress**, beginning with accessible loading feedback and regression coverage. The first Phase 3 accessibility slice is now CI-verified: E2E run #703 passed with 66 Playwright tests, and the Verify workflow's `verify` and `utme-subject-choice-migration` jobs passed on corrected source/test commit `667085dea853f4c30ed9b639259ab593304305ed`. CI verifies the frontend against mocked service contracts; it does not prove live content or provider integrations exist. Content-driven learning/practice/progress, payment/referral/AI/audio/notification delivery, expanded admin operations, manual accessibility and real-device PWA acceptance remain incomplete or unverified as recorded in the master handoff. Do not fabricate official JAMB content or present fixtures as production data.
+**ONE final completion batch, FCB-01 through FCB-12, is active.** The canonical remaining work and dependencies are in `docs/ACE-JAMB-MASTER-HANDOFF.md` under “FINAL MASTER COMPLETION BATCH — ALL REMAINING ACE JAMB WORK”. FCB-01 is the security, migration and backend-contract audit. Preserve the existing frontend baseline (158 mocked desktop/mobile Playwright tests), compulsory English plus three subjects, and catalogue-independent onboarding. The security remediation is reviewed source until separately authorized and verified in production; no full-product completion is claimed. Current audit evidence: `docs/FCB-01-SECURITY-CONTRACT-AUDIT-2026-10-27.md`.
 
 The user has explicitly kept app deployment out of scope. Deployment workflows/configuration and the legacy AppDeploy entrypoint were removed; do not recreate or deploy the app unless the user explicitly reverses that instruction.
 
@@ -35,7 +35,7 @@ Requirements: Node.js 20+ and npm.
 
 1. Copy `.env.example` to `.env.local`.
 2. Set `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` to the intended Supabase project values.
-3. Install dependencies: `npm install`.
+3. Install dependencies: `npm ci`.
 4. Start the local development server: `npm run dev`.
 
 ## Verification

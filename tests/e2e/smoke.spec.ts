@@ -1120,7 +1120,103 @@ test.describe('ACE JAMB administrator review full text', () => {
   })
 })
 
+async function mockAcademicReview(page: import('@playwright/test').Page, isAdmin: boolean) {
+  await mockFirstTimeStudent(page)
+  const seasonId = 'a0000000-0000-4000-8000-000000000010'
+  const states = ['pending', 'approved', 'restricted', 'rejected'] as const
+  const versions = states.map((rights, index) => ({
+    id: `a0000000-0000-4000-8000-00000000002${index}`, season_id: seasonId,
+    subject_id: subjects[0].id, version: index + 1, title: `${rights} review fixture`,
+    status: 'draft', rights_status: rights, source_title: 'Authorized test fixture',
+    source_url: 'https://example.test/syllabus', provenance: {},
+  }))
+  const writes: Array<{ path: string; payload: Record<string, unknown> }> = []
+  await page.route(`${projectUrl}/rest/v1/rpc/is_admin_or_editor`, (route) => route.fulfill({ json: true }))
+  await page.route(`${projectUrl}/rest/v1/rpc/is_admin`, (route) => route.fulfill({ json: isAdmin }))
+  await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/exam_seasons'), (route) => route.fulfill({ json: [{ id: seasonId, code: 'fixture', name: 'Fixture season', exam_year: 2027, status: 'draft' }] }))
+  await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/syllabus_versions'), async (route) => {
+    if (route.request().method() !== 'GET') {
+      const payload = route.request().postDataJSON()
+      writes.push({ path: 'syllabus_versions', payload })
+      const selectedId = new URL(route.request().url()).searchParams.get('id')?.replace('eq.', '')
+      const version = versions.find((item) => item.id === selectedId)
+      if (version && payload.rights_status) version.rights_status = payload.rights_status
+      await route.fulfill({ status: 204 })
+    } else await route.fulfill({ json: versions })
+  })
+  await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/topics'), async (route) => {
+    if (route.request().method() === 'GET') {
+      const selectedId = new URL(route.request().url()).searchParams.get('syllabus_version_id')?.replace('eq.', '')
+      await route.fulfill({ json: [{ id: 'b0000000-0000-4000-8000-000000000010', subject_id: subjects[0].id, syllabus_version_id: selectedId, name: 'Existing review topic', active: true, sort_order: 10, description: null }] })
+    } else {
+      writes.push({ path: 'topics', payload: route.request().postDataJSON() })
+      await route.fulfill({ status: 201, json: [] })
+    }
+  })
+  await page.route(`${projectUrl}/rest/v1/rpc/activate_syllabus_version`, async (route) => {
+    writes.push({ path: 'activate_syllabus_version', payload: route.request().postDataJSON() })
+    await route.fulfill({ json: null })
+  })
+  return { versions, writes }
+}
+
 test.describe('ACE JAMB academic editor access', () => {
+  test('editor authors pending drafts but cannot review rights, activate or edit reviewed drafts', async ({ page }) => {
+    const { versions, writes } = await mockAcademicReview(page, false)
+    await page.goto('/admin-academic')
+    await expect(page.getByRole('heading', { name: 'Academic Structure' })).toBeVisible()
+    await expect(page.getByLabel('Rights review', { exact: true })).toHaveCount(0)
+    await expect(page.getByRole('button', { name: 'Activate version' })).toHaveCount(0)
+    await page.getByLabel('Topic name', { exact: true }).fill('Source-backed draft topic')
+    await page.getByRole('button', { name: 'Add inactive topic' }).click()
+    await expect(page.getByRole('status')).toContainText('Topic saved as inactive draft content')
+    expect(writes).toEqual([{ path: 'topics', payload: expect.objectContaining({ name: 'Source-backed draft topic', active: false, syllabus_version_id: versions[0].id }) }])
+    for (const version of versions.slice(1)) {
+      await page.getByLabel('Syllabus version').selectOption(version.id)
+      await expect(page.getByText('Existing review topic', { exact: true })).toHaveCount(0)
+      await expect(page.getByRole('button', { name: 'Add inactive topic' })).toHaveCount(0)
+      await expect(page.getByRole('button', { name: 'Add inactive subtopic' })).toHaveCount(0)
+      await expect(page.getByLabel('Rights review', { exact: true })).toHaveCount(0)
+      await expect(page.getByRole('button', { name: 'Activate version' })).toHaveCount(0)
+    }
+    expect(writes).toHaveLength(1)
+  })
+
+  test('administrator can review rights and activate approved draft content', async ({ page }) => {
+    const { versions, writes } = await mockAcademicReview(page, true)
+    await page.goto('/admin-academic')
+    await expect(page.getByLabel('Rights review', { exact: true })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Activate version' })).toBeDisabled()
+    page.on('dialog', (dialog) => dialog.accept())
+    await page.getByLabel('Rights review', { exact: true }).selectOption('approved')
+    await expect(page.getByRole('status')).toContainText('Rights status updated to approved')
+    expect(writes[0]).toEqual({ path: 'syllabus_versions', payload: expect.objectContaining({ rights_status: 'approved' }) })
+    await page.getByLabel('Syllabus version').selectOption(versions[1].id)
+    await expect(page.getByRole('button', { name: 'Activate version' })).toBeEnabled()
+    await expect(page.getByRole('button', { name: 'Add inactive topic' })).toBeEnabled()
+    await page.getByRole('button', { name: 'Activate version' }).click()
+    await expect(page.getByRole('status')).toContainText('Syllabus version activated through the server-side validation function')
+    expect(writes[1]).toEqual({ path: 'activate_syllabus_version', payload: { p_syllabus_version_id: versions[1].id } })
+    expect(writes).toHaveLength(2)
+  })
+
+  test('administrator role lookup failure blocks all tools until a verified retry', async ({ page }) => {
+    await mockAcademicReview(page, false)
+    let failAdminCheck = true
+    await page.route(`${projectUrl}/rest/v1/rpc/is_admin`, async (route) => {
+      if (failAdminCheck) await route.fulfill({ status: 400, json: { message: 'private role lookup error' } })
+      else await route.fulfill({ json: false })
+    })
+    await page.goto('/admin-academic')
+    await expect(page.getByText('Unable to verify academic editor access. Please try again.')).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Academic Structure' })).toHaveCount(0)
+    await expect(page.getByText('private role lookup error')).toHaveCount(0)
+    failAdminCheck = false
+    await page.getByRole('button', { name: 'Retry academic editor verification' }).click()
+    await expect(page.getByRole('heading', { name: 'Academic Structure' })).toBeVisible()
+    await expect(page.getByLabel('Rights review', { exact: true })).toHaveCount(0)
+  })
+
   test('announces academic workspace loading while the season list resolves', async ({ page }) => {
     await mockFirstTimeStudent(page)
     let releaseSeasonRequest!: () => void

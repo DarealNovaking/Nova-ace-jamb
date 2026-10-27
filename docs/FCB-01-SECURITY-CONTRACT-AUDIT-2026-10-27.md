@@ -94,7 +94,7 @@ offline SQL-parser/redaction process before extracting original scripts. No orig
 - Performance advisor: 20 auth/RLS initialization WARN, 49 overlapping-policy WARN, 72 unused-index INFO.
   Prioritize hot owner queries and remove only demonstrated redundant policy paths after security behavior tests;
   zero/low traffic makes unused-index status insufficient grounds to drop indexes. New admin policies use scalar SELECT helpers.
-  No latency improvement claimed; representative production query plans and load tests remain outstanding.
+  Read-only EXPLAIN (no ANALYZE, synthetic UUID filters) selected `idx_attempts_user_started` for history and `idx_questions_taxonomy` for published subject questions. These privileged planner checks establish index availability, not authenticated-RLS latency or measured throughput. No index change justified; load testing remains outstanding.
 - High-confidence source secret-pattern scan: no private-key, sb_secret or GitHub-token patterns found in source/functions/workflows.
   This is a limited scan, not proof that no secret exists anywhere. No secret values were requested/read/logged.
 - Dependency lockfile added; `npm ci` verified locally; npm audit reports zero known vulnerabilities at this lock.
@@ -107,7 +107,7 @@ the existing onboarding and syllabus-visibility SQL scripts plus all three new F
 RED/GREEN evidence includes entitlement probe, editor syllabus rights bypass, unknown-rights exposure, NULL attempt count,
 and valid English-last legacy save ordering. SQL fixtures contain synthetic users/content only.
 
-Native PostgreSQL CI and complete 158-test Playwright regression: PENDING on the review branch.
+GitHub Verify run 40532523228 on review commit `34d484767477cae6a08051afffc3b44e6fefadd0`: PASS, including native PostgreSQL existing/new SQL suites and Deno checks. Playwright run 40532523408: PASS, 158 tests and zero failures, job log inspected. Follow-up multi-session concurrency and role-aware academic UI changes (six new browser cases) require a fresh SHA-matched CI run.
 Local Chromium installation failed because the CDN returned truncated archives; no browser PASS invented.
 Real account/provider/device behavior, cross-session concurrency, complete schema replay, backups and deployed SHA remain UNVERIFIED.
 Supabase CLI telemetry was rejected by automatic review; no further CLI use or workaround attempted. The generated migration files already existed.
@@ -127,3 +127,10 @@ Homepage URLs and historical 2026 exam composition are not 2027 publication/righ
 Education publication (FCB-02/03), real content-backed attempts (FCB-04/05/06), grounded knowledge (FCB-07), and release (FCB-11/12)
 remain acceptance-blocked on the named source/rights/season and live-operation gates. Payment/AI/email/push provider selection,
 business thresholds and cost authorization remain undecided; no provider chosen silently. Existing optional WhatsApp CTA preserved.
+
+
+Follow-up source also aligns the academic UI with server approval boundaries: both role RPCs must succeed;
+editor rights/activation controls are absent, reviewed drafts are read-only, pending drafts retain authoring.
+Admin rights and activation actions have browser regression coverage. Native psql concurrency harness refuses remote hosts
+and production-shaped auth.users tables, observes actual lock contention, then asserts one administrator remains.
+It is wired after the RPC fixture before later suites replace schemas. CI execution of the added coverage remains pending.
