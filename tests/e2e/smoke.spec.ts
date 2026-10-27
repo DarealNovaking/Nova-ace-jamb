@@ -1822,11 +1822,14 @@ test.describe('ACE JAMB study-preference loading safety', () => {
     await expect(page.getByRole('alert')).toContainText('We could not load your saved study preferences')
     await expect(page.getByText('private user preferences details')).toHaveCount(0)
     await expect(page.getByRole('button', { name: 'Save study preferences' })).toBeDisabled()
+    await expect(page.getByText('Reload your saved preferences to see an accurate routine.')).toBeVisible()
+    await expect(page.getByText('75 min')).toHaveCount(0)
     expect(writes).toBe(0)
 
     allowRead = true
     await page.getByRole('button', { name: 'Retry loading study preferences' }).click()
     await expect(page.getByLabel('Daily study time')).toHaveValue('75')
+    await expect(page.getByText('Reload your saved preferences to see an accurate routine.')).toHaveCount(0)
     await expect(page.getByLabel('Fri', { exact: true })).toBeChecked()
     await expect(page.getByLabel('Mon', { exact: true })).not.toBeChecked()
     await expect(page.getByRole('alert')).toHaveCount(0)
