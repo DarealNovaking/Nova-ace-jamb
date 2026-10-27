@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { BookOpen, CheckCircle2, CircleAlert, FilePlus2, Loader2, Plus, RefreshCw, ShieldCheck } from 'lucide-react'
 import { ace } from '../lib/supabase'
 import { listSeasons, type ExamSeason, type SyllabusVersion, type SyllabusTopic, type SyllabusSubtopic } from '../lib/seasonService'
@@ -29,6 +29,9 @@ export default function AdminAcademicWorkspace() {
   const [subtopicDescription, setSubtopicDescription] = useState('')
   const [busy, setBusy] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [treeLoading, setTreeLoading] = useState(false)
+  const [loadedTreeVersionId, setLoadedTreeVersionId] = useState('')
+  const treeRun = useRef(0)
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
 
@@ -36,6 +39,7 @@ export default function AdminAcademicWorkspace() {
   const selectedTopic = topics.find((item) => item.id === selectedTopicId) ?? null
   const selectedSubject = subjects.find((item) => item.id === selectedVersion?.subject_id) ?? null
   const isDraft = selectedVersion?.status === 'draft'
+  const treeReady = !treeLoading && selectedVersionId !== '' && loadedTreeVersionId === selectedVersionId
 
   const versionOptions = useMemo(() => versions.map((version) => {
     const subject = subjects.find((item) => item.id === version.subject_id)
@@ -67,6 +71,9 @@ export default function AdminAcademicWorkspace() {
       setSelectedVersionId(nextSelected)
       if (nextSelected) await loadTree(nextSelected)
       else {
+        treeRun.current += 1
+        setTreeLoading(false)
+        setLoadedTreeVersionId('')
         setTopics([])
         setSubtopics([])
         setSelectedTopicId('')
@@ -79,16 +86,29 @@ export default function AdminAcademicWorkspace() {
   }
 
   async function loadTree(versionId: string) {
-    const [{ data: topicRows, error: topicError }, { data: subtopicRows, error: subtopicError }] = await Promise.all([
+    const run = ++treeRun.current
+    setTreeLoading(true)
+    setLoadedTreeVersionId('')
+    // Never show a previous version's records while a new version is selected.
+    setTopics([])
+    setSubtopics([])
+    setSelectedTopicId('')
+    try {
+      const [{ data: topicRows, error: topicError }, { data: subtopicRows, error: subtopicError }] = await Promise.all([
       ace.from('topics').select('id,subject_id,syllabus_version_id,name,description,sort_order,active').eq('syllabus_version_id', versionId).order('sort_order'),
       ace.from('subtopics').select('id,topic_id,syllabus_version_id,name,description,sort_order,active').eq('syllabus_version_id', versionId).order('sort_order'),
     ])
-    if (topicError) throw topicError
-    if (subtopicError) throw subtopicError
-    const nextTopics = (topicRows ?? []) as SyllabusTopic[]
-    setTopics(nextTopics)
-    setSubtopics((subtopicRows ?? []) as SyllabusSubtopic[])
-    setSelectedTopicId((current) => nextTopics.some((item) => item.id === current) ? current : nextTopics[0]?.id ?? '')
+      if (run !== treeRun.current) return
+      if (topicError) throw topicError
+      if (subtopicError) throw subtopicError
+      const nextTopics = (topicRows ?? []) as SyllabusTopic[]
+      setTopics(nextTopics)
+      setSubtopics((subtopicRows ?? []) as SyllabusSubtopic[])
+      setSelectedTopicId((current) => nextTopics.some((item) => item.id === current) ? current : nextTopics[0]?.id ?? '')
+      setLoadedTreeVersionId(versionId)
+    } finally {
+      if (run === treeRun.current) setTreeLoading(false)
+    }
   }
 
   useEffect(() => { void loadWorkspace() }, [])
@@ -148,6 +168,7 @@ export default function AdminAcademicWorkspace() {
   async function addTopic(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
     if (!selectedVersion || !isDraft) return setError('Select a draft syllabus version before editing topics.')
+    if (!treeReady || busy) return setError('Wait for this syllabus version to finish loading before editing.')
     if (!topicName.trim()) return setError('Enter a topic name.')
     await runAction(async () => {
       const { error: insertError } = await ace.from('topics').insert({
@@ -168,6 +189,7 @@ export default function AdminAcademicWorkspace() {
   async function addSubtopic(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
     if (!selectedVersion || !isDraft || !selectedTopic) return setError('Select a topic in a draft syllabus version first.')
+    if (!treeReady || busy) return setError('Wait for this syllabus version to finish loading before editing.')
     if (!subtopicName.trim()) return setError('Enter a subtopic name.')
     await runAction(async () => {
       const siblingRows = subtopics.filter((item) => item.topic_id === selectedTopic.id)
@@ -187,7 +209,7 @@ export default function AdminAcademicWorkspace() {
   }
 
   async function toggleActive(kind: 'topic' | 'subtopic', id: string, active: boolean) {
-    if (!selectedVersion || !isDraft) return
+    if (!selectedVersion || !isDraft || !treeReady || busy) return
     await runAction(async () => {
       const table = kind === 'topic' ? 'topics' : 'subtopics'
       const { error: updateError } = await ace.from(table).update({ active }).eq('id', id).eq('syllabus_version_id', selectedVersion.id)
@@ -218,7 +240,7 @@ export default function AdminAcademicWorkspace() {
   }
 
   async function activateVersion() {
-    if (!selectedVersion) return
+    if (!selectedVersion || !treeReady || busy) return
     if (selectedVersion.rights_status !== 'approved') return setError('Rights must be approved before activation.')
     if (!topics.some((item) => item.active)) return setError('At least one active topic is required before activation.')
     if (!window.confirm('Activate this syllabus version? It will become visible to students and older versions for the same season/subject will be archived.')) return
@@ -253,8 +275,10 @@ export default function AdminAcademicWorkspace() {
           <div><h2 className="text-xl font-black">Syllabus review</h2><p className="mt-1 text-sm text-white/50">Review provenance, rights, topics and activation status.</p></div>
           <button type="button" className={secondaryClass} onClick={() => void loadWorkspace()} disabled={busy}><RefreshCw size={15}/> Refresh</button>
         </div>
-        <label className="mt-4 block max-w-3xl text-sm text-white/70">Syllabus version<select className={inputClass} value={selectedVersionId} onChange={async (e) => { const id = e.target.value; setSelectedVersionId(id); setError(''); setNotice(''); if (id) { try { await loadTree(id) } catch (caught) { setError(caught instanceof Error ? caught.message : 'Unable to load syllabus tree.') } } else { setTopics([]); setSubtopics([]); setSelectedTopicId('') } }}><option value="">No versions created</option>{versionOptions.map((version) => <option key={version.id} value={version.id}>{version.label}</option>)}</select></label>
+        <label className="mt-4 block max-w-3xl text-sm text-white/70">Syllabus version<select className={inputClass} value={selectedVersionId} disabled={busy} onChange={async (e) => { const id = e.target.value; setSelectedVersionId(id); setError(''); setNotice(''); if (id) { try { await loadTree(id) } catch { setError('Unable to load this syllabus version. Retry or refresh the workspace.') } } else { treeRun.current += 1; setTreeLoading(false); setLoadedTreeVersionId(''); setTopics([]); setSubtopics([]); setSelectedTopicId('') } }}><option value="">No versions created</option>{versionOptions.map((version) => <option key={version.id} value={version.id}>{version.label}</option>)}</select></label>
 
+        {selectedVersion && treeLoading && <p role="status" className="mt-4 text-sm text-white/55">Loading selected syllabus topics…</p>}
+        {selectedVersion && !treeLoading && !treeReady && <p role="alert" className="mt-4 text-sm text-amber-100">This version's topics are not available. Refresh before editing.</p>}
         {selectedVersion && <div className="mt-5 rounded-2xl border border-white/10 bg-black/20 p-4 sm:p-5">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div><p className="font-bold">{selectedVersion.title}</p><p className="mt-1 text-xs text-white/45">{selectedSubject?.name ?? 'Subject'} · version {selectedVersion.version} · {seasons.find((s) => s.id === selectedVersion.season_id)?.name ?? 'Season'}</p><p className="mt-2 break-all text-xs text-purple-200/80">{selectedVersion.source_title || 'No source title'}{selectedVersion.source_url ? ` · ${selectedVersion.source_url}` : ''}</p></div>
@@ -262,7 +286,7 @@ export default function AdminAcademicWorkspace() {
           </div>
           {selectedVersion.status === 'draft' && <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end">
             <label className="text-sm text-white/70">Rights review<select className={inputClass} value={selectedVersion.rights_status} onChange={(e) => void updateRights(e.target.value as SyllabusVersion['rights_status'])}><option value="pending">Pending</option><option value="approved">Approved</option><option value="restricted">Restricted</option><option value="rejected">Rejected</option></select></label>
-            <button type="button" className={buttonClass} disabled={busy || selectedVersion.rights_status !== 'approved' || !topics.some((item) => item.active)} onClick={() => void activateVersion()}><ShieldCheck size={16}/> Activate version</button>
+            <button type="button" className={buttonClass} disabled={busy || !treeReady || selectedVersion.rights_status !== 'approved' || !topics.some((item) => item.active)} onClick={() => void activateVersion()}><ShieldCheck size={16}/> Activate version</button>
           </div>}
           {selectedVersion.status === 'active' && <p className="mt-4 text-sm text-emerald-200">This version is active and its approved content may be visible to students.</p>}
         </div>}
@@ -273,9 +297,9 @@ export default function AdminAcademicWorkspace() {
             <form onSubmit={addTopic} className="mt-3 space-y-3">
               <label className="block text-sm text-white/70">Topic name<input className={inputClass} value={topicName} onChange={(e) => setTopicName(e.target.value)} maxLength={200} required/></label>
               <label className="block text-sm text-white/70">Description (optional)<textarea className={inputClass} value={topicDescription} onChange={(e) => setTopicDescription(e.target.value)} rows={2} maxLength={2000}/></label>
-              <button type="submit" className={buttonClass} disabled={busy}><Plus size={15}/> Add inactive topic</button>
+              <button type="submit" className={buttonClass} disabled={busy || !treeReady}><Plus size={15}/> Add inactive topic</button>
             </form>
-            <ul className="mt-4 space-y-2">{topics.map((topic) => <li key={topic.id} className="flex items-start justify-between gap-3 rounded-xl bg-white/[.035] p-3"><button type="button" onClick={() => setSelectedTopicId(topic.id)} className="min-w-0 text-left"><span className="block font-semibold">{topic.name}</span><span className="text-xs text-white/45">{topic.active ? 'Active for review' : 'Inactive draft'} · order {topic.sort_order}</span></button><button type="button" className={secondaryClass} onClick={() => void toggleActive('topic', topic.id, !topic.active)} disabled={busy}>{topic.active ? 'Deactivate' : 'Mark active'}</button></li>)}</ul>
+            <ul className="mt-4 space-y-2">{topics.map((topic) => <li key={topic.id} className="flex items-start justify-between gap-3 rounded-xl bg-white/[.035] p-3"><button type="button" onClick={() => setSelectedTopicId(topic.id)} className="min-w-0 text-left"><span className="block font-semibold">{topic.name}</span><span className="text-xs text-white/45">{topic.active ? 'Active for review' : 'Inactive draft'} · order {topic.sort_order}</span></button><button type="button" className={secondaryClass} onClick={() => void toggleActive('topic', topic.id, !topic.active)} disabled={busy || !treeReady}>{topic.active ? 'Deactivate' : 'Mark active'}</button></li>)}</ul>
             {!topics.length && <p className="mt-3 text-sm text-white/45">No topics yet. Add verified source-backed syllabus topics.</p>}
           </div>
           <div className="rounded-2xl border border-white/10 p-4">
@@ -285,9 +309,9 @@ export default function AdminAcademicWorkspace() {
               <label className="block text-sm text-white/70">Parent topic<select className={inputClass} value={selectedTopicId} onChange={(e) => setSelectedTopicId(e.target.value)} required><option value="">Choose topic</option>{topics.map((topic) => <option key={topic.id} value={topic.id}>{topic.name}</option>)}</select></label>
               <label className="block text-sm text-white/70">Subtopic name<input className={inputClass} value={subtopicName} onChange={(e) => setSubtopicName(e.target.value)} maxLength={200} required/></label>
               <label className="block text-sm text-white/70">Description (optional)<textarea className={inputClass} value={subtopicDescription} onChange={(e) => setSubtopicDescription(e.target.value)} rows={2} maxLength={2000}/></label>
-              <button type="submit" className={buttonClass} disabled={busy || !selectedTopic}><Plus size={15}/> Add inactive subtopic</button>
+              <button type="submit" className={buttonClass} disabled={busy || !treeReady || !selectedTopic}><Plus size={15}/> Add inactive subtopic</button>
             </form>
-            <ul className="mt-4 space-y-2">{subtopics.filter((item) => item.topic_id === selectedTopicId).map((item) => <li key={item.id} className="flex items-start justify-between gap-3 rounded-xl bg-white/[.035] p-3"><div><p className="font-semibold">{item.name}</p><p className="text-xs text-white/45">{item.active ? 'Active for review' : 'Inactive draft'} · order {item.sort_order}</p></div><button type="button" className={secondaryClass} onClick={() => void toggleActive('subtopic', item.id, !item.active)} disabled={busy}>{item.active ? 'Deactivate' : 'Mark active'}</button></li>)}</ul>
+            <ul className="mt-4 space-y-2">{subtopics.filter((item) => item.topic_id === selectedTopicId).map((item) => <li key={item.id} className="flex items-start justify-between gap-3 rounded-xl bg-white/[.035] p-3"><div><p className="font-semibold">{item.name}</p><p className="text-xs text-white/45">{item.active ? 'Active for review' : 'Inactive draft'} · order {item.sort_order}</p></div><button type="button" className={secondaryClass} onClick={() => void toggleActive('subtopic', item.id, !item.active)} disabled={busy || !treeReady}>{item.active ? 'Deactivate' : 'Mark active'}</button></li>)}</ul>
             {!subtopics.some((item) => item.topic_id === selectedTopicId) && <p className="mt-3 text-sm text-white/45">No subtopics for this topic yet.</p>}
           </div>
         </div>}
