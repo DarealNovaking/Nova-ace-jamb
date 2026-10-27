@@ -885,6 +885,25 @@ test.describe('ACE JAMB preparation workspaces', () => {
     expect(startCount).toBe(0)
   })
 
+  test('progress compares only saved completed sessions and does not invent readiness', async ({ page }) => {
+    await mockPreparedStudent(page)
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/attempts'), async (route) => {
+      await route.fulfill({ json: [
+        { id: '93000000-0000-4000-8000-000000000001', mode: 'practice', status: 'completed', started_at: '2026-10-25T09:00:00Z', completed_at: '2026-10-25T10:00:00Z', score: 80, correct_count: 8, answered_count: 10, subject_id: subjects[0].id },
+        { id: '93000000-0000-4000-8000-000000000002', mode: 'cbt', status: 'completed', started_at: '2026-10-24T09:00:00Z', completed_at: '2026-10-24T10:00:00Z', score: 40, correct_count: 4, answered_count: 10, subject_id: subjects[0].id },
+        { id: '93000000-0000-4000-8000-000000000003', mode: 'cbt', status: 'active', started_at: '2026-10-26T09:00:00Z', completed_at: null, score: null, correct_count: 9, answered_count: 10, subject_id: subjects[0].id },
+      ] })
+    })
+    await page.goto('/')
+    await expect(page.getByRole('heading', { name: 'Welcome back, Test Futarian.' })).toBeVisible()
+    await page.getByRole('button', { name: 'My progress', exact: false }).click()
+    await expect(page.getByText('80% correct')).toHaveCount(0)
+    await expect(page.getByText('60% correct')).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Recent session accuracy' })).toBeVisible()
+    await expect(page.getByText('+40 percentage points compared with your previous session.')).toBeVisible()
+    await expect(page.getByText('predicted JAMB score', { exact: false })).toBeVisible()
+  })
+
   test('flashcard review reveals verified content and persists a self-scoped review', async ({ page }) => {
     await mockPreparedStudent(page)
     let savedReview: Record<string, unknown> | null = null

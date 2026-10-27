@@ -72,3 +72,37 @@ export function summarizeAttempts(attempts: PastAttempt[]): ProgressSummary {
     })),
   }
 }
+
+export type AttemptAccuracyPoint = {
+  id: string
+  when: string
+  mode: string
+  correct: number
+  answered: number
+  accuracy: number
+}
+
+export type AccuracyTrend = {
+  recent: AttemptAccuracyPoint[]
+  // Difference between the two most recent valid completed attempts, in percentage points.
+  changePoints: number | null
+}
+
+// Recent accuracy is descriptive, not a prediction of the student's JAMB score.
+// Ignore invalid dates/counts and do not mutate caller-owned attempt records.
+export function summarizeAccuracyTrend(attempts: PastAttempt[], maxSessions = 5): AccuracyTrend {
+  const points = attempts.flatMap((attempt) => {
+    if (attempt.status !== 'completed' || !Number.isFinite(attempt.answered_count) || attempt.answered_count <= 0) return []
+    const answered = Math.floor(attempt.answered_count)
+    const correct = Math.min(Math.max(0, Math.floor(Number.isFinite(attempt.correct_count) ? attempt.correct_count : 0)), answered)
+    const when = attempt.completed_at || attempt.started_at
+    const timestamp = Date.parse(when)
+    if (!Number.isFinite(timestamp)) return []
+    return [{
+      id: attempt.id, when, mode: attempt.mode, answered, correct,
+      accuracy: Math.round((correct / answered) * 100),
+    }]
+  }).sort((a, b) => Date.parse(b.when) - Date.parse(a.when))
+  const recent = points.slice(0, Math.max(0, Math.min(20, Math.floor(maxSessions))))
+  return { recent, changePoints: recent.length < 2 ? null : recent[0].accuracy - recent[1].accuracy }
+}

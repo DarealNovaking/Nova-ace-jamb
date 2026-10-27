@@ -57,3 +57,18 @@ export async function fetchStudentMistakes(limit = 20): Promise<StudentQuestionM
   if (error) throw error
   return Array.isArray(data) ? (data as StudentQuestionMistake[]) : []
 }
+
+// Strict version for progress: do not mislabel network/permission failures as empty history.
+export async function fetchStudentAttempts(limit = 20): Promise<PastAttempt[]> {
+  const { data: { user }, error: authError } = await supabase.auth.getUser()
+  if (authError) throw authError
+  if (!user) throw new Error('Sign in required')
+  const { data, error } = await ace
+    .from('attempts')
+    .select('id,mode,status,started_at,completed_at,score,correct_count,answered_count,subject_id')
+    .eq('user_id', user.id)
+    .order('started_at', { ascending: false })
+    .limit(Math.max(1, Math.min(20, limit)))
+  if (error) throw error
+  return Array.isArray(data) ? (data as PastAttempt[]) : []
+}

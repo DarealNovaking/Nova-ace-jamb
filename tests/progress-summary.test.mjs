@@ -1,7 +1,7 @@
 // Run with: node --experimental-strip-types --test tests/progress-summary.test.mjs
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { summarizeAttempts } from '../src/lib/progressSummary.ts'
+import { summarizeAttempts, summarizeAccuracyTrend } from '../src/lib/progressSummary.ts'
 
 const base = { id: 'a', mode: 'cbt', started_at: '2026-10-01T10:00:00Z', completed_at: '2026-10-01T11:00:00Z', score: null }
 
@@ -30,4 +30,20 @@ test('corrupt counts are clamped, never produce more than 100%', () => {
   const s = summarizeAttempts([{ ...base, status: 'completed', correct_count: 99, answered_count: 10, subject_id: null }])
   assert.equal(s.accuracy, 100)
   assert.deepEqual(s.bySubject, [])
+})
+
+test('recent accuracy uses completed genuine answers and compares latest two chronologically', () => {
+  const t = summarizeAccuracyTrend([
+    { ...base, id: 'older', status: 'completed', correct_count: 3, answered_count: 10, completed_at: '2026-10-01T11:00:00Z' },
+    { ...base, id: 'new', status: 'completed', correct_count: 8, answered_count: 10, completed_at: '2026-10-09T11:00:00Z' },
+    { ...base, id: 'partial', status: 'active', correct_count: 9, answered_count: 10, completed_at: '2026-10-20T11:00:00Z' },
+    { ...base, id: 'corrupt', status: 'completed', correct_count: 100, answered_count: 0, completed_at: '2026-10-30T11:00:00Z' },
+  ])
+  assert.equal(t.changePoints, 50)
+  assert.deepEqual(t.recent.map((item) => item.id), ['new', 'older'])
+})
+
+test('accuracy trend is unavailable with fewer than two valid sessions', () => {
+  assert.equal(summarizeAccuracyTrend([]).changePoints, null)
+  assert.equal(summarizeAccuracyTrend([{ ...base, status: 'completed', correct_count: 1, answered_count: 2 }]).changePoints, null)
 })
