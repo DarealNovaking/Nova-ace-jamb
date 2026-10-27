@@ -35,3 +35,11 @@ Every final report must state: completed work/files; actual verification evidenc
 
 ## Active-scope update — 2026-10-27
 **The previous "frontend-only, do not reopen backend" restriction is superseded by the owner's final-batch direction.** Read the single canonical "FINAL MASTER COMPLETION BATCH — ALL REMAINING ACE JAMB WORK" in docs/ACE-JAMB-MASTER-HANDOFF.md. Complete FCB-01..FCB-12 by verified dependencies, never restart finished frontend components or reactivate retired catalogue programmes/IBASS import. Use the existing GitHub main and live Supabase evidence; backend/source implementation is in scope when safely authorized, but **production database/content changes, deployments and billable provider actions still need specific approval**. Next exact action is FCB-01 server/RLS/RPC migration contract audit and testable security remediation.
+
+## Balanced autonomy — owner-approved 2026-10-27
+- Default operating mode for every agent is **Balanced Autonomy**: independently make routine technical decisions and continue through the approved FCB work in dependency order without repeated permission prompts.
+- Inspect the current checkpoint, relevant master-handoff sections, HEAD, and affected code/tests first. Read historical material when needed to resolve ambiguity; do not repeatedly reprocess unchanged history.
+- Batch compatible implementation and documentation; run focused tests for each meaningful change, milestone-wide checks at gates, and immediate checks for security-sensitive modifications. Record evidence honestly.
+- Request approval for destructive or irreversible operations, production database/content mutations, deployments, billable provider actions, or significant product/scope decisions. Never infer authorization from this operating mode.
+- On blockers, try one materially different safe approach and continue independent authorized tasks. Do not bypass controls or fabricate verification.
+- The final FCB-01..FCB-12 scope supersedes historical frontend-only restrictions. Preserve one integrator and the canonical handoff/checkpoint.
