@@ -859,7 +859,7 @@ test.describe('ACE JAMB preparation workspaces', () => {
 
     await page.goto('/')
     await expect(page.getByRole('heading', { name: 'Welcome back, Test Futarian.' })).toBeVisible()
-    await page.getByRole('button', { name: 'Quick revision', exact: true }).click()
+    await page.getByRole('button', { name: /Quick revision/ }).click()
     await expect(page.getByText('Missed repeatedly')).toBeVisible()
     await expect(page.getByText('No published revision topics yet')).toBeVisible()
     await page.getByRole('button', { name: 'Practise missed questions' }).click()
