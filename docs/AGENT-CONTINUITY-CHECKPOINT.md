@@ -2317,3 +2317,24 @@ Poll E2E #673 and record its final result. Then prioritize only frontend work su
 - The checkpoint's prior queued E2E/Verify run IDs (40422034609 / 40422034652) were not independently confirmed terminal in this pass. A combined-status lookup for the current documentation commit returned no statuses; this does not establish test failure or success. Earlier baseline runs in the prompt pack are historical baseline evidence only.
 - A read-only count query using assumed `status` columns failed because the live schema differs from that assumption. No data changed. Next queries must inspect actual columns before counting or reasoning about content approval state.
 - **Exact next action:** continue FCB-01 by inspecting live definitions and ACLs of the callable `SECURITY DEFINER` RPCs—prioritize `set_user_role`, `activate_exam_config`, `activate_exam_season`, `activate_syllabus_version`, `publish_catalog_batch`, `stage_catalog_import`, and `save_student_foundation*`; compare each against repository migrations/source and write focused non-production regression tests/migration proposal. Do not apply production changes or deploy without the required gate authorization.
+
+
+## FCB-01 focused RPC review — 2026-10-27
+Scope completed in this pass: live Supabase definitions for `set_user_role`, `activate_exam_config`, `activate_exam_season`, `activate_syllabus_version`, `approve_catalog_batch`, `publish_catalog_batch`, `has_active_entitlement`, `is_syllabus_version_public`, `can_manage_catalog`, `get_catalog_source`, `check_catalog_import_idempotency`, and student foundation save functions; live security advisor; repository role-management migration and historical handoff.
+
+Verified controls:
+- `ace.set_user_role(uuid,text)`: live definition checks authenticated caller and `ace.is_admin()`, restricts role values, verifies Auth target exists, serializes role changes, prevents last-admin removal, and writes an audit event. Historical migration explicitly revokes PUBLIC/anon and grants EXECUTE to authenticated only. No privilege-escalation path was confirmed in this function during this review.
+- `activate_exam_config`, `activate_exam_season`, `activate_syllabus_version`, `approve_catalog_batch`, and `publish_catalog_batch`: inspected definitions include admin/editor or admin role checks, input/existence checks, validation/state gates, and fixed search paths. These checks lower risk but do not replace remaining full-path tests.
+- `has_active_entitlement`: requires an authenticated caller and restricts the requested user ID to `auth.uid()` unless caller is admin.
+- `get_catalog_source` and `check_catalog_import_idempotency`: both gate result rows on signed-in admin/editor role.
+- `save_student_foundation_catalog_with_subjects`: writes profile/preferences/subjects for `auth.uid()`, validates score, time, four distinct active subjects, active institution/program/season, and the configured subject rule. No cross-user write was seen in the inspected body.
+- `is_syllabus_version_public` is intentionally a boolean public-status helper for active, rights-approved syllabus versions. Its anon EXECUTE warning is not by itself a confirmed data leak; confirm call sites/policy dependencies before changing its grant.
+
+Open hardening / not yet fully verified:
+- Supabase security advisor observed 22 authenticated-callable SECURITY DEFINER functions and one anon-callable function at 2026-10-27 17:00 UTC. This is a broad heuristic warning, not 23 confirmed vulnerabilities.
+- `approve_catalog_batch` has search_path `ace, public` rather than `pg_catalog` first. Its body uses qualified tables and role checks, but harden the path in a reviewed migration after checking dependencies. `can_manage_catalog` also has `ace, public`; review its dependency/callers before tightening.
+- Not every one of the 22 function bodies, every RLS policy, Edge Function, API exposure setting, or frontend call site was reviewed; no full security regression suite was run. Do not mark FCB-01 security acceptance complete.
+- Catalogue RPCs are historical/dormant scope and must not be revived for product work; only security hardening of existing callable surface is in scope.
+- No live schema changes, data writes, grants, migrations, or deployments were performed. No regression tests were added in this pass; connected tool access did not provide a local checkout/test runner. The failed assumed-column count query remains a documented no-op.
+
+Next exact action: inspect the remaining advisor-listed SECURITY DEFINER function definitions and their repository migration history/call sites; verify the exposed-schema/function grants and `public` schema CREATE privileges. Then add a focused migration/test proposal on a feature branch, run available checks, and request/confirm the production gate before applying anything.
