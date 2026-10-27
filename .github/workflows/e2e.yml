@@ -3,7 +3,16 @@ name: ACE JAMB E2E
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - '**/*.md'
   pull_request:
+
+# Run only the newest commit's checks for each branch. PR checks always run;
+# documentation-only pushes do not spend browser/CI minutes.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   e2e:
