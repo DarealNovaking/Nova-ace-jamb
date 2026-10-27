@@ -1329,6 +1329,42 @@ test.describe('ACE JAMB preparation workspaces', () => {
     await expect(page.getByRole('heading', { name: 'No reviewed questions published for this topic yet' })).toBeVisible()
   })
 
+  test('approved subtopic insight is backed by saved answers and routes only to matching practice', async ({ page }) => {
+    await mockSyllabusPublicationState(page, 'approved')
+    const topic = '70000000-0000-4000-8000-000000000001'
+    const subtopic = '79000000-0000-4000-8000-000000000001'
+    const question = '99000000-0000-4000-8000-000000000021'
+    let requestedSubtopic = ''
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/subtopics'), async (route) => {
+      await route.fulfill({ json: [{
+        id: subtopic, topic_id: topic, syllabus_version_id: '60000000-0000-4000-8000-000000000001',
+        name: 'Reading details', description: 'Test-only approved subtopic', sort_order: 1, active: true,
+      }] })
+    })
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/student_question_stats'), async (route) => {
+      await route.fulfill({ json: [{
+        question_id: question, attempts: 10, correct_count: 3, incorrect_count: 7, last_answered_at: '2026-10-27T00:00:00Z',
+      }] })
+    })
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/questions'), async (route) => {
+      const params = new URL(route.request().url()).searchParams
+      if (params.has('subtopic_id')) {
+        requestedSubtopic = params.get('subtopic_id') ?? ''
+        await route.fulfill({ json: [] })
+        return
+      }
+      await route.fulfill({ json: [{ id: question, subject_id: subjects[0].id, topic_id: topic, subtopic_id: subtopic }] })
+    })
+    await page.goto('/?view=progress')
+    await expect(page.getByRole('heading', { name: 'Observed subtopic review priorities' })).toBeVisible()
+    await expect(page.getByText('30% correct across 10 recorded answers on 1 tracked question.')).toBeVisible()
+    await page.getByRole('button', { name: 'Practise Reading details' }).click()
+    await expect(page).toHaveURL(/[?&]focus=subtopic/)
+    await expect(page).toHaveURL(new RegExp('subtopic=' + subtopic))
+    await expect(page.getByRole('heading', { name: 'No reviewed questions published for this topic yet' })).toBeVisible()
+    expect(requestedSubtopic).toBe('eq.' + subtopic)
+  })
+
   test('flashcard review reveals verified content and persists a self-scoped review', async ({ page }) => {
     await mockPreparedStudent(page)
     let savedReview: Record<string, unknown> | null = null

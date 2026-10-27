@@ -109,7 +109,7 @@ export async function fetchStudentTopicEvidence(limit = 80): Promise<{ records: 
   const records = (data ?? []) as import('./progressSummary').QuestionReviewEvidence[]
   const ids = [...new Set(records.map((item) => item.question_id))].filter((id) => /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id))
   if (!ids.length) return { records, published: [] }
-  const { data: questions, error: questionError } = await ace.from('questions').select('id,subject_id,topic_id')
+  const { data: questions, error: questionError } = await ace.from('questions').select('id,subject_id,topic_id,subtopic_id')
     .in('id', ids).eq('active', true).eq('review_status', 'published')
   if (questionError) throw questionError
   return { records, published: (questions ?? []) as import('./progressSummary').PublishedTopicMapping[] }

@@ -138,7 +138,7 @@ export type QuestionReviewEvidence = {
   incorrect_count: number
   last_answered_at: string
 }
-export type PublishedTopicMapping = { id: string; subject_id: string | null; topic_id: string | null }
+export type PublishedTopicMapping = { id: string; subject_id: string | null; topic_id: string | null; subtopic_id?: string | null }
 export type ApprovedTopicRef = { id: string; name: string; subject_id?: string }
 export type TopicEvidence = { topicId: string; topicName: string; subjectId: string; answers: number; correct: number; accuracy: number; trackedQuestions: number }
 
@@ -176,4 +176,63 @@ export function summarizeTopicEvidence(
     topicId, topicName: entry.topicName, subjectId: entry.subjectId, answers: entry.answers, correct: entry.correct,
     accuracy: Math.round((entry.correct / entry.answers) * 100), trackedQuestions: entry.trackedQuestions,
   })).sort((a,b)=>a.accuracy-b.accuracy || b.answers-a.answers || a.topicName.localeCompare(b.topicName))
+}
+
+export type ApprovedSubtopicTopicRef = {
+  id: string
+  name: string
+  subject_id?: string
+  subtopics?: Array<{ id: string; name: string }>
+}
+
+export type SubtopicEvidence = {
+  subtopicId: string
+  subtopicName: string
+  topicId: string
+  topicName: string
+  subjectId: string
+  answers: number
+  correct: number
+  accuracy: number
+  trackedQuestions: number
+}
+
+// Only reviewed question metadata mapped to currently approved syllabus subtopics
+// contributes. A low sample count must never become a personal mastery label.
+export function summarizeSubtopicEvidence(
+  records: QuestionReviewEvidence[],
+  published: PublishedTopicMapping[],
+  approved: ApprovedSubtopicTopicRef[],
+  minAnswers = 5,
+): SubtopicEvidence[] {
+  const allowedTopics = new Map(approved.filter((item) => item.subject_id).map((item) => [item.id, item]))
+  const publishedQuestions = new Map(published.filter((item) => item.id && item.subject_id && item.topic_id && item.subtopic_id).map((item) => [item.id, item]))
+  const result = new Map<string, SubtopicEvidence>()
+  const visited = new Set<string>()
+  for (const record of records) {
+    if (visited.has(record.question_id)) continue
+    visited.add(record.question_id)
+    const mapped = publishedQuestions.get(record.question_id)
+    if (!mapped?.topic_id || !mapped.subject_id || !mapped.subtopic_id) continue
+    const topic = allowedTopics.get(mapped.topic_id)
+    if (!topic || topic.subject_id !== mapped.subject_id) continue
+    const subtopic = topic.subtopics?.find((item) => item.id === mapped.subtopic_id)
+    if (!subtopic) continue
+    const correct = Math.max(0, Math.floor(Number.isFinite(record.correct_count) ? record.correct_count : 0))
+    const incorrect = Math.max(0, Math.floor(Number.isFinite(record.incorrect_count) ? record.incorrect_count : 0))
+    const answers = correct + incorrect
+    if (!answers) continue
+    const current = result.get(subtopic.id) ?? {
+      subtopicId: subtopic.id, subtopicName: subtopic.name, topicId: topic.id, topicName: topic.name,
+      subjectId: mapped.subject_id, answers: 0, correct: 0, accuracy: 0, trackedQuestions: 0,
+    }
+    current.answers += answers
+    current.correct += correct
+    current.trackedQuestions += 1
+    result.set(subtopic.id, current)
+  }
+  const threshold = Number.isFinite(minAnswers) ? Math.max(1, Math.floor(minAnswers)) : 5
+  return [...result.values()].filter((item) => item.answers >= threshold).map((item) => ({
+    ...item, accuracy: Math.round((item.correct / item.answers) * 100),
+  })).sort((a, b) => a.accuracy - b.accuracy || b.answers - a.answers || a.subtopicName.localeCompare(b.subtopicName))
 }

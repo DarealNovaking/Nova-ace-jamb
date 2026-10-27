@@ -1,7 +1,7 @@
 // Run with: node --experimental-strip-types --test tests/progress-summary.test.mjs
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { summarizeAttempts, summarizeAccuracyTrend, suggestStudyFocus, summarizeTopicEvidence } from '../src/lib/progressSummary.ts'
+import { summarizeAttempts, summarizeAccuracyTrend, suggestStudyFocus, summarizeTopicEvidence, summarizeSubtopicEvidence } from '../src/lib/progressSummary.ts'
 
 const base = { id: 'a', mode: 'cbt', started_at: '2026-10-01T10:00:00Z', completed_at: '2026-10-01T11:00:00Z', score: null }
 
@@ -83,4 +83,24 @@ test('topic suggestions omit small, unpublished and mismatched subject evidence'
   assert.deepEqual(summarizeTopicEvidence(rows, [{ id: 'a', topic_id: 't', subject_id: 'eng' }], topics), [])
   assert.deepEqual(summarizeTopicEvidence(rows, [{ id: 'a', topic_id: 't', subject_id: 'math' }], topics, 1), [])
   assert.deepEqual(summarizeTopicEvidence(rows, [], topics, 1), [])
+})
+
+test('subtopic insights use only linked approved subtopics and qualifying saved answer history', () => {
+  const approved = [{ id: 't', name: 'Comprehension', subject_id: 'eng', subtopics: [{ id: 's', name: 'Reading details' }] }]
+  const records = [
+    { question_id: 'a', attempts: 5, correct_count: 2, incorrect_count: 3, last_answered_at: '2026-10-27' },
+    { question_id: 'b', attempts: 10, correct_count: 0, incorrect_count: 10, last_answered_at: '2026-10-27' },
+    { question_id: 'c', attempts: 10, correct_count: 0, incorrect_count: 10, last_answered_at: '2026-10-27' },
+  ]
+  const published = [
+    { id: 'a', subject_id: 'eng', topic_id: 't', subtopic_id: 's' },
+    { id: 'b', subject_id: 'eng', topic_id: 't', subtopic_id: 'unapproved' },
+    { id: 'c', subject_id: 'math', topic_id: 't', subtopic_id: 's' },
+  ]
+  assert.deepEqual(summarizeSubtopicEvidence(records, published, approved), [{
+    subtopicId: 's', subtopicName: 'Reading details', topicId: 't', topicName: 'Comprehension',
+    subjectId: 'eng', answers: 5, correct: 2, accuracy: 40, trackedQuestions: 1,
+  }])
+  assert.deepEqual(summarizeSubtopicEvidence(records.slice(0, 1).map((x) => ({ ...x, correct_count: 1, incorrect_count: 2 })), published, approved), [])
+  assert.deepEqual(summarizeSubtopicEvidence(records, [], approved), [])
 })

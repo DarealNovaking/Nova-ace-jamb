@@ -1,14 +1,14 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Trophy } from 'lucide-react'
 import { fetchStudentAttempts, fetchStudentMistakes, fetchStudentTopicEvidence } from '../lib/practiceService'
-import { summarizeAttempts, summarizeAccuracyTrend, suggestStudyFocus, summarizeTopicEvidence } from '../lib/progressSummary'
+import { summarizeAttempts, summarizeAccuracyTrend, suggestStudyFocus, summarizeTopicEvidence, summarizeSubtopicEvidence } from '../lib/progressSummary'
 import type { PastAttempt, StudentQuestionMistake, PublishedTopicMapping, QuestionReviewEvidence } from '../lib/progressSummary'
 
 type Subject = { id: string; name: string; code: string }
 type Props = {
   subjects: Subject[]
   topicCount: number
-  topics: Array<{ id: string; name: string; subject_id?: string }>
+  topics: Array<{ id: string; name: string; subject_id?: string; subtopics?: Array<{ id: string; name: string }> }>
   onStartCbt: (mode?: 'cbt' | 'practice', focus?: 'mistakes' | 'repeated' | 'speed' | 'subject' | 'topic' | 'subtopic', subjectId?: string, topicId?: string, subtopicId?: string) => void
 }
 
@@ -70,6 +70,7 @@ export default function StudentProgressSummary({ subjects, topics, topicCount, o
   const trend = useMemo(() => summarizeAccuracyTrend(attempts), [attempts])
   const studyFocus = useMemo(() => suggestStudyFocus(attempts, subjects), [attempts, subjects])
   const observedTopics = useMemo(() => summarizeTopicEvidence(topicRecords, publishedTopics, topics), [topicRecords, publishedTopics, topics])
+  const observedSubtopics = useMemo(() => summarizeSubtopicEvidence(topicRecords, publishedTopics, topics), [topicRecords, publishedTopics, topics])
   const subjectName = (id: string) => subjects.find((subject) => subject.id === id)?.name ?? 'Other subject'
   const hasData = summary.sessions > 0
   const recent = attempts.filter((attempt) => attempt.status === 'completed' && attempt.answered_count > 0).slice(0, 5)
@@ -110,6 +111,23 @@ export default function StudentProgressSummary({ subjects, topics, topicCount, o
             <p className="font-semibold">{topic.topicName}</p>
             <p className="mt-1 text-sm text-white/55">{topic.accuracy}% correct across {topic.answers} saved answers on {topic.trackedQuestions} tracked question{topic.trackedQuestions === 1 ? '' : 's'}.</p>
             <button type="button" onClick={() => onStartCbt('practice', 'topic', topic.subjectId, topic.topicId)} className="mt-3 min-h-11 rounded-xl bg-purple-300 px-4 py-2 text-sm font-bold text-[#120b1c]">Practise {topic.topicName}</button>
+          </li>
+        ))}</ol>}
+      </section>
+
+
+      <section aria-labelledby="subtopic-evidence-heading" className="mt-6 rounded-2xl border border-white/10 bg-white/[.025] p-5">
+        <h3 id="subtopic-evidence-heading" className="font-bold">Observed subtopic review priorities</h3>
+        <p className="mt-2 text-sm leading-6 text-white/50">Based on real saved answers mapped to published questions and approved syllabus subtopics. At least five recorded answers are needed; this is not a verified mastery score or predicted exam result.</p>
+        {topicLoading && <p role="status" className="mt-3 text-sm text-white/60">Checking subtopic history…</p>}
+        {!topicLoading && topicError && <p className="mt-3 text-sm text-white/55">Subtopic observations are unavailable until topic history loads successfully.</p>}
+        {!topicLoading && !topicError && !observedSubtopics.length && <p className="mt-4 text-sm text-white/55">There is not enough approved subtopic-level answer history to suggest a priority.</p>}
+        {!topicLoading && !topicError && observedSubtopics.length > 0 && <ol className="mt-4 space-y-3">{observedSubtopics.slice(0, 5).map((subtopic) => (
+          <li key={subtopic.subtopicId} className="rounded-xl border border-white/10 p-4">
+            <p className="text-xs text-purple-200/70">{subtopic.topicName}</p>
+            <p className="mt-1 font-semibold">{subtopic.subtopicName}</p>
+            <p className="mt-2 text-sm text-white/55">{subtopic.accuracy}% correct across {subtopic.answers} recorded answers on {subtopic.trackedQuestions} tracked question{subtopic.trackedQuestions === 1 ? '' : 's'}.</p>
+            <button type="button" onClick={() => onStartCbt('practice', 'subtopic', subtopic.subjectId, subtopic.topicId, subtopic.subtopicId)} className="mt-3 min-h-11 rounded-xl bg-purple-300 px-4 py-2 text-sm font-bold text-[#120b1c]">Practise {subtopic.subtopicName}</button>
           </li>
         ))}</ol>}
       </section>
