@@ -443,6 +443,57 @@ test.describe('ACE JAMB persistent CBT', () => {
     expect(startCalls).toBe(1)
   })
 
+  test('review marks survive CBT reload and clear after submission without changing answers', async ({ page }) => {
+    await mockPreparedStudent(page)
+    const questionIds = ['30000000-0000-4000-8000-000000000021', '30000000-0000-4000-8000-000000000022']
+    const attemptId = '40000000-0000-4000-8000-000000000021'
+    const startedAt = new Date().toISOString()
+    let submitted = 0
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/start_attempt'), async (route) => {
+      await route.fulfill({ json: {
+        attempt_id: attemptId, status: 'active', started_at: startedAt, duration_seconds: 1800,
+        random_seed: 2, question_order: questionIds,
+        option_order: Object.fromEntries(questionIds.map((id) => [id, ['A']])), question_count: 2,
+      } })
+    })
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/resume_attempt'), async (route) => {
+      await route.fulfill({ json: {
+        attempt_id: attemptId, status: 'active', mode: 'cbt', subject_id: null,
+        started_at: startedAt, completed_at: null, duration_seconds: 1800, remaining_seconds: 1800,
+        random_seed: 2, question_order: questionIds,
+        option_order: Object.fromEntries(questionIds.map((id) => [id, ['A']])),
+        answers: [], score: null, correct_count: 0, answered_count: 0,
+      } })
+    })
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/questions'), async (route) => {
+      await route.fulfill({ json: questionIds.map((id, index) => ({
+        id, question_text: 'Reviewed question ' + (index + 1),
+        options: [{ key: 'A', text: 'Option A' }], subject_id: null, topic_id: null, difficulty: 'easy',
+      })) })
+    })
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/submit_attempt'), async (route) => {
+      submitted += 1
+      await route.fulfill({ json: {
+        attempt_id: attemptId, status: 'completed', score: 0, correct_count: 0, answered_count: 0,
+        total_questions: 2, completed_at: new Date().toISOString(),
+      } })
+    })
+    await page.goto('/?cbt=1')
+    await expect(page.getByRole('heading', { name: 'JAMB simulation' })).toBeVisible()
+    await page.getByRole('button', { name: 'Mark for review' }).click()
+    await expect(page.getByRole('button', { name: 'Go to question 1, unanswered, marked for review' })).toBeVisible()
+    await expect(page.getByText('0 answered · 2 unanswered · 1 marked for review')).toBeVisible()
+    await page.reload()
+    await expect(page.getByRole('button', { name: 'Remove review mark' })).toBeVisible()
+    await page.getByRole('button', { name: 'Next unanswered' }).click()
+    await expect(page.getByRole('heading', { name: 'Reviewed question 2' })).toBeVisible()
+    await expect.poll(() => page.evaluate((id) => JSON.parse(localStorage.getItem('ace-cbt-review-flags:' + id) ?? '[]'), attemptId)).toEqual([questionIds[0]])
+    await page.getByRole('button', { name: 'Submit CBT' }).click()
+    await expect(page.getByText('0/2 correct')).toBeVisible()
+    expect(submitted).toBe(1)
+    expect(await page.evaluate((id) => localStorage.getItem('ace-cbt-review-flags:' + id), attemptId)).toBeNull()
+  })
+
   test('restores a completed attempt result without requiring question content', async ({ page }) => {
     await mockPreparedStudent(page)
     const attemptId = '40000000-0000-4000-8000-000000000003'
