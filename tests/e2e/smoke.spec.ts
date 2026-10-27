@@ -935,7 +935,7 @@ test.describe('ACE JAMB preparation workspaces', () => {
       if (!allowFlashcardSuccess) {
         failedFlashcardRequests += 1
         await route.fulfill({
-          status: 503,
+          status: 400,
           contentType: 'application/json',
           json: { code: 'flashcards_unavailable', details: '', hint: '', message: 'private database host should not be shown' },
         })
