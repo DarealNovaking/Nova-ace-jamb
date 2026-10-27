@@ -29,6 +29,7 @@ export default function AdminAcademicWorkspace() {
   const [subtopicDescription, setSubtopicDescription] = useState('')
   const [busy, setBusy] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [loadFailed, setLoadFailed] = useState(false)
   const [treeLoading, setTreeLoading] = useState(false)
   const [loadedTreeVersionId, setLoadedTreeVersionId] = useState('')
   const treeRun = useRef(0)
@@ -49,6 +50,7 @@ export default function AdminAcademicWorkspace() {
 
   async function loadWorkspace(preferredVersionId?: string) {
     setLoading(true)
+    setLoadFailed(false)
     setError('')
     try {
       const [seasonRows, subjectResult, versionResult] = await Promise.all([
@@ -78,8 +80,11 @@ export default function AdminAcademicWorkspace() {
         setSubtopics([])
         setSelectedTopicId('')
       }
-    } catch (caught) {
-      setError(caught instanceof Error ? caught.message : 'Unable to load academic structure.')
+      return true
+    } catch {
+      setLoadFailed(true)
+      setError('Academic structure could not be loaded. Check your access and retry before editing.')
+      return false
     } finally {
       setLoading(false)
     }
@@ -121,7 +126,9 @@ export default function AdminAcademicWorkspace() {
       await action()
       setNotice(successMessage)
     } catch (caught) {
-      setError(caught instanceof Error ? caught.message : 'The operation could not be completed.')
+      setError(caught instanceof Error && caught.message === 'ACADEMIC_RELOAD_FAILED'
+        ? 'Your change may have saved, but the latest academic data could not be reloaded. Retry before further editing.'
+        : 'The operation could not be completed. Check your access and retry.')
     } finally {
       setBusy(false)
     }
@@ -158,7 +165,7 @@ export default function AdminAcademicWorkspace() {
         provenance: { source_title: sourceTitle.trim(), source_url: source, entered_via: 'admin-academic', recorded_at: new Date().toISOString() },
       }).select('id').single()
       if (insertError) throw insertError
-      await loadWorkspace(data.id)
+      if (!(await loadWorkspace(data.id))) throw new Error('ACADEMIC_RELOAD_FAILED')
       setSourceTitle('')
       setSourceUrl('')
       setVersionTitle('')
@@ -235,7 +242,7 @@ export default function AdminAcademicWorkspace() {
         provenance: { ...selectedVersion.provenance, rights_reviewed_at: new Date().toISOString(), rights_review_status: rightsStatus },
       }).eq('id', selectedVersion.id).eq('status', 'draft')
       if (updateError) throw updateError
-      await loadWorkspace(selectedVersion.id)
+      if (!(await loadWorkspace(selectedVersion.id))) throw new Error('ACADEMIC_RELOAD_FAILED')
     }, `Rights status updated to ${rightsStatus}.`)
   }
 
@@ -252,6 +259,7 @@ export default function AdminAcademicWorkspace() {
   }
 
   if (loading) return <div role="status" aria-live="polite" aria-atomic="true" aria-busy="true" className="grid min-h-[50vh] place-items-center text-white"><Loader2 className="animate-spin" aria-hidden="true" /><span className="sr-only">Loading academic workspace…</span></div>
+  if (loadFailed) return <section role="alert" className="rounded-2xl border border-red-400/20 bg-red-500/10 p-6 text-red-100"><p>{error || 'Academic data is unavailable.'} Any recent edits must be confirmed by reloading before you make more changes.</p><button type="button" className="mt-4 min-h-11 rounded-xl border border-white/25 px-4 py-2 font-semibold" onClick={() => void loadWorkspace()}>Retry loading academic structure</button></section>
 
   return (
     <div className="space-y-6">
