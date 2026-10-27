@@ -254,7 +254,7 @@ export default function AdminAcademicWorkspace() {
     await runAction(async () => {
       const { error: activateError } = await ace.rpc('activate_syllabus_version', { p_syllabus_version_id: selectedVersion.id })
       if (activateError) throw activateError
-      await loadWorkspace(selectedVersion.id)
+      if (!(await loadWorkspace(selectedVersion.id))) throw new Error('ACADEMIC_RELOAD_FAILED')
     }, 'Syllabus version activated through the server-side validation function.')
   }
 
