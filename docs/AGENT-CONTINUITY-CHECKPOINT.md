@@ -2,6 +2,14 @@
 
 > **Current-state rule:** this opening section is authoritative. Entries below the historical divider are evidence history and do not override this section.
 
+## FCB-02 correction postflight — 2026-10-29 (Africa/Lagos)
+
+Owner reported Apply reviewed corrections done. Fresh read-only SQL confirms all eight reviewed corrections now saved, including History/PHE names and Conditional sentences source note. Entire956-row seven-field subtopic projection equals precomputed final target86806e7337523a601427debd19e26888;214-topic projection remains2012de2bfc6beeebcc1e31a232037c54. All214topics/956subtopics inactive.25v2 versions remain draft/rights pending;50v1 scaffolds unchanged in grouped state (one approved draft/49pending drafts). No connector writes, role/schema/config/rights/publication change. Evidence docs/evidence/fcb-02-corrections-postflight-2026-10-29.json. Merged main b45c4d7 now has all6 GitHub checks completed SUCCESS, including full browser suite and production Cloudflare.
+
+Correction work COMPLETE; no further user click/sign-in/paid automation or staging replay required. FCB-02 overall remains IN PROGRESS because documented source-use basis, official2027 season/config and legitimate published student acceptance remain open. Human subject-teacher prerequisite was withdrawn; do not reinstate it. Exact next action: resolve/document remaining launch source-use and official2027 configuration evidence, preserving inactive drafts until supported publication/activation. Do not claim missing official facts or mark the whole milestone complete.
+
+### Previous release state (superseded by postflight above)
+
 ## FCB-02 frontend released — 2026-10-29 (Africa/Lagos)
 
 PR12 merged as b45c4d772362cedb897aa701faa152baff23b53c; its tree e8f512349318272cdb8167de44a9f77de4cb48be exactly matches tested source814a911d710bdfb987ec9765ffa92b5b96fae17b/local a5857ee. PR10 became merged by ancestry; do not merge/replay its older source separately. Full unfiltered E2E40759431770/job123067025376 passed184 desktop/mobile cases (4.2m). Verify40759431969 passed all4jobs; native job123067027083 confirms42SQL scenarios.43localNode tests/typecheck/build passed. Final bounded reviewer found no blocker in callback-ref fix/selection-race regression/full workflow.

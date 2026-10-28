@@ -6,12 +6,11 @@
       "ARA-03-01",
       "ARA-03-15",
       "ARA-04-01",
-      "IGB-04-08"
-    ],
-    "pending_renames": [
+      "IGB-04-08",
       "HIS-04-10",
       "PHE-02-04"
     ],
+    "pending_renames": [],
     "saved_additions": [
       {
         "review_id": "ARA-03-21",
@@ -25,8 +24,8 @@
         "actual_id": "2f6c5f55-2982-4efd-acd5-ff753402f262",
         "name": "Conditional sentences",
         "order": 162,
-        "source_note": null,
-        "status": "topic saved; source-note fill still pending"
+        "source_note": "matches reviewed note; readback verified2026-10-29",
+        "status": "complete"
       }
     ]
   },
@@ -68,8 +67,8 @@
     },
     "subtopics_current": {
       "count": 956,
-      "fingerprint": "e5380bea7564102134b8720bece5a771",
-      "result": "entire seven-field row projection matches exactly the six saved content changes, with Conditional description NULL"
+      "fingerprint": "86806e7337523a601427debd19e26888",
+      "result": "Matches final reviewed target; all eight corrections saved."
     },
     "subtopics_final_target": {
       "count": 956,
@@ -103,7 +102,9 @@
     "preflight": "Exact seven-field row snapshots and draft/pending version state; exact already-applied states skip writes",
     "execution": "Sequential conditional PATCHes and read-back; not a database transaction or version lock",
     "partial_failure": "Require check before retry; already-saved exact states are not repeated",
-    "remaining_work": "Verified action released to production via PR12/main b45c4d7. User clicks Apply reviewed corrections in genuine admin session; final readback still required."
+    "remaining_work": "NONE — genuine admin action saved all three remaining fields; independent readback matches final target."
   },
-  "last_rechecked": "2026-10-29 Africa/Lagos"
+  "last_rechecked": "2026-10-29 Africa/Lagos",
+  "status": "COMPLETE — verified2026-10-29",
+  "postflight_evidence": "fcb-02-corrections-postflight-2026-10-29.json"
 }
