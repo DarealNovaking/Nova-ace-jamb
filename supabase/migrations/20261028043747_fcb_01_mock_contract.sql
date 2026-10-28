@@ -1,4 +1,4 @@
--- SOURCE ONLY. Requires the reviewed CBT mutation and exam-config proposals.
+-- Applied with explicit owner authorization as 20261028043747 on 28 October 2026.
 -- No real examination rules, commercial limits or publication rights are asserted.
 begin;
 alter table ace.attempts add column if not exists exam_config_id uuid references ace.exam_configs(id);

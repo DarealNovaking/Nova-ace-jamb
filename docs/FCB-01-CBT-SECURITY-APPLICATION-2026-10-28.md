@@ -1,4 +1,22 @@
-# Coordinated CBT security application review
+# Coordinated CBT security — applied and live-verified (28 October 2026)
+
+Owner approval is fulfilled. Do not request it again or reapply the bundle. Runtime access remains disabled: runtime/mode/usage tables are empty and creation is denied until separately approved policies exist.
+
+The initial whole-core request expired without changing production. The exact approved core SQL was split into three independently safe migrations; delivery and mock followed. Actual source/ledger files:
+
+- `supabase/migrations/20261028043526_fcb_01_cbt_private_runtime.sql`
+- `supabase/migrations/20261028043550_fcb_01_cbt_start_boundary.sql`
+- `supabase/migrations/20261028043607_fcb_01_cbt_mutation_boundaries.sql`
+- `supabase/migrations/20261028043630_fcb_01_attempt_question_delivery.sql`
+- `supabase/migrations/20261028043747_fcb_01_mock_contract.sql`
+
+Full live catalog/ACL matches independently compiled reviewed SQL. Default-disabled runtime, owner isolation and private factory denial probes PASS. Locking permission probes used a rolled-back normal transaction after READ ONLY correctly rejected row-lock syntax; no account/attempt fixtures were created. Attempts/questions stay zero; content, seasons, providers and frontend deployment remain inactive/unchanged. The existing metadata rollback refuses captured papers and remains incident-only. Current recovery replay/native CI is a separate source-verification step, not permission to enable the product.
+
+---
+
+## Historical reviewed scope (approved and fulfilled)
+
+### Original review
 
 This source bundle is **not applied**. It requires specific production authorization. Source 0735891 passed Verify 40630042446 (14 SQL suites, native rollback, 21 races) and E2E 40630042678 (164 tests); actual logs inspected. Existing six approved fixes must not be reapplied.
 

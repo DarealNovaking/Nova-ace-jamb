@@ -1,6 +1,6 @@
 -- Disposable recovered schema only; all composition/content below is synthetic.
-\i supabase/proposals/fcb_01_cbt_mutation_contract.sql
-\i supabase/proposals/fcb_01_attempt_question_delivery.sql
+\i tests/sql/fixtures/fcb_01_cbt_contract.sql
+\i supabase/migrations/20261028043630_fcb_01_attempt_question_delivery.sql
 \i tests/sql/fixtures/fcb_01_cbt_content.sql
 set local role authenticated;
 do $$ begin
@@ -13,7 +13,7 @@ end $$;
 reset role;
 rollback;
 \i supabase/migrations/20261028032933_fcb_01_exam_config_security.sql
-\i supabase/proposals/fcb_01_mock_contract.sql
+\i supabase/migrations/20261028043747_fcb_01_mock_contract.sql
 \i tests/sql/fixtures/fcb_01_mock_content.sql
 set local role authenticated;
 select set_config('request.jwt.claim.sub','86000000-0000-4000-8000-000000000003',true);

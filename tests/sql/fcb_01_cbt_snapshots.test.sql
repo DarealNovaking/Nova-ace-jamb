@@ -1,6 +1,6 @@
 -- Disposable recovered schema ONLY. Proposals are not applied to production.
-\i supabase/proposals/fcb_01_cbt_mutation_contract.sql
-\i supabase/proposals/fcb_01_attempt_question_delivery.sql
+\i tests/sql/fixtures/fcb_01_cbt_contract.sql
+\i supabase/migrations/20261028043630_fcb_01_attempt_question_delivery.sql
 \i tests/sql/fixtures/fcb_01_cbt_content.sql
 set local role authenticated;
 select set_config('request.jwt.claim.sub','31000000-0000-4000-8000-000000000001',true);

@@ -1,6 +1,6 @@
 -- Disposable recovered schema only. Numeric policies below are synthetic tests,
 -- never launch limits or production defaults.
-\i supabase/proposals/fcb_01_cbt_mutation_contract.sql
+\i tests/sql/fixtures/fcb_01_cbt_contract.sql
 \i tests/sql/fixtures/fcb_01_cbt_content.sql
 delete from ace.cbt_runtime_policy;
 set local role authenticated;

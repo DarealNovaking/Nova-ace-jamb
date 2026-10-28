@@ -1,5 +1,5 @@
--- Review proposal only. NOT applied; not part of an automatic migration push.
--- Requires the private snapshot column in fcb_01_cbt_mutation_contract.sql.
+-- Applied with explicit owner authorization as 20261028043630 on 28 October 2026.
+-- Requires private paper state from 20261028043526_fcb_01_cbt_private_runtime.
 -- Current rights/publication still govern access to captured paper versions.
 begin;
 create or replace function ace.get_attempt_questions(p_attempt_id uuid)

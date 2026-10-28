@@ -18,7 +18,7 @@ insert into ace.questions values
  ('10000000-0000-4000-8000-000000000002','Synthetic Q2','[{"key":"A","text":"Other"}]',null,null,'easy',true,'published','licensed','A','secret');
 insert into ace.attempts(id,user_id,status,started_at,duration_seconds,question_order) values
  ('20000000-0000-4000-8000-000000000001','30000000-0000-4000-8000-000000000001','active',now(),600,'["10000000-0000-4000-8000-000000000002","10000000-0000-4000-8000-000000000001"]');
-\i supabase/proposals/fcb_01_attempt_question_delivery.sql
+\i supabase/migrations/20261028043630_fcb_01_attempt_question_delivery.sql
 update ace.attempts a set question_snapshot=(select jsonb_agg(jsonb_build_object('id',q.id,'stem',q.stem,'options',q.options,'correct_option_key',q.correct_option_key,'subject_id',q.subject_id,'topic_id',q.topic_id,'difficulty',q.difficulty) order by wanted.ord)
 from jsonb_array_elements_text(a.question_order) with ordinality wanted(id,ord) join ace.questions q on q.id=wanted.id::uuid);
 -- RED before implementation: endpoint must exist, have narrow ACLs and no direct grants.

@@ -75,7 +75,10 @@ CREATE TABLE ace."attempts" (
   "status" text DEFAULT 'active'::text NOT NULL,
   "score" numeric,
   "correct_count" integer DEFAULT 0 NOT NULL,
-  "answered_count" integer DEFAULT 0 NOT NULL
+  "answered_count" integer DEFAULT 0 NOT NULL,
+  "question_snapshot" jsonb DEFAULT '[]'::jsonb NOT NULL,
+  "exam_config_id" uuid,
+  "exam_config_snapshot" jsonb
 );
 
 CREATE TABLE ace."audit_events" (
@@ -126,6 +129,30 @@ CREATE TABLE ace."catalog_sources" (
   "status" text DEFAULT 'discovered'::text NOT NULL,
   "created_at" timestamp with time zone DEFAULT now() NOT NULL,
   "updated_at" timestamp with time zone DEFAULT now() NOT NULL
+);
+
+CREATE TABLE ace."cbt_mode_access" (
+  "mode" text NOT NULL,
+  "enabled" boolean DEFAULT false NOT NULL,
+  "entitlement_product_code" text,
+  "max_questions" integer NOT NULL,
+  "max_duration_seconds" integer NOT NULL
+);
+
+CREATE TABLE ace."cbt_runtime_policy" (
+  "singleton" boolean DEFAULT true NOT NULL,
+  "enabled" boolean DEFAULT false NOT NULL,
+  "window_seconds" integer NOT NULL,
+  "max_starts" integer NOT NULL,
+  "max_active" integer NOT NULL,
+  "cooldown_seconds" integer NOT NULL
+);
+
+CREATE TABLE ace."cbt_start_usage" (
+  "user_id" uuid NOT NULL,
+  "window_started_at" timestamp with time zone,
+  "starts" integer DEFAULT 0 NOT NULL,
+  "last_start_at" timestamp with time zone
 );
 
 CREATE TABLE ace."devices" (
@@ -755,6 +782,22 @@ begin
 end;
 $function$;
 
+CREATE OR REPLACE FUNCTION ace.audit_cbt_policy()
+ RETURNS trigger
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'pg_catalog', 'ace'
+AS $function$
+begin
+ insert into ace.audit_events(actor_user_id,event_type,entity_type,metadata)
+ values(auth.uid(),'cbt_policy_changed',tg_table_name,jsonb_build_object('operation',tg_op,
+  'before',case when tg_op<>'INSERT' then to_jsonb(old) else null end,
+  'after',case when tg_op<>'DELETE' then to_jsonb(new) else null end));
+ if tg_op='DELETE' then return old; end if;
+ return new;
+end;
+$function$;
+
 CREATE OR REPLACE FUNCTION ace.can_manage_catalog()
  RETURNS boolean
  LANGUAGE sql
@@ -780,6 +823,97 @@ AS $function$
  limit 1;
 $function$;
 
+CREATE OR REPLACE FUNCTION ace.create_attempt_internal(p_mode text, p_subject_id uuid DEFAULT NULL::uuid, p_question_count integer DEFAULT 20, p_duration_seconds integer DEFAULT 1800, p_question_ids uuid[] DEFAULT NULL::uuid[], p_reserved boolean DEFAULT false)
+ RETURNS jsonb
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'pg_catalog', 'ace'
+AS $function$
+declare
+  v_user uuid := auth.uid();
+  v_attempt uuid;
+  v_seed bigint;
+  v_ids uuid[];
+  v_order jsonb;
+  v_options jsonb := '{}'::jsonb;
+  v_q uuid;
+  v_opts jsonb;
+  v_opt_keys jsonb;
+  v_snapshot jsonb;
+begin
+  if v_user is null then raise exception 'Authentication required' using errcode='28000'; end if;
+  if p_mode is null or p_mode not in ('practice','cbt','mock','learning','revision','ai_practice') then raise exception 'Unsupported attempt mode' using errcode='22023'; end if;
+  if p_question_count is null or p_question_count < 1 or p_question_count > 500 then raise exception 'Invalid question count' using errcode='22023'; end if;
+  if p_duration_seconds is null or p_duration_seconds < 60 or p_duration_seconds > 86400 then raise exception 'Invalid duration' using errcode='22023'; end if;
+
+  if cardinality(p_question_ids)>500 then raise exception 'Too many explicit questions' using errcode='22023'; end if;
+  -- Reserve before question selection; failed creation rolls back its reservation.
+  if p_reserved is distinct from true then perform ace.reserve_cbt_start(p_mode,p_question_count,p_duration_seconds); end if;
+  v_seed := floor(random()*9223372036854775807)::bigint;
+
+  if p_question_ids is not null and cardinality(p_question_ids) > 0 then
+    select array_agg(q.id order by array_position(p_question_ids,q.id)) into v_ids
+    from ace.questions q
+    where q.id = any(p_question_ids)
+      and q.active = true
+      and q.review_status = 'published'
+      and q.rights_status in ('owned','licensed','permitted')
+      and (p_subject_id is null or q.subject_id = p_subject_id);
+  else
+    select array_agg(x.id order by x.rank) into v_ids
+    from (
+      select q.id, row_number() over(order by md5(v_seed::text || ':' || q.id::text)) as rank
+      from ace.questions q
+      where q.active = true
+        and q.review_status = 'published'
+        and q.rights_status in ('owned','licensed','permitted')
+        and (p_subject_id is null or q.subject_id = p_subject_id)
+      limit p_question_count
+    ) x;
+  end if;
+
+  if v_ids is null or cardinality(v_ids) = 0 then
+    raise exception 'No published questions available for this attempt';
+  end if;
+  if cardinality(v_ids) > p_question_count then v_ids := v_ids[1:p_question_count]; end if;
+
+  select jsonb_agg(to_jsonb(qid) order by ord) into v_order
+  from unnest(v_ids) with ordinality u(qid,ord);
+
+  -- Lock before copying so concurrent authoring cannot mix paper versions/options.
+  perform q.id from ace.questions q where q.id=any(v_ids)
+    and q.active=true and q.review_status='published'
+    and q.rights_status in ('owned','licensed','permitted') order by q.id for share;
+  select jsonb_agg(jsonb_build_object('id',q.id,'content_version',q.content_version,
+    'stem',q.stem,'options',q.options,'correct_option_key',q.correct_option_key,
+    'subject_id',q.subject_id,'topic_id',q.topic_id,'difficulty',q.difficulty)
+    order by array_position(v_ids,q.id)) into v_snapshot
+  from ace.questions q where q.id=any(v_ids)
+    and q.active=true and q.review_status='published'
+    and q.rights_status in ('owned','licensed','permitted');
+  if v_snapshot is null or jsonb_array_length(v_snapshot)<>cardinality(v_ids) then
+    raise exception 'Attempt questions unavailable' using errcode='P0002';
+  end if;
+
+  foreach v_q in array v_ids loop
+    select item->'options' into v_opts from jsonb_array_elements(v_snapshot) item where item->>'id'=v_q::text;
+    select jsonb_agg(e.value->>'key' order by md5(v_seed::text || ':' || v_q::text || ':' || (e.value->>'key')))
+      into v_opt_keys
+    from jsonb_array_elements(v_opts) e(value)
+    where e.value ? 'key';
+    v_options := v_options || jsonb_build_object(v_q::text, coalesce(v_opt_keys,'[]'::jsonb));
+  end loop;
+
+  insert into ace.attempts(user_id,mode,subject_id,started_at,duration_seconds,random_seed,question_order,option_order,status,question_snapshot)
+  values(v_user,p_mode,p_subject_id,now(),p_duration_seconds,v_seed,v_order,v_options,'active',v_snapshot)
+  returning id into v_attempt;
+
+  return jsonb_build_object('attempt_id',v_attempt,'status','active','started_at',now(),
+    'duration_seconds',p_duration_seconds,'random_seed',v_seed,'question_order',v_order,
+    'option_order',v_options,'question_count',cardinality(v_ids));
+end;
+$function$;
+
 CREATE OR REPLACE FUNCTION ace.get_active_exam_blueprint()
  RETURNS jsonb
  LANGUAGE sql
@@ -798,6 +932,59 @@ select coalesce((
   order by s.exam_year desc, c.version desc
   limit 1
 ),'{}'::jsonb);
+$function$;
+
+CREATE OR REPLACE FUNCTION ace.get_attempt_questions(p_attempt_id uuid)
+ RETURNS jsonb
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'pg_catalog', 'ace'
+AS $function$
+declare
+ v_user uuid := auth.uid();
+ v_order jsonb;
+ v_snapshot jsonb;
+ v_questions jsonb;
+ v_count integer;
+begin
+ if v_user is null then raise exception 'Authentication required' using errcode='28000'; end if;
+ if p_attempt_id is null then raise exception 'Attempt required' using errcode='22023'; end if;
+ -- No administrator/editor override: this endpoint is always an owner operation.
+ select a.question_order,a.question_snapshot into v_order,v_snapshot from ace.attempts a
+ where a.id=p_attempt_id and a.user_id=v_user
+   and a.status='active'
+   and a.duration_seconds>0
+   and a.started_at<=clock_timestamp()
+   and a.started_at + a.duration_seconds * interval '1 second'>clock_timestamp();
+ if not found or jsonb_typeof(v_order) is distinct from 'array' then
+  raise exception 'Attempt unavailable' using errcode='P0002';
+ end if;
+ if jsonb_array_length(v_order) not between 1 and 500
+    or jsonb_typeof(v_snapshot) is distinct from 'array'
+    or jsonb_array_length(v_snapshot)<>jsonb_array_length(v_order) then
+  raise exception 'Attempt unavailable' using errcode='P0002';
+ end if;
+ select jsonb_agg(jsonb_build_object(
+   'id',q.id,'question_text',frozen->>'stem',
+   -- Whitelist nested option fields too: stored options may carry review metadata.
+   'options',(select coalesce(jsonb_agg(jsonb_build_object(
+     'key',o.value->>'key','text',coalesce(o.value->>'text',o.value->>'label','')
+   ) order by o.ord),'[]'::jsonb)
+     from jsonb_array_elements(frozen->'options') with ordinality o(value,ord)),
+   'subject_id',frozen->'subject_id','topic_id',frozen->'topic_id','difficulty',frozen->'difficulty'
+ ) order by wanted.ord),count(distinct q.id)
+ into v_questions,v_count
+ from jsonb_array_elements_text(v_order) with ordinality wanted(id,ord)
+ join jsonb_array_elements(v_snapshot) frozen on frozen->>'id'=wanted.id
+ join ace.questions q on q.id=wanted.id::uuid
+ where q.active=true and q.review_status='published'
+   and q.rights_status in ('owned','licensed','permitted');
+ -- Withdrawal, missing rows or duplicate IDs invalidate the whole delivery.
+ if v_count<>jsonb_array_length(v_order) then
+  raise exception 'Attempt questions unavailable' using errcode='P0002';
+ end if;
+ return v_questions;
+end;
 $function$;
 
 CREATE OR REPLACE FUNCTION ace.get_catalog_institutions()
@@ -821,6 +1008,21 @@ AS $function$
  where auth.uid() is not null and ace.is_admin_or_editor() and s.id=p_source_id;
 $function$;
 
+CREATE OR REPLACE FUNCTION ace.guard_attempt_snapshot()
+ RETURNS trigger
+ LANGUAGE plpgsql
+ SET search_path TO 'pg_catalog', 'ace'
+AS $function$
+begin
+ if new.question_snapshot is distinct from old.question_snapshot
+    or new.question_order is distinct from old.question_order
+    or new.option_order is distinct from old.option_order then
+  raise exception 'Attempt paper is immutable' using errcode='23514';
+ end if;
+ return new;
+end;
+$function$;
+
 CREATE OR REPLACE FUNCTION ace.guard_exam_composition()
  RETURNS trigger
  LANGUAGE plpgsql
@@ -839,6 +1041,23 @@ begin
  insert into ace.audit_events(actor_user_id,event_type,entity_type,entity_id,metadata)
  values(auth.uid(),'exam_composition_changed','exam_config',coalesce(v_new,v_old),jsonb_build_object('operation',tg_op));
  if tg_op='DELETE' then return old; end if;
+ return new;
+end;
+$function$;
+
+CREATE OR REPLACE FUNCTION ace.guard_mock_provenance()
+ RETURNS trigger
+ LANGUAGE plpgsql
+ SET search_path TO 'pg_catalog', 'ace'
+AS $function$
+begin
+ if old.exam_config_id is not null and
+    (new.exam_config_id is distinct from old.exam_config_id
+     or new.exam_config_snapshot is distinct from old.exam_config_snapshot
+     or new.duration_seconds is distinct from old.duration_seconds
+     or new.mode is distinct from old.mode) then
+  raise exception 'Mock configuration is immutable' using errcode='23514';
+ end if;
  return new;
 end;
 $function$;
@@ -1138,75 +1357,127 @@ begin
 end;
 $function$;
 
+CREATE OR REPLACE FUNCTION ace.reserve_cbt_start(p_mode text, p_count integer, p_duration integer)
+ RETURNS void
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'pg_catalog', 'ace'
+AS $function$
+declare policy ace.cbt_runtime_policy%rowtype; access ace.cbt_mode_access%rowtype;
+ gate ace.cbt_start_usage%rowtype; v_user uuid:=auth.uid(); v_now timestamptz; v_entitlements uuid[];
+begin
+ if v_user is null then raise exception 'Authentication required' using errcode='28000'; end if;
+ select * into policy from ace.cbt_runtime_policy where singleton and enabled for share;
+ if not found then raise exception 'CBT runtime policy unavailable' using errcode='42501'; end if;
+ select * into access from ace.cbt_mode_access where mode=p_mode and enabled for share;
+ if not found then raise exception 'Attempt mode unavailable' using errcode='42501'; end if;
+ if p_count is null or p_duration is null or p_count<1 or p_count>access.max_questions
+    or p_duration<60 or p_duration>access.max_duration_seconds then
+  raise exception 'Attempt exceeds configured bounds' using errcode='22023';
+ end if;
+ -- One row per user across ALL modes: switching modes cannot evade limits.
+ -- An actual UPDATE also invalidates a stale REPEATABLE READ snapshot.
+ insert into ace.cbt_start_usage(user_id) values(v_user)
+ on conflict(user_id) do update set user_id=excluded.user_id returning * into gate;
+ if access.entitlement_product_code is not null then
+  select array_agg(id) into v_entitlements from (
+   select e.id from ace.entitlements e join ace.products p on p.id=e.product_id
+    where e.user_id=v_user and p.code=access.entitlement_product_code and e.status='active'
+    order by e.id for share of e,p
+  ) locked;
+ end if;
+ -- Neither user-row contention nor an entitlement lock may freeze the clock.
+ v_now:=clock_timestamp();
+ if access.entitlement_product_code is not null and not exists(
+  select 1 from ace.entitlements where id=any(v_entitlements) and starts_at<=v_now and ends_at>v_now) then
+  raise exception 'Active access required' using errcode='42501';
+ end if;
+ if gate.last_start_at is not null and gate.last_start_at+policy.cooldown_seconds*interval '1 second'>v_now then
+  raise exception 'Attempt start cooldown' using errcode='P0001';
+ end if;
+ if gate.window_started_at is null or gate.window_started_at+policy.window_seconds*interval '1 second'<=v_now then
+  gate.window_started_at:=v_now; gate.starts:=0;
+ end if;
+ if gate.starts>=policy.max_starts then raise exception 'Attempt start limit reached' using errcode='P0001'; end if;
+ if (select count(*) from ace.attempts where user_id=v_user and status='active'
+   and (duration_seconds is null or started_at+duration_seconds*interval '1 second'>v_now))>=policy.max_active then
+  raise exception 'Active attempt limit reached' using errcode='P0001';
+ end if;
+ update ace.cbt_start_usage set window_started_at=gate.window_started_at,
+  starts=gate.starts+1,last_start_at=v_now where user_id=v_user;
+end;
+$function$;
+
 CREATE OR REPLACE FUNCTION ace.resume_attempt(p_attempt_id uuid)
  RETURNS jsonb
  LANGUAGE plpgsql
- SET search_path TO 'ace', 'public'
+ SECURITY DEFINER
+ SET search_path TO 'pg_catalog', 'ace'
 AS $function$
-declare a ace.attempts%rowtype; v_remaining integer; v_answers jsonb;
+declare a ace.attempts%rowtype; v_answers jsonb; v_remaining integer;
 begin
-  select * into a from ace.attempts where id=p_attempt_id and user_id=auth.uid();
-  if not found then raise exception 'Attempt not found' using errcode='P0002'; end if;
-  v_remaining:=case when a.status='active' then greatest(0,a.duration_seconds-floor(extract(epoch from(now()-a.started_at)))::integer) else 0 end;
-  select coalesce(jsonb_agg(jsonb_build_object('question_id',question_id,'selected_option_key',selected_option_key,'response_ms',response_ms,'answered_at',answered_at) order by answered_at),'[]'::jsonb) into v_answers from ace.attempt_answers where attempt_id=a.id;
-  return jsonb_build_object('attempt_id',a.id,'status',a.status,'mode',a.mode,'subject_id',a.subject_id,'started_at',a.started_at,'completed_at',a.completed_at,'duration_seconds',a.duration_seconds,'remaining_seconds',v_remaining,'question_order',a.question_order,'option_order',a.option_order,'answers',v_answers,'score',a.score,'correct_count',a.correct_count,'answered_count',a.answered_count);
+ if auth.uid() is null then raise exception 'Authentication required' using errcode='28000'; end if;
+ if p_attempt_id is null then raise exception 'Attempt required' using errcode='22023'; end if;
+ select * into a from ace.attempts where id=p_attempt_id and user_id=auth.uid();
+ if not found then raise exception 'Attempt unavailable' using errcode='P0002'; end if;
+ v_remaining:=case when a.status='active' then greatest(0,a.duration_seconds-floor(extract(epoch from(clock_timestamp()-a.started_at)))::integer) else 0 end;
+ select coalesce(jsonb_agg(jsonb_build_object('question_id',question_id,
+   'selected_option_key',selected_option_key,'response_ms',response_ms,'answered_at',answered_at)
+   order by answered_at,question_id),'[]'::jsonb) into v_answers
+ from ace.attempt_answers where attempt_id=a.id;
+ return jsonb_build_object('attempt_id',a.id,'status',a.status,'mode',a.mode,
+   'subject_id',a.subject_id,'started_at',a.started_at,'completed_at',a.completed_at,
+   'duration_seconds',a.duration_seconds,'remaining_seconds',v_remaining,
+   'random_seed',a.random_seed,'question_order',a.question_order,'option_order',a.option_order,
+   'answers',v_answers,'score',case when a.status='completed' then a.score else null end,
+   'correct_count',case when a.status='completed' then a.correct_count else 0 end,
+   'answered_count',a.answered_count);
 end;
 $function$;
 
 CREATE OR REPLACE FUNCTION ace.save_attempt_answer(p_attempt_id uuid, p_question_id uuid, p_selected_option_key text, p_response_ms integer DEFAULT NULL::integer)
  RETURNS jsonb
  LANGUAGE plpgsql
- SET search_path TO 'pg_catalog', 'ace', 'public'
+ SECURITY DEFINER
+ SET search_path TO 'pg_catalog', 'ace'
 AS $function$
-declare
-  a ace.attempts%rowtype;
-  q ace.questions%rowtype;
-  v_correct boolean;
-  v_elapsed integer;
-  v_selected text := nullif(trim(p_selected_option_key),'');
+declare a ace.attempts%rowtype; q ace.questions%rowtype;
+ v_selected text:=nullif(trim(p_selected_option_key),''); v_frozen jsonb; v_answered integer; v_when timestamptz;
 begin
-  select * into a from ace.attempts
-  where id=p_attempt_id and user_id=auth.uid()
-  for update;
-  if not found then raise exception 'Attempt not found' using errcode='P0002'; end if;
-  if a.status <> 'active' then raise exception 'Attempt is not active'; end if;
-
-  v_elapsed := floor(extract(epoch from (now()-a.started_at)))::integer;
-  if v_elapsed >= a.duration_seconds then raise exception 'Attempt time has expired'; end if;
-  if p_response_ms is not null and p_response_ms < 0 then raise exception 'Invalid response time'; end if;
-  if not exists(select 1 from jsonb_array_elements_text(a.question_order) x(value) where x.value=p_question_id::text) then
-    raise exception 'Question is not part of this attempt';
-  end if;
-
-  select * into q from ace.questions
-  where id=p_question_id
-    and active=true
-    and review_status='published'
-    and rights_status in ('owned','licensed','permitted');
-  if not found then raise exception 'Question unavailable'; end if;
-  if v_selected is not null and not exists(
-    select 1 from jsonb_array_elements(q.options) e
-    where e.value ? 'key' and e.value->>'key'=v_selected
-  ) then raise exception 'Invalid option'; end if;
-
-  v_correct := v_selected is not null and v_selected=q.correct_option_key;
-  insert into ace.attempt_answers(attempt_id,question_id,selected_option_key,is_correct,response_ms,answered_at)
-  values(a.id,q.id,v_selected,v_correct,p_response_ms,now())
-  on conflict(attempt_id,question_id) do update
-    set selected_option_key=excluded.selected_option_key,
-        is_correct=excluded.is_correct,
-        response_ms=excluded.response_ms,
-        answered_at=excluded.answered_at;
-
-  select count(*) filter(where selected_option_key is not null),
-         count(*) filter(where is_correct=true)
-    into a.answered_count,a.correct_count
+ if auth.uid() is null then raise exception 'Authentication required' using errcode='28000'; end if;
+ if p_attempt_id is null or p_question_id is null then raise exception 'Attempt and question required' using errcode='22023'; end if;
+ select * into a from ace.attempts where id=p_attempt_id and user_id=auth.uid() for update;
+ if not found then raise exception 'Attempt unavailable' using errcode='P0002'; end if;
+ if a.status<>'active' or a.duration_seconds is null or a.duration_seconds<=0
+    or a.started_at>clock_timestamp()
+    or a.started_at+a.duration_seconds*interval '1 second'<=clock_timestamp() then
+  raise exception 'Attempt is not writable' using errcode='22023';
+ end if;
+ if p_response_ms is not null and (p_response_ms<0 or p_response_ms::bigint>a.duration_seconds::bigint*1000) then
+  raise exception 'Invalid response time' using errcode='22023';
+ end if;
+ if not exists(select 1 from jsonb_array_elements_text(a.question_order) x(id) where x.id=p_question_id::text) then
+  raise exception 'Question unavailable' using errcode='P0002';
+ end if;
+ select * into q from ace.questions where id=p_question_id and active=true
+  and review_status='published' and rights_status in ('owned','licensed','permitted') for share;
+ if not found then raise exception 'Question unavailable' using errcode='P0002'; end if;
+ select item into v_frozen from jsonb_array_elements(a.question_snapshot) item where item->>'id'=p_question_id::text;
+ if not found then raise exception 'Attempt paper unavailable' using errcode='P0002'; end if;
+ if v_selected is not null and not exists(select 1 from jsonb_array_elements(v_frozen->'options') o where o->>'key'=v_selected) then
+  raise exception 'Invalid option' using errcode='22023';
+ end if;
+ v_when:=clock_timestamp();
+ -- Correctness is computed only at submission, never in the save response.
+ insert into ace.attempt_answers(attempt_id,question_id,selected_option_key,is_correct,response_ms,answered_at)
+ values(a.id,q.id,v_selected,null,p_response_ms,v_when)
+ on conflict(attempt_id,question_id) do update set selected_option_key=excluded.selected_option_key,
+  is_correct=null,response_ms=excluded.response_ms,answered_at=excluded.answered_at;
+ select count(*) filter(where selected_option_key is not null) into v_answered
   from ace.attempt_answers where attempt_id=a.id;
-  update ace.attempts set answered_count=a.answered_count,correct_count=a.correct_count where id=a.id;
-
-  return jsonb_build_object('attempt_id',a.id,'question_id',q.id,
-    'selected_option_key',v_selected,'is_correct',v_correct,
-    'answered_at',now(),'answered_count',a.answered_count);
+ update ace.attempts set answered_count=v_answered,correct_count=0,score=null where id=a.id;
+ return jsonb_build_object('attempt_id',a.id,'question_id',q.id,'selected_option_key',v_selected,
+  'answered_at',v_when,'answered_count',v_answered);
 end;
 $function$;
 
@@ -1706,93 +1977,163 @@ $function$;
 CREATE OR REPLACE FUNCTION ace.start_attempt(p_mode text, p_subject_id uuid DEFAULT NULL::uuid, p_question_count integer DEFAULT 20, p_duration_seconds integer DEFAULT 1800, p_question_ids uuid[] DEFAULT NULL::uuid[])
  RETURNS jsonb
  LANGUAGE plpgsql
- SET search_path TO 'pg_catalog', 'ace', 'public'
+ SECURITY DEFINER
+ SET search_path TO 'pg_catalog', 'ace'
 AS $function$
-declare
-  v_user uuid := auth.uid();
-  v_attempt uuid;
-  v_seed bigint;
-  v_ids uuid[];
-  v_order jsonb;
-  v_options jsonb := '{}'::jsonb;
-  v_q uuid;
-  v_opts jsonb;
-  v_opt_keys jsonb;
 begin
-  if v_user is null then raise exception 'Authentication required' using errcode='28000'; end if;
-  if p_mode is null or p_mode not in ('practice','cbt','mock','learning','revision','ai_practice') then raise exception 'Unsupported attempt mode' using errcode='22023'; end if;
-  if p_question_count is null or p_question_count < 1 or p_question_count > 500 then raise exception 'Invalid question count' using errcode='22023'; end if;
-  if p_duration_seconds is null or p_duration_seconds < 60 or p_duration_seconds > 86400 then raise exception 'Invalid duration' using errcode='22023'; end if;
+ if auth.uid() is null then raise exception 'Authentication required' using errcode='28000'; end if;
+ if p_mode='mock' then raise exception 'Mocks require an approved exam configuration' using errcode='22023'; end if;
+ return ace.create_attempt_internal(p_mode,p_subject_id,p_question_count,p_duration_seconds,p_question_ids);
+end;
+$function$;
 
-  v_seed := floor(random()*9223372036854775807)::bigint;
-
-  if p_question_ids is not null and cardinality(p_question_ids) > 0 then
-    select array_agg(q.id order by array_position(p_question_ids,q.id)) into v_ids
-    from ace.questions q
-    where q.id = any(p_question_ids)
-      and q.active = true
-      and q.review_status = 'published'
-      and q.rights_status in ('owned','licensed','permitted')
-      and (p_subject_id is null or q.subject_id = p_subject_id);
-  else
-    select array_agg(x.id order by x.rank) into v_ids
-    from (
-      select q.id, row_number() over(order by md5(v_seed::text || ':' || q.id::text)) as rank
-      from ace.questions q
-      where q.active = true
-        and q.review_status = 'published'
-        and q.rights_status in ('owned','licensed','permitted')
-        and (p_subject_id is null or q.subject_id = p_subject_id)
-      limit p_question_count
-    ) x;
+CREATE OR REPLACE FUNCTION ace.start_mock_attempt(p_exam_config_id uuid, p_subject_ids uuid[])
+ RETURNS jsonb
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'pg_catalog', 'ace'
+AS $function$
+declare c ace.exam_configs%rowtype; v_season uuid; v_status text; r record;
+ v_ids uuid[]:='{}'::uuid[]; v_selected uuid[]; v_config jsonb; v_subjects jsonb;
+ v_result jsonb; v_required integer; v_optional integer; v_total integer;
+begin
+ if auth.uid() is null then raise exception 'Authentication required' using errcode='28000'; end if;
+ if p_exam_config_id is null or p_subject_ids is null or cardinality(p_subject_ids)<>4
+    or (select count(distinct x) from unnest(p_subject_ids) x)<>4 then
+  raise exception 'Choose English and three different subjects' using errcode='22023';
+ end if;
+ select season_id into v_season from ace.exam_configs where id=p_exam_config_id;
+ if not found then raise exception 'Approved configuration unavailable' using errcode='P0002'; end if;
+ -- Same parent-first lock order as approval. A concurrent approval cannot mix versions.
+ select status into v_status from ace.exam_seasons where id=v_season for share;
+ select * into c from ace.exam_configs where id=p_exam_config_id and season_id=v_season for share;
+ if not found or v_status is distinct from 'active' or not c.active
+    or not exists(select 1 from ace.audit_events where event_type='exam_config_activated' and entity_id=c.id)
+    or not exists(select 1 from ace.audit_events where event_type='exam_season_activated' and entity_id=v_season) then
+  raise exception 'Approved configuration unavailable' using errcode='P0002';
+ end if;
+ if c.total_questions not between 1 and 500 or c.duration_seconds not between 60 and 86400
+    or c.option_count not between 2 and 8 then
+  raise exception 'Configuration exceeds supported attempt bounds' using errcode='22023';
+ end if;
+ perform cs.subject_id from ace.exam_config_subjects cs where cs.exam_config_id=c.id order by cs.subject_id for share;
+ perform s.id from ace.subjects s where s.id=any(p_subject_ids) order by s.id for share;
+ select count(*) filter(where cs.required and s.code='ENG'),count(*) filter(where not cs.required),sum(cs.question_count),
+   jsonb_agg(jsonb_build_object('subject_id',s.id,'required',cs.required,'question_count',cs.question_count)
+    order by cs.sort_order,s.id)
+ into v_required,v_optional,v_total,v_subjects
+ from ace.exam_config_subjects cs join ace.subjects s on s.id=cs.subject_id
+ where cs.exam_config_id=c.id and s.id=any(p_subject_ids) and s.active and cs.question_count>0;
+ if v_required<>1 or v_optional<>3 or v_total is distinct from c.total_questions
+    or exists(select 1 from ace.exam_config_subjects where exam_config_id=c.id and required and not(subject_id=any(p_subject_ids))) then
+  raise exception 'Choose configured English and three optional subjects' using errcode='22023';
+ end if;
+ -- Deny disabled/unentitled/exhausted calls before scanning the question bank.
+ perform ace.reserve_cbt_start('mock',c.total_questions,c.duration_seconds);
+ for r in select cs.* from ace.exam_config_subjects cs where cs.exam_config_id=c.id
+   and cs.subject_id=any(p_subject_ids) order by cs.subject_id loop
+  -- Freeze publication predicates through question capture. Future withdrawals still
+  -- use the existing per-operation current-rights gates; frozen keys stay private.
+  perform v.id from ace.syllabus_versions v where v.season_id=v_season and v.subject_id=r.subject_id order by v.id for share;
+  perform t.id from ace.topics t join ace.syllabus_versions v on v.id=t.syllabus_version_id
+   where v.season_id=v_season and v.subject_id=r.subject_id order by t.id for share of t;
+  perform st.id from ace.subtopics st join ace.syllabus_versions v on v.id=st.syllabus_version_id
+   where v.season_id=v_season and v.subject_id=r.subject_id order by st.id for share of st;
+  select array_agg(id order by rank) into v_selected from (
+   select q.id,md5(random()::text||q.id::text) rank from ace.questions q
+   join ace.topics t on t.id=q.topic_id and t.subject_id=q.subject_id and t.active
+   join ace.syllabus_versions v on v.id=t.syllabus_version_id and v.subject_id=q.subject_id
+   where q.subject_id=r.subject_id and v.season_id=v_season and v.status='active' and v.rights_status='approved'
+    and q.active and q.review_status='published' and q.rights_status in ('owned','licensed','permitted')
+    and (q.subtopic_id is null or exists(select 1 from ace.subtopics st where st.id=q.subtopic_id
+      and st.topic_id=t.id and st.syllabus_version_id=v.id and st.active))
+    and case when jsonb_typeof(q.options)='array' then
+      jsonb_array_length(q.options)=c.option_count
+      and (select count(distinct o->>'key') from jsonb_array_elements(q.options) o
+           where nullif(o->>'key','') is not null and jsonb_typeof(o->'text')='string')=c.option_count
+      and exists(select 1 from jsonb_array_elements(q.options) o where o->>'key'=q.correct_option_key)
+      else false end
+   order by rank limit r.question_count for share of q
+  ) chosen;
+  if coalesce(cardinality(v_selected),0)<>r.question_count then
+   raise exception 'Insufficient approved questions for configured paper' using errcode='P0002';
   end if;
-
-  if v_ids is null or cardinality(v_ids) = 0 then
-    raise exception 'No published questions available for this attempt';
-  end if;
-  if cardinality(v_ids) > p_question_count then v_ids := v_ids[1:p_question_count]; end if;
-
-  select jsonb_agg(to_jsonb(qid) order by ord) into v_order
-  from unnest(v_ids) with ordinality u(qid,ord);
-
-  foreach v_q in array v_ids loop
-    select options into v_opts from ace.questions where id = v_q;
-    select jsonb_agg(e.value->>'key' order by md5(v_seed::text || ':' || v_q::text || ':' || (e.value->>'key')))
-      into v_opt_keys
-    from jsonb_array_elements(v_opts) e(value)
-    where e.value ? 'key';
-    v_options := v_options || jsonb_build_object(v_q::text, coalesce(v_opt_keys,'[]'::jsonb));
-  end loop;
-
-  insert into ace.attempts(user_id,mode,subject_id,started_at,duration_seconds,random_seed,question_order,option_order,status)
-  values(v_user,p_mode,p_subject_id,now(),p_duration_seconds,v_seed,v_order,v_options,'active')
-  returning id into v_attempt;
-
-  return jsonb_build_object('attempt_id',v_attempt,'status','active','started_at',now(),
-    'duration_seconds',p_duration_seconds,'random_seed',v_seed,'question_order',v_order,
-    'option_order',v_options,'question_count',cardinality(v_ids));
+  v_ids:=v_ids||v_selected;
+ end loop;
+ -- Reuse owner, current-rights, paper snapshot and option shuffle code. The public
+ -- generic endpoint rejects mode=mock, and clients have no attempt table writes.
+ v_result:=ace.create_attempt_internal('mock',null,c.total_questions,c.duration_seconds,v_ids,true);
+ if (v_result->>'question_count')::integer<>c.total_questions then
+  raise exception 'Incomplete approved paper' using errcode='P0002';
+ end if;
+ v_config:=jsonb_build_object('exam_config_id',c.id,'season_id',c.season_id,'version',c.version,
+  'duration_seconds',c.duration_seconds,'total_questions',c.total_questions,'option_count',c.option_count,'subjects',v_subjects);
+ update ace.attempts set mode='mock',exam_config_id=c.id,exam_config_snapshot=v_config
+ where id=(v_result->>'attempt_id')::uuid and user_id=auth.uid();
+ return v_result||jsonb_build_object('mode','mock','exam_config',v_config);
 end;
 $function$;
 
 CREATE OR REPLACE FUNCTION ace.submit_attempt(p_attempt_id uuid)
  RETURNS jsonb
  LANGUAGE plpgsql
- SET search_path TO 'ace', 'public'
+ SECURITY DEFINER
+ SET search_path TO 'pg_catalog', 'ace'
 AS $function$
-declare a ace.attempts%rowtype; v_total integer; v_answered integer; v_correct integer; v_score numeric; r record;
+declare a ace.attempts%rowtype; v_total integer; v_available integer;
+ v_answered integer; v_correct integer; v_score numeric; v_completed timestamptz; r record;
 begin
-  select * into a from ace.attempts where id=p_attempt_id and user_id=auth.uid() for update;
-  if not found then raise exception 'Attempt not found' using errcode='P0002'; end if;
-  if a.status='completed' then return jsonb_build_object('attempt_id',a.id,'status','completed','score',a.score,'correct_count',a.correct_count,'answered_count',a.answered_count,'completed_at',a.completed_at); end if;
-  if a.status<>'active' then raise exception 'Attempt cannot be submitted'; end if;
-  select jsonb_array_length(a.question_order) into v_total;
-  select count(*) filter(where selected_option_key is not null),count(*) filter(where is_correct=true) into v_answered,v_correct from ace.attempt_answers where attempt_id=a.id;
-  v_score:=round((v_correct::numeric*100)/nullif(v_total,0),2);
-  update ace.attempts set status='completed',completed_at=now(),score=v_score,correct_count=v_correct,answered_count=v_answered where id=a.id;
-  for r in select question_id,is_correct,coalesce(response_ms,0) response_ms from ace.attempt_answers where attempt_id=a.id loop
-    insert into ace.student_question_stats(user_id,question_id,attempts,correct_count,incorrect_count,total_response_ms,last_answered_at) values(a.user_id,r.question_id,1,case when r.is_correct then 1 else 0 end,case when r.is_correct then 0 else 1 end,r.response_ms,now()) on conflict(user_id,question_id) do update set attempts=ace.student_question_stats.attempts+1,correct_count=ace.student_question_stats.correct_count+excluded.correct_count,incorrect_count=ace.student_question_stats.incorrect_count+excluded.incorrect_count,total_response_ms=ace.student_question_stats.total_response_ms+excluded.total_response_ms,last_answered_at=excluded.last_answered_at;
-  end loop;
-  return jsonb_build_object('attempt_id',a.id,'status','completed','score',v_score,'correct_count',v_correct,'answered_count',v_answered,'total_questions',v_total,'completed_at',now());
+ if auth.uid() is null then raise exception 'Authentication required' using errcode='28000'; end if;
+ if p_attempt_id is null then raise exception 'Attempt required' using errcode='22023'; end if;
+ select * into a from ace.attempts where id=p_attempt_id and user_id=auth.uid() for update;
+ if not found then raise exception 'Attempt unavailable' using errcode='P0002'; end if;
+ v_total:=jsonb_array_length(a.question_order);
+ if a.status='completed' then
+  return jsonb_build_object('attempt_id',a.id,'status','completed','score',a.score,
+   'correct_count',a.correct_count,'answered_count',a.answered_count,
+   'total_questions',v_total,'completed_at',a.completed_at);
+ end if;
+ if a.status<>'active' or v_total not between 1 and 500 then
+  raise exception 'Attempt cannot be submitted' using errcode='22023';
+ end if;
+ if jsonb_typeof(a.question_snapshot) is distinct from 'array'
+    or jsonb_array_length(a.question_snapshot)<>v_total
+    or (select count(distinct value) from jsonb_array_elements_text(a.question_order))<>v_total
+    or (select count(distinct item->>'id') from jsonb_array_elements(a.question_snapshot) item)<>v_total
+    or exists(select 1 from jsonb_array_elements_text(a.question_order) wanted(id)
+       where not exists(select 1 from jsonb_array_elements(a.question_snapshot) item where item->>'id'=wanted.id)) then
+  raise exception 'Attempt paper unavailable' using errcode='P0002';
+ end if;
+ -- Lock assigned content while scoring, excluding unrelated or withdrawn questions.
+ perform q.id from ace.questions q
+  where exists(select 1 from jsonb_array_elements_text(a.question_order) wanted(id) where wanted.id=q.id::text)
+   and q.active=true and q.review_status='published' and q.rights_status in ('owned','licensed','permitted')
+  order by q.id for share;
+ get diagnostics v_available=row_count;
+ if v_available<>v_total then raise exception 'Attempt questions unavailable' using errcode='P0002'; end if;
+ update ace.attempt_answers ans set is_correct=(ans.selected_option_key is not null and ans.selected_option_key=frozen->>'correct_option_key')
+ from jsonb_array_elements(a.question_snapshot) frozen where ans.attempt_id=a.id and ans.question_id::text=frozen->>'id';
+ select count(*) filter(where ans.selected_option_key is not null),count(*) filter(where ans.is_correct=true)
+ into v_answered,v_correct from ace.attempt_answers ans
+ where ans.attempt_id=a.id
+  and exists(select 1 from jsonb_array_elements_text(a.question_order) wanted(id) where wanted.id=ans.question_id::text);
+ v_score:=round(v_correct::numeric*100/v_total,2); v_completed:=clock_timestamp();
+ update ace.attempts set status='completed',completed_at=v_completed,score=v_score,
+  correct_count=v_correct,answered_count=v_answered where id=a.id;
+ for r in select question_id,is_correct,coalesce(response_ms,0) response_ms from ace.attempt_answers ans
+  where attempt_id=a.id and selected_option_key is not null
+   and exists(select 1 from jsonb_array_elements_text(a.question_order) wanted(id) where wanted.id=ans.question_id::text)
+ loop
+  insert into ace.student_question_stats(user_id,question_id,attempts,correct_count,incorrect_count,total_response_ms,last_answered_at)
+  values(a.user_id,r.question_id,1,case when r.is_correct then 1 else 0 end,case when r.is_correct then 0 else 1 end,r.response_ms,v_completed)
+  on conflict(user_id,question_id) do update set attempts=ace.student_question_stats.attempts+1,
+   correct_count=ace.student_question_stats.correct_count+excluded.correct_count,
+   incorrect_count=ace.student_question_stats.incorrect_count+excluded.incorrect_count,
+   total_response_ms=ace.student_question_stats.total_response_ms+excluded.total_response_ms,
+   last_answered_at=excluded.last_answered_at;
+ end loop;
+ return jsonb_build_object('attempt_id',a.id,'status','completed','score',v_score,
+  'correct_count',v_correct,'answered_count',v_answered,'total_questions',v_total,'completed_at',v_completed);
 end;
 $function$;
 
@@ -2018,6 +2359,30 @@ ALTER TABLE ace."catalog_sources" ADD CONSTRAINT "catalog_sources_source_type_ch
 
 ALTER TABLE ace."catalog_sources" ADD CONSTRAINT "catalog_sources_status_check" CHECK (status = ANY (ARRAY['discovered'::text, 'reviewed'::text, 'approved'::text, 'superseded'::text, 'rejected'::text]));
 
+ALTER TABLE ace."cbt_mode_access" ADD CONSTRAINT "cbt_mode_access_max_duration_seconds_check" CHECK (max_duration_seconds >= 60 AND max_duration_seconds <= 86400);
+
+ALTER TABLE ace."cbt_mode_access" ADD CONSTRAINT "cbt_mode_access_max_questions_check" CHECK (max_questions >= 1 AND max_questions <= 500);
+
+ALTER TABLE ace."cbt_mode_access" ADD CONSTRAINT "cbt_mode_access_mode_check" CHECK (mode = ANY (ARRAY['practice'::text, 'cbt'::text, 'mock'::text, 'learning'::text, 'revision'::text, 'ai_practice'::text]));
+
+ALTER TABLE ace."cbt_mode_access" ADD CONSTRAINT "cbt_mode_access_pkey" PRIMARY KEY (mode);
+
+ALTER TABLE ace."cbt_runtime_policy" ADD CONSTRAINT "cbt_runtime_policy_cooldown_seconds_check" CHECK (cooldown_seconds >= 0 AND cooldown_seconds <= 86400);
+
+ALTER TABLE ace."cbt_runtime_policy" ADD CONSTRAINT "cbt_runtime_policy_max_active_check" CHECK (max_active >= 1 AND max_active <= 1000);
+
+ALTER TABLE ace."cbt_runtime_policy" ADD CONSTRAINT "cbt_runtime_policy_max_starts_check" CHECK (max_starts >= 1 AND max_starts <= 100000);
+
+ALTER TABLE ace."cbt_runtime_policy" ADD CONSTRAINT "cbt_runtime_policy_pkey" PRIMARY KEY (singleton);
+
+ALTER TABLE ace."cbt_runtime_policy" ADD CONSTRAINT "cbt_runtime_policy_singleton_check" CHECK (singleton);
+
+ALTER TABLE ace."cbt_runtime_policy" ADD CONSTRAINT "cbt_runtime_policy_window_seconds_check" CHECK (window_seconds >= 1 AND window_seconds <= 86400);
+
+ALTER TABLE ace."cbt_start_usage" ADD CONSTRAINT "cbt_start_usage_pkey" PRIMARY KEY (user_id);
+
+ALTER TABLE ace."cbt_start_usage" ADD CONSTRAINT "cbt_start_usage_starts_check" CHECK (starts >= 0);
+
 ALTER TABLE ace."devices" ADD CONSTRAINT "devices_pkey" PRIMARY KEY (id);
 
 ALTER TABLE ace."devices" ADD CONSTRAINT "devices_user_id_device_hash_key" UNIQUE (user_id, device_hash);
@@ -2242,6 +2607,8 @@ ALTER TABLE ace."attempt_answers" ADD CONSTRAINT "attempt_answers_attempt_id_fke
 
 ALTER TABLE ace."attempt_answers" ADD CONSTRAINT "attempt_answers_question_id_fkey" FOREIGN KEY (question_id) REFERENCES ace.questions(id);
 
+ALTER TABLE ace."attempts" ADD CONSTRAINT "attempts_exam_config_id_fkey" FOREIGN KEY (exam_config_id) REFERENCES ace.exam_configs(id);
+
 ALTER TABLE ace."attempts" ADD CONSTRAINT "attempts_subject_id_fkey" FOREIGN KEY (subject_id) REFERENCES ace.subjects(id);
 
 ALTER TABLE ace."attempts" ADD CONSTRAINT "attempts_user_id_fkey" FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
@@ -2253,6 +2620,10 @@ ALTER TABLE ace."catalog_import_batches" ADD CONSTRAINT "catalog_import_batches_
 ALTER TABLE ace."catalog_import_batches" ADD CONSTRAINT "catalog_import_batches_source_id_fkey" FOREIGN KEY (source_id) REFERENCES ace.catalog_sources(id) ON DELETE RESTRICT;
 
 ALTER TABLE ace."catalog_import_rows" ADD CONSTRAINT "catalog_import_rows_batch_id_fkey" FOREIGN KEY (batch_id) REFERENCES ace.catalog_import_batches(id) ON DELETE CASCADE;
+
+ALTER TABLE ace."cbt_mode_access" ADD CONSTRAINT "cbt_mode_access_entitlement_product_code_fkey" FOREIGN KEY (entitlement_product_code) REFERENCES ace.products(code);
+
+ALTER TABLE ace."cbt_start_usage" ADD CONSTRAINT "cbt_start_usage_user_id_fkey" FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
 
 ALTER TABLE ace."devices" ADD CONSTRAINT "devices_user_id_fkey" FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
 
@@ -2409,6 +2780,8 @@ CREATE INDEX idx_ai_usage_user_created ON ace.ai_usage USING btree (user_id, cre
 CREATE INDEX idx_answers_attempt ON ace.attempt_answers USING btree (attempt_id);
 
 CREATE INDEX idx_attempt_answers_question ON ace.attempt_answers USING btree (question_id);
+
+CREATE INDEX idx_attempts_active_user ON ace.attempts USING btree (user_id, started_at) WHERE (status = 'active'::text);
 
 CREATE INDEX idx_attempts_subject ON ace.attempts USING btree (subject_id);
 
@@ -2577,6 +2950,12 @@ ALTER TABLE ace."catalog_import_batches" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE ace."catalog_import_rows" ENABLE ROW LEVEL SECURITY;
 
 ALTER TABLE ace."catalog_sources" ENABLE ROW LEVEL SECURITY;
+
+ALTER TABLE ace."cbt_mode_access" ENABLE ROW LEVEL SECURITY;
+
+ALTER TABLE ace."cbt_runtime_policy" ENABLE ROW LEVEL SECURITY;
+
+ALTER TABLE ace."cbt_start_usage" ENABLE ROW LEVEL SECURITY;
 
 ALTER TABLE ace."devices" ENABLE ROW LEVEL SECURITY;
 
@@ -2839,6 +3218,14 @@ CREATE POLICY "topics_editor_manage" ON ace."topics" AS PERMISSIVE FOR ALL TO PU
 
 CREATE POLICY "topics_public_read" ON ace."topics" AS PERMISSIVE FOR SELECT TO PUBLIC USING ((((active = true) AND ace.is_syllabus_version_public(syllabus_version_id)) OR ace.is_admin_or_editor()));
 
+CREATE TRIGGER guard_attempt_snapshot BEFORE UPDATE OF question_snapshot, question_order, option_order ON ace.attempts FOR EACH ROW EXECUTE FUNCTION ace.guard_attempt_snapshot();
+
+CREATE TRIGGER guard_mock_provenance BEFORE UPDATE ON ace.attempts FOR EACH ROW EXECUTE FUNCTION ace.guard_mock_provenance();
+
+CREATE TRIGGER audit_cbt_policy AFTER INSERT OR DELETE OR UPDATE ON ace.cbt_mode_access FOR EACH ROW EXECUTE FUNCTION ace.audit_cbt_policy();
+
+CREATE TRIGGER audit_cbt_policy AFTER INSERT OR DELETE OR UPDATE ON ace.cbt_runtime_policy FOR EACH ROW EXECUTE FUNCTION ace.audit_cbt_policy();
+
 CREATE TRIGGER guard_exam_composition BEFORE INSERT OR DELETE OR UPDATE ON ace.exam_config_subjects FOR EACH ROW EXECUTE FUNCTION ace.guard_exam_composition();
 
 CREATE TRIGGER profiles_touch_updated_at BEFORE UPDATE ON ace.profiles FOR EACH ROW EXECUTE FUNCTION ace.touch_profile_updated_at();
@@ -2909,6 +3296,8 @@ GRANT EXECUTE ON FUNCTION ace."check_catalog_import_idempotency"(p_snapshot_hash
 
 GRANT EXECUTE ON FUNCTION ace."get_active_exam_blueprint"() TO authenticated;
 
+GRANT EXECUTE ON FUNCTION ace."get_attempt_questions"(p_attempt_id uuid) TO authenticated;
+
 GRANT EXECUTE ON FUNCTION ace."get_catalog_institutions"() TO authenticated;
 
 GRANT EXECUTE ON FUNCTION ace."get_catalog_source"(p_source_id uuid) TO authenticated;
@@ -2944,6 +3333,8 @@ GRANT EXECUTE ON FUNCTION ace."set_user_role"(target_user_id uuid, target_role t
 GRANT EXECUTE ON FUNCTION ace."stage_catalog_import"(p_source_id uuid, p_season_id uuid, p_dataset_type text, p_snapshot_hash text, p_metadata jsonb, p_rows jsonb) TO authenticated;
 
 GRANT EXECUTE ON FUNCTION ace."start_attempt"(p_mode text, p_subject_id uuid, p_question_count integer, p_duration_seconds integer, p_question_ids uuid[]) TO authenticated;
+
+GRANT EXECUTE ON FUNCTION ace."start_mock_attempt"(p_exam_config_id uuid, p_subject_ids uuid[]) TO authenticated;
 
 GRANT EXECUTE ON FUNCTION ace."submit_attempt"(p_attempt_id uuid) TO authenticated;
 

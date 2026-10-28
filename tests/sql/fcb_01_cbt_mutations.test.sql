@@ -1,5 +1,5 @@
 -- Run only AFTER the recovered baseline in a disposable database. No live fixtures.
-\i supabase/proposals/fcb_01_cbt_mutation_contract.sql
+\i tests/sql/fixtures/fcb_01_cbt_contract.sql
 \i tests/sql/fixtures/fcb_01_cbt_content.sql
 set local role authenticated;
 select set_config('request.jwt.claim.sub','31000000-0000-4000-8000-000000000001',true);

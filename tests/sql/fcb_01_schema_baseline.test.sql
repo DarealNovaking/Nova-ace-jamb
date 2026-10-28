@@ -18,8 +18,8 @@ grant usage on schema auth to anon,authenticated;
 
 -- Ensure the replay is empty, preserving fail-closed API grants and deployed guards.
 do $$ declare t record; n bigint; begin
- if (select count(*) from pg_tables where schemaname='ace') <> 48 then
-  raise exception 'expected 48 tables';
+ if (select count(*) from pg_tables where schemaname='ace') <> 51 then
+  raise exception 'expected 51 tables';
  end if;
  for t in select tablename from pg_tables where schemaname='ace' loop
   execute format('select count(*) from ace.%I',t.tablename) into n;
@@ -31,7 +31,9 @@ do $$ declare t record; n bigint; begin
  if has_table_privilege('authenticated','ace.attempts','UPDATE') or
     has_table_privilege('authenticated','ace.attempt_answers','UPDATE') or
     has_function_privilege('anon','ace.has_active_entitlement(uuid,text)','EXECUTE') or
-    has_function_privilege('authenticated','ace.guard_syllabus_authoring()','EXECUTE') then
+    has_function_privilege('authenticated','ace.guard_syllabus_authoring()','EXECUTE') or
+    has_function_privilege('authenticated','ace.create_attempt_internal(text,uuid,integer,integer,uuid[],boolean)','EXECUTE') or
+    has_table_privilege('authenticated','ace.cbt_start_usage','SELECT') then
   raise exception 'fail-closed privileges changed';
  end if;
  if (select count(*) from pg_policies where schemaname='ace') <> 82 then
@@ -55,6 +57,10 @@ select set_config('request.jwt.claim.sub','01000000-0000-4000-8000-000000000001'
 do $$ begin
  if ace.is_admin() or ace.is_admin_or_editor() then raise exception 'synthetic student elevated'; end if;
  if ace.has_active_entitlement('01000000-0000-4000-8000-000000000002') then raise exception 'cross-owner probe'; end if;
+ begin
+  perform ace.start_attempt('practice',null,1,600,null);
+  raise exception 'unconfigured runtime enabled in recovery' using errcode='Z0001';
+ exception when insufficient_privilege then null; end;
 end $$;
 rollback;
 select 'FCB-01 full schema baseline and auth-trigger tests passed' result;
