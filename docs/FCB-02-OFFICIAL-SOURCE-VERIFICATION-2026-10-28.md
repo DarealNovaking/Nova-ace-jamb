@@ -39,3 +39,7 @@ The September bulletin and 2026 manual web size/timeout limits were overcome by 
 PASS: actual remote main/review heads match the FCB-01 closeout checkpoint; 25/25 HTTP/PDF/parse checks; all hashes and metadata captured; English/Yoruba visual spot checks; current versus stale English source discrepancy recorded. Documentation-only work; code/build/Playwright/SQL suites were not rerun and no new runtime pass is claimed.
 
 Next: obtain the selected launch subjects and source reuse authority, then prepare a review-only, version-specific taxonomy from the authorized documents. Keep final 2027 config inactive until directly supported and separately approved. Existing publication/version/takedown tests and FCB-01 controls must be reused; FCB-02 acceptance still requires actual authorized published records and tested student/admin selectors.
+
+
+### Continuation — taxonomy review draft
+The owner directed continuation using IBASS. Internal source review and draft preparation proceeded; publication is still gated. See [the review summary](content-review/README.md): 25 subjects, 213 page-backed root navigation candidates and 39 first-pass English/Mathematics subtopic candidates. No live import/activation occurred. The earlier instruction to obtain launch coverage/rights before preparing any draft is superseded for this internal review; those items still gate publication and final acceptance. Next: map child detail for the other 23 subjects and review granularity/applicability.

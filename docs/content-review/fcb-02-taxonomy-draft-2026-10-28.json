@@ -1,0 +1,3440 @@
+{
+  "format_version": 1,
+  "prepared_on": "2026-10-28",
+  "purpose": "Internal editorial structure review; not an import or publication payload",
+  "source_manifest": "../evidence/fcb-02-official-syllabus-documents-2026-10-28.json",
+  "all_subjects_are_review_coverage_not_launch_selection": true,
+  "status": "draft",
+  "season_applicability": "requires_subject_specific_review",
+  "publishable": false,
+  "subjects": [
+    {
+      "subject_code": "AGR",
+      "source_subject_label": "Agriculture science",
+      "source_url": "https://ibass.jamb.gov.ng/static/media/AgricPdf.9465f3cd595e9542868a.pdf",
+      "source_sha256": "8134bf3b3a22633163e733a777b5fe63629614ce4a3daf4ea9dd77307f99c81e",
+      "source_pdf_pages": 16,
+      "review_status": "draft_structure",
+      "rights_status": "unverified",
+      "publication_allowed": false,
+      "leaf_coverage": "not_yet_mapped",
+      "nodes": [
+        {
+          "review_id": "AGR-01",
+          "order": 1,
+          "label": "General agriculture",
+          "source_locator": {
+            "pdf_page": 1,
+            "anchor": "General agriculture",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "AGR-02",
+          "order": 2,
+          "label": "Agronomy",
+          "source_locator": {
+            "pdf_page": 3,
+            "anchor": "Agronomy",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "AGR-03",
+          "order": 3,
+          "label": "Animal production",
+          "source_locator": {
+            "pdf_page": 8,
+            "anchor": "Animal production",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "AGR-04",
+          "order": 4,
+          "label": "Agricultural economics and extension",
+          "source_locator": {
+            "pdf_page": 11,
+            "anchor": "Agriculture Economics and Extension",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "AGR-05",
+          "order": 5,
+          "label": "Agricultural technology",
+          "source_locator": {
+            "pdf_page": 14,
+            "anchor": "Agricultural technology",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        }
+      ],
+      "mapping_status": "not_bound_to_live_version_or_database_ids",
+      "editorial_review_complete": false,
+      "source_2027_applicability": "subject_specific_confirmation_required"
+    },
+    {
+      "subject_code": "ARA",
+      "source_subject_label": "Arabic",
+      "source_url": "https://ibass.jamb.gov.ng/static/media/Arabic.233fe7117fc534609a6e.pdf",
+      "source_sha256": "438cc6e7369bdb4548c2a068ac1c82df7d42b3cbe53cafc2b7d8db29d1b0cfc5",
+      "source_pdf_pages": 5,
+      "review_status": "draft_structure",
+      "rights_status": "unverified",
+      "publication_allowed": false,
+      "leaf_coverage": "not_yet_mapped",
+      "nodes": [
+        {
+          "review_id": "ARA-01",
+          "order": 1,
+          "label": "Comprehension",
+          "source_locator": {
+            "pdf_page": 1,
+            "anchor": "Comprehension",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "ARA-02",
+          "order": 2,
+          "label": "Translation",
+          "source_locator": {
+            "pdf_page": 1,
+            "anchor": "Translation",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "ARA-03",
+          "order": 3,
+          "label": "Grammar",
+          "source_locator": {
+            "pdf_page": 1,
+            "anchor": "Grammar",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "ARA-04",
+          "order": 4,
+          "label": "Composition",
+          "source_locator": {
+            "pdf_page": 3,
+            "anchor": "Composition",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "ARA-05",
+          "order": 5,
+          "label": "Arabic literature",
+          "source_locator": {
+            "pdf_page": 3,
+            "anchor": "Arabic literature",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        }
+      ],
+      "mapping_status": "not_bound_to_live_version_or_database_ids",
+      "editorial_review_complete": false,
+      "source_2027_applicability": "subject_specific_confirmation_required"
+    },
+    {
+      "subject_code": "ART",
+      "source_subject_label": "Art",
+      "source_url": "https://ibass.jamb.gov.ng/static/media/Artpdf.85197ba4c495458e1ba8.pdf",
+      "source_sha256": "31505bd8250a01756996dd4342e29ef8aaab06a147b01061c4d1e07fe8db3a64",
+      "source_pdf_pages": 5,
+      "review_status": "draft_structure",
+      "rights_status": "unverified",
+      "publication_allowed": false,
+      "leaf_coverage": "not_yet_mapped",
+      "nodes": [
+        {
+          "review_id": "ART-01",
+          "order": 1,
+          "label": "Section A: art foundations",
+          "source_locator": {
+            "pdf_page": 1,
+            "anchor": "SECTION A",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "ART-02",
+          "order": 2,
+          "label": "Section B: art history and traditions",
+          "source_locator": {
+            "pdf_page": 2,
+            "anchor": "SECTION B",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "ART-03",
+          "order": 3,
+          "label": "Section C: techniques and tools",
+          "source_locator": {
+            "pdf_page": 3,
+            "anchor": "SECTION C",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "ART-04",
+          "order": 4,
+          "label": "Section D: appreciation and enterprise",
+          "source_locator": {
+            "pdf_page": 4,
+            "anchor": "SECTION D",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        }
+      ],
+      "mapping_status": "not_bound_to_live_version_or_database_ids",
+      "editorial_review_complete": false,
+      "source_2027_applicability": "subject_specific_confirmation_required"
+    },
+    {
+      "subject_code": "BIO",
+      "source_subject_label": "Biology",
+      "source_url": "https://ibass.jamb.gov.ng/static/media/Biology.0075e70afd357d7a39ae.pdf",
+      "source_sha256": "8afb9aa5c3bece851d6a7ec9b6ce85909aa94f1657d0d01b76d96a5d904467f5",
+      "source_pdf_pages": 12,
+      "review_status": "draft_structure",
+      "rights_status": "unverified",
+      "publication_allowed": false,
+      "leaf_coverage": "not_yet_mapped",
+      "nodes": [
+        {
+          "review_id": "BIO-01",
+          "order": 1,
+          "label": "Variety of organisms",
+          "source_locator": {
+            "pdf_page": 1,
+            "anchor": "Variety of organisms",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "BIO-02",
+          "order": 2,
+          "label": "Form and functions",
+          "source_locator": {
+            "pdf_page": 3,
+            "anchor": "Form and functions",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "BIO-03",
+          "order": 3,
+          "label": "Ecology",
+          "source_locator": {
+            "pdf_page": 6,
+            "anchor": "Ecology",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "BIO-04",
+          "order": 4,
+          "label": "Heredity and variations",
+          "source_locator": {
+            "pdf_page": 9,
+            "anchor": "Heredity and variations",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "BIO-05",
+          "order": 5,
+          "label": "Evolution",
+          "source_locator": {
+            "pdf_page": 11,
+            "anchor": "Evolution",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        }
+      ],
+      "mapping_status": "not_bound_to_live_version_or_database_ids",
+      "editorial_review_complete": false,
+      "source_2027_applicability": "subject_specific_confirmation_required"
+    },
+    {
+      "subject_code": "CHE",
+      "source_subject_label": "Chemistry",
+      "source_url": "https://ibass.jamb.gov.ng/static/media/Chemistry.9efd0b98043d56922aaa.pdf",
+      "source_sha256": "a3c15bfee3beac0f4106a32b0091e2a2c51eaec8baa62fafa44afcad72193738",
+      "source_pdf_pages": 16,
+      "review_status": "draft_structure",
+      "rights_status": "unverified",
+      "publication_allowed": false,
+      "leaf_coverage": "not_yet_mapped",
+      "nodes": [
+        {
+          "review_id": "CHE-01",
+          "order": 1,
+          "label": "Separation and purification",
+          "source_locator": {
+            "pdf_page": 1,
+            "anchor": "Separation of Mixtures",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "CHE-02",
+          "order": 2,
+          "label": "Chemical combination",
+          "source_locator": {
+            "pdf_page": 1,
+            "anchor": "Chemical combination",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "CHE-03",
+          "order": 3,
+          "label": "Kinetic theory and gas laws",
+          "source_locator": {
+            "pdf_page": 2,
+            "anchor": "Kinetic Theory of Matter",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "CHE-04",
+          "order": 4,
+          "label": "Atomic structure and bonding",
+          "source_locator": {
+            "pdf_page": 2,
+            "anchor": "Atomic structure and bonding",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "CHE-05",
+          "order": 5,
+          "label": "Nuclear chemistry",
+          "source_locator": {
+            "pdf_page": 3,
+            "anchor": "Nuclear chemistry",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "CHE-06",
+          "order": 6,
+          "label": "Solubility",
+          "source_locator": {
+            "pdf_page": 4,
+            "anchor": "Solubility",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "CHE-07",
+          "order": 7,
+          "label": "Environmental pollution",
+          "source_locator": {
+            "pdf_page": 4,
+            "anchor": "Environmental pollution",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "CHE-08",
+          "order": 8,
+          "label": "Acids, bases and salts",
+          "source_locator": {
+            "pdf_page": 5,
+            "anchor": "Acids, bases and salts",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "CHE-09",
+          "order": 9,
+          "label": "Oxidation and reduction",
+          "source_locator": {
+            "pdf_page": 6,
+            "anchor": "Oxidation and reduction",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "CHE-10",
+          "order": 10,
+          "label": "Electrolysis",
+          "source_locator": {
+            "pdf_page": 7,
+            "anchor": "Electrolysis",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "CHE-11",
+          "order": 11,
+          "label": "Energy changes",
+          "source_locator": {
+            "pdf_page": 7,
+            "anchor": "Energy changes",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "CHE-12",
+          "order": 12,
+          "label": "Rates of chemical reaction",
+          "source_locator": {
+            "pdf_page": 8,
+            "anchor": "Rates of chemical reaction",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "CHE-13",
+          "order": 13,
+          "label": "Chemical equilibrium",
+          "source_locator": {
+            "pdf_page": 8,
+            "anchor": "Chemical Equilibra",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "CHE-14",
+          "order": 14,
+          "label": "Non-metals and their compounds",
+          "source_locator": {
+            "pdf_page": 9,
+            "anchor": "Non-metals and their compounds",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "CHE-15",
+          "order": 15,
+          "label": "Metals and their compounds",
+          "source_locator": {
+            "pdf_page": 11,
+            "anchor": "Metals and their compounds",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "CHE-16",
+          "order": 16,
+          "label": "Organic compounds",
+          "source_locator": {
+            "pdf_page": 13,
+            "anchor": "Organic compounds",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "CHE-17",
+          "order": 17,
+          "label": "Chemistry and industry",
+          "source_locator": {
+            "pdf_page": 15,
+            "anchor": "Chemistry and industry",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        }
+      ],
+      "mapping_status": "not_bound_to_live_version_or_database_ids",
+      "editorial_review_complete": false,
+      "source_2027_applicability": "subject_specific_confirmation_required"
+    },
+    {
+      "subject_code": "CRS",
+      "source_subject_label": "Christian religious studies",
+      "source_url": "https://ibass.jamb.gov.ng/static/media/CRS.7f96f8e535ca408ca474.pdf",
+      "source_sha256": "ea8cbe0c793c451527034c531246b31fd37f70be833b8de5eb4cccd02755254a",
+      "source_pdf_pages": 12,
+      "review_status": "draft_structure",
+      "rights_status": "unverified",
+      "publication_allowed": false,
+      "leaf_coverage": "not_yet_mapped",
+      "nodes": [
+        {
+          "review_id": "CRS-01",
+          "order": 1,
+          "label": "Creation to the division of the kingdom",
+          "source_locator": {
+            "pdf_page": 1,
+            "anchor": "Themes from Creation",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "CRS-02",
+          "order": 2,
+          "label": "Division of the kingdom to exile and the prophets",
+          "source_locator": {
+            "pdf_page": 3,
+            "anchor": "Themes from the Division",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "CRS-03",
+          "order": 3,
+          "label": "Gospels and Acts",
+          "source_locator": {
+            "pdf_page": 5,
+            "anchor": "Themes from the four Gospels",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "CRS-04",
+          "order": 4,
+          "label": "Selected epistles",
+          "source_locator": {
+            "pdf_page": 9,
+            "anchor": "Themes from selected Epistles",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        }
+      ],
+      "mapping_status": "not_bound_to_live_version_or_database_ids",
+      "editorial_review_complete": false,
+      "source_2027_applicability": "subject_specific_confirmation_required"
+    },
+    {
+      "subject_code": "COM",
+      "source_subject_label": "Commerce",
+      "source_url": "https://ibass.jamb.gov.ng/static/media/Commerce.819d9c6929bc849d1cd9.pdf",
+      "source_sha256": "200792d4c77333f47427c3cc0ea064f4aea95aacc79720edb07294df5a270c68",
+      "source_pdf_pages": 8,
+      "review_status": "draft_structure",
+      "rights_status": "unverified",
+      "publication_allowed": false,
+      "leaf_coverage": "not_yet_mapped",
+      "nodes": [
+        {
+          "review_id": "COM-01",
+          "order": 1,
+          "label": "Commerce",
+          "source_locator": {
+            "pdf_page": 1,
+            "anchor": "Commerce",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "COM-02",
+          "order": 2,
+          "label": "Occupation",
+          "source_locator": {
+            "pdf_page": 1,
+            "anchor": "Occupation",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "COM-03",
+          "order": 3,
+          "label": "Production",
+          "source_locator": {
+            "pdf_page": 1,
+            "anchor": "Production",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "COM-04",
+          "order": 4,
+          "label": "Trade",
+          "source_locator": {
+            "pdf_page": 2,
+            "anchor": "Trade",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "COM-05",
+          "order": 5,
+          "label": "Purchase and sale of goods",
+          "source_locator": {
+            "pdf_page": 2,
+            "anchor": "Purchase and sale of goods",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "COM-06",
+          "order": 6,
+          "label": "Aids to trade",
+          "source_locator": {
+            "pdf_page": 3,
+            "anchor": "Aids-to-trade",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "COM-07",
+          "order": 7,
+          "label": "Business units",
+          "source_locator": {
+            "pdf_page": 4,
+            "anchor": "Business units",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "COM-08",
+          "order": 8,
+          "label": "Financing business",
+          "source_locator": {
+            "pdf_page": 4,
+            "anchor": "Financing business",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "COM-09",
+          "order": 9,
+          "label": "Trade associations",
+          "source_locator": {
+            "pdf_page": 5,
+            "anchor": "Trade associations",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "COM-10",
+          "order": 10,
+          "label": "Money",
+          "source_locator": {
+            "pdf_page": 5,
+            "anchor": "Money",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "COM-11",
+          "order": 11,
+          "label": "Stock exchange",
+          "source_locator": {
+            "pdf_page": 5,
+            "anchor": "Stock exchange",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "COM-12",
+          "order": 12,
+          "label": "Business management",
+          "source_locator": {
+            "pdf_page": 5,
+            "anchor": "Elements of Business Management",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "COM-13",
+          "order": 13,
+          "label": "Marketing",
+          "source_locator": {
+            "pdf_page": 6,
+            "anchor": "Elements of Marketing",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "COM-14",
+          "order": 14,
+          "label": "Legal aspects of business",
+          "source_locator": {
+            "pdf_page": 6,
+            "anchor": "Legal aspects of business",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "COM-15",
+          "order": 15,
+          "label": "Commodity exchange",
+          "source_locator": {
+            "pdf_page": 6,
+            "anchor": "Commodity exchange",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "COM-16",
+          "order": 16,
+          "label": "Business environment and social responsibility",
+          "source_locator": {
+            "pdf_page": 7,
+            "anchor": "Business environment and social responsibility",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        }
+      ],
+      "mapping_status": "not_bound_to_live_version_or_database_ids",
+      "editorial_review_complete": false,
+      "source_2027_applicability": "subject_specific_confirmation_required"
+    },
+    {
+      "subject_code": "CST",
+      "source_subject_label": "Computer studies",
+      "source_url": "https://ibass.jamb.gov.ng/static/media/Computer.ea1ead8cea82f53d3717.pdf",
+      "source_sha256": "166486f25996554f4ebd7c58ea757e612fb539d7833b7201c9438c257f862163",
+      "source_pdf_pages": 23,
+      "review_status": "draft_structure",
+      "rights_status": "unverified",
+      "publication_allowed": false,
+      "leaf_coverage": "not_yet_mapped",
+      "nodes": [
+        {
+          "review_id": "CST-01",
+          "order": 1,
+          "label": "Evolution of computing",
+          "source_locator": {
+            "pdf_page": 1,
+            "anchor": "Evolution of computing",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "CST-02",
+          "order": 2,
+          "label": "Fundamentals of computing",
+          "source_locator": {
+            "pdf_page": 3,
+            "anchor": "Fundamentals of computing",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "CST-03",
+          "order": 3,
+          "label": "Computer application packages",
+          "source_locator": {
+            "pdf_page": 6,
+            "anchor": "Computer application packages",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "CST-04",
+          "order": 4,
+          "label": "Managing computer files",
+          "source_locator": {
+            "pdf_page": 10,
+            "anchor": "Managing computer files",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "CST-05",
+          "order": 5,
+          "label": "Computer maintenance and safety",
+          "source_locator": {
+            "pdf_page": 11,
+            "anchor": "Computer Maintenance and Safety Measures",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "CST-06",
+          "order": 6,
+          "label": "Information and communication technology",
+          "source_locator": {
+            "pdf_page": 12,
+            "anchor": "Communication Technology",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "CST-07",
+          "order": 7,
+          "label": "Problem-solving skills",
+          "source_locator": {
+            "pdf_page": 16,
+            "anchor": "Developing Problem-Solving Skills",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "CST-08",
+          "order": 8,
+          "label": "Artificial intelligence and robotics",
+          "source_locator": {
+            "pdf_page": 19,
+            "anchor": "Artificial Intelligence",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "CST-09",
+          "order": 9,
+          "label": "Computer ethics and human issues",
+          "source_locator": {
+            "pdf_page": 20,
+            "anchor": "Computer ethics and human issues",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        }
+      ],
+      "mapping_status": "not_bound_to_live_version_or_database_ids",
+      "editorial_review_complete": false,
+      "source_2027_applicability": "subject_specific_confirmation_required"
+    },
+    {
+      "subject_code": "ECO",
+      "source_subject_label": "Economics",
+      "source_url": "https://ibass.jamb.gov.ng/static/media/Economics.da2a30ae8659e29c8bb4.pdf",
+      "source_sha256": "4b56a76c3845468a7fe2cb463a16d37e23a76e9f9576bffaaa9a88567f6393b5",
+      "source_pdf_pages": 9,
+      "review_status": "draft_structure",
+      "rights_status": "unverified",
+      "publication_allowed": false,
+      "leaf_coverage": "not_yet_mapped",
+      "nodes": [
+        {
+          "review_id": "ECO-01",
+          "order": 1,
+          "label": "Economics as a science",
+          "source_locator": {
+            "pdf_page": 1,
+            "anchor": "Economics as a science",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "ECO-02",
+          "order": 2,
+          "label": "Economic systems",
+          "source_locator": {
+            "pdf_page": 1,
+            "anchor": "Economic systems",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "ECO-03",
+          "order": 3,
+          "label": "Methods and tools of economic analysis",
+          "source_locator": {
+            "pdf_page": 2,
+            "anchor": "Methods and tools of economic analysis",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "ECO-04",
+          "order": 4,
+          "label": "Demand",
+          "source_locator": {
+            "pdf_page": 2,
+            "anchor": "The Theory of Demand",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "ECO-05",
+          "order": 5,
+          "label": "Consumer behaviour",
+          "source_locator": {
+            "pdf_page": 3,
+            "anchor": "Theory of Consumer Behaviour",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "ECO-06",
+          "order": 6,
+          "label": "Supply",
+          "source_locator": {
+            "pdf_page": 3,
+            "anchor": "The Theory of Supply",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "ECO-07",
+          "order": 7,
+          "label": "Price determination",
+          "source_locator": {
+            "pdf_page": 3,
+            "anchor": "Theory of Price Determination",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "ECO-08",
+          "order": 8,
+          "label": "Production",
+          "source_locator": {
+            "pdf_page": 4,
+            "anchor": "Theory of Production",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "ECO-09",
+          "order": 9,
+          "label": "Costs and revenue",
+          "source_locator": {
+            "pdf_page": 4,
+            "anchor": "Theory of Costs and Revenue",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "ECO-10",
+          "order": 10,
+          "label": "Market structures",
+          "source_locator": {
+            "pdf_page": 5,
+            "anchor": "Market structures",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "ECO-11",
+          "order": 11,
+          "label": "National income",
+          "source_locator": {
+            "pdf_page": 5,
+            "anchor": "National income",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "ECO-12",
+          "order": 12,
+          "label": "Money and inflation",
+          "source_locator": {
+            "pdf_page": 5,
+            "anchor": "Money and inflation",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "ECO-13",
+          "order": 13,
+          "label": "Financial institutions",
+          "source_locator": {
+            "pdf_page": 6,
+            "anchor": "Financial institutions",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "ECO-14",
+          "order": 14,
+          "label": "Public finance",
+          "source_locator": {
+            "pdf_page": 6,
+            "anchor": "Public finance",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "ECO-15",
+          "order": 15,
+          "label": "Economic growth and development",
+          "source_locator": {
+            "pdf_page": 6,
+            "anchor": "Economic growth and development",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "ECO-16",
+          "order": 16,
+          "label": "Agriculture in Nigeria",
+          "source_locator": {
+            "pdf_page": 6,
+            "anchor": "Agriculture in Nigeria",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "ECO-17",
+          "order": 17,
+          "label": "Industry and industrialization",
+          "source_locator": {
+            "pdf_page": 7,
+            "anchor": "Industry and industrialization",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "ECO-18",
+          "order": 18,
+          "label": "Natural resources and the Nigerian economy",
+          "source_locator": {
+            "pdf_page": 7,
+            "anchor": "Natural resources and the Nigerian economy",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "ECO-19",
+          "order": 19,
+          "label": "Business organizations",
+          "source_locator": {
+            "pdf_page": 7,
+            "anchor": "Business organizations",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "ECO-20",
+          "order": 20,
+          "label": "Population",
+          "source_locator": {
+            "pdf_page": 8,
+            "anchor": "Population",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "ECO-21",
+          "order": 21,
+          "label": "International trade",
+          "source_locator": {
+            "pdf_page": 8,
+            "anchor": "International trade",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "ECO-22",
+          "order": 22,
+          "label": "International economic organizations",
+          "source_locator": {
+            "pdf_page": 8,
+            "anchor": "International economic organizations",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "ECO-23",
+          "order": 23,
+          "label": "Factors of production and their theories",
+          "source_locator": {
+            "pdf_page": 8,
+            "anchor": "Factors of production and their theories",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        }
+      ],
+      "mapping_status": "not_bound_to_live_version_or_database_ids",
+      "editorial_review_complete": false,
+      "source_2027_applicability": "subject_specific_confirmation_required"
+    },
+    {
+      "subject_code": "FRE",
+      "source_subject_label": "French",
+      "source_url": "https://ibass.jamb.gov.ng/static/media/French.170eeaabf96471e303c5.pdf",
+      "source_sha256": "d01b001b95433d1e82fa1767281027f7ef6b2b8079e009e01d0c2df356d3868e",
+      "source_pdf_pages": 5,
+      "review_status": "draft_structure",
+      "rights_status": "unverified",
+      "publication_allowed": false,
+      "leaf_coverage": "not_yet_mapped",
+      "nodes": [
+        {
+          "review_id": "FRE-01",
+          "order": 1,
+          "label": "Written comprehension",
+          "source_locator": {
+            "pdf_page": 1,
+            "anchor": "Written Comprehension in French",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "FRE-02",
+          "order": 2,
+          "label": "Written French structure and usage",
+          "source_locator": {
+            "pdf_page": 1,
+            "anchor": "Principles Governing the Structure",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "FRE-03",
+          "order": 3,
+          "label": "French sounds",
+          "source_locator": {
+            "pdf_page": 4,
+            "anchor": "Workings of French sounds",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "FRE-04",
+          "order": 4,
+          "label": "Culture and civilization",
+          "source_locator": {
+            "pdf_page": 4,
+            "anchor": "Culture and civilization",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        }
+      ],
+      "mapping_status": "not_bound_to_live_version_or_database_ids",
+      "editorial_review_complete": false,
+      "source_2027_applicability": "subject_specific_confirmation_required"
+    },
+    {
+      "subject_code": "GEO",
+      "source_subject_label": "Geography",
+      "source_url": "https://ibass.jamb.gov.ng/static/media/Geography.0bf33e33f48e4139be13.pdf",
+      "source_sha256": "3c3d1b4fc57f37496e4c745f72c9d5ef29d61c13f09a8f91d9961e331a01d62f",
+      "source_pdf_pages": 9,
+      "review_status": "draft_structure",
+      "rights_status": "unverified",
+      "publication_allowed": false,
+      "leaf_coverage": "not_yet_mapped",
+      "nodes": [
+        {
+          "review_id": "GEO-01",
+          "order": 1,
+          "label": "Practical geography",
+          "source_locator": {
+            "pdf_page": 1,
+            "anchor": "Practical geography",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "GEO-02",
+          "order": 2,
+          "label": "Physical geography",
+          "source_locator": {
+            "pdf_page": 2,
+            "anchor": "Physical geography",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "GEO-03",
+          "order": 3,
+          "label": "Human geography",
+          "source_locator": {
+            "pdf_page": 6,
+            "anchor": "Human geography",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "GEO-04",
+          "order": 4,
+          "label": "Regional geography",
+          "source_locator": {
+            "pdf_page": 7,
+            "anchor": "Regional geography",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        }
+      ],
+      "mapping_status": "not_bound_to_live_version_or_database_ids",
+      "editorial_review_complete": false,
+      "source_2027_applicability": "subject_specific_confirmation_required"
+    },
+    {
+      "subject_code": "GOV",
+      "source_subject_label": "Government",
+      "source_url": "https://ibass.jamb.gov.ng/static/media/Government.92e42612590a98eeba28.pdf",
+      "source_sha256": "a162a3db37a000772bf1e111e5c403eed573a3d12aa3c816411d712a534818fe",
+      "source_pdf_pages": 8,
+      "review_status": "draft_structure",
+      "rights_status": "unverified",
+      "publication_allowed": false,
+      "leaf_coverage": "not_yet_mapped",
+      "nodes": [
+        {
+          "review_id": "GOV-01",
+          "order": 1,
+          "label": "Elements of government",
+          "source_locator": {
+            "pdf_page": 1,
+            "anchor": "Elements of government",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "GOV-02",
+          "order": 2,
+          "label": "Political development in Nigeria",
+          "source_locator": {
+            "pdf_page": 3,
+            "anchor": "Political development in Nigeria",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "GOV-03",
+          "order": 3,
+          "label": "Foreign policy and international relations",
+          "source_locator": {
+            "pdf_page": 6,
+            "anchor": "FOREIGN POLICY",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "GOV-04",
+          "order": 4,
+          "label": "International organizations",
+          "source_locator": {
+            "pdf_page": 6,
+            "anchor": "International organizations",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        }
+      ],
+      "mapping_status": "not_bound_to_live_version_or_database_ids",
+      "editorial_review_complete": false,
+      "source_2027_applicability": "subject_specific_confirmation_required"
+    },
+    {
+      "subject_code": "HAU",
+      "source_subject_label": "Hausa",
+      "source_url": "https://ibass.jamb.gov.ng/static/media/Hausa.ca90bfcfca9f88527acf.pdf",
+      "source_sha256": "1fa1bb70e4f30ad5cc637689832ed96d698f3778ee04b4207d12e7a700df53c1",
+      "source_pdf_pages": 10,
+      "review_status": "draft_structure",
+      "rights_status": "unverified",
+      "publication_allowed": false,
+      "leaf_coverage": "not_yet_mapped",
+      "nodes": [
+        {
+          "review_id": "HAU-01",
+          "order": 1,
+          "label": "Language",
+          "source_locator": {
+            "pdf_page": 1,
+            "anchor": "Harshe",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "HAU-02",
+          "order": 2,
+          "label": "Culture",
+          "source_locator": {
+            "pdf_page": 1,
+            "anchor": "Al’adu",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "HAU-03",
+          "order": 3,
+          "label": "Literature",
+          "source_locator": {
+            "pdf_page": 1,
+            "anchor": "Adabi",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        }
+      ],
+      "mapping_status": "not_bound_to_live_version_or_database_ids",
+      "editorial_review_complete": false,
+      "source_2027_applicability": "subject_specific_confirmation_required"
+    },
+    {
+      "subject_code": "HIS",
+      "source_subject_label": "History",
+      "source_url": "https://ibass.jamb.gov.ng/static/media/History.64d0bbe89bb7585bcddc.pdf",
+      "source_sha256": "7d79d865f6a5a51850a9060bf15f819c8c1d27d65a0ee1bca12f5dc6689ac7dc",
+      "source_pdf_pages": 12,
+      "review_status": "draft_structure",
+      "rights_status": "unverified",
+      "publication_allowed": false,
+      "leaf_coverage": "not_yet_mapped",
+      "nodes": [
+        {
+          "review_id": "HIS-01",
+          "order": 1,
+          "label": "Nigeria up to 1800",
+          "source_locator": {
+            "pdf_page": 1,
+            "anchor": "THE NIGERIA AREA UP TO 1800",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "HIS-02",
+          "order": 2,
+          "label": "Nigeria 1800–1900",
+          "source_locator": {
+            "pdf_page": 2,
+            "anchor": "THE NIGERIA AREA 1800",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "HIS-03",
+          "order": 3,
+          "label": "Nigeria 1900–1960",
+          "source_locator": {
+            "pdf_page": 4,
+            "anchor": "NIGERIA 1900",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "HIS-04",
+          "order": 4,
+          "label": "Nigeria since independence",
+          "source_locator": {
+            "pdf_page": 6,
+            "anchor": "Nigeria since independence",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "HIS-05",
+          "order": 5,
+          "label": "West and North Africa",
+          "source_locator": {
+            "pdf_page": 7,
+            "anchor": "West and North Africa",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "HIS-06",
+          "order": 6,
+          "label": "Horn of Africa and Southern Africa",
+          "source_locator": {
+            "pdf_page": 8,
+            "anchor": "Horn of Africa and Southern Africa",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "HIS-07",
+          "order": 7,
+          "label": "Imperialism, colonialism and nation-building",
+          "source_locator": {
+            "pdf_page": 8,
+            "anchor": "IMPERIALISM, COLONIALISM",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        }
+      ],
+      "mapping_status": "not_bound_to_live_version_or_database_ids",
+      "editorial_review_complete": false,
+      "source_2027_applicability": "subject_specific_confirmation_required"
+    },
+    {
+      "subject_code": "HEC",
+      "source_subject_label": "Home-Economics",
+      "source_url": "https://ibass.jamb.gov.ng/static/media/Home-Economics.89dc0fce33c5910e66c6.pdf",
+      "source_sha256": "c3c4337d5307f9d50a226eee6fc448e463994eb4e17343be7e538f9bf3282ce8",
+      "source_pdf_pages": 10,
+      "review_status": "draft_structure",
+      "rights_status": "unverified",
+      "publication_allowed": false,
+      "leaf_coverage": "not_yet_mapped",
+      "nodes": [
+        {
+          "review_id": "HEC-01",
+          "order": 1,
+          "label": "Home economics",
+          "source_locator": {
+            "pdf_page": 1,
+            "anchor": "Home economics",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "HEC-02",
+          "order": 2,
+          "label": "Home management",
+          "source_locator": {
+            "pdf_page": 2,
+            "anchor": "Home management",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "HEC-03",
+          "order": 3,
+          "label": "Foods and nutrition",
+          "source_locator": {
+            "pdf_page": 5,
+            "anchor": "FOODS & NUTRITION",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "HEC-04",
+          "order": 4,
+          "label": "Clothing and textile",
+          "source_locator": {
+            "pdf_page": 8,
+            "anchor": "CLOTHING & TEXTILE",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        }
+      ],
+      "mapping_status": "not_bound_to_live_version_or_database_ids",
+      "editorial_review_complete": false,
+      "source_2027_applicability": "subject_specific_confirmation_required"
+    },
+    {
+      "subject_code": "IGB",
+      "source_subject_label": "Igbo",
+      "source_url": "https://ibass.jamb.gov.ng/static/media/Igbo.7a09449bbeefc39b4f44.pdf",
+      "source_sha256": "11a74b8605caf216e7c2bd668efcddc081a902e847fa616ffd1a15ea9d542ca8",
+      "source_pdf_pages": 9,
+      "review_status": "draft_structure",
+      "rights_status": "unverified",
+      "publication_allowed": false,
+      "leaf_coverage": "not_yet_mapped",
+      "nodes": [
+        {
+          "review_id": "IGB-01",
+          "order": 1,
+          "label": "Language",
+          "source_locator": {
+            "pdf_page": 1,
+            "anchor": "LANGUAGES",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "IGB-02",
+          "order": 2,
+          "label": "Literature",
+          "source_locator": {
+            "pdf_page": 3,
+            "anchor": "Literature",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "IGB-03",
+          "order": 3,
+          "label": "Customs and institutions",
+          "source_locator": {
+            "pdf_page": 5,
+            "anchor": "Customs and institutions",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "IGB-04",
+          "order": 4,
+          "label": "General and current affairs",
+          "source_locator": {
+            "pdf_page": 7,
+            "anchor": "General and current affairs",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        }
+      ],
+      "mapping_status": "not_bound_to_live_version_or_database_ids",
+      "editorial_review_complete": false,
+      "source_2027_applicability": "subject_specific_confirmation_required"
+    },
+    {
+      "subject_code": "ISS",
+      "source_subject_label": "Islamic-Studies",
+      "source_url": "https://ibass.jamb.gov.ng/static/media/Islamic.973a07ea012af6554ed3.pdf",
+      "source_sha256": "69ccbc33817976cea4c49e59d608890d134ed95b70903332722a14ff40b7c145",
+      "source_pdf_pages": 13,
+      "review_status": "draft_structure",
+      "rights_status": "unverified",
+      "publication_allowed": false,
+      "leaf_coverage": "not_yet_mapped",
+      "nodes": [
+        {
+          "review_id": "ISS-01",
+          "order": 1,
+          "label": "Qur’an and Hadith",
+          "source_locator": {
+            "pdf_page": 1,
+            "anchor": "THE QUR’ĀN AND HADĪTH",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "ISS-02",
+          "order": 2,
+          "label": "Tawhid and Fiqh",
+          "source_locator": {
+            "pdf_page": 5,
+            "anchor": "TAWHĪD AND FIQH",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "ISS-03",
+          "order": 3,
+          "label": "Islamic history and civilization",
+          "source_locator": {
+            "pdf_page": 10,
+            "anchor": "Islamic history and civilization",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        }
+      ],
+      "mapping_status": "not_bound_to_live_version_or_database_ids",
+      "editorial_review_complete": false,
+      "source_2027_applicability": "subject_specific_confirmation_required"
+    },
+    {
+      "subject_code": "LIT",
+      "source_subject_label": "Literature-In-English",
+      "source_url": "https://ibass.jamb.gov.ng/static/media/Literature.f24a00818658eb8ecbd0.pdf",
+      "source_sha256": "623832f18e3d26fbf6dd66e80e01cc80002c911e3cf4bcd0fb79c4ae9d82d18e",
+      "source_pdf_pages": 6,
+      "review_status": "draft_structure",
+      "rights_status": "unverified",
+      "publication_allowed": false,
+      "leaf_coverage": "not_yet_mapped",
+      "nodes": [
+        {
+          "review_id": "LIT-01",
+          "order": 1,
+          "label": "Drama",
+          "source_locator": {
+            "pdf_page": 1,
+            "anchor": "Drama",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "LIT-02",
+          "order": 2,
+          "label": "Prose",
+          "source_locator": {
+            "pdf_page": 2,
+            "anchor": "Prose",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "LIT-03",
+          "order": 3,
+          "label": "Poetry",
+          "source_locator": {
+            "pdf_page": 3,
+            "anchor": "Poetry",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "LIT-04",
+          "order": 4,
+          "label": "General literary terms",
+          "source_locator": {
+            "pdf_page": 4,
+            "anchor": "General literary terms",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "LIT-05",
+          "order": 5,
+          "label": "Literary appreciation",
+          "source_locator": {
+            "pdf_page": 4,
+            "anchor": "Literary appreciation",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        }
+      ],
+      "mapping_status": "not_bound_to_live_version_or_database_ids",
+      "editorial_review_complete": false,
+      "source_2027_applicability": "subject_specific_confirmation_required"
+    },
+    {
+      "subject_code": "MAT",
+      "source_subject_label": "Mathematics",
+      "source_url": "https://ibass.jamb.gov.ng/static/media/Mathematics.c0621f4b8b674e75fd05.pdf",
+      "source_sha256": "aff7a7c2cc46036902dda38db1d1567d10982de709305cfbfc90dc437329754f",
+      "source_pdf_pages": 6,
+      "review_status": "draft_structure",
+      "rights_status": "unverified",
+      "publication_allowed": false,
+      "leaf_coverage": "first_pass_subtopic_candidates_only; objectives_and_finer_granularity_not_mapped",
+      "nodes": [
+        {
+          "review_id": "MAT-01",
+          "order": 1,
+          "label": "Number and numeration",
+          "source_locator": {
+            "pdf_page": 2,
+            "anchor": "NUMBER AND NUMERATION",
+            "anchor_verified": true
+          },
+          "children": [
+            {
+              "review_id": "MAT-01-01",
+              "order": 1,
+              "label": "Number bases and modular arithmetic",
+              "source_locator": {
+                "pdf_page": 2,
+                "anchor": "Number bases/Modular Arithmetic",
+                "anchor_verified": true
+              }
+            },
+            {
+              "review_id": "MAT-01-02",
+              "order": 2,
+              "label": "Fractions, decimals, approximation and percentages",
+              "source_locator": {
+                "pdf_page": 2,
+                "anchor": "Fractions, Decimals, Approximations",
+                "anchor_verified": true
+              }
+            },
+            {
+              "review_id": "MAT-01-03",
+              "order": 3,
+              "label": "Indices, logarithms and surds",
+              "source_locator": {
+                "pdf_page": 2,
+                "anchor": "Indices, logarithms and surds",
+                "anchor_verified": true
+              }
+            },
+            {
+              "review_id": "MAT-01-04",
+              "order": 4,
+              "label": "Sets",
+              "source_locator": {
+                "pdf_page": 2,
+                "anchor": "Sets",
+                "anchor_verified": true
+              }
+            }
+          ],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "MAT-02",
+          "order": 2,
+          "label": "Algebra",
+          "source_locator": {
+            "pdf_page": 2,
+            "anchor": "Algebra",
+            "anchor_verified": true
+          },
+          "children": [
+            {
+              "review_id": "MAT-02-01",
+              "order": 1,
+              "label": "Polynomials",
+              "source_locator": {
+                "pdf_page": 2,
+                "anchor": "Polynomials",
+                "anchor_verified": true
+              }
+            },
+            {
+              "review_id": "MAT-02-02",
+              "order": 2,
+              "label": "Variation",
+              "source_locator": {
+                "pdf_page": 3,
+                "anchor": "Variation",
+                "anchor_verified": true
+              }
+            },
+            {
+              "review_id": "MAT-02-03",
+              "order": 3,
+              "label": "Inequalities",
+              "source_locator": {
+                "pdf_page": 3,
+                "anchor": "Inequalities",
+                "anchor_verified": true
+              }
+            },
+            {
+              "review_id": "MAT-02-04",
+              "order": 4,
+              "label": "Progression",
+              "source_locator": {
+                "pdf_page": 3,
+                "anchor": "Progression",
+                "anchor_verified": true
+              }
+            },
+            {
+              "review_id": "MAT-02-05",
+              "order": 5,
+              "label": "Binary operations",
+              "source_locator": {
+                "pdf_page": 3,
+                "anchor": "Binary operations",
+                "anchor_verified": true
+              }
+            },
+            {
+              "review_id": "MAT-02-06",
+              "order": 6,
+              "label": "Matrices and determinants",
+              "source_locator": {
+                "pdf_page": 3,
+                "anchor": "Matrices and determinants",
+                "anchor_verified": true
+              }
+            }
+          ],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "MAT-03",
+          "order": 3,
+          "label": "Geometry and trigonometry",
+          "source_locator": {
+            "pdf_page": 3,
+            "anchor": "Geometry and trigonometry",
+            "anchor_verified": true
+          },
+          "children": [
+            {
+              "review_id": "MAT-03-01",
+              "order": 1,
+              "label": "Euclidean geometry",
+              "source_locator": {
+                "pdf_page": 3,
+                "anchor": "Euclidean geometry",
+                "anchor_verified": true
+              }
+            },
+            {
+              "review_id": "MAT-03-02",
+              "order": 2,
+              "label": "Mensuration",
+              "source_locator": {
+                "pdf_page": 4,
+                "anchor": "Mensuration",
+                "anchor_verified": true
+              }
+            },
+            {
+              "review_id": "MAT-03-03",
+              "order": 3,
+              "label": "Loci",
+              "source_locator": {
+                "pdf_page": 4,
+                "anchor": "Loci",
+                "anchor_verified": true
+              }
+            },
+            {
+              "review_id": "MAT-03-04",
+              "order": 4,
+              "label": "Coordinate geometry",
+              "source_locator": {
+                "pdf_page": 4,
+                "anchor": "Coordinate geometry",
+                "anchor_verified": true
+              }
+            },
+            {
+              "review_id": "MAT-03-05",
+              "order": 5,
+              "label": "Trigonometry",
+              "source_locator": {
+                "pdf_page": 4,
+                "anchor": "Trigonometry",
+                "anchor_verified": true
+              }
+            }
+          ],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "MAT-04",
+          "order": 4,
+          "label": "Calculus",
+          "source_locator": {
+            "pdf_page": 4,
+            "anchor": "Calculus",
+            "anchor_verified": true
+          },
+          "children": [
+            {
+              "review_id": "MAT-04-01",
+              "order": 1,
+              "label": "Differentiation",
+              "source_locator": {
+                "pdf_page": 4,
+                "anchor": "Differentiation",
+                "anchor_verified": true
+              }
+            },
+            {
+              "review_id": "MAT-04-02",
+              "order": 2,
+              "label": "Applications of differentiation",
+              "source_locator": {
+                "pdf_page": 4,
+                "anchor": "Application of differentiation",
+                "anchor_verified": true
+              }
+            },
+            {
+              "review_id": "MAT-04-03",
+              "order": 3,
+              "label": "Integration",
+              "source_locator": {
+                "pdf_page": 5,
+                "anchor": "Integration",
+                "anchor_verified": true
+              }
+            }
+          ],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "MAT-05",
+          "order": 5,
+          "label": "Statistics",
+          "source_locator": {
+            "pdf_page": 5,
+            "anchor": "Statistics",
+            "anchor_verified": true
+          },
+          "children": [
+            {
+              "review_id": "MAT-05-01",
+              "order": 1,
+              "label": "Representation of data",
+              "source_locator": {
+                "pdf_page": 5,
+                "anchor": "Representation of data",
+                "anchor_verified": true
+              }
+            },
+            {
+              "review_id": "MAT-05-02",
+              "order": 2,
+              "label": "Measures of location",
+              "source_locator": {
+                "pdf_page": 5,
+                "anchor": "Measures of location",
+                "anchor_verified": true
+              }
+            },
+            {
+              "review_id": "MAT-05-03",
+              "order": 3,
+              "label": "Measures of dispersion",
+              "source_locator": {
+                "pdf_page": 5,
+                "anchor": "Measures of dispersion",
+                "anchor_verified": true
+              }
+            },
+            {
+              "review_id": "MAT-05-04",
+              "order": 4,
+              "label": "Permutation and combination",
+              "source_locator": {
+                "pdf_page": 5,
+                "anchor": "Permutation and combination",
+                "anchor_verified": true
+              }
+            },
+            {
+              "review_id": "MAT-05-05",
+              "order": 5,
+              "label": "Probability",
+              "source_locator": {
+                "pdf_page": 5,
+                "anchor": "Probability",
+                "anchor_verified": true
+              }
+            }
+          ],
+          "label_kind": "editorial_navigation_candidate"
+        }
+      ],
+      "mapping_status": "not_bound_to_live_version_or_database_ids",
+      "editorial_review_complete": false,
+      "source_2027_applicability": "subject_specific_confirmation_required"
+    },
+    {
+      "subject_code": "MUS",
+      "source_subject_label": "Music",
+      "source_url": "https://ibass.jamb.gov.ng/static/media/Music.6a7142057d840d45959d.pdf",
+      "source_sha256": "991be53543662ec259542f5dbb263efa06dfcca428af3df76d7182f79288c720",
+      "source_pdf_pages": 9,
+      "review_status": "draft_structure",
+      "rights_status": "unverified",
+      "publication_allowed": false,
+      "leaf_coverage": "not_yet_mapped",
+      "nodes": [
+        {
+          "review_id": "MUS-01",
+          "order": 1,
+          "label": "Rudiments of music",
+          "source_locator": {
+            "pdf_page": 1,
+            "anchor": "Rudiments of music",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "MUS-02",
+          "order": 2,
+          "label": "Elementary harmony",
+          "source_locator": {
+            "pdf_page": 2,
+            "anchor": "Elementary harmony",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "MUS-03",
+          "order": 3,
+          "label": "History and literature of African music",
+          "source_locator": {
+            "pdf_page": 4,
+            "anchor": "History and literature of African music",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "MUS-04",
+          "order": 4,
+          "label": "History and literature of Western music",
+          "source_locator": {
+            "pdf_page": 6,
+            "anchor": "History and literature of Western music",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "MUS-05",
+          "order": 5,
+          "label": "Comparative music studies",
+          "source_locator": {
+            "pdf_page": 7,
+            "anchor": "Comparative music studies",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        }
+      ],
+      "mapping_status": "not_bound_to_live_version_or_database_ids",
+      "editorial_review_complete": false,
+      "source_2027_applicability": "subject_specific_confirmation_required"
+    },
+    {
+      "subject_code": "PHY",
+      "source_subject_label": "Physics",
+      "source_url": "https://ibass.jamb.gov.ng/static/media/Physics.16527a294cb7e7a87a35.pdf",
+      "source_sha256": "62f5ac84592735cd5829296cb52da5bc8b582ee0f2227999cca73b58dcabfee5",
+      "source_pdf_pages": 20,
+      "review_status": "draft_structure",
+      "rights_status": "unverified",
+      "publication_allowed": false,
+      "leaf_coverage": "not_yet_mapped",
+      "nodes": [
+        {
+          "review_id": "PHY-01",
+          "order": 1,
+          "label": "Measurements and units",
+          "source_locator": {
+            "pdf_page": 1,
+            "anchor": "Measurements and units",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "PHY-02",
+          "order": 2,
+          "label": "Scalars and vectors",
+          "source_locator": {
+            "pdf_page": 2,
+            "anchor": "Scalars and vectors",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "PHY-03",
+          "order": 3,
+          "label": "Position, distance and displacement",
+          "source_locator": {
+            "pdf_page": 2,
+            "anchor": "Measurement, position, distance",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "PHY-04",
+          "order": 4,
+          "label": "Motion",
+          "source_locator": {
+            "pdf_page": 3,
+            "anchor": "Motion",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "PHY-05",
+          "order": 5,
+          "label": "Gravitational field",
+          "source_locator": {
+            "pdf_page": 4,
+            "anchor": "Gravitational field",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "PHY-06",
+          "order": 6,
+          "label": "Equilibrium of forces",
+          "source_locator": {
+            "pdf_page": 5,
+            "anchor": "Equilibrium of forces",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "PHY-07",
+          "order": 7,
+          "label": "Friction",
+          "source_locator": {
+            "pdf_page": 5,
+            "anchor": "Friction",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "PHY-08",
+          "order": 8,
+          "label": "Work, energy and power",
+          "source_locator": {
+            "pdf_page": 5,
+            "anchor": "Work, energy and power",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "PHY-09",
+          "order": 9,
+          "label": "Simple machines",
+          "source_locator": {
+            "pdf_page": 6,
+            "anchor": "Simple machines",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "PHY-10",
+          "order": 10,
+          "label": "Elasticity",
+          "source_locator": {
+            "pdf_page": 7,
+            "anchor": "Elasticity",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "PHY-11",
+          "order": 11,
+          "label": "Pressure",
+          "source_locator": {
+            "pdf_page": 7,
+            "anchor": "Pressure",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "PHY-12",
+          "order": 12,
+          "label": "Liquids at rest",
+          "source_locator": {
+            "pdf_page": 7,
+            "anchor": "Liquids at rest",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "PHY-13",
+          "order": 13,
+          "label": "Temperature and its measurement",
+          "source_locator": {
+            "pdf_page": 7,
+            "anchor": "Temperature and its measurement",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "PHY-14",
+          "order": 14,
+          "label": "Quantity of heat",
+          "source_locator": {
+            "pdf_page": 8,
+            "anchor": "Quantity of heat",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "PHY-15",
+          "order": 15,
+          "label": "Change of state",
+          "source_locator": {
+            "pdf_page": 8,
+            "anchor": "Change of state",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "PHY-16",
+          "order": 16,
+          "label": "Thermal expansion",
+          "source_locator": {
+            "pdf_page": 8,
+            "anchor": "Thermal expansion",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "PHY-17",
+          "order": 17,
+          "label": "Gas laws",
+          "source_locator": {
+            "pdf_page": 9,
+            "anchor": "Gas laws",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "PHY-18",
+          "order": 18,
+          "label": "Vapours",
+          "source_locator": {
+            "pdf_page": 9,
+            "anchor": "Vapours",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "PHY-19",
+          "order": 19,
+          "label": "Structure of matter and kinetic theory",
+          "source_locator": {
+            "pdf_page": 9,
+            "anchor": "Structure of matter and kinetic theory",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "PHY-20",
+          "order": 20,
+          "label": "Heat transfer",
+          "source_locator": {
+            "pdf_page": 10,
+            "anchor": "Heat transfer",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "PHY-21",
+          "order": 21,
+          "label": "Waves",
+          "source_locator": {
+            "pdf_page": 10,
+            "anchor": "Waves",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "PHY-22",
+          "order": 22,
+          "label": "Propagation of sound waves",
+          "source_locator": {
+            "pdf_page": 11,
+            "anchor": "Propagation of sound waves",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "PHY-23",
+          "order": 23,
+          "label": "Characteristics of sound waves",
+          "source_locator": {
+            "pdf_page": 12,
+            "anchor": "Characteristics of sound waves",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "PHY-24",
+          "order": 24,
+          "label": "Light energy",
+          "source_locator": {
+            "pdf_page": 12,
+            "anchor": "Light energy",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "PHY-25",
+          "order": 25,
+          "label": "Reflection at plane and curved surfaces",
+          "source_locator": {
+            "pdf_page": 12,
+            "anchor": "Reflection of Light",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "PHY-26",
+          "order": 26,
+          "label": "Refraction at plane and curved surfaces",
+          "source_locator": {
+            "pdf_page": 13,
+            "anchor": "Refraction of Light",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "PHY-27",
+          "order": 27,
+          "label": "Optical instruments",
+          "source_locator": {
+            "pdf_page": 13,
+            "anchor": "Optical instruments",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "PHY-28",
+          "order": 28,
+          "label": "Dispersion and colours",
+          "source_locator": {
+            "pdf_page": 14,
+            "anchor": "Dispersion of light and colours",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "PHY-29",
+          "order": 29,
+          "label": "Electrostatics",
+          "source_locator": {
+            "pdf_page": 14,
+            "anchor": "Electrostatics",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "PHY-30",
+          "order": 30,
+          "label": "Capacitors",
+          "source_locator": {
+            "pdf_page": 14,
+            "anchor": "Capacitors",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "PHY-31",
+          "order": 31,
+          "label": "Electric cells",
+          "source_locator": {
+            "pdf_page": 15,
+            "anchor": "Electric cells",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "PHY-32",
+          "order": 32,
+          "label": "Current electricity",
+          "source_locator": {
+            "pdf_page": 15,
+            "anchor": "Current electricity",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "PHY-33",
+          "order": 33,
+          "label": "Electrical energy and power",
+          "source_locator": {
+            "pdf_page": 15,
+            "anchor": "Electrical energy and power",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "PHY-34",
+          "order": 34,
+          "label": "Magnets and magnetic fields",
+          "source_locator": {
+            "pdf_page": 16,
+            "anchor": "Magnets and magnetic fields",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "PHY-35",
+          "order": 35,
+          "label": "Force on a conductor in a magnetic field",
+          "source_locator": {
+            "pdf_page": 16,
+            "anchor": "Force on a Current-Carrying Conductor",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "PHY-36",
+          "order": 36,
+          "label": "Electromagnetic induction",
+          "source_locator": {
+            "pdf_page": 17,
+            "anchor": "Electromagnetic induction",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "PHY-37",
+          "order": 37,
+          "label": "Simple AC circuits",
+          "source_locator": {
+            "pdf_page": 17,
+            "anchor": "Simple A. C. Circuits",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "PHY-38",
+          "order": 38,
+          "label": "Conduction through materials",
+          "source_locator": {
+            "pdf_page": 18,
+            "anchor": "Conduction of Electricity Through",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "PHY-39",
+          "order": 39,
+          "label": "Elementary modern physics",
+          "source_locator": {
+            "pdf_page": 18,
+            "anchor": "Elementary modern physics",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "PHY-40",
+          "order": 40,
+          "label": "Introductory electronics",
+          "source_locator": {
+            "pdf_page": 19,
+            "anchor": "Introductory electronics",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "PHY-41",
+          "order": 41,
+          "label": "Fibre optics and lasers",
+          "source_locator": {
+            "pdf_page": 19,
+            "anchor": "Introduction to fibre optics and lasers",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        }
+      ],
+      "mapping_status": "not_bound_to_live_version_or_database_ids",
+      "editorial_review_complete": false,
+      "source_2027_applicability": "subject_specific_confirmation_required"
+    },
+    {
+      "subject_code": "PHE",
+      "source_subject_label": "Physical and Health Education",
+      "source_url": "https://ibass.jamb.gov.ng/static/media/PHE.d3add6c626efcb3f0f2b.pdf",
+      "source_sha256": "a6f02706da5daa5e0ad27542e4f2edeade64297deff63d5278809181e2de6345",
+      "source_pdf_pages": 11,
+      "review_status": "draft_structure",
+      "rights_status": "unverified",
+      "publication_allowed": false,
+      "leaf_coverage": "not_yet_mapped",
+      "nodes": [
+        {
+          "review_id": "PHE-01",
+          "order": 1,
+          "label": "Foundations and principles of PHE",
+          "source_locator": {
+            "pdf_page": 1,
+            "anchor": "FOUNDATIONS AND PRINCIPLES",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "PHE-02",
+          "order": 2,
+          "label": "Human anatomy and physiology",
+          "source_locator": {
+            "pdf_page": 2,
+            "anchor": "HUMAN ANATOMY AND PHYSIOLOGY",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "PHE-03",
+          "order": 3,
+          "label": "Sports and games",
+          "source_locator": {
+            "pdf_page": 3,
+            "anchor": "THEORY OF PRACTICE OF SPORTS",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "PHE-04",
+          "order": 4,
+          "label": "Food, nutrition and drugs",
+          "source_locator": {
+            "pdf_page": 4,
+            "anchor": "FOOD, NUTRITION AND DRUGS",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "PHE-05",
+          "order": 5,
+          "label": "Physical fitness and conditioning",
+          "source_locator": {
+            "pdf_page": 5,
+            "anchor": "PHYSICAL FITNESS AND CONDITIONING",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "PHE-06",
+          "order": 6,
+          "label": "Recreation, leisure and dance",
+          "source_locator": {
+            "pdf_page": 6,
+            "anchor": "RECREATION, LEISURE AND DANCE",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "PHE-07",
+          "order": 7,
+          "label": "First aid and safety",
+          "source_locator": {
+            "pdf_page": 6,
+            "anchor": "FIRST AID AND SAFETY",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "PHE-08",
+          "order": 8,
+          "label": "National and international sports competitions",
+          "source_locator": {
+            "pdf_page": 7,
+            "anchor": "National and international sports competitions",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "PHE-09",
+          "order": 9,
+          "label": "Corrective and adapted physical education",
+          "source_locator": {
+            "pdf_page": 8,
+            "anchor": "CORRECTIVE AND ADAPTED PHYSICAL EDUCATION",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "PHE-10",
+          "order": 10,
+          "label": "Personal, community and environmental health",
+          "source_locator": {
+            "pdf_page": 8,
+            "anchor": "Personal, community and environmental health",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "PHE-11",
+          "order": 11,
+          "label": "Communicable and non-communicable diseases",
+          "source_locator": {
+            "pdf_page": 9,
+            "anchor": "Communicable and non-communicable diseases",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "PHE-12",
+          "order": 12,
+          "label": "Family life and human sexuality",
+          "source_locator": {
+            "pdf_page": 10,
+            "anchor": "FAMILY LIFE AND HUMAN SEXUALITY",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        }
+      ],
+      "mapping_status": "not_bound_to_live_version_or_database_ids",
+      "editorial_review_complete": false,
+      "source_2027_applicability": "subject_specific_confirmation_required"
+    },
+    {
+      "subject_code": "POA",
+      "source_subject_label": "Principles of Accounts",
+      "source_url": "https://ibass.jamb.gov.ng/static/media/Principles-of-Accounting.64fc902ad37449d1f6ff.pdf",
+      "source_sha256": "5662db42e549144884a4ec01d1bade7b58220198eac58c9531e904fd77642e27",
+      "source_pdf_pages": 6,
+      "review_status": "draft_structure",
+      "rights_status": "unverified",
+      "publication_allowed": false,
+      "leaf_coverage": "not_yet_mapped",
+      "nodes": [
+        {
+          "review_id": "POA-01",
+          "order": 1,
+          "label": "Bookkeeping and accounting",
+          "source_locator": {
+            "pdf_page": 1,
+            "anchor": "Nature and Significance of Book keeping",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "POA-02",
+          "order": 2,
+          "label": "Double entry",
+          "source_locator": {
+            "pdf_page": 1,
+            "anchor": "Principles of Double Entry",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "POA-03",
+          "order": 3,
+          "label": "Ethics and professional bodies",
+          "source_locator": {
+            "pdf_page": 2,
+            "anchor": "Ethics, Professional and Regulatory Bodies",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "POA-04",
+          "order": 4,
+          "label": "Cash book",
+          "source_locator": {
+            "pdf_page": 2,
+            "anchor": "Cash book",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "POA-05",
+          "order": 5,
+          "label": "Bank transactions and reconciliation",
+          "source_locator": {
+            "pdf_page": 2,
+            "anchor": "Bank transactions and reconciliation",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "POA-06",
+          "order": 6,
+          "label": "Final accounts of a sole trader",
+          "source_locator": {
+            "pdf_page": 2,
+            "anchor": "Final Accounts of a Sole",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "POA-07",
+          "order": 7,
+          "label": "Stock valuation",
+          "source_locator": {
+            "pdf_page": 3,
+            "anchor": "Stock valuation",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "POA-08",
+          "order": 8,
+          "label": "Control accounts",
+          "source_locator": {
+            "pdf_page": 3,
+            "anchor": "Control accounts",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "POA-09",
+          "order": 9,
+          "label": "Incomplete records and single entry",
+          "source_locator": {
+            "pdf_page": 3,
+            "anchor": "Incomplete records and single entry",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "POA-10",
+          "order": 10,
+          "label": "Manufacturing accounts",
+          "source_locator": {
+            "pdf_page": 3,
+            "anchor": "Manufacturing accounts",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "POA-11",
+          "order": 11,
+          "label": "Not-for-profit accounts",
+          "source_locator": {
+            "pdf_page": 3,
+            "anchor": "Accounts of Not-For-Profit-Making",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "POA-12",
+          "order": 12,
+          "label": "Departmental accounts",
+          "source_locator": {
+            "pdf_page": 4,
+            "anchor": "Departmental accounts",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "POA-13",
+          "order": 13,
+          "label": "Branch accounts",
+          "source_locator": {
+            "pdf_page": 4,
+            "anchor": "Branch accounts",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "POA-14",
+          "order": 14,
+          "label": "Joint venture accounts",
+          "source_locator": {
+            "pdf_page": 4,
+            "anchor": "Joint venture accounts",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "POA-15",
+          "order": 15,
+          "label": "Partnership accounts",
+          "source_locator": {
+            "pdf_page": 4,
+            "anchor": "Partnership accounts",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "POA-16",
+          "order": 16,
+          "label": "Company accounts",
+          "source_locator": {
+            "pdf_page": 4,
+            "anchor": "Introduction to Company Accounts",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "POA-17",
+          "order": 17,
+          "label": "Public sector accounting",
+          "source_locator": {
+            "pdf_page": 5,
+            "anchor": "Public sector accounting",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "POA-18",
+          "order": 18,
+          "label": "Information technology in accounting",
+          "source_locator": {
+            "pdf_page": 5,
+            "anchor": "Information technology in accounting",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        }
+      ],
+      "mapping_status": "not_bound_to_live_version_or_database_ids",
+      "editorial_review_complete": false,
+      "source_2027_applicability": "subject_specific_confirmation_required"
+    },
+    {
+      "subject_code": "ENG",
+      "source_subject_label": "Use of English",
+      "source_url": "https://ibass.jamb.gov.ng/static/media/Use-of-English.885e843b1f51e6a3d062.pdf",
+      "source_sha256": "f2b6bc4f2c30fc19ecf57bc14778100ce0deca59445beff9f7e10f34cbf7da18",
+      "source_pdf_pages": 5,
+      "review_status": "draft_structure",
+      "rights_status": "unverified",
+      "publication_allowed": false,
+      "leaf_coverage": "first_pass_subtopic_candidates_only; objectives_and_finer_granularity_not_mapped",
+      "nodes": [
+        {
+          "review_id": "ENG-01",
+          "order": 1,
+          "label": "Comprehension and summary",
+          "source_locator": {
+            "pdf_page": 1,
+            "anchor": "Comprehension and summary",
+            "anchor_verified": true
+          },
+          "children": [
+            {
+              "review_id": "ENG-01-01",
+              "order": 1,
+              "label": "Comprehension passages",
+              "source_locator": {
+                "pdf_page": 3,
+                "anchor": "comprehension passage",
+                "anchor_verified": true
+              }
+            },
+            {
+              "review_id": "ENG-01-02",
+              "order": 2,
+              "label": "Summary passages",
+              "source_locator": {
+                "pdf_page": 3,
+                "anchor": "summary passage",
+                "anchor_verified": true
+              }
+            },
+            {
+              "review_id": "ENG-01-03",
+              "order": 3,
+              "label": "Cloze passages",
+              "source_locator": {
+                "pdf_page": 3,
+                "anchor": "cloze passage",
+                "anchor_verified": true
+              }
+            },
+            {
+              "review_id": "ENG-01-04",
+              "order": 4,
+              "label": "Reading text — title awaiting confirmation",
+              "source_locator": {
+                "pdf_page": 1,
+                "anchor": "Approved Reading Text",
+                "anchor_verified": true
+              },
+              "blocker": "Current document does not identify the reading-text title. Do not select a novel from legacy search snippets."
+            }
+          ],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "ENG-02",
+          "order": 2,
+          "label": "Lexis and structure",
+          "source_locator": {
+            "pdf_page": 2,
+            "anchor": "Lexis and structure",
+            "anchor_verified": true
+          },
+          "children": [
+            {
+              "review_id": "ENG-02-01",
+              "order": 1,
+              "label": "Synonyms",
+              "source_locator": {
+                "pdf_page": 2,
+                "anchor": "Synonyms",
+                "anchor_verified": true
+              }
+            },
+            {
+              "review_id": "ENG-02-02",
+              "order": 2,
+              "label": "Antonyms",
+              "source_locator": {
+                "pdf_page": 2,
+                "anchor": "Antonyms",
+                "anchor_verified": true
+              }
+            },
+            {
+              "review_id": "ENG-02-03",
+              "order": 3,
+              "label": "Clause and sentence patterns",
+              "source_locator": {
+                "pdf_page": 2,
+                "anchor": "Clause and sentence patterns",
+                "anchor_verified": true
+              }
+            },
+            {
+              "review_id": "ENG-02-04",
+              "order": 4,
+              "label": "Word classes and functions",
+              "source_locator": {
+                "pdf_page": 2,
+                "anchor": "word classes and their functions",
+                "anchor_verified": true
+              }
+            },
+            {
+              "review_id": "ENG-02-05",
+              "order": 5,
+              "label": "Grammar: tense, agreement and related forms",
+              "source_locator": {
+                "pdf_page": 2,
+                "anchor": "mood, tense, aspect, number",
+                "anchor_verified": true
+              }
+            },
+            {
+              "review_id": "ENG-02-06",
+              "order": 6,
+              "label": "Mechanics",
+              "source_locator": {
+                "pdf_page": 2,
+                "anchor": "Mechanics",
+                "anchor_verified": true
+              }
+            },
+            {
+              "review_id": "ENG-02-07",
+              "order": 7,
+              "label": "Literal, figurative and idiomatic usage",
+              "source_locator": {
+                "pdf_page": 2,
+                "anchor": "ordinary usage, figurative usage",
+                "anchor_verified": true
+              }
+            }
+          ],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "ENG-03",
+          "order": 3,
+          "label": "Oral forms",
+          "source_locator": {
+            "pdf_page": 2,
+            "anchor": "Oral forms",
+            "anchor_verified": true
+          },
+          "children": [
+            {
+              "review_id": "ENG-03-01",
+              "order": 1,
+              "label": "Vowels",
+              "source_locator": {
+                "pdf_page": 2,
+                "anchor": "Vowels",
+                "anchor_verified": true
+              }
+            },
+            {
+              "review_id": "ENG-03-02",
+              "order": 2,
+              "label": "Consonants",
+              "source_locator": {
+                "pdf_page": 2,
+                "anchor": "Consonants",
+                "anchor_verified": true
+              }
+            },
+            {
+              "review_id": "ENG-03-03",
+              "order": 3,
+              "label": "Rhymes",
+              "source_locator": {
+                "pdf_page": 2,
+                "anchor": "Rhymes",
+                "anchor_verified": true
+              }
+            },
+            {
+              "review_id": "ENG-03-04",
+              "order": 4,
+              "label": "Word stress",
+              "source_locator": {
+                "pdf_page": 2,
+                "anchor": "Word stress",
+                "anchor_verified": true
+              }
+            },
+            {
+              "review_id": "ENG-03-05",
+              "order": 5,
+              "label": "Emphatic stress",
+              "source_locator": {
+                "pdf_page": 2,
+                "anchor": "Emphatic stress",
+                "anchor_verified": true
+              }
+            }
+          ],
+          "label_kind": "editorial_navigation_candidate"
+        }
+      ],
+      "mapping_status": "not_bound_to_live_version_or_database_ids",
+      "editorial_review_complete": false,
+      "source_2027_applicability": "subject_specific_confirmation_required"
+    },
+    {
+      "subject_code": "YOR",
+      "source_subject_label": "Yoruba",
+      "source_url": "https://ibass.jamb.gov.ng/static/media/Yoruba.c9f0848e61ff86f1349b.pdf",
+      "source_sha256": "bd2f306a457863a2144957fd9586d88b6354629355553a8b92fcbf053cff04cd",
+      "source_pdf_pages": 5,
+      "review_status": "draft_structure",
+      "rights_status": "unverified",
+      "publication_allowed": false,
+      "leaf_coverage": "not_yet_mapped",
+      "nodes": [
+        {
+          "review_id": "YOR-01",
+          "order": 1,
+          "label": "Language",
+          "source_locator": {
+            "pdf_page": 2,
+            "anchor": "Language",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "YOR-02",
+          "order": 2,
+          "label": "Literature",
+          "source_locator": {
+            "pdf_page": 3,
+            "anchor": "Literature",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        },
+        {
+          "review_id": "YOR-03",
+          "order": 3,
+          "label": "Culture",
+          "source_locator": {
+            "pdf_page": 4,
+            "anchor": "Culture",
+            "anchor_verified": true
+          },
+          "children": [],
+          "label_kind": "editorial_navigation_candidate"
+        }
+      ],
+      "mapping_status": "not_bound_to_live_version_or_database_ids",
+      "editorial_review_complete": false,
+      "source_2027_applicability": "subject_specific_confirmation_required"
+    }
+  ],
+  "known_source_issues": [
+    {
+      "subject_code": "CST",
+      "pdf_pages": [
+        1,
+        3,
+        6,
+        10,
+        11,
+        12,
+        16,
+        19,
+        20
+      ],
+      "issue": "Overview calls the list ten sections but lists A–K; detailed body has sections A–I with different grouping. Draft follows detailed body, not the overview. Academic sign-off required."
+    },
+    {
+      "subject_code": "PHE",
+      "pdf_pages": [
+        3,
+        4,
+        5
+      ],
+      "issue": "Section D heading appears on page 4 before continued sports material in extraction and source layout. Do not automatically attach ball/racket games to food/nutrition. Leaf mapping withheld."
+    },
+    {
+      "subject_code": "PHY",
+      "pdf_pages": [
+        2
+      ],
+      "issue": "Source numbering splits item 2 into 2a and 2b; draft represents these as separate navigation candidates, giving 41 rather than 40 root candidates. Not a claim about examination question counts."
+    },
+    {
+      "subject_code": "HIS",
+      "pdf_pages": [
+        1,
+        7,
+        8
+      ],
+      "issue": "Source groups Nigerian history and Africa/wider-world history with reused section letters. Draft labels remain unique by subject/order; preserve part context when expanding leaves."
+    },
+    {
+      "subject_code": "YOR",
+      "pdf_pages": [
+        3
+      ],
+      "issue": "Poetry page selection explicitly varies by year. Retain 2027-specific selection at later text review; no book content included."
+    },
+    {
+      "subject_code": "ART",
+      "pdf_pages": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "issue": "Source sections are lettered without descriptive section titles. Descriptive draft labels are editorial navigation proposals, not verbatim official headings."
+    },
+    {
+      "subject_code": "ENG",
+      "pdf_pages": [
+        1
+      ],
+      "issue": "Approved reading text is unnamed. Novel-dependent material remains blocked."
+    }
+  ],
+  "coverage_limits": [
+    "All 25 subjects included for review, not an owner-selected launch subset.",
+    "213 root navigation candidates; sectioned and flat topic structures are deliberately distinguished only at editorial review, not forced into live rows.",
+    "English and Mathematics have first-pass subtopic candidates. Other 23 subjects still need leaf mapping.",
+    "No full lesson content, learning objectives, questions, quotations, reading-text/book content, AI grounding, or audio prepared.",
+    "No rights approval, current-season binding, production import, publication, runtime enablement or deployment authorized by this file."
+  ]
+}
