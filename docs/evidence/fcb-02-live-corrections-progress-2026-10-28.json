@@ -103,6 +103,7 @@
     "preflight": "Exact seven-field row snapshots and draft/pending version state; exact already-applied states skip writes",
     "execution": "Sequential conditional PATCHes and read-back; not a database transaction or version lock",
     "partial_failure": "Require check before retry; already-saved exact states are not repeated",
-    "remaining_work": "Finish selection-change callback fix, exact-source CI/review/preview, then user clicks Apply reviewed corrections in authenticated stable preview."
-  }
+    "remaining_work": "Verified action released to production via PR12/main b45c4d7. User clicks Apply reviewed corrections in genuine admin session; final readback still required."
+  },
+  "last_rechecked": "2026-10-29 Africa/Lagos"
 }
