@@ -2854,3 +2854,34 @@ test.describe('ACE JAMB remaining reviewed correction batch', () => {
     expect(writes.filter((w) => w.id === writes[0].id)).toHaveLength(1)
   })
 })
+
+test('finishing reviewed corrections refreshes the currently selected syllabus version', async ({ page }) => {
+  const { rows, writes } = await mockReviewedCorrectionBatch(page)
+  let release: () => void = () => undefined
+  const gate = new Promise<void>((resolve) => { release = resolve })
+  const topicReads: string[] = []
+  await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/topics'), async (route) => {
+    topicReads.push(new URL(route.request().url()).searchParams.get('syllabus_version_id') ?? '')
+    await route.fulfill({ json: [] })
+  })
+  await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/subtopics'), async (route) => {
+    const q = new URL(route.request().url()).searchParams
+    if (route.request().method() === 'GET' && q.has('id') && writes.length === 3) await gate
+    await route.fallback()
+  })
+  await page.goto('/admin-academic')
+  await expect(page.getByRole('heading', { name: 'Create a draft syllabus version' })).toBeVisible()
+  const panel = page.getByRole('region', { name: 'Finish reviewed corrections' })
+  await expect(panel).toBeVisible({ timeout: 1000 })
+  await panel.getByRole('button', { name: 'Apply reviewed corrections' }).click()
+  await expect.poll(() => writes.length).toBe(3)
+  const target = rows[1].syllabus_version_id
+  await page.getByLabel('Syllabus version', { exact: true }).selectOption(target)
+  await expect.poll(() => topicReads.at(-1)).toBe(`eq.${target}`)
+  const before = topicReads.length
+  release()
+  await expect(panel.getByRole('status')).toContainText('All reviewed corrections are saved')
+  await expect.poll(() => topicReads.length).toBeGreaterThan(before)
+  expect(topicReads.at(-1)).toBe(`eq.${target}`)
+  await expect(page.getByLabel('Syllabus version', { exact: true })).toHaveValue(target)
+})
