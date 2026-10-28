@@ -60,7 +60,31 @@
     "current_deployed_commit": "UNVERIFIED",
     "rollback_deployment_version": "UNVERIFIED",
     "direct_admin_academic_route_on_provider": "UNVERIFIED",
-    "authenticated_live_preview": "UNVERIFIED"
+    "authenticated_live_preview": "UNVERIFIED",
+    "github_check_run_evidence": {
+      "main": {
+        "check_id": 122456058417,
+        "source_sha": "17f29e137a483066789e0242f20637c89beeae08",
+        "conclusion": "success",
+        "build_id": "99ddf614-8a81-41e6-b9fe-aa72d82edd2f",
+        "version_id": "809c6301-c4b1-41a4-ae7e-b6e054aacc46",
+        "details_url": "https://dash.cloudflare.com/a2812f47dffc2f372d582b67bffb5334/workers/services/view/nova-ace-jamb/production/builds/99ddf614-8a81-41e6-b9fe-aa72d82edd2f"
+      },
+      "candidate": {
+        "check_id": 122849757177,
+        "source_sha": "66e06c5f14aa6d2fcfb10a1b77f5256e6247ec06",
+        "conclusion": "failure",
+        "build_id": "6f148286-5a67-4787-abf2-5ee544915c25",
+        "details_url": "https://dash.cloudflare.com/a2812f47dffc2f372d582b67bffb5334/workers/services/view/nova-ace-jamb/production/builds/6f148286-5a67-4787-abf2-5ee544915c25",
+        "annotations_count": 0,
+        "error_log_available_in_github_summary": false
+      },
+      "worker": "nova-ace-jamb",
+      "app": "Cloudflare Workers and Pages",
+      "source": "GitHub full check-runs API; legacy combined statuses alone returned empty."
+    },
+    "external_github_app_build_integration": true,
+    "rollback_candidate_from_historical_success": "809c6301-c4b1-41a4-ae7e-b6e054aacc46 (retention/activation unverified)"
   },
   "performed": [
     "Read current source/main/PR and full workflow conclusions",
@@ -75,5 +99,6 @@
     "Role or publication changes",
     "Authentication fallback or credential handling"
   ],
-  "next_action": "Obtain read-only Cloudflare Workers deployment metadata: actual build branch/trigger, currently deployed commit/version and rollback deployment reference; then prepare specific release approval. Do not merge before verifying external deployment side effects."
+  "next_action": "Obtain the actual failure log from Cloudflare build6f148286-5a67-4787-abf2-5ee544915c25; diagnose root cause before changes, merge, deployment or staging. GitHub summary has no error log/annotations and no Cloudflare log connector was found.",
+  "release_status": "BLOCKED: failed external Cloudflare Worker build on verified runtime source"
 }
