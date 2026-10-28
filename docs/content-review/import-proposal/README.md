@@ -106,3 +106,10 @@ Cloudflare release remains **BLOCKED pending provider metadata**. Cloudflare Wor
 
 
 **Release blocker found in full GitHub check-runs:** the external Cloudflare integration does exist. Main17f29e1 succeeded (build99ddf614-8a81-41e6-b9fe-aa72d82edd2f,version809c6301-c4b1-41a4-ae7e-b6e054aacc46), but verified application source66e06c5 has FAILED Cloudflare check122849757177,build6f148286-5a67-4787-abf2-5ee544915c25. Legacy commit statuses did not expose these checks. The actual failed-build log is required before diagnosing; GitHub summary has no error/annotations and no Cloudflare log connector was found. Application tests passed, but release is BLOCKED. Historical successful version is not proof of current activation or rollback retention. Exact dashboard link and check provenance are recorded in release-readiness evidence. No merge/deploy/staging occurred.
+
+
+## Cloudflare diagnosis resolved; preview fix prepared
+
+Direct Cloudflare access now works. Failed build 6f148286 successfully builds the app,then Wrangler 4.154.0 rejects missingpreviews{}. Actual provider branch is security/fcb-01-contract-audit with npxwranglerpreview; auto-build enabled,otherbranch previews disabled. Activeproduction809c6301(version641) remains100%,linked tomain17f29e1; previousversion640 is retained. No provider changes made.
+
+Source-only candidate `fix/fcb-02-cloudflare-preview-config` adds root wrangler.jsonc withpreviews{},./dist SPA assets,and currentWorkername/compatdate/observability. No extra app dependencies. Typecheck/build,Wranglerconfigreader/dryrun,and6local workerd route/filechecks PASS; independent configreview no blocker. Current connected branch is unchanged because applying the fix there creates an actualPreview. Specific approval for that preview run is next; main/prodrelease and contentstaging remain separate. [Direct diagnosis evidence](../../evidence/fcb-02-cloudflare-build-diagnosis-2026-10-28.json).
