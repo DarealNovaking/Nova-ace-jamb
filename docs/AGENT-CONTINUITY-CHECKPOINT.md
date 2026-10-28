@@ -1,6 +1,25 @@
 # ACE JAMB — Current Agent Checkpoint
 
-> **Current-state rule:** this opening section is authoritative. Older entries below are historical and must not override the latest verified evidence.
+> **Current-state rule:** this opening section is authoritative. All entries below the historical divider are evidence history; their old scope/next-action claims do not override this section.
+
+- **Updated:** 2026-10-28 — FCB-01 approved mock-paper contract.
+- **Repository:** `DarealNovaking/Nova-ace-jamb`. Main remains the release base; active reviewed source is PR #10, `security/fcb-01-contract-audit`.
+- **Latest source/test SHA:** `6ce26be683375cfcd4c510ddc747f6aed15582d4`. Working directory `/workspace/scratch/84a394a7502b/Nova-ace-jamb`, local branch `review/fcb-01-mock-contract`. Use current remote evidence if this workspace expires.
+- **Verified:** GitHub Verify [40606756714](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40606756714) PASS: 13 SQL suites, 12 native concurrency cases, schema/catalog/ACL recovery, Node/Deno, typecheck/build. Native job `122548059778` logs inspected, including mock capture versus approval under both isolation levels. E2E [40606756727](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40606756727) PASS, **164 desktop/mobile tests, zero failures**; actual job `122548059746` log inspected (`164 passed (3.7m)`).
+- **Production:** four specifically approved security migrations applied and live-verified, most recent signup correction `20261027220044`. Do not reapply signup. Configuration/season/taxonomy and broader CBT/mock proposals remain **unapplied** and disconnected from the frontend. No live content changes, deployments or billable provider activation in this continuation.
+- **Implemented in reviewed source:** owner-only CBT mutations/delivery, private immutable paper versions and server scoring; administrator-only audited season/config approvals; protected active compositions; syllabus version identity; approved-config mock start enforcing English plus three configured subjects, exact per-subject counts/timing and lawful season-specific question selection. Caller-controlled generic mock start fails closed. Existing frontend retained.
+- **Live read-only evidence:** zero attempts, approved published questions, active configurations and active seasons. No mock/practice quota flags exist; ACE Pass metadata only defines seasonal access/price direction, not exact free/premium limits. No business thresholds invented.
+- **Active programme:** ONE final completion batch FCB-01..FCB-12 in the master handoff. FCB-01 remains OPEN. Catalogue/IBASS is retired; English plus any three other subjects remains the product rule. Old frontend-only/Batch-6 next actions are superseded.
+- **Gates:** separate configuration/season + syllabus security production bundle requires scoped owner approval per `docs/FCB-01-NEXT-SECURITY-APPLICATION-2026-10-27.md`. Broader CBT rollout still requires resource/entitlement policy, approved content/official configuration, coordinated client integration and production authorization. FCB-02 content rights remain pending; no providers/releases are implicitly approved.
+- **Next action:** continue the approved final-batch dependencies from verified source `6ce26be`, preserving the 164-test frontend baseline. Apply only the named two-proposal security bundle if separately authorized, with fresh preflight/rollback and live postflight; otherwise keep source work separate from production and obtain the specific policy/content decisions needed for release.
+
+---
+
+## Historical checkpoint entries (superseded where newer evidence conflicts)
+
+# Historical opening snapshot — Batch 6
+
+> Superseded historical snapshot; follow the current opening section above.
 
 - **Updated:** 2026-10-27 — Batch 6 flashcard review flow and deterministic E2E retry correction.
 - **Repository:** `DarealNovaking/Nova-ace-jamb`, branch `main`.
@@ -2508,3 +2527,11 @@ Next exact action: inspect the remaining advisor-listed SECURITY DEFINER functio
 - Local RED/GREEN PASS: caller-controlled mock rejection; endpoint absence then approved-paper success; anonymous/draft/NULL/duplicate/unconfigured selections; publication/rights/taxonomy/option withdrawal; no partial attempts; preserved config version/timer after metadata changes; safe delivery and idempotent scoring. Existing mutation/snapshot/configuration/version suites PASS; 33 Node tests, typecheck, production build and diff whitespace check PASS. No frontend changes. Two native mock-vs-approval races added for READ COMMITTED/REPEATABLE READ; SHA-matched CI/native/browser verification PENDING.
 - Fresh connected read-only production check: 0 attempts, 0 approved published questions, 0 active configs, 0 active seasons. No live mutation, content publication, deployment or provider activation. Broader CBT/mock proposals remain disconnected from the frontend and need coordinated production review, abuse/entitlement policy and approved sources. Source safety is not full FCB-01 acceptance.
 - Next action: inspect new SHA CI, fix any failure, record actual evidence, then continue source-only resource/entitlement boundaries. The separate two-proposal production security bundle still needs scoped authorization; generic continuation is not approval to activate content or deploy CBT.
+
+
+## FCB-01 approved mock contract verified — 2026-10-28 (current evidence)
+- PR #10 source/test **6ce26be683375cfcd4c510ddc747f6aed15582d4**: **Verify 40606756714 PASS** (13 SQL suites, 12 native concurrency cases, schema/catalog/ACL recovery, Node/Deno, typecheck/build); **E2E 40606756727 PASS, 164 desktop/mobile tests, zero failures**. Actual native job 122548059778 and browser job 122548059746 logs inspected. Mock/approval READ COMMITTED and REPEATABLE READ races both confirm approval waits until original paper capture commits. No failure skipped. Following evidence-only commit changes no source/tests.
+- Added approved-config mock creation in source, preserved immutable paper/config version, exact English+3 composition, current approved taxonomy/rights checks and server timing/scoring; arbitrary generic mock creation rejected. Frontend unchanged. Proposals remain unapplied/unconnected. Main read back as `17f29e137a483066789e0242f20637c89beeae08`; no merge or deployment.
+- Fixed continuity drift: the checkpoint now begins with the current FCB-01 state, verified source, real production status and exact next action; old Batch 6/frontend-only instructions are explicitly historical. Audit header likewise distinguishes initial investigation from current production/source state.
+- Resource/entitlement release gate is concrete: no CBT/mock/practice limit flags in production; ACE Pass metadata contains seasonal access and price direction only; master section 20 and decision register leave exact free-tier limits undecided. No invented commercial quotas or automatic premium gating. Content rights/official configuration remain missing; all real content stays withheld.
+- **Production unchanged this continuation:** four previously approved migrations total; signup already verified; no test accounts, season/config activation, content publication, provider or release actions. FCB-01 and final batch OPEN. Next live step requires scoped approval of only the two reviewed config/season and syllabus identity proposals in `docs/FCB-01-NEXT-SECURITY-APPLICATION-2026-10-27.md`, with new preflight/rollback/postflight. Broader CBT/mock production rollout is not included. Source resource policy work requires the owner-approved free/premium limits; approved document/question sources remain the FCB-02 gate.
