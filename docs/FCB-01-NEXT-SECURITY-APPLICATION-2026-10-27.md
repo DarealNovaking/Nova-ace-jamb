@@ -1,4 +1,20 @@
-# Next isolated production security review
+# Approved security bundle — partial application status (28 October 2026)
+
+The owner explicitly approved the two-proposal bundle. Do not request approval again for the same reviewed SQL.
+
+- **Applied and verified:** `20261028002329_fcb_01_syllabus_version_identity`. All five intended constraints and the partial legacy-name index are live; old global uniqueness is removed. No topics, subtopics or syllabus records changed.
+- **Still unapplied:** `supabase/proposals/fcb_01_exam_config_security.sql`. Requests expired with `Invalid or expired requestState`; read-only checks confirm the original function hash, absent guard and no migration ledger entry. No lock/session remains. A guarded request with statement/lock timeouts also expired. Stop repeating the same connector failure; resume with a fresh working request context, retaining this authorization.
+- **Already complete:** signup fix `20261027220044`; do not reapply.
+
+Preflight matched the three original function definitions/owners/ACLs, four policies, parent ACLs and empty taxonomy. Forward/rollback exact same-runtime catalog parity passed. Cross-engine raw ACL formatting was initially different (implicit versus explicit default/owner ACLs), so exact rollback was checked within the same disposable runtime; no API permission difference was ignored. Rollback artifacts below remain available.
+
+This approval permits only the two reviewed schema-security changes, not season/config activation, publication, broader CBT/mock rollout, deployments, content deletion or provider costs. The owner described the account as test-only; no account was inspected or removed.
+
+---
+
+## Original reviewed scope (historical proposal paths/status)
+
+### Original review
 
 The signup fix is already applied and verified as `20261027220044`. Do not apply it again. This review concerns two additional **unapplied** source proposals in PR #10:
 

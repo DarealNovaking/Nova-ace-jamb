@@ -1,4 +1,4 @@
--- Source review proposal only; NOT applied to production.
+-- Applied with explicit owner authorization as 20261028002329 on 2026-10-28.
 -- Preserve legacy null-version uniqueness while allowing distinct seasonal versions.
 -- Existing rows are retained; mismatched taxonomy data must fail validation before release.
 begin;

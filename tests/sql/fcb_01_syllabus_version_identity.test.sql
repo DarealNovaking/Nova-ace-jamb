@@ -1,5 +1,5 @@
 -- Synthetic disposable recovered database only; no production content.
-\i supabase/proposals/fcb_01_syllabus_version_identity.sql
+\i supabase/migrations/20261028002329_fcb_01_syllabus_version_identity.sql
 begin;
 insert into auth.users(id,email,raw_user_meta_data) values ('97000000-0000-4000-8000-000000000001','version-admin@example.invalid','{}');
 update ace.roles set role='admin' where user_id='97000000-0000-4000-8000-000000000001';

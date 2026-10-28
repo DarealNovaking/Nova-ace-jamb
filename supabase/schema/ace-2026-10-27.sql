@@ -2135,6 +2135,8 @@ ALTER TABLE ace."subtopics" ADD CONSTRAINT "subtopics_pkey" PRIMARY KEY (id);
 
 ALTER TABLE ace."subtopics" ADD CONSTRAINT "subtopics_topic_id_name_key" UNIQUE (topic_id, name);
 
+ALTER TABLE ace."syllabus_versions" ADD CONSTRAINT "syllabus_versions_id_subject_key" UNIQUE (id, subject_id);
+
 ALTER TABLE ace."syllabus_versions" ADD CONSTRAINT "syllabus_versions_pkey" PRIMARY KEY (id);
 
 ALTER TABLE ace."syllabus_versions" ADD CONSTRAINT "syllabus_versions_rights_status_check" CHECK (rights_status = ANY (ARRAY['pending'::text, 'approved'::text, 'restricted'::text, 'rejected'::text]));
@@ -2145,9 +2147,11 @@ ALTER TABLE ace."syllabus_versions" ADD CONSTRAINT "syllabus_versions_status_che
 
 ALTER TABLE ace."syllabus_versions" ADD CONSTRAINT "syllabus_versions_version_check" CHECK (version > 0);
 
+ALTER TABLE ace."topics" ADD CONSTRAINT "topics_id_version_key" UNIQUE (id, syllabus_version_id);
+
 ALTER TABLE ace."topics" ADD CONSTRAINT "topics_pkey" PRIMARY KEY (id);
 
-ALTER TABLE ace."topics" ADD CONSTRAINT "topics_subject_id_name_key" UNIQUE (subject_id, name);
+ALTER TABLE ace."topics" ADD CONSTRAINT "topics_version_name_key" UNIQUE (syllabus_version_id, name);
 
 ALTER TABLE ace."ai_requests" ADD CONSTRAINT "ai_requests_provider_id_fkey" FOREIGN KEY (provider_id) REFERENCES ace.ai_providers(id) ON DELETE SET NULL;
 
@@ -2301,6 +2305,8 @@ ALTER TABLE ace."study_plans" ADD CONSTRAINT "study_plans_season_id_fkey" FOREIG
 
 ALTER TABLE ace."study_plans" ADD CONSTRAINT "study_plans_user_id_fkey" FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
 
+ALTER TABLE ace."subtopics" ADD CONSTRAINT "subtopics_parent_version_fkey" FOREIGN KEY (topic_id, syllabus_version_id) REFERENCES ace.topics(id, syllabus_version_id) ON DELETE CASCADE;
+
 ALTER TABLE ace."subtopics" ADD CONSTRAINT "subtopics_syllabus_version_id_fkey" FOREIGN KEY (syllabus_version_id) REFERENCES ace.syllabus_versions(id) ON DELETE RESTRICT;
 
 ALTER TABLE ace."subtopics" ADD CONSTRAINT "subtopics_topic_id_fkey" FOREIGN KEY (topic_id) REFERENCES ace.topics(id) ON DELETE CASCADE;
@@ -2312,6 +2318,8 @@ ALTER TABLE ace."syllabus_versions" ADD CONSTRAINT "syllabus_versions_subject_id
 ALTER TABLE ace."topics" ADD CONSTRAINT "topics_subject_id_fkey" FOREIGN KEY (subject_id) REFERENCES ace.subjects(id) ON DELETE CASCADE;
 
 ALTER TABLE ace."topics" ADD CONSTRAINT "topics_syllabus_version_id_fkey" FOREIGN KEY (syllabus_version_id) REFERENCES ace.syllabus_versions(id) ON DELETE RESTRICT;
+
+ALTER TABLE ace."topics" ADD CONSTRAINT "topics_version_subject_fkey" FOREIGN KEY (syllabus_version_id, subject_id) REFERENCES ace.syllabus_versions(id, subject_id) ON DELETE RESTRICT;
 
 CREATE INDEX idx_ai_requests_provider ON ace.ai_requests USING btree (provider_id);
 
@@ -2472,6 +2480,8 @@ CREATE UNIQUE INDEX ux_active_syllabus_per_season_subject ON ace.syllabus_versio
 CREATE INDEX idx_topics_subject ON ace.topics USING btree (subject_id);
 
 CREATE INDEX idx_topics_syllabus_version ON ace.topics USING btree (syllabus_version_id, sort_order);
+
+CREATE UNIQUE INDEX topics_legacy_subject_name_idx ON ace.topics USING btree (subject_id, name) WHERE (syllabus_version_id IS NULL);
 
 ALTER TABLE ace."ai_providers" ENABLE ROW LEVEL SECURITY;
 
