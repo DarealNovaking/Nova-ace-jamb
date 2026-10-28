@@ -43,3 +43,7 @@ Next: obtain the selected launch subjects and source reuse authority, then prepa
 
 ### Continuation — taxonomy review draft
 The owner directed continuation using IBASS. Internal source review and draft preparation proceeded; publication is still gated. See [the review summary](content-review/README.md): 25 subjects, 213 page-backed root navigation candidates and 39 first-pass English/Mathematics subtopic candidates. No live import/activation occurred. The earlier instruction to obtain launch coverage/rights before preparing any draft is superseded for this internal review; those items still gate publication and final acceptance. Next: map child detail for the other 23 subjects and review granularity/applicability.
+
+
+### Continuation — all-subject first-pass hierarchy
+The previously pending 23 subjects now have child candidates. Current totals are 214 roots and 955 child candidates, with 1,169 checked page anchors and a draft-hash-bound validation record. Chemistry unit 18 was added after closer review. Of the child locators, 950 sit inside their parent source spans, three intentionally cross-reference English paper structure, and two PHE assignments remain explicitly pending source-layout review. All 25 PDFs were re-downloaded and matched recorded hashes/page counts. See `content-review/README.md`; older 213/39 counts and “23 subjects pending” statements are historical. Next: academic granularity/applicability review, beginning with PHE and prescribed texts. No publication/activation occurred.

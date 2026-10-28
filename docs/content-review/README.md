@@ -1,58 +1,67 @@
-# FCB-02 syllabus structure review — 28 October 2026
+# FCB-02 syllabus hierarchy review — 28 October 2026
 
-**Draft for editorial review. FCB-02 remains IN PROGRESS.** The owner directed continuation using IBASS; source review and draft preparation can proceed while publication remains gated. All 25 existing subjects are included in this review; this does not select the launch subset.
+**First-pass hierarchy coverage across all 25 subjects. Draft only; FCB-02 remains IN PROGRESS.** The owner directed continuation using IBASS. This expands the earlier 213-root/39-child outline; it does not approve launch coverage, season applicability or publication.
 
-[The structured draft](fcb-02-taxonomy-draft-2026-10-28.json) contains **213 root navigation candidates and 39 subtopic candidates**. Every one of the 252 entries has a 1-based PDF-page locator and a short anchor found in the exact hash-verified source document. Labels are editorial navigation proposals, not a claim of complete official taxonomy or academic approval. No learning-objective, lesson, novel/book, past-question or full-syllabus text is included.
+[Structured draft](fcb-02-taxonomy-draft-2026-10-28.json) · [Validation record](fcb-02-validation-2026-10-28.json) · [Exact-source manifest](../evidence/fcb-02-official-syllabus-documents-2026-10-28.json)
+
+The current draft contains **214 root navigation candidates and 955 subtopic candidates**. Every root now has children, including the previously pending 23 subjects. Each of the **1,169 entries** has a verified 1-based PDF-page locator and short source anchor. All 25 PDFs were re-downloaded and their SHA-256 hashes/page counts matched the existing manifest. The earlier root pass missed explicitly numbered Chemistry unit 18, Astronomical Chemistry; it is now included and was checked on rendered PDF page 15. Earlier 213-root counts are historical.
+
+These are editorial navigation candidates, not a claim that every source objective, finer detail or prescribed text has been exhaustively mapped or independently academically approved. No full syllabus, lesson, book/novel, past-question or learning-objective corpus is included.
 
 ## Coverage
 
 | Code | Source subject label | Root candidates | Subtopic candidates |
 |---|---|---:|---:|
-| AGR | Agriculture science | 5 | 0 |
-| ARA | Arabic | 5 | 0 |
-| ART | Art | 4 | 0 |
-| BIO | Biology | 5 | 0 |
-| CHE | Chemistry | 17 | 0 |
-| CRS | Christian religious studies | 4 | 0 |
-| COM | Commerce | 16 | 0 |
-| CST | Computer studies | 9 | 0 |
-| ECO | Economics | 23 | 0 |
-| FRE | French | 4 | 0 |
-| GEO | Geography | 4 | 0 |
-| GOV | Government | 4 | 0 |
-| HAU | Hausa | 3 | 0 |
-| HIS | History | 7 | 0 |
-| HEC | Home-Economics | 4 | 0 |
-| IGB | Igbo | 4 | 0 |
-| ISS | Islamic-Studies | 3 | 0 |
-| LIT | Literature-In-English | 5 | 0 |
+| AGR | Agriculture science | 5 | 45 |
+| ARA | Arabic | 5 | 31 |
+| ART | Art | 4 | 13 |
+| BIO | Biology | 5 | 24 |
+| CHE | Chemistry | 18 | 63 |
+| CRS | Christian religious studies | 4 | 52 |
+| COM | Commerce | 16 | 48 |
+| CST | Computer studies | 9 | 36 |
+| ECO | Economics | 23 | 68 |
+| FRE | French | 4 | 18 |
+| GEO | Geography | 4 | 24 |
+| GOV | Government | 4 | 38 |
+| HAU | Hausa | 3 | 24 |
+| HIS | History | 7 | 42 |
+| HEC | Home-Economics | 4 | 25 |
+| IGB | Igbo | 4 | 40 |
+| ISS | Islamic-Studies | 3 | 19 |
+| LIT | Literature-In-English | 5 | 13 |
 | MAT | Mathematics | 5 | 23 |
-| MUS | Music | 5 | 0 |
-| PHY | Physics | 41 | 0 |
-| PHE | Physical and Health Education | 12 | 0 |
-| POA | Principles of Accounts | 18 | 0 |
+| MUS | Music | 5 | 25 |
+| PHY | Physics | 41 | 149 |
+| PHE | Physical and Health Education | 12 | 39 |
+| POA | Principles of Accounts | 18 | 63 |
 | ENG | Use of English | 3 | 16 |
-| YOR | Yoruba | 3 | 0 |
+| YOR | Yoruba | 3 | 17 |
 
-English and Mathematics have a first pass of subtopic candidates, not complete learning-objective or finer-grained coverage. The other 23 subjects currently have root structure only. Flat subject lists such as Physics and Chemistry use individual source topics as root candidates. Sectioned subjects such as Mathematics use source sections as roots. These are deliberate review choices, not a count of exam questions. Physics has 41 roots because item 2 is split into separate 2a/2b concepts in its source.
+Flat sources such as Physics use individual source topics as roots. Sectioned sources such as Mathematics use source sections as roots. Their child granularity therefore still requires academic consistency review. Physics has 41 roots because source item 2 is split into 2a/2b concepts; these are not examination question counts.
 
-## Existing architecture fit
+## Locator checks and unresolved source layout
 
-`src/lib/seasonService.ts` already loads `ace.topics` and `ace.subtopics` by `syllabus_version_id`, filtering for active rows. Retain this two-level model and existing academic editor/publication controls; no frontend rewrite or schema change is needed for this draft.
+A page-level keyword hit alone can match an adjacent topic or a repeated overview. The closer pass also checked child anchors between each parent heading and the next parent heading, retaining explicit cross-references and source exceptions:
 
-When reviewed, the intended mapping is a root to `topics` and a child to `subtopics`. It is **not ready to import**: review IDs are not UUIDs or database identities; there are no live subject/version bindings; all subjects retain `rights_status=unverified`, `publication_allowed=false` and `editorial_review_complete=false`. Final topic granularity still requires academic review, especially for flat sources with no child detail. No state in this file grants publication access or bypasses existing RLS/RPC checks.
+| Check | Count | Meaning |
+|---|---:|---|
+| Child anchor within its parent heading span | 950 | Source-page plus parent-span location verified; semantic completeness/academic approval not implied. |
+| English exam-structure cross-reference | 3 | Comprehension, summary and cloze candidates cite the later paper-structure section. |
+| PHE source-heading ambiguity | 2 | Ball/racket games tentatively remain under sports; source page 4 puts the food heading before continued sports entries. Academic confirmation required. |
 
-## Source issues preserved
+The draft records the check on every child. The validation record identifies all five exceptions. PHE page 4 was rendered and inspected again; neither ambiguous entry is treated as approved. The English reading-text title remains an explicit blocker; no novel was inferred.
 
-- Computer Studies page 1 calls its overview ten sections but lists A–K. The detailed body uses different A–I groupings. The draft follows the detailed body and flags the inconsistency for academic review.
-- PHE page 4 visually places the food/nutrition heading above continued sports material. Do not automatically parent ball/racket games under food. Its leaf mapping is withheld. The rendered page was inspected, so this is present in the document layout rather than solely a text-extraction issue.
-- Art's section descriptions are editorial labels because its source uses lettered section headings.
-- History reuses section letters across parts. Preserve its part context when adding child detail.
-- The current English source does not name its approved reading text. The corresponding candidate is explicitly blocked; no novel was inferred.
-- Yoruba's poetry coverage varies by year. Retain the 2027-specific selection at later prescribed-text review; no book text is included here.
+Other preserved issues: Computer Studies' overview and detailed-body section groupings differ; the draft follows the detailed body. Art's descriptive section labels are editorial. History reuses section letters across parts, so its part context must remain intact. Hausa locators now point at detailed culture/literature sections rather than the first-page overview. French and Government locators were tightened to avoid repeated overview or adjacent-section matches. Yoruba's poetry selection varies by year and still needs prescribed-text applicability review.
 
-## Verification and continuation
+## Existing architecture and publication boundary
 
-PASS: 25 unique subject codes match the existing inventory; 25 source hashes/page counts rechecked; all 252 page anchors verified against local exact-source PDFs; unique review IDs and contiguous ordering; all publication/rights flags withheld. Visual spot checks: Computer Studies page 1 and PHE page 4. Draft shape remains outside application imports; no production or frontend files changed. No runtime tests were rerun for this review-data/documentation batch.
+`src/lib/seasonService.ts` already loads version-bound `ace.topics` and `ace.subtopics`. Preserve that two-level architecture and the existing academic editor, RLS and publication controls. Intended mapping after review is root → topic, child → subtopic; there is no app/schema rewrite here.
 
-Next action: expand the remaining 23 subjects' child-level mapping, preserving the source issues above, then review all 25 for topic granularity and syllabus/season applicability. Launch coverage, documented reuse authority, final exam configuration and separately approved live publication remain gates for FCB-02 acceptance. No need to ask the owner to provide PDFs already retrieved from IBASS.
+This is **not an import payload**: review IDs are not UUIDs; no live subject/version binding exists. All subjects retain unverified rights, publication disabled and academic review incomplete. These fields do not grant access or bypass server checks. No database data, season/config/runtime state, provider, frontend deployment or main merge changed.
+
+## Verification and exact continuation
+
+PASS: 25 existing subject codes; all 25 exact-source hashes/page counts; 1,169 page anchors; 214 nonempty root mappings; unique IDs and contiguous sibling ordering; 950 child matches inside parent spans; three documented English cross-references; two explicitly pending PHE exceptions; rights/publication flags withheld. The validation record is tied to the draft SHA-256. Visual spot checks: Chemistry page 15 and PHE page 4. No application/SQL/runtime files changed, so runtime suites were not rerun and no new runtime acceptance is claimed.
+
+Next action: review hierarchy granularity and syllabus/season applicability, prioritizing the two flagged PHE parent assignments and subject-specific prescribed texts. First-pass expansion for the other 23 subjects is no longer pending. Documented reuse authority, launch coverage, final exam configuration and separately approved live publication still gate FCB-02 completion. No need to request the IBASS PDFs from the owner.

@@ -1,0 +1,159 @@
+{
+  "prepared_on": "2026-10-28",
+  "scope": "Internal draft data validation, not runtime acceptance or academic/legal approval",
+  "draft_sha256": "dff823341da4098d5acf2cd83d0df9605990324f6a331a5641a074961e1bf1e6",
+  "source_documents_rechecked": 25,
+  "source_hashes_and_page_counts": "PASS",
+  "subject_codes_match_existing_inventory": "PASS",
+  "unique_ids_and_contiguous_sibling_order": "PASS",
+  "all_root_nodes_have_child_candidates": "PASS",
+  "all_source_page_anchors": "PASS",
+  "rights_and_publication_flags_withheld": "PASS",
+  "roots": 214,
+  "subtopic_candidates": 955,
+  "source_page_locators": 1169,
+  "parent_locator_checks": {
+    "within_parent_span": 950,
+    "exam_structure_cross_references": 3,
+    "ambiguous_heading_pending_review": 2
+  },
+  "exception_ids": [
+    "PHE-03-02",
+    "PHE-03-03",
+    "ENG-01-01",
+    "ENG-01-02",
+    "ENG-01-03"
+  ],
+  "visual_spot_checks": [
+    "Chemistry PDF page 15: numbered Astronomical Chemistry unit verified",
+    "PHE PDF page 4: ambiguous heading layout verified"
+  ],
+  "runtime_tests": "NOT_RUN: data/documentation only; no application, SQL or deployment change",
+  "by_subject": [
+    {
+      "code": "AGR",
+      "roots": 5,
+      "subtopic_candidates": 45
+    },
+    {
+      "code": "ARA",
+      "roots": 5,
+      "subtopic_candidates": 31
+    },
+    {
+      "code": "ART",
+      "roots": 4,
+      "subtopic_candidates": 13
+    },
+    {
+      "code": "BIO",
+      "roots": 5,
+      "subtopic_candidates": 24
+    },
+    {
+      "code": "CHE",
+      "roots": 18,
+      "subtopic_candidates": 63
+    },
+    {
+      "code": "CRS",
+      "roots": 4,
+      "subtopic_candidates": 52
+    },
+    {
+      "code": "COM",
+      "roots": 16,
+      "subtopic_candidates": 48
+    },
+    {
+      "code": "CST",
+      "roots": 9,
+      "subtopic_candidates": 36
+    },
+    {
+      "code": "ECO",
+      "roots": 23,
+      "subtopic_candidates": 68
+    },
+    {
+      "code": "FRE",
+      "roots": 4,
+      "subtopic_candidates": 18
+    },
+    {
+      "code": "GEO",
+      "roots": 4,
+      "subtopic_candidates": 24
+    },
+    {
+      "code": "GOV",
+      "roots": 4,
+      "subtopic_candidates": 38
+    },
+    {
+      "code": "HAU",
+      "roots": 3,
+      "subtopic_candidates": 24
+    },
+    {
+      "code": "HIS",
+      "roots": 7,
+      "subtopic_candidates": 42
+    },
+    {
+      "code": "HEC",
+      "roots": 4,
+      "subtopic_candidates": 25
+    },
+    {
+      "code": "IGB",
+      "roots": 4,
+      "subtopic_candidates": 40
+    },
+    {
+      "code": "ISS",
+      "roots": 3,
+      "subtopic_candidates": 19
+    },
+    {
+      "code": "LIT",
+      "roots": 5,
+      "subtopic_candidates": 13
+    },
+    {
+      "code": "MAT",
+      "roots": 5,
+      "subtopic_candidates": 23
+    },
+    {
+      "code": "MUS",
+      "roots": 5,
+      "subtopic_candidates": 25
+    },
+    {
+      "code": "PHY",
+      "roots": 41,
+      "subtopic_candidates": 149
+    },
+    {
+      "code": "PHE",
+      "roots": 12,
+      "subtopic_candidates": 39
+    },
+    {
+      "code": "POA",
+      "roots": 18,
+      "subtopic_candidates": 63
+    },
+    {
+      "code": "ENG",
+      "roots": 3,
+      "subtopic_candidates": 16
+    },
+    {
+      "code": "YOR",
+      "roots": 3,
+      "subtopic_candidates": 17
+    }
+  ]
+}
