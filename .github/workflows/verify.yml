@@ -158,3 +158,45 @@ jobs:
         run: python3 tests/sql/fcb_01_cbt_concurrency.py
       - name: Test native CBT start, active-slot and cooldown contention
         run: python3 tests/sql/fcb_01_cbt_resource_concurrency.py
+
+  fcb02-draft-import:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: pgvector/pgvector:0.8.7-pg17
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: fcb02_review_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d fcb02_review_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      PGHOST: 127.0.0.1
+      PGUSER: postgres
+      PGDATABASE: fcb02_review_test
+      PGPASSWORD: postgres
+      ACE_FCB02_DISPOSABLE_TEST: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install PostgreSQL client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+      - name: Test draft-only payload generation and refusal paths
+        run: python3 -m unittest discover -s tests/content -p 'test_*.py'
+      - name: Generate the exact reviewed import package without connecting to a database
+        run: |
+          python3 scripts/prepare-fcb02-import.py --output-dir /tmp/fcb02-import-proposal
+          diff -u docs/content-review/import-proposal/review.json /tmp/fcb02-import-proposal/review.json
+      - name: Prepare empty isolated recovered PostgreSQL schema
+        run: psql -X -v ON_ERROR_STOP=1 -f tests/sql/fcb_01_schema_baseline.test.sql
+      - name: Test staging, refusal, privacy, guarded rollback and concurrent references
+        run: python3 tests/sql/fcb_02_draft_import.py --output-dir /tmp/fcb02-import-proposal
+      - name: Retain the unexecuted production review scripts and test evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: fcb02-draft-import-review
+          path: /tmp/fcb02-import-proposal/
+          retention-days: 14
