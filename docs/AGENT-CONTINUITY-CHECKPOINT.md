@@ -2,7 +2,7 @@
 
 > **Current-state rule:** this opening section is authoritative. All entries below the historical divider are evidence history; their old scope/next-action claims do not override this section.
 
-- **Updated:** 2026-10-28 — FCB-01 VERIFIED COMPLETE; next package FCB-02.
+- **Updated:** 2026-10-28 — FCB-01 VERIFIED COMPLETE; FCB-02 source discovery advanced, rights/config gates remain open.
 - **Repository:** `DarealNovaking/Nova-ace-jamb`. Main remains the release base; active reviewed source is PR #10, `security/fcb-01-contract-audit`.
 - **Latest source/test SHA:** `7e58dcec2ba72ce4469b7c3c315363b7a6ef324d`. Working directory `/workspace/scratch/84a394a7502b/Nova-ace-jamb`. Inspect actual local branch/HEAD; local integration branches may change. Use current remote evidence if this workspace expires.
 - **Verified:** Verify [40634326588](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40634326588) PASS: 14 SQL suites, native rollback/upgrade/refusal, 21 races, complete current recovery/API ACL parity, Node/Deno, typecheck/build. E2E [40634326572](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40634326572) PASS, 164 tests; job `122637674579` log `164 passed (3.7m)` and native `122637674782` logs inspected.
@@ -12,7 +12,8 @@
 - **Active programme:** ONE final batch FCB-01..12. **FCB-01 DONE** for its audited security/recovery baseline; **FCB-02 is next/OPEN**. No full-product or release completion claimed. Catalogue/IBASS remains retired; English plus three other subjects remains the rule.
 - **Connector:** Supabase app setting is Allow all actions, not read-only. Both links target the same project; **Primary** successfully applies migrations, while the link named Supabase has request-state errors. Use Primary. Browser fallback was declined and closed. Do not ask for passwords/sign-in or repeat approvals.
 - **Gates:** security approvals fulfilled/live-verified; do not reapply. Runtime remains disabled with no policies seeded. FCB-02 needs official season/config evidence and authorized document-specific source rights. Chosen launch coverage, business limits, content publication, providers and deployment remain separate gates.
-- **Next action:** continue FCB-02 source/rights and authoritative 2027 configuration verification from existing inventory; no guessed content or automatic activation. Preserve the verified FCB-01 baseline. Use Primary; do not reopen completed security work or browser authentication.
+- **FCB-02 source evidence (2026-10-28):** recovered all 25 current official syllabus PDF links from public IBASS bundle `main.221b9987.js`; 25/25 HTTP 200/PDF parsing, hashes/page metadata recorded in `docs/evidence/fcb-02-official-syllabus-documents-2026-10-28.json`. Current English PDF leaves reading text unnamed; Yoruba has explicit 2027 poetry range. Ministry lists 15–25 March 2027 as proposed only. See `docs/FCB-02-OFFICIAL-SOURCE-VERIFICATION-2026-10-28.md`. No content/database/activation changes.
+- **Next action:** obtain chosen launch subjects and documented source reuse authority, then prepare the authorized version-specific taxonomy for review. Final 2027 configuration still needs direct complete source evidence and separate activation approval. Do not repeat portal-link discovery, reopen FCB-01, or browser authentication.
 
 ---
 

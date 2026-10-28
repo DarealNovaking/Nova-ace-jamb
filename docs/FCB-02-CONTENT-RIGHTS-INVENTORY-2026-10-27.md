@@ -1,5 +1,7 @@
 # FCB-02 source and rights inventory — 2026-10-27
 
+> Update 2026-10-28: document-link discovery is resolved for all 25 subjects; see [current verification](FCB-02-OFFICIAL-SOURCE-VERIFICATION-2026-10-28.md) and its hashed manifest. This historical live inventory remains unchanged; no rights approval or publication is implied.
+
 Read-only live inventory of project `uokiqlgmzprqfbzmedaz`. This is evidence for the existing FCB-02 acceptance gate, not another roadmap. No content, status, rights, season or subject was changed.
 
 Every listed version was inspected individually for its recorded publication state and source fields. None has approved rights or a published topic tree. A generic JAMB/IBASS homepage is provenance scaffolding, not an identified reviewed syllabus document or permission to republish. No legally usable source corpus was found in the repository.
