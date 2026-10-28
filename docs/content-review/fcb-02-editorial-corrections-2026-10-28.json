@@ -1,0 +1,187 @@
+{
+  "format_version": 1,
+  "prepared_on": "2026-10-28",
+  "status": "reviewed_source_proposal_not_applied",
+  "base_review_digest": "aa9340d4f81bdf5253c322b14a9a091f8b0cd638a6593fd3805b207ee1453ef3",
+  "scope": "Six subtopic display-name corrections and two inactive Arabic grammar additions. All versions stay draft with rights pending; no approval, activation, publication, exam configuration or source package regeneration.",
+  "review_method": "Primary-agent source verification plus separate read-only agent navigation review; no human teacher required or claimed. Not exhaustive objectives or lesson approval.",
+  "expected_total_subtopics_after_apply": 956,
+  "expected_topic_count": 214,
+  "operations": [
+    {
+      "operation": "rename_subtopic",
+      "review_id": "ARA-03-01",
+      "expected_row": {
+        "active": false,
+        "description": "EDITORIAL REVIEW DRAFT ARA-03-01. Source PDF page 1; anchor: Demonstrative. Source SHA-256: 438cc6e7369bdb4548c2a068ac1c82df7d42b3cbe53cafc2b7d8db29d1b0cfc5. Parent mapping: within_parent_span. Not academically or rights approved; do not publish automatically.",
+        "id": "1117dfe4-f285-5cc3-991c-ca70835f81c9",
+        "name": "Demonstratives and relatives",
+        "sort_order": 10,
+        "syllabus_version_id": "6d397acc-cfca-5ddc-a749-07a8ed1aada9",
+        "topic_id": "d3c4a312-c7c0-5434-95d2-364bdfc633c5"
+      },
+      "changes": {
+        "name": "Demonstrative, relative, conditional and interrogative forms"
+      },
+      "source_pdf_pages": [
+        1,
+        2
+      ],
+      "source_sha256": "438cc6e7369bdb4548c2a068ac1c82df7d42b3cbe53cafc2b7d8db29d1b0cfc5",
+      "reason": "Includes the four grammatical forms in source item1."
+    },
+    {
+      "operation": "rename_subtopic",
+      "review_id": "ARA-03-15",
+      "expected_row": {
+        "active": false,
+        "description": "EDITORIAL REVIEW DRAFT ARA-03-15. Source PDF page 2; anchor: derived verb. Source SHA-256: 438cc6e7369bdb4548c2a068ac1c82df7d42b3cbe53cafc2b7d8db29d1b0cfc5. Parent mapping: within_parent_span. Not academically or rights approved; do not publish automatically.",
+        "id": "def8e5e6-d8b6-56a5-995e-f2442d215c99",
+        "name": "Derived verbs",
+        "sort_order": 150,
+        "syllabus_version_id": "6d397acc-cfca-5ddc-a749-07a8ed1aada9",
+        "topic_id": "d3c4a312-c7c0-5434-95d2-364bdfc633c5"
+      },
+      "changes": {
+        "name": "Triliteral and derived verbs"
+      },
+      "source_pdf_pages": [
+        2
+      ],
+      "source_sha256": "438cc6e7369bdb4548c2a068ac1c82df7d42b3cbe53cafc2b7d8db29d1b0cfc5",
+      "reason": "Restores both basic three-root-letter and derived verb forms; source English uses Trilateral."
+    },
+    {
+      "operation": "rename_subtopic",
+      "review_id": "ARA-04-01",
+      "expected_row": {
+        "active": false,
+        "description": "EDITORIAL REVIEW DRAFT ARA-04-01. Source PDF page 3; anchor: current affairs. Source SHA-256: 438cc6e7369bdb4548c2a068ac1c82df7d42b3cbe53cafc2b7d8db29d1b0cfc5. Parent mapping: within_parent_span. Not academically or rights approved; do not publish automatically.",
+        "id": "b63674d0-f87b-5e38-b119-fcf55f59e225",
+        "name": "Current-affairs composition",
+        "sort_order": 10,
+        "syllabus_version_id": "6d397acc-cfca-5ddc-a749-07a8ed1aada9",
+        "topic_id": "b2340820-6a5c-5da7-8439-3bb72a16d6fa"
+      },
+      "changes": {
+        "name": "Composition on everyday and current topics"
+      },
+      "source_pdf_pages": [
+        3
+      ],
+      "source_sha256": "438cc6e7369bdb4548c2a068ac1c82df7d42b3cbe53cafc2b7d8db29d1b0cfc5",
+      "reason": "Includes ordinary education, culture, health and other listed topics alongside current affairs."
+    },
+    {
+      "operation": "rename_subtopic",
+      "review_id": "IGB-04-08",
+      "expected_row": {
+        "active": false,
+        "description": "EDITORIAL REVIEW DRAFT IGB-04-08. Source PDF page 7; anchor: Human Rights Violation. Source SHA-256: 11a74b8605caf216e7c2bd668efcddc081a902e847fa616ffd1a15ea9d542ca8. Parent mapping: within_parent_span. Not academically or rights approved; do not publish automatically.",
+        "id": "b587c164-4fac-5a94-bba6-b92ff9651598",
+        "name": "Human rights and child labour",
+        "sort_order": 80,
+        "syllabus_version_id": "d9c787d6-af6b-5ee5-be3f-5461a9de9574",
+        "topic_id": "8423edd1-f491-51ca-a52d-123496880cfa"
+      },
+      "changes": {
+        "name": "Human rights violations and child abuse"
+      },
+      "source_pdf_pages": [
+        7
+      ],
+      "source_sha256": "11a74b8605caf216e7c2bd668efcddc081a902e847fa616ffd1a15ea9d542ca8",
+      "reason": "Corrects child labour substitution; the source heading concerns child abuse."
+    },
+    {
+      "operation": "rename_subtopic",
+      "review_id": "HIS-04-10",
+      "expected_row": {
+        "active": false,
+        "description": "EDITORIAL REVIEW DRAFT HIS-04-10. Source PDF page 7; anchor: Transition to the Fourth Republic. Source SHA-256: 7d79d865f6a5a51850a9060bf15f819c8c1d27d65a0ee1bca12f5dc6689ac7dc. Parent mapping: within_parent_span. Not academically or rights approved; do not publish automatically.",
+        "id": "d1e47474-bb6f-58b4-9f81-52dba2df1116",
+        "name": "Fourth Republic",
+        "sort_order": 100,
+        "syllabus_version_id": "54a533a3-b3f4-5e10-9de7-552517031c1f",
+        "topic_id": "5a8df6bb-425b-5369-b5e8-5d3e7b60619d"
+      },
+      "changes": {
+        "name": "Transition to the Fourth Republic"
+      },
+      "source_pdf_pages": [
+        7
+      ],
+      "source_sha256": "7d79d865f6a5a51850a9060bf15f819c8c1d27d65a0ee1bca12f5dc6689ac7dc",
+      "reason": "Includes the preceding transition and Abdulsalami regime."
+    },
+    {
+      "operation": "rename_subtopic",
+      "review_id": "PHE-02-04",
+      "expected_row": {
+        "active": false,
+        "description": "EDITORIAL REVIEW DRAFT PHE-02-04. Source PDF page 2; anchor: Nervous system. Source SHA-256: a6f02706da5daa5e0ad27542e4f2edeade64297deff63d5278809181e2de6345. Parent mapping: within_parent_span. Not academically or rights approved; do not publish automatically.",
+        "id": "5f724972-4528-5ad4-8d68-11870b04ce3f",
+        "name": "Nervous system",
+        "sort_order": 40,
+        "syllabus_version_id": "a09f896e-8278-5898-aa3a-2b52dbdaa372",
+        "topic_id": "b8e2b4b5-f807-510e-b42b-6dbc372cd214"
+      },
+      "changes": {
+        "name": "Nervous system and sense organs"
+      },
+      "source_pdf_pages": [
+        2
+      ],
+      "source_sha256": "a6f02706da5daa5e0ad27542e4f2edeade64297deff63d5278809181e2de6345",
+      "reason": "Restores sense organs from the same source heading."
+    },
+    {
+      "operation": "add_subtopic",
+      "review_id": "ARA-03-21",
+      "expected_absent_id": "931c362c-40b6-57ce-b81b-c28a7bd62dbc",
+      "row": {
+        "id": "931c362c-40b6-57ce-b81b-c28a7bd62dbc",
+        "topic_id": "d3c4a312-c7c0-5434-95d2-364bdfc633c5",
+        "syllabus_version_id": "6d397acc-cfca-5ddc-a749-07a8ed1aada9",
+        "name": "Derivatives",
+        "sort_order": 161,
+        "active": false,
+        "description": "EDITORIAL REVIEW DRAFT ARA-03-21. Source PDF page 3; anchor: Derivatives. Source SHA-256: 438cc6e7369bdb4548c2a068ac1c82df7d42b3cbe53cafc2b7d8db29d1b0cfc5. Added by source-based navigation review; rights and publication approval remain pending."
+      },
+      "source_pdf_pages": [
+        3
+      ],
+      "source_sha256": "438cc6e7369bdb4548c2a068ac1c82df7d42b3cbe53cafc2b7d8db29d1b0cfc5",
+      "reason": "Missing separately numbered grammar topic; inserted between Verbal noun and Numerals without renumbering existing review IDs."
+    },
+    {
+      "operation": "add_subtopic",
+      "review_id": "ARA-03-22",
+      "expected_absent_id": "20921964-1929-5624-b5c3-9c250d4a1b8e",
+      "row": {
+        "id": "20921964-1929-5624-b5c3-9c250d4a1b8e",
+        "topic_id": "d3c4a312-c7c0-5434-95d2-364bdfc633c5",
+        "syllabus_version_id": "6d397acc-cfca-5ddc-a749-07a8ed1aada9",
+        "name": "Conditional sentences",
+        "sort_order": 162,
+        "active": false,
+        "description": "EDITORIAL REVIEW DRAFT ARA-03-22. Source PDF page 3; anchor: Conditional sentence. Source SHA-256: 438cc6e7369bdb4548c2a068ac1c82df7d42b3cbe53cafc2b7d8db29d1b0cfc5. Added by source-based navigation review; rights and publication approval remain pending."
+      },
+      "source_pdf_pages": [
+        3
+      ],
+      "source_sha256": "438cc6e7369bdb4548c2a068ac1c82df7d42b3cbe53cafc2b7d8db29d1b0cfc5",
+      "reason": "Missing separately numbered grammar topic; inserted between Verbal noun and Numerals without renumbering existing review IDs."
+    }
+  ],
+  "application_preconditions": [
+    "Real signed-in administrator, never connector claim impersonation.",
+    "Specific owner approval of this eight-operation production draft correction.",
+    "Lock affected draft versions; require draft status and pending rights; compare exact expected row data before rename.",
+    "Refuse if an added ID already exists with differing data or source rows changed.",
+    "Preserve original fixed payload, installer and digest. Record a separate correction audit.",
+    "After modification, original package bulk-undo must refuse; use reviewed row-specific reversal only if unchanged and unreferenced."
+  ],
+  "live_applied": false,
+  "proposal_sha256": "340717e8b6522f144a498ab2e12ff323e12078c00be19bab8c830dfa89df1750"
+}

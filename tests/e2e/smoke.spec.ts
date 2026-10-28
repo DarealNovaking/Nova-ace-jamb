@@ -2720,3 +2720,58 @@ test.describe('FCB-02 private review package', () => {
     expect(calls).toBe(0)
   })
 })
+
+async function mockSubtopicCorrection(page: import('@playwright/test').Page, rejectSave = false) {
+  const { versions } = await mockAcademicReview(page, true)
+  const row = { id: 'c0000000-0000-4000-8000-000000000088', topic_id: 'b0000000-0000-4000-8000-000000000010', syllabus_version_id: versions[0].id, name: 'Nervous system', description: 'Source-backed draft', sort_order: 40, active: false }
+  const writes: Array<{ body: Record<string, unknown>; query: URLSearchParams }> = []
+  await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/subtopics'), async (route) => {
+    if (route.request().method() === 'PATCH') {
+      const body = route.request().postDataJSON()
+      writes.push({ body, query: new URL(route.request().url()).searchParams })
+      if (rejectSave) {
+        await route.fulfill({ status: 406, json: { code: 'PGRST116', message: 'Private database details must not appear' } })
+      } else {
+        Object.assign(row, body)
+        await route.fulfill({ json: { id: row.id } })
+      }
+    } else await route.fulfill({ json: [row] })
+  })
+  return { row, writes }
+}
+
+test.describe('ACE JAMB draft subtopic corrections', () => {
+  test('saves corrected name and order within the selected draft without changing publication', async ({ page }) => {
+    const { row, writes } = await mockSubtopicCorrection(page)
+    await page.goto('/admin-academic')
+    const item = page.getByRole('listitem').filter({ has: page.getByText('Nervous system', { exact: true }) })
+    await item.getByText('Edit name and order', { exact: true }).click()
+    await item.getByLabel('Subtopic display name').fill('  Nervous system and sense organs  ')
+    await item.getByLabel('Display order').fill('41')
+    await item.getByRole('button', { name: 'Save subtopic' }).click()
+    await expect(page.getByRole('status')).toContainText('Subtopic changes saved')
+    await expect(page.getByText('Nervous system and sense organs', { exact: true })).toBeVisible()
+    await expect(page.getByText('Inactive draft · order 41', { exact: true })).toBeVisible()
+    expect(writes).toHaveLength(1)
+    expect(writes[0].body).toEqual({ name: 'Nervous system and sense organs', sort_order: 41 })
+    expect(writes[0].query.get('id')).toBe(`eq.${row.id}`)
+    expect(writes[0].query.get('syllabus_version_id')).toBe(`eq.${row.syllabus_version_id}`)
+    expect(writes[0].query.get('topic_id')).toBe(`eq.${row.topic_id}`)
+    expect(writes[0].query.get('name')).toBe('eq.Nervous system')
+    expect(writes[0].query.get('sort_order')).toBe('eq.40')
+  })
+
+  test('a rejected or stale correction stays unsaved and hides database details', async ({ page }) => {
+    const { writes } = await mockSubtopicCorrection(page, true)
+    await page.goto('/admin-academic')
+    const item = page.getByRole('listitem').filter({ has: page.getByText('Nervous system', { exact: true }) })
+    await item.getByText('Edit name and order', { exact: true }).click()
+    await item.getByLabel('Subtopic display name').fill('Corrected source label')
+    await item.getByRole('button', { name: 'Save subtopic' }).click()
+    await expect(page.getByRole('alert').filter({ hasText: 'The operation could not be completed' })).toBeVisible()
+    await expect(page.getByText('Private database details must not appear')).toHaveCount(0)
+    await expect(page.getByText('Subtopic changes saved', { exact: false })).toHaveCount(0)
+    await expect(page.getByText('Nervous system', { exact: true })).toBeVisible()
+    expect(writes).toHaveLength(1)
+  })
+})

@@ -1,0 +1,15 @@
+{
+  "run_id": "5adb8d18-a38f-40b0-b366-697c09ca7b1b",
+  "status": "BLOCKED_SIGN_IN_REQUIRED",
+  "duration_seconds": 554,
+  "owner_approval": "Approve everything as long as following JAMB instructions; includes the eight exact reviewed draft corrections. Do not ask again for these edits.",
+  "browser_result": "TinyFish reports it clicked Sign out during navigation, invalidating the previously working administrator session. No credentials configured; no write reported.",
+  "read_only_postflight": {
+    "matching_corrected_rows": 0,
+    "subtopics": 954,
+    "active_subtopics": 0
+  },
+  "applied": false,
+  "next_action": "User signs in through renewed authorized TinyFish setup window and saves profile; resume eight approved corrections using real session. Explicitly prohibit Sign out and unrelated navigation; stop immediately on unavailable session or unsupported editing.",
+  "no_secrets_recorded": true
+}

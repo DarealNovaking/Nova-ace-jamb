@@ -1,0 +1,266 @@
+{
+  "reviewed_on": "2026-10-28",
+  "status": "BLOCKED_EXTERNAL_ACCEPTANCE",
+  "scope": "Read-only live counts/source-link/state reconciliation and authenticated preview acceptance. No per-field live payload equality or new publication-flow test claimed.",
+  "review_digest": "aa9340d4f81bdf5253c322b14a9a091f8b0cd638a6593fd3805b207ee1453ef3",
+  "preview_run_id": "51089e50-4fcc-4068-849e-129ee6738dd0",
+  "preview_result": "Signed-admin Check review package succeeded; existing private staging reported.",
+  "observed_live": {
+    "draft_versions": 75,
+    "staged_v2_versions": 25,
+    "topics": 214,
+    "subtopics": 954,
+    "active_topics": 0,
+    "active_subtopics": 0,
+    "active_versions": 0,
+    "active_seasons": 0,
+    "active_configs": 0,
+    "config_count": 1,
+    "existing_config_year": 2026,
+    "target_2027_config_count": 0
+  },
+  "subjects": [
+    {
+      "subject_code": "AGR",
+      "version_id": "23d1c9d7-0bfb-5ddf-a733-574250ff4fb7",
+      "expected_topics": 5,
+      "expected_subtopics": 45,
+      "source_url": "https://ibass.jamb.gov.ng/static/media/AgricPdf.9465f3cd595e9542868a.pdf",
+      "observed_status": "draft",
+      "observed_rights_status": "pending"
+    },
+    {
+      "subject_code": "ARA",
+      "version_id": "6d397acc-cfca-5ddc-a749-07a8ed1aada9",
+      "expected_topics": 5,
+      "expected_subtopics": 31,
+      "source_url": "https://ibass.jamb.gov.ng/static/media/Arabic.233fe7117fc534609a6e.pdf",
+      "observed_status": "draft",
+      "observed_rights_status": "pending"
+    },
+    {
+      "subject_code": "ART",
+      "version_id": "c0729259-83da-5172-8bdb-9bee5d78263e",
+      "expected_topics": 4,
+      "expected_subtopics": 13,
+      "source_url": "https://ibass.jamb.gov.ng/static/media/Artpdf.85197ba4c495458e1ba8.pdf",
+      "observed_status": "draft",
+      "observed_rights_status": "pending"
+    },
+    {
+      "subject_code": "BIO",
+      "version_id": "0e3d49eb-1d45-50e7-beca-2906c19e7a1c",
+      "expected_topics": 5,
+      "expected_subtopics": 24,
+      "source_url": "https://ibass.jamb.gov.ng/static/media/Biology.0075e70afd357d7a39ae.pdf",
+      "observed_status": "draft",
+      "observed_rights_status": "pending"
+    },
+    {
+      "subject_code": "CHE",
+      "version_id": "5ee6196e-b0ca-584a-93f3-37bf931d0be8",
+      "expected_topics": 18,
+      "expected_subtopics": 63,
+      "source_url": "https://ibass.jamb.gov.ng/static/media/Chemistry.9efd0b98043d56922aaa.pdf",
+      "observed_status": "draft",
+      "observed_rights_status": "pending"
+    },
+    {
+      "subject_code": "COM",
+      "version_id": "248f740a-2e4c-5b7e-a809-b656b24d17aa",
+      "expected_topics": 16,
+      "expected_subtopics": 48,
+      "source_url": "https://ibass.jamb.gov.ng/static/media/Commerce.819d9c6929bc849d1cd9.pdf",
+      "observed_status": "draft",
+      "observed_rights_status": "pending"
+    },
+    {
+      "subject_code": "CRS",
+      "version_id": "a398b860-c07a-50c9-9eb3-747ef6e55090",
+      "expected_topics": 4,
+      "expected_subtopics": 52,
+      "source_url": "https://ibass.jamb.gov.ng/static/media/CRS.7f96f8e535ca408ca474.pdf",
+      "observed_status": "draft",
+      "observed_rights_status": "pending"
+    },
+    {
+      "subject_code": "CST",
+      "version_id": "60d593a1-c330-5781-a575-2a1bfc248606",
+      "expected_topics": 9,
+      "expected_subtopics": 36,
+      "source_url": "https://ibass.jamb.gov.ng/static/media/Computer.ea1ead8cea82f53d3717.pdf",
+      "observed_status": "draft",
+      "observed_rights_status": "pending"
+    },
+    {
+      "subject_code": "ECO",
+      "version_id": "11a6e24e-4b65-578a-b54e-df67a4216a43",
+      "expected_topics": 23,
+      "expected_subtopics": 68,
+      "source_url": "https://ibass.jamb.gov.ng/static/media/Economics.da2a30ae8659e29c8bb4.pdf",
+      "observed_status": "draft",
+      "observed_rights_status": "pending"
+    },
+    {
+      "subject_code": "ENG",
+      "version_id": "14afa758-0fba-5ca6-99d6-346f36a6dd30",
+      "expected_topics": 3,
+      "expected_subtopics": 15,
+      "source_url": "https://ibass.jamb.gov.ng/static/media/Use-of-English.885e843b1f51e6a3d062.pdf",
+      "observed_status": "draft",
+      "observed_rights_status": "pending"
+    },
+    {
+      "subject_code": "FRE",
+      "version_id": "195651c8-cab0-5434-93f9-aa2e7cf6c6dd",
+      "expected_topics": 4,
+      "expected_subtopics": 18,
+      "source_url": "https://ibass.jamb.gov.ng/static/media/French.170eeaabf96471e303c5.pdf",
+      "observed_status": "draft",
+      "observed_rights_status": "pending"
+    },
+    {
+      "subject_code": "GEO",
+      "version_id": "8ec5abeb-a3d1-5d37-8055-6ff15450036f",
+      "expected_topics": 4,
+      "expected_subtopics": 24,
+      "source_url": "https://ibass.jamb.gov.ng/static/media/Geography.0bf33e33f48e4139be13.pdf",
+      "observed_status": "draft",
+      "observed_rights_status": "pending"
+    },
+    {
+      "subject_code": "GOV",
+      "version_id": "fc03e2b7-9b5c-5dab-aa4d-b3d0fed75355",
+      "expected_topics": 4,
+      "expected_subtopics": 38,
+      "source_url": "https://ibass.jamb.gov.ng/static/media/Government.92e42612590a98eeba28.pdf",
+      "observed_status": "draft",
+      "observed_rights_status": "pending"
+    },
+    {
+      "subject_code": "HAU",
+      "version_id": "4485f04a-b978-5631-b879-beb38d98e122",
+      "expected_topics": 3,
+      "expected_subtopics": 24,
+      "source_url": "https://ibass.jamb.gov.ng/static/media/Hausa.ca90bfcfca9f88527acf.pdf",
+      "observed_status": "draft",
+      "observed_rights_status": "pending"
+    },
+    {
+      "subject_code": "HEC",
+      "version_id": "b866a7f4-ccca-5a20-ac6b-59abefe92b5b",
+      "expected_topics": 4,
+      "expected_subtopics": 25,
+      "source_url": "https://ibass.jamb.gov.ng/static/media/Home-Economics.89dc0fce33c5910e66c6.pdf",
+      "observed_status": "draft",
+      "observed_rights_status": "pending"
+    },
+    {
+      "subject_code": "HIS",
+      "version_id": "54a533a3-b3f4-5e10-9de7-552517031c1f",
+      "expected_topics": 7,
+      "expected_subtopics": 42,
+      "source_url": "https://ibass.jamb.gov.ng/static/media/History.64d0bbe89bb7585bcddc.pdf",
+      "observed_status": "draft",
+      "observed_rights_status": "pending"
+    },
+    {
+      "subject_code": "IGB",
+      "version_id": "d9c787d6-af6b-5ee5-be3f-5461a9de9574",
+      "expected_topics": 4,
+      "expected_subtopics": 40,
+      "source_url": "https://ibass.jamb.gov.ng/static/media/Igbo.7a09449bbeefc39b4f44.pdf",
+      "observed_status": "draft",
+      "observed_rights_status": "pending"
+    },
+    {
+      "subject_code": "ISS",
+      "version_id": "1bafa0e8-8d7e-5d94-b73f-40befd15c4f9",
+      "expected_topics": 3,
+      "expected_subtopics": 19,
+      "source_url": "https://ibass.jamb.gov.ng/static/media/Islamic.973a07ea012af6554ed3.pdf",
+      "observed_status": "draft",
+      "observed_rights_status": "pending"
+    },
+    {
+      "subject_code": "LIT",
+      "version_id": "9809a547-a454-51b1-b81d-6dd3eca0cbda",
+      "expected_topics": 5,
+      "expected_subtopics": 13,
+      "source_url": "https://ibass.jamb.gov.ng/static/media/Literature.f24a00818658eb8ecbd0.pdf",
+      "observed_status": "draft",
+      "observed_rights_status": "pending"
+    },
+    {
+      "subject_code": "MAT",
+      "version_id": "8c67f11b-9c71-5e05-8d53-ebb13349598a",
+      "expected_topics": 5,
+      "expected_subtopics": 23,
+      "source_url": "https://ibass.jamb.gov.ng/static/media/Mathematics.c0621f4b8b674e75fd05.pdf",
+      "observed_status": "draft",
+      "observed_rights_status": "pending"
+    },
+    {
+      "subject_code": "MUS",
+      "version_id": "48b71581-c3b8-53cb-88a4-0bbd89a196bc",
+      "expected_topics": 5,
+      "expected_subtopics": 25,
+      "source_url": "https://ibass.jamb.gov.ng/static/media/Music.6a7142057d840d45959d.pdf",
+      "observed_status": "draft",
+      "observed_rights_status": "pending"
+    },
+    {
+      "subject_code": "PHE",
+      "version_id": "a09f896e-8278-5898-aa3a-2b52dbdaa372",
+      "expected_topics": 12,
+      "expected_subtopics": 39,
+      "source_url": "https://ibass.jamb.gov.ng/static/media/PHE.d3add6c626efcb3f0f2b.pdf",
+      "observed_status": "draft",
+      "observed_rights_status": "pending"
+    },
+    {
+      "subject_code": "PHY",
+      "version_id": "e1910121-1034-57b8-aefe-66b8b2d65b4f",
+      "expected_topics": 41,
+      "expected_subtopics": 149,
+      "source_url": "https://ibass.jamb.gov.ng/static/media/Physics.16527a294cb7e7a87a35.pdf",
+      "observed_status": "draft",
+      "observed_rights_status": "pending"
+    },
+    {
+      "subject_code": "POA",
+      "version_id": "95f719de-b643-5884-a514-7ed90a9d3e3d",
+      "expected_topics": 18,
+      "expected_subtopics": 63,
+      "source_url": "https://ibass.jamb.gov.ng/static/media/Principles-of-Accounting.64fc902ad37449d1f6ff.pdf",
+      "observed_status": "draft",
+      "observed_rights_status": "pending"
+    },
+    {
+      "subject_code": "YOR",
+      "version_id": "759c1a21-2641-5123-b3fd-f93e42a3404c",
+      "expected_topics": 3,
+      "expected_subtopics": 17,
+      "source_url": "https://ibass.jamb.gov.ng/static/media/Yoruba.c9f0848e61ff86f1349b.pdf",
+      "observed_status": "draft",
+      "observed_rights_status": "pending"
+    }
+  ],
+  "external_gates": [
+    "Documented source-use authority for selected launch taxonomy; public availability is not recorded permission.",
+    "Independent academic approval including disclosed source exceptions and year-specific prescribed texts.",
+    "Owner selection of launch subjects, including compulsory English.",
+    "Authoritative 2027 exam composition/timing/dates; existing 2026 settings are historical.",
+    "Separately approved activation/publication, followed by actual student selector/visibility/season-switch/rollback/takedown acceptance."
+  ],
+  "official_recheck": {
+    "homepage": "https://jamb.gov.ng/",
+    "ibass": "https://ibass.jamb.gov.ng/",
+    "manual_link": "https://jamb.gov.ng/PDFs/2027/JAMB_TEST_User_Manual_V2.0.1.pdf",
+    "manual_finding": "31-page centre network simulation/asset verification manual, not 2027 UTME paper configuration. Minimum network-test duration is not exam duration.",
+    "2027_final_configuration": "Not established by this bounded search; absence of retrieval is not proof that no announcement exists.",
+    "brochure_notice_url": "https://ibass.jamb.gov.ng/assets/uploads/brochure-notice.pdf",
+    "brochure_notice_finding": "Search indexed an all-rights-reserved notice, but direct open served HTML app shell. Not used as document-specific syllabus licensing authority."
+  },
+  "changes": "Documentation only; no live mutation, activation, publication, merge, deployment or new runtime code."
+}
