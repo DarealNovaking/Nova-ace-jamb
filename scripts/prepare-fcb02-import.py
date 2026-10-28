@@ -111,7 +111,7 @@ def build_proposal(draft, target):
     return proposal
 
 
-FK_QUERY = """select coalesce(jsonb_agg(jsonb_build_object('schema',ns.nspname,'table',rel.relname,'constraint',c.conname,'target',target.relname,'columns',(select jsonb_agg(a.attname order by k.ord) from unnest(c.conkey) with ordinality k(attnum,ord) join pg_attribute a on a.attrelid=c.conrelid and a.attnum=k.attnum),'target_columns',(select jsonb_agg(a.attname order by k.ord) from unnest(c.confkey) with ordinality k(attnum,ord) join pg_attribute a on a.attrelid=c.confrelid and a.attnum=k.attnum),'definition',pg_get_constraintdef(c.oid)) order by ns.nspname,rel.relname,c.conname),'[]'::jsonb) from pg_constraint c join pg_class rel on rel.oid=c.conrelid join pg_namespace ns on ns.oid=rel.relnamespace join pg_class target on target.oid=c.confrelid where c.contype='f' and c.confrelid in ('ace.syllabus_versions'::regclass,'ace.topics'::regclass,'ace.subtopics'::regclass)"""
+FK_QUERY = """select coalesce(jsonb_agg(jsonb_build_object('schema',ns.nspname,'table',rel.relname,'constraint',c.conname,'target',target.relname,'columns',(select jsonb_agg(a.attname order by k.ord) from unnest(c.conkey) with ordinality k(attnum,ord) join pg_catalog.pg_attribute a on a.attrelid=c.conrelid and a.attnum=k.attnum),'target_columns',(select jsonb_agg(a.attname order by k.ord) from unnest(c.confkey) with ordinality k(attnum,ord) join pg_catalog.pg_attribute a on a.attrelid=c.confrelid and a.attnum=k.attnum),'definition',pg_get_constraintdef(c.oid)) order by ns.nspname,rel.relname,c.conname),'[]'::jsonb) from pg_catalog.pg_constraint c join pg_catalog.pg_class rel on rel.oid=c.conrelid join pg_catalog.pg_namespace ns on ns.oid=rel.relnamespace join pg_catalog.pg_class target on target.oid=c.confrelid where c.contype='f' and c.confrelid in ('ace.syllabus_versions'::regclass,'ace.topics'::regclass,'ace.subtopics'::regclass)"""
 
 
 def preflight_sql(p):
@@ -158,7 +158,7 @@ begin
 {preflight_sql(p)}
 """]
     if rollback:
-        statements.append(" if not exists(select 1 from pg_roles where rolname=current_user and (rolsuper or rolbypassrls)) then raise exception 'Rollback requires trusted database owner context to inspect all references' using errcode='42501'; end if;\n")
+        statements.append(" if not exists(select 1 from pg_catalog.pg_roles where rolname=current_user and (rolsuper or rolbypassrls)) then raise exception 'Rollback requires trusted database owner context to inspect all references' using errcode='42501'; end if;\n")
     if not rollback:
         statements.append(' if new_count=0 then\n')
         for key, table in TABLES.items():
@@ -192,7 +192,7 @@ def render_sql(p, mode='preview'):
     if mode not in {'preview','apply','rollback'}:
         raise ValueError('Unknown review mode')
     sql = '-- UNAPPLIED FCB-02 review proposal. No claims/roles are set here.\n'
-    sql += "begin;\nset local standard_conforming_strings=on;\nset local lock_timeout='3s';\nset local statement_timeout='30s';\n"
+    sql += "begin;\nset local standard_conforming_strings=on;\nset local search_path=pg_catalog,pg_temp;\nset local lock_timeout='3s';\nset local statement_timeout='30s';\n"
     sql += render_body(p, rollback=mode == 'rollback')
     return sql + ('rollback;\n' if mode == 'preview' else 'commit;\n')
 
@@ -208,7 +208,7 @@ def executor_body(p):
  reviewed_digest constant text := {sql_literal(p['review_digest'])};
 begin
  if auth.uid() is null or not ace.is_admin() then raise exception 'Authenticated administrator context required' using errcode='42501'; end if;
- if not exists(select 1 from pg_roles where rolname=current_user and (rolsuper or rolbypassrls)) then raise exception 'Trusted executor owner required' using errcode='42501'; end if;
+ if not exists(select 1 from pg_catalog.pg_roles where rolname=current_user and (rolsuper or rolbypassrls)) then raise exception 'Trusted executor owner required' using errcode='42501'; end if;
  -- Hold authorization until this transaction ends, including concurrent demotion.
  perform 1 from ace.roles where user_id=auth.uid() and role='admin' for share;
  if not found then raise exception 'Authenticated administrator context required' using errcode='42501'; end if;
@@ -264,7 +264,7 @@ set local lock_timeout='3s';
 set local statement_timeout='30s';
 create function ace.manage_fcb02_draft(p_action text, p_review_digest text, p_package text)
 returns jsonb language plpgsql security definer
-set search_path = pg_catalog
+set search_path = pg_catalog, pg_temp
 set lock_timeout = '3s'
 as $executor$
 """ + executor_body(p) + """$executor$;
@@ -280,14 +280,15 @@ def render_uninstall(p):
     body_hash = hashlib.sha256(('\n'+executor_body(p)).encode()).hexdigest()
     return f"""-- UNAPPLIED uninstall: remove only the unchanged helper, never staged content.
 begin;
+set local search_path=pg_catalog,pg_temp;
 set local lock_timeout='3s';
 do $uninstall$
 declare f record;
 begin
- select prosrc,prosecdef,proconfig,pg_get_userbyid(proowner) owner_name into f from pg_proc where oid=to_regprocedure('ace.manage_fcb02_draft(text,text,text)');
+ select prosrc,prosecdef,proconfig,pg_get_userbyid(proowner) owner_name into f from pg_catalog.pg_proc where oid=to_regprocedure('ace.manage_fcb02_draft(text,text,text)');
  if not found then return; end if;
  if encode(sha256(convert_to(f.prosrc,'UTF8')),'hex')<>{sql_literal(body_hash)} or not f.prosecdef or f.owner_name<>'postgres'
- or f.proconfig is distinct from array['search_path=pg_catalog','lock_timeout=3s']::text[] then raise exception 'Executor definition drift; uninstall refused'; end if;
+ or f.proconfig is distinct from array['search_path=pg_catalog, pg_temp','lock_timeout=3s']::text[] then raise exception 'Executor definition drift; uninstall refused'; end if;
  drop function ace.manage_fcb02_draft(text,text,text);
 end
 $uninstall$;

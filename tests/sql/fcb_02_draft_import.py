@@ -118,6 +118,7 @@ def executor_scenarios(p):
     reference=f"insert into ace.learning_progress(user_id,subject_id,topic_id,subtopic_id) values('{STUDENT}',(select subject_id from ace.topics where id='{referenced['topic_id']}'),'{referenced['topic_id']}','{referenced['id']}');"
     add('hidden-reference-preview-disabled','begin;'+ctx+call('stage')+'reset role;'+reference+ctx+"do $test$ declare result jsonb;begin "+call().replace('select ace.', 'result := ace.').rstrip(';')+";if (result->>'can_undo')::boolean then raise exception 'Unsafe removal offered';end if;end $test$;rollback;")
     add('hidden-reference-undo-refused','begin;'+ctx+call('stage')+'reset role;'+reference+ctx+call('undo')+'rollback;','Referenced draft content; removal refused')
+    add('temp-catalog-cannot-hide-new-reference-contract','begin;'+ctx+call('stage')+"reset role;create table ace.fcb02_synthetic_reference(topic_id uuid references ace.topics(id) on delete cascade);create temp table pg_constraint as select * from pg_catalog.pg_constraint where conrelid<>'ace.fcb02_synthetic_reference'::regclass;"+ctx+call('undo')+'rollback;','Foreign-key contract drift')
     uninstall=module.render_uninstall(p).replace('begin;','',1).rsplit('commit;',1)[0]
     add('uninstall-only-helper','begin;'+uninstall+counts_sql()+'rollback;')
     add('changed-helper-uninstall-refused',"begin;alter function ace.manage_fcb02_draft(text,text,text) security invoker;"+uninstall+'rollback;','Executor definition drift')

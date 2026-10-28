@@ -64,7 +64,7 @@ class ProposalTests(unittest.TestCase):
         self.assertNotIn('set_config(', sql)
         self.assertNotIn('create or replace function', sql.lower())
         self.assertLess(len(sql), 30000)
-        self.assertIn('set search_path = pg_catalog', sql)
+        self.assertIn('set search_path = pg_catalog, pg_temp', sql)
         uninstall = module.render_uninstall(p)
         self.assertIn('prosrc', uninstall)
         self.assertNotIn('delete from', uninstall.lower())
