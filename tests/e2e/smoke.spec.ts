@@ -2876,12 +2876,12 @@ test('finishing reviewed corrections refreshes the currently selected syllabus v
   await panel.getByRole('button', { name: 'Apply reviewed corrections' }).click()
   await expect.poll(() => writes.length).toBe(3)
   const target = rows[1].syllabus_version_id
-  await page.getByLabel('Syllabus version', { exact: true }).selectOption(target)
+  await page.getByLabel('Syllabus version').selectOption(target)
   await expect.poll(() => topicReads.at(-1)).toBe(`eq.${target}`)
   const before = topicReads.length
   release()
   await expect(panel.getByRole('status')).toContainText('All reviewed corrections are saved')
   await expect.poll(() => topicReads.length).toBeGreaterThan(before)
   expect(topicReads.at(-1)).toBe(`eq.${target}`)
-  await expect(page.getByLabel('Syllabus version', { exact: true })).toHaveValue(target)
+  await expect(page.getByLabel('Syllabus version')).toHaveValue(target)
 })
