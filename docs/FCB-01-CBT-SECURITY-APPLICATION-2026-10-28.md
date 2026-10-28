@@ -1,6 +1,6 @@
 # Coordinated CBT security application review
 
-This source bundle is **not applied**. It requires specific production authorization after SHA-matched native checks. Existing six approved fixes must not be reapplied.
+This source bundle is **not applied**. It requires specific production authorization. Source 0735891 passed Verify 40630042446 (14 SQL suites, native rollback, 21 races) and E2E 40630042678 (164 tests); actual logs inspected. Existing six approved fixes must not be reapplied.
 
 Apply in dependency order: `supabase/proposals/fcb_01_cbt_mutation_contract.sql`, `supabase/proposals/fcb_01_attempt_question_delivery.sql`, then `supabase/proposals/fcb_01_mock_contract.sql`. A production preflight must still match the six-fix recovery snapshot and confirm no existing attempts require preserving/migrating old papers. Use the working Primary connection and tool-recorded migration IDs. No blind historical db push.
 
