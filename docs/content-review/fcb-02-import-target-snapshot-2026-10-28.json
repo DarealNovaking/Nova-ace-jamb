@@ -1202,5 +1202,13 @@
         ]
       }
     ]
+  },
+  "execution_context_preflight": {
+    "observed_on": "2026-10-28",
+    "database_role": "postgres",
+    "transaction_read_only": "off",
+    "has_authenticated_actor": false,
+    "actor_is_admin": false,
+    "result": "Connection is write-enabled; proposal guard intentionally refuses absent verified administrator identity. No production claims or roles were set."
   }
 }
