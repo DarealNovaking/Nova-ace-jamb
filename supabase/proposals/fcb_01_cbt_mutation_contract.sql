@@ -41,6 +41,7 @@ declare
 begin
   if v_user is null then raise exception 'Authentication required' using errcode='28000'; end if;
   if p_mode is null or p_mode not in ('practice','cbt','mock','learning','revision','ai_practice') then raise exception 'Unsupported attempt mode' using errcode='22023'; end if;
+  if p_mode='mock' then raise exception 'Mocks require an approved exam configuration' using errcode='22023'; end if;
   if p_question_count is null or p_question_count < 1 or p_question_count > 500 then raise exception 'Invalid question count' using errcode='22023'; end if;
   if p_duration_seconds is null or p_duration_seconds < 60 or p_duration_seconds > 86400 then raise exception 'Invalid duration' using errcode='22023'; end if;
 

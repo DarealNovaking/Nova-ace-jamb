@@ -146,5 +146,9 @@ jobs:
         run: psql -X -v ON_ERROR_STOP=1 -f tests/sql/fcb_01_exam_config_security.test.sql
       - name: Test native configuration and season approval races
         run: python3 tests/sql/fcb_01_exam_config_concurrency.py
+      - name: Test approved-configuration mock paper contracts
+        run: psql -X -v ON_ERROR_STOP=1 -f tests/sql/fcb_01_mock_contract.test.sql
+      - name: Test native mock capture versus administrator approval
+        run: python3 tests/sql/fcb_01_mock_concurrency.py
       - name: Test native CBT submit replay and save races
         run: python3 tests/sql/fcb_01_cbt_concurrency.py
