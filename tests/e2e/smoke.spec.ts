@@ -2634,3 +2634,89 @@ test.describe('ACE JAMB reduced-motion accessibility', () => {
     expect(motionStyles.animationMilliseconds).toBeLessThanOrEqual(0.1)
   })
 })
+
+test.describe('FCB-02 private review package', () => {
+  test('admin explicitly stages and removes private review drafts', async ({ page }) => {
+    await mockAcademicReview(page, true)
+    const actions: string[] = []
+    let staged = false
+    await page.route(`${projectUrl}/rest/v1/rpc/manage_fcb02_draft`, async (route) => {
+      const body = route.request().postDataJSON()
+      expect(body.p_review_digest).toMatch(/^[a-f0-9]{64}$/)
+      expect(JSON.parse(body.p_package).topics).toHaveLength(214)
+      actions.push(body.p_action)
+      if (body.p_action === 'stage') staged = true
+      if (body.p_action === 'undo') staged = false
+      await route.fulfill({ json: { state: staged ? 'staged' : 'not_staged', can_stage: !staged, can_undo: staged, changed: body.p_action !== 'preview', versions: staged ? 25 : 0, topics: staged ? 214 : 0, subtopics: staged ? 954 : 0, target_year: 2027, publication_allowed: false, rights_status: 'pending' } })
+    })
+    await page.goto('/admin-academic')
+    const panel = page.getByRole('region', { name: 'IBASS private review package' })
+    await expect(panel.getByText('Ready for private review staging.')).toBeVisible()
+    await expect(panel.getByRole('button', { name: 'Stage private review drafts' })).toBeDisabled()
+    expect(actions.every(action => action === 'preview')).toBeTruthy()
+    await panel.getByLabel('I understand these drafts still need rights and academic approval.').check()
+    await panel.getByRole('button', { name: 'Stage private review drafts' }).focus()
+    await page.keyboard.press('Enter')
+    await expect(panel.getByText('Private review drafts are staged.')).toBeVisible()
+    await expect(panel.getByRole('button', { name: 'Remove unchanged review drafts' })).toBeDisabled()
+    await panel.getByLabel('Remove only this unchanged, unused review package.').check()
+    await panel.getByRole('button', { name: 'Remove unchanged review drafts' }).click()
+    await expect(panel.getByText('Ready for private review staging.')).toBeVisible()
+    expect(actions.filter(a => a !== 'preview')).toEqual(['stage', 'undo'])
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy()
+  })
+
+  test('unavailable helper and failed write allow safe retry without leaking database details', async ({ page }) => {
+    await mockAcademicReview(page, true)
+    let available = false
+    let writeCalls = 0
+    await page.route(`${projectUrl}/rest/v1/rpc/manage_fcb02_draft`, async (route) => {
+      const { p_action } = route.request().postDataJSON()
+      if (!available) return route.fulfill({ status: 404, json: { code: 'PGRST202', message: 'secret database detail' } })
+      if (p_action !== 'preview') {
+        writeCalls++
+        return route.fulfill({ status: 400, json: { message: 'secret database detail' } })
+      }
+      await route.fulfill({ json: { state: 'not_staged', can_stage: true, can_undo: false, changed: false, versions: 0, topics: 0, subtopics: 0, target_year: 2027, publication_allowed: false, rights_status: 'pending' } })
+    })
+    await page.goto('/admin-academic')
+    const panel = page.getByRole('region', { name: 'IBASS private review package' })
+    await expect(panel.getByRole('alert')).toContainText('Bulk syllabus staging isn’t available yet.')
+    await expect(page.getByRole('heading', { name: 'Create a draft syllabus version' })).toBeVisible()
+    available = true
+    await panel.getByRole('button', { name: 'Check review package' }).click()
+    await panel.getByLabel('I understand these drafts still need rights and academic approval.').check()
+    await panel.getByRole('button', { name: 'Stage private review drafts' }).click()
+    await expect(panel.getByRole('alert')).toContainText('could not be confirmed')
+    await expect(panel.getByRole('button', { name: 'Stage private review drafts' })).toHaveCount(0)
+    await panel.getByRole('button', { name: 'Check review package' }).click()
+    await expect(panel.getByRole('button', { name: 'Stage private review drafts' })).toBeDisabled()
+    expect(writeCalls).toBe(1)
+    await expect(page.getByText('secret database detail')).toHaveCount(0)
+  })
+
+  test('referenced drafts cannot be removed in bulk', async ({ page }) => {
+    await mockAcademicReview(page, true)
+    const actions: string[] = []
+    await page.route(`${projectUrl}/rest/v1/rpc/manage_fcb02_draft`, async route => {
+      actions.push(route.request().postDataJSON().p_action)
+      await route.fulfill({ json: { state: 'staged', can_stage: false, can_undo: false, changed: false, versions: 25, topics: 214, subtopics: 954, target_year: 2027, publication_allowed: false, rights_status: 'pending' } })
+    })
+    await page.goto('/admin-academic')
+    const panel = page.getByRole('region', { name: 'IBASS private review package' })
+    await expect(panel.getByText(/bulk removal is unavailable/)).toBeVisible()
+    await expect(panel.getByRole('button', { name: 'Remove unchanged review drafts' })).toHaveCount(0)
+    expect(actions.every(action => action === 'preview')).toBeTruthy()
+    await page.screenshot({ path: test.info().outputPath('private-review-package.png'), fullPage: true })
+  })
+
+  test('content editor never loads the bulk package or sees staging controls', async ({ page }) => {
+    await mockAcademicReview(page, false)
+    let calls = 0
+    await page.route(`${projectUrl}/rest/v1/rpc/manage_fcb02_draft`, async (route) => { calls++; await route.abort() })
+    await page.goto('/admin-academic')
+    await expect(page.getByRole('heading', { name: 'Create a draft syllabus version' })).toBeVisible()
+    await expect(page.getByRole('region', { name: 'IBASS private review package' })).toHaveCount(0)
+    expect(calls).toBe(0)
+  })
+})

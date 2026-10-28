@@ -53,6 +53,22 @@ class ProposalTests(unittest.TestCase):
         text = "O'Brien \\ test'); drop table ace.subjects; --"
         self.assertEqual(module.sql_literal(text), "'O''Brien \\ test''); drop table ace.subjects; --'")
 
+    def test_executor_is_fixed_package_admin_only_and_installer_has_no_content(self):
+        p = self.build()
+        sql = module.render_executor(p)
+        self.assertIn('security definer', sql.lower())
+        self.assertIn('for share', sql.lower())
+        self.assertIn("p_action not in ('preview','stage','undo')", sql)
+        self.assertIn(p['review_digest'], sql)
+        self.assertIn('octet_length(p_package)', sql)
+        self.assertNotIn('set_config(', sql)
+        self.assertNotIn('create or replace function', sql.lower())
+        self.assertLess(len(sql), 30000)
+        self.assertIn('set search_path = pg_catalog', sql)
+        uninstall = module.render_uninstall(p)
+        self.assertIn('prosrc', uninstall)
+        self.assertNotIn('delete from', uninstall.lower())
+
     def test_rejects_subject_mapping_drift(self):
         self.target['snapshot']['subjects'][0]['code'] = 'ZZZ'
         with self.assertRaises(ValueError): self.build()

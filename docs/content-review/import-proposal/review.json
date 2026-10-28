@@ -8,8 +8,8 @@
     "exam_year": 2027
   },
   "draft_content_sha256": "d2cabac7ddee8ea6fc6163c48fbcaad71580492a293f4031bf6d00bb74ec18db",
-  "generator_sha256": "c6a53ff32f743d06d8db42ce7295bfeab968fe3b874e1275cd98df01fb55eadb",
-  "review_digest": "99e88402da4b3cc40051bed15e00ed21c7b932430f01733829a941b877376b2b",
+  "generator_sha256": "010f83900273bf92537eea6a45f8eeadb15a4f00e515ab382ea8d51dc0a5b6a7",
+  "review_digest": "bec10467d95efb5d1ca6db6d2d49c791fdcd847603210bfd5a22fc35b9513e1a",
   "bindings": [
     {
       "subject_code": "AGR",
@@ -175,9 +175,12 @@
   },
   "publication_allowed": false,
   "generated_files": {
-    "apply.sql": "ca96e067b2857113d7218b209ac343c9657d144fd4cadd1e31df3f9693a70969",
-    "preview.sql": "dd6c3e223767759c75b9f8287da13284c4cce4012a3529e640b4cc3828f7931b",
-    "proposal.json": "4b3752d9672070c2e5b1b32204467b425080a26701a8b4002f8df35d6201ad1c",
-    "rollback.sql": "a258e5ec9019fbd5ed32a4ef7bd11dcb7901fc10c5a0c53d94696bc3b71c455a"
+    "apply.sql": "a20c537f30a834077f8f3db8ecbe7fe1553297a649998a726e4586325f6e6449",
+    "fcb02ReviewPayload.json": "8d00e884a14d2947e78f98b85aa01e5b4fe5dadd1b1bd34e03a00da9a7fd6c35",
+    "install-executor.sql": "05098aa1464fc63664e478bb6d5bbe87c2378401b97c9904c29389016eeff044",
+    "preview.sql": "fad28792106d5764e198e3f45ea4d4f2dfd02c77bcd54caee95122b6a75919a8",
+    "proposal.json": "e7bd6b825ae92651530eba68850e21d4414f547bdcbb0f6e4a2c9a3bcbf56efa",
+    "rollback.sql": "dca0215b657713700c6ef1fe0ee15dedcc8b5982b0aeb7d18bb0a35581cb6d5e",
+    "uninstall-executor.sql": "b74fe9fbec3db1d8382c1a2dc5836301d155ab6f728db97054edaf79fab986e5"
   }
 }

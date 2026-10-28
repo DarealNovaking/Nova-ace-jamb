@@ -1,6 +1,6 @@
 # FCB-02 draft-only import proposal — 28 October 2026
 
-**Prepared, not applied.** [Review manifest](review.json) binds the generator, target snapshot, prospective IDs, exclusion and exact generated file hashes. This is a content-staging proposal, not a schema migration or publication approval.
+**Prepared, not applied.** [Review manifest](review.json) binds the generator, target snapshot, prospective IDs, exclusion and exact generated file hashes. This includes an unapplied administrator-helper installer and a content-staging proposal; neither grants publication approval.
 
 ## Concrete proposed change
 
@@ -25,7 +25,10 @@ The generator has no database/network execution path. It emits:
 | `preview.sql` | Full guarded staging transaction ending in ROLLBACK. |
 | `apply.sql` | Same guarded staging transaction ending in COMMIT; unapplied. |
 | `rollback.sql` | Owner-context guarded removal of unchanged, unused package rows only. |
-| `review.json` | Digest, bindings, counts and exact hashes of the four files above. |
+| `install-executor.sql` | Create one fixed-package authenticated administrator RPC; stage no content. |
+| `uninstall-executor.sql` | Remove only the unchanged helper, preserving staged rows. |
+| `fcb02ReviewPayload.json` | Canonical fixed payload and digest for the lazy-loaded administrator panel. |
+| `review.json` | Digest, bindings, counts and exact hashes of all generated files above. |
 
 Generated SQL/data are retained as the **fcb02-draft-import-review** CI artifact, rather than duplicating several megabytes of reconstructible literals in Git. The committed generator, reviewed source draft, target snapshot and review manifest reproduce it byte for byte. CI compares the regenerated review manifest before exercising the scripts.
 
@@ -33,7 +36,7 @@ Generated SQL/data are retained as the **fcb02-draft-import-review** CI artifact
 
 The source text is base64 data, never executable SQL. The SQL server recomputes SHA-256 of canonical decoded payload bytes, verifies it against the embedded reviewed digest, and requires an explicit matching transaction/session acknowledgment. The digest includes the generator source hash. Exact emitted SQL hashes must also match the reviewed manifest: a payload digest alone does not authenticate executable SQL body changes.
 
-No script sets JWT claims, grants roles, changes RLS, creates a user, supplies a token or impersonates an administrator. Applying/previewing requires a real administrator identity already established by a trusted authenticated execution context. A normal identity-free connector SQL session is expected to refuse it. **No authenticated bulk executor is installed by this proposal.** Verify that execution context before requesting any live staging approval; do not spoof a user's UUID into a production SQL session to satisfy the guard.
+No script sets JWT claims, grants roles, changes RLS, creates a user, supplies a token or impersonates an administrator. Applying/previewing requires a real administrator identity already established by a trusted authenticated execution context. A normal identity-free connector SQL session is expected to refuse it. **No authenticated bulk executor has been installed.** The new source-only installer creates `ace.manage_fcb02_draft(text,text,text)`, called through the existing signed-in administrator session. Do not spoof a user's UUID into a production SQL session to satisfy the guard.
 
 Rollback additionally requires a trusted database owner/bypass-RLS context plus that verified administrator identity. An ordinary authenticated administrator can have an RLS-filtered view of student records; it cannot safely certify that all external references are absent. The guarded rollback therefore refuses that narrower context. No client table privilege or policy is widened.
 
@@ -54,4 +57,19 @@ PASS locally: 8 Python unit cases; 21 real SQL scenarios on a disposable full51-
 
 Native PostgreSQL 17 job `122758105973` executed **22 scenarios PASS**, including the concurrent reference writer versus rollback race; its logs were inspected. The 8 unit cases and exact regenerated review-manifest comparison also passed in CI. Exact tested source: `3f9ffc8066a1d0cd46ea378715779e3ef305c45d`. [Generated package and native test evidence](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40671198288/artifacts/12808182524). Browser run [40671198259](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40671198259) completed PASS, **164 tests**, with job `122758105471` log inspected. Overall [Verify run 40671198288](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40671198288) completed PASS, including typecheck/build, recovery/contracts, the new native job and cleanup. No production application is claimed.
 
-Next: establish the verified administrator execution path before requesting live draft-only staging approval. Exact native/browser CI and independent review are already verified; do not repeat them without a new change or failure. Rights, publication, final exam settings and launch coverage remain separate FCB-02 acceptance gates.
+Historical next action was to establish the administrator execution path; the source implementation below now addresses it. Exact native/browser CI and independent review are already verified; do not repeat them without a new change or failure. Rights, publication, final exam settings and launch coverage remain separate FCB-02 acceptance gates.
+
+
+## Authenticated administrator staging entry point — source proposal
+
+The existing academic workspace gains one administrator-only panel. On mount it requests `preview`; staging and removal each require a fresh explicit checkbox confirmation. Editors and students do not mount the panel or load its payload. A missing RPC leaves normal editing available. An uncertain write clears actions until a fresh preview succeeds; raw database errors are never displayed.
+
+The installer creates, rather than replaces, one `SECURITY DEFINER` function owned by postgres. It grants execution to authenticated users, revokes PUBLIC/anon access, uses only `pg_catalog` in its search path, validates `auth.uid()`/administrator status, and holds the real role row `FOR SHARE` through commit. It additionally requires a superuser/bypass-RLS execution owner. It pins the exact canonical payload byte length and SHA-256 before parsing; clients cannot substitute arbitrary content or select another package. Installation changes no content or user roles. The function itself sets a bounded lock timeout; caller/PostgREST statement deadlines remain caller configuration, not a claimed function-level deadline.
+
+Actions are `preview`, `stage`, `undo`. Preview performs preflight checks and may take locks, but persists no content. Stage uses the same target/FK/row contract as the direct scripts. Exact replay is a no-op. Undo sees RLS-hidden references as the trusted owner, locks rows before inspecting them, and refuses changed or referenced drafts. Bulk audits are written only for actual changes. Uninstall verifies the exact function source hash, owner, definer setting and configuration, then drops only that helper without CASCADE; it never removes staged drafts.
+
+The client payload is committed once as generated data and loaded dynamically only from the administrator panel. CI regenerates and compares both that payload and the review manifest. This adds a roughly 624 KB uncompressed / 97 KB gzip administrator asset; student entry size is unchanged. The asset contains review metadata and topic labels, no credentials, book text or private student data.
+
+Current validation: 9 Python tests and local full-schema SQL scenarios PASS; typecheck/build PASS. Native concurrency and browser CI for this new entry point are pending. Local browser execution is BLOCKED: Chromium is absent and the browser download returned a truncated archive. The prior 164-test browser result above covers the earlier source only. Independent code review found no blocker; the suggested owner-bypass guard was added and tested. Production remains at the unchanged 50 scaffolds and zero taxonomy rows observed before implementation.
+
+Next: complete native PostgreSQL and browser CI, inspect failures/evidence, then present the exact helper installation and deployment/staging boundaries for specific owner approval under AGENTS.md. Do not install, stage, merge or deploy merely because source tests pass. Rights, applicability, publication, launch coverage and final exam configuration remain separate FCB-02 gates.
