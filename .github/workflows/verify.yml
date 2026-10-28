@@ -191,6 +191,7 @@ jobs:
           python3 scripts/prepare-fcb02-import.py --output-dir /tmp/fcb02-import-proposal
           diff -u docs/content-review/import-proposal/review.json /tmp/fcb02-import-proposal/review.json
           diff -u src/data/fcb02ReviewPayload.json /tmp/fcb02-import-proposal/fcb02ReviewPayload.json
+          diff -u supabase/migrations/20261028133030_fcb02_fixed_review_admin_executor.sql /tmp/fcb02-import-proposal/install-executor.sql
       - name: Prepare empty isolated recovered PostgreSQL schema
         run: psql -X -v ON_ERROR_STOP=1 -f tests/sql/fcb_01_schema_baseline.test.sql
       - name: Test staging, refusal, privacy, guarded rollback and concurrent references

@@ -1,6 +1,6 @@
 # FCB-02 draft-only import proposal — 28 October 2026
 
-**Prepared, not applied.** [Review manifest](review.json) binds the generator, target snapshot, prospective IDs, exclusion and exact generated file hashes. This includes an unapplied administrator-helper installer and a content-staging proposal; neither grants publication approval.
+**Helper installed after specific approval; content import remains unapplied.** [Review manifest](review.json) binds the generator, target snapshot, prospective IDs, exclusion and exact generated file hashes. This includes an unapplied administrator-helper installer and a content-staging proposal; neither grants publication approval.
 
 ## Concrete proposed change
 
@@ -87,3 +87,12 @@ Exact source **`319fb18bf795ec7244ddcfeaf66d87f2dd2c89f4`**: [Verify40693456640]
 [Exact reviewed scripts and test evidence](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40693456640/artifacts/12817893123). Review digest `aa9340d4f81bdf5253c322b14a9a091f8b0cd638a6593fd3805b207ee1453ef3`; installer SHA256 `a07a244340fc414e4f8701cc75714cc6496b6e978842500e14e765837386f580`; helper-only uninstaller `a8dcdfdba3dbb938727b6c4202f177f7b26852dad040f7c63296a76d843fe3d0`.
 
 Ready for specific approval of **helper installation only**. Proposed effect: create one fixed-package administrator RPC, revoke public/anonymous execution, grant authenticated execution (real administrator checks still apply), notify PostgREST, then verify owner/source/config/ACL. No content staging, user-role changes, rights approval, publication, main merge or frontend deployment is included. Uninstall removes only the verified unchanged helper. No live authenticated/PostgREST execution is claimed before installation and subsequent separately authorized integration acceptance. FCB-02 remains IN PROGRESS.
+
+
+## Helper installation accepted —28 October2026
+
+Owner approved helper-only installation. Migration **20261028133030_fcb02_fixed_review_admin_executor** is applied, with exact installer/body hashes,owner,definer,configuration and ACL verified. PUBLIC/anon execution denied; identity-free authenticated and anonymous live calls refused.50scaffold rows and role hashes unchanged;0topics/subtopics/questions/attempts and4audit events. All51RLS tables unchanged;40functions/ledger53. First expired connector request made no change; identical reviewed retry succeeded. [Evidence](../../evidence/fcb-02-helper-install-2026-10-28.json).
+
+Security advisors added only the expected [authenticated SECURITY DEFINER exposure notice](https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable) for this deliberately callable API, protected internally by the verified real-administrator/role-lock checks. No unrelated advisory changed.
+
+The helper is live; the new administrator panel is still source-only. Main merge/frontend deployment, signed-admin integration and content staging remain separately gated. Earlier unapplied-installer/approval-pending statements describe preparation history and are superseded by this installation record. Content import, publication and rights approval are still unapplied.
