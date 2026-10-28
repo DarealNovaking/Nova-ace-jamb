@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { applyReviewedCorrections, checkReviewedCorrections, reviewedCorrections } from '../lib/reviewedCorrectionsService'
 import type { CorrectionPlan } from '../lib/reviewedCorrectionPlan'
 
@@ -9,6 +9,8 @@ export default function ReviewedDraftCorrections({ onChanged }: { onChanged: () 
   const [mustCheck, setMustCheck] = useState(false)
   const inFlight = useRef(false)
   const mounted = useRef(true)
+  const onChangedRef = useRef(onChanged)
+  useLayoutEffect(() => { onChangedRef.current = onChanged }, [onChanged])
   useEffect(() => { mounted.current = true; return () => { mounted.current = false } }, [])
 
   async function run(next: 'check' | 'apply') {
@@ -22,7 +24,7 @@ export default function ReviewedDraftCorrections({ onChanged }: { onChanged: () 
       if (!mounted.current) return
       setPlan(result)
       setMustCheck(false)
-      if (result.remaining.length === 0) onChanged()
+      if (result.remaining.length === 0) onChangedRef.current()
     } catch {
       if (!mounted.current) return
       setMustCheck(true)
