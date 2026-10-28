@@ -12,7 +12,7 @@ do $$ begin
 end $$;
 reset role;
 rollback;
-\i supabase/proposals/fcb_01_exam_config_security.sql
+\i supabase/migrations/20261028032933_fcb_01_exam_config_security.sql
 \i supabase/proposals/fcb_01_mock_contract.sql
 \i tests/sql/fixtures/fcb_01_mock_content.sql
 set local role authenticated;

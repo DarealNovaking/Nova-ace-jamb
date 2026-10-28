@@ -6188,14 +6188,14 @@
     {
       "name": "activate_exam_config",
       "identity": "p_exam_config_id uuid",
-      "definition": "CREATE OR REPLACE FUNCTION ace.activate_exam_config(p_exam_config_id uuid)\n RETURNS void\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'pg_catalog', 'ace'\nAS $function$\ndeclare\n  v_user uuid := auth.uid();\n  validation jsonb;\n  v_season_id uuid;\nbegin\n  if v_user is null or not ace.is_admin_or_editor() then raise exception 'Admin/editor access required'; end if;\n  select season_id into v_season_id from ace.exam_configs where id=p_exam_config_id;\n  if v_season_id is null then raise exception 'Exam configuration not found'; end if;\n  validation := ace.validate_exam_config(p_exam_config_id);\n  if coalesce((validation->>'valid')::boolean,false) is not true then raise exception 'Exam configuration invalid: %', validation->'errors'; end if;\n  update ace.exam_configs set active=false where season_id=v_season_id and id<>p_exam_config_id;\n  update ace.exam_configs set active=true, version=version+1 where id=p_exam_config_id;\nend;\n$function$\n",
+      "definition": "CREATE OR REPLACE FUNCTION ace.activate_exam_config(p_exam_config_id uuid)\n RETURNS void\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'pg_catalog', 'ace'\nAS $function$\ndeclare v_season uuid; v_status text; validation jsonb; v_prior jsonb;\nbegin\n if auth.uid() is null or not ace.is_admin() then raise exception 'Administrator approval required' using errcode='42501'; end if;\n if p_exam_config_id is null then raise exception 'Configuration required' using errcode='22023'; end if;\n select season_id into v_season from ace.exam_configs where id=p_exam_config_id;\n if not found then raise exception 'Configuration unavailable' using errcode='P0002'; end if;\n -- Serialize different target configurations too, keeping one active per season.\n select status into v_status from ace.exam_seasons where id=v_season for update;\n if not found then raise exception 'Season unavailable' using errcode='P0002'; end if;\n if v_status in ('closed','archived') then raise exception 'Closed season cannot be activated' using errcode='22023'; end if;\n perform id from ace.exam_configs where season_id=v_season order by id for update;\n if not exists(select 1 from ace.exam_configs where id=p_exam_config_id and season_id=v_season) then\n  raise exception 'Configuration unavailable' using errcode='P0002';\n end if;\n validation:=ace.validate_exam_config(p_exam_config_id);\n if coalesce((validation->>'valid')::boolean,false) is not true then raise exception 'Invalid exam configuration' using errcode='22023'; end if;\n select coalesce(jsonb_agg(id order by id),'[]'::jsonb) into v_prior from ace.exam_configs where season_id=v_season and active;\n if v_prior=jsonb_build_array(p_exam_config_id) then return; end if;\n update ace.exam_configs set active=false where season_id=v_season and id<>p_exam_config_id and active;\n -- Version identifies the configuration; activating it must not collide with a later draft.\n update ace.exam_configs set active=true where id=p_exam_config_id;\n insert into ace.audit_events(actor_user_id,event_type,entity_type,entity_id,metadata)\n values(auth.uid(),'exam_config_activated','exam_config',p_exam_config_id,jsonb_build_object('season_id',v_season,'previous_active',v_prior));\nend;\n$function$\n",
       "owner": "postgres",
       "acl": "{postgres=X/postgres,authenticated=X/postgres}"
     },
     {
       "name": "activate_exam_season",
       "identity": "p_season_id uuid",
-      "definition": "CREATE OR REPLACE FUNCTION ace.activate_exam_season(p_season_id uuid)\n RETURNS void\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'pg_catalog', 'ace'\nAS $function$\ndeclare\n  v_user uuid := auth.uid();\n  v_season ace.exam_seasons%rowtype;\nbegin\n  if v_user is null or not ace.is_admin_or_editor() then raise exception 'Admin/editor access required'; end if;\n  select * into v_season from ace.exam_seasons where id=p_season_id for update;\n  if not found then raise exception 'Season not found'; end if;\n  if not exists (select 1 from ace.exam_configs where season_id=p_season_id and active=true) then raise exception 'Season must have an active exam configuration'; end if;\n  if not exists (select 1 from ace.syllabus_versions where season_id=p_season_id and status='active') then raise exception 'Season must have at least one active syllabus version'; end if;\n  update ace.exam_seasons set status='archived', updated_at=now() where status='active' and id<>p_season_id;\n  update ace.exam_seasons set status='active', updated_at=now() where id=p_season_id;\nend;\n$function$\n",
+      "definition": "CREATE OR REPLACE FUNCTION ace.activate_exam_season(p_season_id uuid)\n RETURNS void\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'pg_catalog', 'ace'\nAS $function$\ndeclare v_status text; v_config uuid; v_prior jsonb;\nbegin\n if auth.uid() is null or not ace.is_admin() then raise exception 'Administrator approval required' using errcode='42501'; end if;\n if p_season_id is null then raise exception 'Season required' using errcode='22023'; end if;\n -- Rare approval operation: serialize all targets before choosing the new active season.\n lock table ace.exam_seasons in share row exclusive mode;\n -- Lock every season row too: a stale REPEATABLE READ snapshot must fail safely.\n perform id from ace.exam_seasons order by id for update;\n select status into v_status from ace.exam_seasons where id=p_season_id for update;\n if not found then raise exception 'Season unavailable' using errcode='P0002'; end if;\n if v_status in ('closed','archived') then raise exception 'Closed season cannot be activated' using errcode='22023'; end if;\n if (select count(*) from ace.exam_configs where season_id=p_season_id and active)<>1 then\n  raise exception 'Season requires one approved configuration' using errcode='22023';\n end if;\n select id into v_config from ace.exam_configs where season_id=p_season_id and active for share;\n if coalesce((ace.validate_exam_config(v_config)->>'valid')::boolean,false) is not true then\n  raise exception 'Season configuration invalid' using errcode='22023';\n end if;\n if exists(select 1 from ace.exam_config_subjects cs where cs.exam_config_id=v_config\n   and not exists(select 1 from ace.syllabus_versions v where v.season_id=p_season_id\n     and v.subject_id=cs.subject_id and v.status='active' and v.rights_status='approved'\n     and exists(select 1 from ace.topics t join ace.subtopics st on st.topic_id=t.id\n       where t.syllabus_version_id=v.id and st.syllabus_version_id=v.id and t.active and st.active))) then\n  raise exception 'Configured subjects require approved published syllabus trees' using errcode='22023';\n end if;\n select coalesce(jsonb_agg(id order by id),'[]'::jsonb) into v_prior from ace.exam_seasons where status='active';\n if v_prior=jsonb_build_array(p_season_id) then return; end if;\n update ace.exam_seasons set status='archived',updated_at=clock_timestamp() where status='active' and id<>p_season_id;\n update ace.exam_seasons set status='active',updated_at=clock_timestamp() where id=p_season_id;\n insert into ace.audit_events(actor_user_id,event_type,entity_type,entity_id,metadata)\n values(auth.uid(),'exam_season_activated','exam_season',p_season_id,jsonb_build_object('previous_active',v_prior,'exam_config_id',v_config));\nend;\n$function$\n",
       "owner": "postgres",
       "acl": "{postgres=X/postgres,authenticated=X/postgres}"
     },
@@ -6247,6 +6247,13 @@
       "definition": "CREATE OR REPLACE FUNCTION ace.get_catalog_source(p_source_id uuid)\n RETURNS TABLE(id uuid, title text, status text, source_type text)\n LANGUAGE sql\n STABLE SECURITY DEFINER\n SET search_path TO 'pg_catalog', 'ace'\nAS $function$\n select s.id,s.title,s.status,s.source_type from ace.catalog_sources s\n where auth.uid() is not null and ace.is_admin_or_editor() and s.id=p_source_id;\n$function$\n",
       "owner": "postgres",
       "acl": "{postgres=X/postgres,authenticated=X/postgres}"
+    },
+    {
+      "name": "guard_exam_composition",
+      "identity": "",
+      "definition": "CREATE OR REPLACE FUNCTION ace.guard_exam_composition()\n RETURNS trigger\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'pg_catalog', 'ace'\nAS $function$\ndeclare v_old uuid; v_new uuid; c record;\nbegin\n if auth.uid() is null or not ace.is_admin_or_editor() then raise exception 'Configuration authoring permission required' using errcode='42501'; end if;\n if tg_op<>'INSERT' then v_old:=old.exam_config_id; end if;\n if tg_op<>'DELETE' then v_new:=new.exam_config_id; end if;\n -- Shared parent locks serialize draft writes against activation's exclusive lock.\n for c in select id,active from ace.exam_configs where id=any(array[v_old,v_new]) order by id for share loop\n  if c.active then raise exception 'Active exam composition is immutable; create a draft version' using errcode='42501'; end if;\n end loop;\n insert into ace.audit_events(actor_user_id,event_type,entity_type,entity_id,metadata)\n values(auth.uid(),'exam_composition_changed','exam_config',coalesce(v_new,v_old),jsonb_build_object('operation',tg_op));\n if tg_op='DELETE' then return old; end if;\n return new;\nend;\n$function$\n",
+      "owner": "postgres",
+      "acl": "{postgres=X/postgres}"
     },
     {
       "name": "guard_syllabus_authoring",
@@ -6398,7 +6405,7 @@
     {
       "name": "validate_exam_config",
       "identity": "p_exam_config_id uuid",
-      "definition": "CREATE OR REPLACE FUNCTION ace.validate_exam_config(p_exam_config_id uuid)\n RETURNS jsonb\n LANGUAGE plpgsql\n STABLE SECURITY DEFINER\n SET search_path TO 'pg_catalog', 'ace'\nAS $function$\ndeclare\n  c ace.exam_configs%rowtype;\n  required_count integer;\n  optional_count integer;\n  required_questions integer;\n  optional_question_counts jsonb;\n  result jsonb;\nbegin\n  if auth.uid() is null or not ace.is_admin_or_editor() then\n    raise exception 'Administrator/editor access required' using errcode='42501';\n  end if;\n  select * into c from ace.exam_configs where id=p_exam_config_id;\n  if not found then return jsonb_build_object('valid',false,'errors',jsonb_build_array('Exam configuration not found')); end if;\n  select count(*) filter (where required), count(*) filter (where not required), coalesce(sum(question_count) filter (where required),0)\n    into required_count, optional_count, required_questions\n  from ace.exam_config_subjects where exam_config_id=p_exam_config_id;\n\n  optional_question_counts := coalesce((select jsonb_agg(distinct question_count order by question_count) from ace.exam_config_subjects where exam_config_id=p_exam_config_id and not required),'[]'::jsonb);\n  result := jsonb_build_object(\n    'valid', true,\n    'errors', '[]'::jsonb,\n    'required_subjects', required_count,\n    'optional_subjects', optional_count,\n    'required_questions', required_questions,\n    'optional_question_counts', optional_question_counts,\n    'total_questions', c.total_questions,\n    'duration_seconds', c.duration_seconds,\n    'option_count', c.option_count\n  );\n\n  if c.duration_seconds <= 0 then result := jsonb_set(result,'{valid}','false'::jsonb); result := jsonb_set(result,'{errors}', (result->'errors') || jsonb_build_array('Duration must be positive')); end if;\n  if c.total_questions <= 0 then result := jsonb_set(result,'{valid}','false'::jsonb); result := jsonb_set(result,'{errors}', (result->'errors') || jsonb_build_array('Total question count must be positive')); end if;\n  if c.option_count < 2 or c.option_count > 8 then result := jsonb_set(result,'{valid}','false'::jsonb); result := jsonb_set(result,'{errors}', (result->'errors') || jsonb_build_array('Option count must be between 2 and 8')); end if;\n  if required_count < 1 then result := jsonb_set(result,'{valid}','false'::jsonb); result := jsonb_set(result,'{errors}', (result->'errors') || jsonb_build_array('At least one required subject is required')); end if;\n  if optional_count < 1 then result := jsonb_set(result,'{valid}','false'::jsonb); result := jsonb_set(result,'{errors}', (result->'errors') || jsonb_build_array('At least one optional subject is required')); end if;\n  if exists (select 1 from ace.exam_config_subjects where exam_config_id=p_exam_config_id and question_count <= 0) then result := jsonb_set(result,'{valid}','false'::jsonb); result := jsonb_set(result,'{errors}', (result->'errors') || jsonb_build_array('All configured subject question counts must be positive')); end if;\n  return result;\nend;\n$function$\n",
+      "definition": "CREATE OR REPLACE FUNCTION ace.validate_exam_config(p_exam_config_id uuid)\n RETURNS jsonb\n LANGUAGE plpgsql\n STABLE SECURITY DEFINER\n SET search_path TO 'pg_catalog', 'ace'\nAS $function$\ndeclare\n  c ace.exam_configs%rowtype;\n  required_count integer;\n  optional_count integer;\n  required_questions integer;\n  optional_question_counts jsonb;\n  result jsonb;\n  v_min integer;\n  v_max integer;\nbegin\n  if auth.uid() is null or not ace.is_admin_or_editor() then\n    raise exception 'Administrator/editor access required' using errcode='42501';\n  end if;\n  select * into c from ace.exam_configs where id=p_exam_config_id;\n  if not found then return jsonb_build_object('valid',false,'errors',jsonb_build_array('Exam configuration not found')); end if;\n  select count(*) filter (where required), count(*) filter (where not required), coalesce(sum(question_count) filter (where required),0)\n    into required_count, optional_count, required_questions\n  from ace.exam_config_subjects where exam_config_id=p_exam_config_id;\n\n  optional_question_counts := coalesce((select jsonb_agg(distinct question_count order by question_count) from ace.exam_config_subjects where exam_config_id=p_exam_config_id and not required),'[]'::jsonb);\n  result := jsonb_build_object(\n    'valid', true,\n    'errors', '[]'::jsonb,\n    'required_subjects', required_count,\n    'optional_subjects', optional_count,\n    'required_questions', required_questions,\n    'optional_question_counts', optional_question_counts,\n    'total_questions', c.total_questions,\n    'duration_seconds', c.duration_seconds,\n    'option_count', c.option_count\n  );\n\n  if c.duration_seconds <= 0 then result := jsonb_set(result,'{valid}','false'::jsonb); result := jsonb_set(result,'{errors}', (result->'errors') || jsonb_build_array('Duration must be positive')); end if;\n  if c.total_questions <= 0 then result := jsonb_set(result,'{valid}','false'::jsonb); result := jsonb_set(result,'{errors}', (result->'errors') || jsonb_build_array('Total question count must be positive')); end if;\n  if c.option_count < 2 or c.option_count > 8 then result := jsonb_set(result,'{valid}','false'::jsonb); result := jsonb_set(result,'{errors}', (result->'errors') || jsonb_build_array('Option count must be between 2 and 8')); end if;\n  if required_count < 1 then result := jsonb_set(result,'{valid}','false'::jsonb); result := jsonb_set(result,'{errors}', (result->'errors') || jsonb_build_array('At least one required subject is required')); end if;\n  if optional_count < 1 then result := jsonb_set(result,'{valid}','false'::jsonb); result := jsonb_set(result,'{errors}', (result->'errors') || jsonb_build_array('At least one optional subject is required')); end if;\n  if exists (select 1 from ace.exam_config_subjects where exam_config_id=p_exam_config_id and question_count <= 0) then result := jsonb_set(result,'{valid}','false'::jsonb); result := jsonb_set(result,'{errors}', (result->'errors') || jsonb_build_array('All configured subject question counts must be positive')); end if;\n  if required_count<>1 or not exists(select 1 from ace.exam_config_subjects cs join ace.subjects sub on sub.id=cs.subject_id\n      where cs.exam_config_id=p_exam_config_id and cs.required and sub.code='ENG' and sub.active) then\n    result:=jsonb_set(result,'{valid}','false'::jsonb);\n    result:=jsonb_set(result,'{errors}',(result->'errors')||jsonb_build_array('Exactly one compulsory active English subject is required'));\n  end if;\n  if optional_count<3 then\n    result:=jsonb_set(result,'{valid}','false'::jsonb);\n    result:=jsonb_set(result,'{errors}',(result->'errors')||jsonb_build_array('At least three optional subjects are required'));\n  end if;\n  if exists(select 1 from ace.exam_config_subjects cs join ace.subjects sub on sub.id=cs.subject_id\n      where cs.exam_config_id=p_exam_config_id and not sub.active) then\n    result:=jsonb_set(result,'{valid}','false'::jsonb);\n    result:=jsonb_set(result,'{errors}',(result->'errors')||jsonb_build_array('Configured subjects must be active'));\n  end if;\n  select sum(question_count) into v_min from (select question_count from ace.exam_config_subjects\n    where exam_config_id=p_exam_config_id and not required order by question_count limit 3) x;\n  select sum(question_count) into v_max from (select question_count from ace.exam_config_subjects\n    where exam_config_id=p_exam_config_id and not required order by question_count desc limit 3) x;\n  if optional_count>=3 and (required_questions+v_min<>c.total_questions or required_questions+v_max<>c.total_questions) then\n    result:=jsonb_set(result,'{valid}','false'::jsonb);\n    result:=jsonb_set(result,'{errors}',(result->'errors')||jsonb_build_array('Every choice of three optional subjects must match the configured total'));\n  end if;\n  return result;\nend;\n$function$\n",
       "owner": "postgres",
       "acl": "{postgres=X/postgres,authenticated=X/postgres}"
     }
@@ -6641,7 +6648,7 @@
         "authenticated"
       ],
       "cmd": "SELECT",
-      "qual": "((EXISTS ( SELECT 1\n   FROM (ace.exam_configs c\n     JOIN ace.exam_seasons s ON ((s.id = c.season_id)))\n  WHERE ((c.id = exam_config_subjects.exam_config_id) AND (s.status = ANY (ARRAY['active'::text, 'closed'::text]))))) OR ace.is_admin_or_editor())",
+      "qual": "((EXISTS ( SELECT 1\n   FROM (ace.exam_configs c\n     JOIN ace.exam_seasons s ON ((s.id = c.season_id)))\n  WHERE ((c.id = exam_config_subjects.exam_config_id) AND c.active AND (s.status = ANY (ARRAY['active'::text, 'closed'::text]))))) OR ace.is_admin_or_editor())",
       "with_check": null
     },
     {
@@ -6666,7 +6673,7 @@
         "authenticated"
       ],
       "cmd": "SELECT",
-      "qual": "(active = true)",
+      "qual": "(active AND (EXISTS ( SELECT 1\n   FROM ace.exam_seasons s\n  WHERE ((s.id = exam_configs.season_id) AND (s.status = ANY (ARRAY['active'::text, 'closed'::text]))))))",
       "with_check": null
     },
     {
@@ -6678,7 +6685,7 @@
         "authenticated"
       ],
       "cmd": "SELECT",
-      "qual": "(active OR ace.is_admin_or_editor())",
+      "qual": "((active AND (EXISTS ( SELECT 1\n   FROM ace.exam_seasons s\n  WHERE ((s.id = exam_configs.season_id) AND (s.status = ANY (ARRAY['active'::text, 'closed'::text])))))) OR ace.is_admin_or_editor())",
       "with_check": null
     },
     {
@@ -6715,7 +6722,7 @@
         "authenticated"
       ],
       "cmd": "SELECT",
-      "qual": "((status = ANY (ARRAY['draft'::text, 'active'::text, 'closed'::text])) OR ace.is_admin_or_editor())",
+      "qual": "((status = ANY (ARRAY['active'::text, 'closed'::text])) OR ace.is_admin_or_editor())",
       "with_check": null
     },
     {
@@ -7397,6 +7404,13 @@
   "triggers": [
     {
       "schema_name": "ace",
+      "table_name": "exam_config_subjects",
+      "name": "guard_exam_composition",
+      "definition": "CREATE TRIGGER guard_exam_composition BEFORE INSERT OR DELETE OR UPDATE ON ace.exam_config_subjects FOR EACH ROW EXECUTE FUNCTION ace.guard_exam_composition()",
+      "enabled": "O"
+    },
+    {
+      "schema_name": "ace",
       "table_name": "profiles",
       "name": "profiles_touch_updated_at",
       "definition": "CREATE TRIGGER profiles_touch_updated_at BEFORE UPDATE ON ace.profiles FOR EACH ROW EXECUTE FUNCTION ace.touch_profile_updated_at()",
@@ -7528,14 +7542,14 @@
       "rls": true,
       "force_rls": false,
       "owner": "postgres",
-      "acl": null
+      "acl": "{postgres=arwdDxtm/postgres,authenticated=r/postgres}"
     },
     {
       "name": "exam_seasons",
       "rls": true,
       "force_rls": false,
       "owner": "postgres",
-      "acl": null
+      "acl": "{postgres=arwdDxtm/postgres,authenticated=r/postgres}"
     },
     {
       "name": "feature_flags",

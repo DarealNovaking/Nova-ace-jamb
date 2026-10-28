@@ -611,18 +611,29 @@ CREATE OR REPLACE FUNCTION ace.activate_exam_config(p_exam_config_id uuid)
  SECURITY DEFINER
  SET search_path TO 'pg_catalog', 'ace'
 AS $function$
-declare
-  v_user uuid := auth.uid();
-  validation jsonb;
-  v_season_id uuid;
+declare v_season uuid; v_status text; validation jsonb; v_prior jsonb;
 begin
-  if v_user is null or not ace.is_admin_or_editor() then raise exception 'Admin/editor access required'; end if;
-  select season_id into v_season_id from ace.exam_configs where id=p_exam_config_id;
-  if v_season_id is null then raise exception 'Exam configuration not found'; end if;
-  validation := ace.validate_exam_config(p_exam_config_id);
-  if coalesce((validation->>'valid')::boolean,false) is not true then raise exception 'Exam configuration invalid: %', validation->'errors'; end if;
-  update ace.exam_configs set active=false where season_id=v_season_id and id<>p_exam_config_id;
-  update ace.exam_configs set active=true, version=version+1 where id=p_exam_config_id;
+ if auth.uid() is null or not ace.is_admin() then raise exception 'Administrator approval required' using errcode='42501'; end if;
+ if p_exam_config_id is null then raise exception 'Configuration required' using errcode='22023'; end if;
+ select season_id into v_season from ace.exam_configs where id=p_exam_config_id;
+ if not found then raise exception 'Configuration unavailable' using errcode='P0002'; end if;
+ -- Serialize different target configurations too, keeping one active per season.
+ select status into v_status from ace.exam_seasons where id=v_season for update;
+ if not found then raise exception 'Season unavailable' using errcode='P0002'; end if;
+ if v_status in ('closed','archived') then raise exception 'Closed season cannot be activated' using errcode='22023'; end if;
+ perform id from ace.exam_configs where season_id=v_season order by id for update;
+ if not exists(select 1 from ace.exam_configs where id=p_exam_config_id and season_id=v_season) then
+  raise exception 'Configuration unavailable' using errcode='P0002';
+ end if;
+ validation:=ace.validate_exam_config(p_exam_config_id);
+ if coalesce((validation->>'valid')::boolean,false) is not true then raise exception 'Invalid exam configuration' using errcode='22023'; end if;
+ select coalesce(jsonb_agg(id order by id),'[]'::jsonb) into v_prior from ace.exam_configs where season_id=v_season and active;
+ if v_prior=jsonb_build_array(p_exam_config_id) then return; end if;
+ update ace.exam_configs set active=false where season_id=v_season and id<>p_exam_config_id and active;
+ -- Version identifies the configuration; activating it must not collide with a later draft.
+ update ace.exam_configs set active=true where id=p_exam_config_id;
+ insert into ace.audit_events(actor_user_id,event_type,entity_type,entity_id,metadata)
+ values(auth.uid(),'exam_config_activated','exam_config',p_exam_config_id,jsonb_build_object('season_id',v_season,'previous_active',v_prior));
 end;
 $function$;
 
@@ -632,17 +643,37 @@ CREATE OR REPLACE FUNCTION ace.activate_exam_season(p_season_id uuid)
  SECURITY DEFINER
  SET search_path TO 'pg_catalog', 'ace'
 AS $function$
-declare
-  v_user uuid := auth.uid();
-  v_season ace.exam_seasons%rowtype;
+declare v_status text; v_config uuid; v_prior jsonb;
 begin
-  if v_user is null or not ace.is_admin_or_editor() then raise exception 'Admin/editor access required'; end if;
-  select * into v_season from ace.exam_seasons where id=p_season_id for update;
-  if not found then raise exception 'Season not found'; end if;
-  if not exists (select 1 from ace.exam_configs where season_id=p_season_id and active=true) then raise exception 'Season must have an active exam configuration'; end if;
-  if not exists (select 1 from ace.syllabus_versions where season_id=p_season_id and status='active') then raise exception 'Season must have at least one active syllabus version'; end if;
-  update ace.exam_seasons set status='archived', updated_at=now() where status='active' and id<>p_season_id;
-  update ace.exam_seasons set status='active', updated_at=now() where id=p_season_id;
+ if auth.uid() is null or not ace.is_admin() then raise exception 'Administrator approval required' using errcode='42501'; end if;
+ if p_season_id is null then raise exception 'Season required' using errcode='22023'; end if;
+ -- Rare approval operation: serialize all targets before choosing the new active season.
+ lock table ace.exam_seasons in share row exclusive mode;
+ -- Lock every season row too: a stale REPEATABLE READ snapshot must fail safely.
+ perform id from ace.exam_seasons order by id for update;
+ select status into v_status from ace.exam_seasons where id=p_season_id for update;
+ if not found then raise exception 'Season unavailable' using errcode='P0002'; end if;
+ if v_status in ('closed','archived') then raise exception 'Closed season cannot be activated' using errcode='22023'; end if;
+ if (select count(*) from ace.exam_configs where season_id=p_season_id and active)<>1 then
+  raise exception 'Season requires one approved configuration' using errcode='22023';
+ end if;
+ select id into v_config from ace.exam_configs where season_id=p_season_id and active for share;
+ if coalesce((ace.validate_exam_config(v_config)->>'valid')::boolean,false) is not true then
+  raise exception 'Season configuration invalid' using errcode='22023';
+ end if;
+ if exists(select 1 from ace.exam_config_subjects cs where cs.exam_config_id=v_config
+   and not exists(select 1 from ace.syllabus_versions v where v.season_id=p_season_id
+     and v.subject_id=cs.subject_id and v.status='active' and v.rights_status='approved'
+     and exists(select 1 from ace.topics t join ace.subtopics st on st.topic_id=t.id
+       where t.syllabus_version_id=v.id and st.syllabus_version_id=v.id and t.active and st.active))) then
+  raise exception 'Configured subjects require approved published syllabus trees' using errcode='22023';
+ end if;
+ select coalesce(jsonb_agg(id order by id),'[]'::jsonb) into v_prior from ace.exam_seasons where status='active';
+ if v_prior=jsonb_build_array(p_season_id) then return; end if;
+ update ace.exam_seasons set status='archived',updated_at=clock_timestamp() where status='active' and id<>p_season_id;
+ update ace.exam_seasons set status='active',updated_at=clock_timestamp() where id=p_season_id;
+ insert into ace.audit_events(actor_user_id,event_type,entity_type,entity_id,metadata)
+ values(auth.uid(),'exam_season_activated','exam_season',p_season_id,jsonb_build_object('previous_active',v_prior,'exam_config_id',v_config));
 end;
 $function$;
 
@@ -788,6 +819,28 @@ CREATE OR REPLACE FUNCTION ace.get_catalog_source(p_source_id uuid)
 AS $function$
  select s.id,s.title,s.status,s.source_type from ace.catalog_sources s
  where auth.uid() is not null and ace.is_admin_or_editor() and s.id=p_source_id;
+$function$;
+
+CREATE OR REPLACE FUNCTION ace.guard_exam_composition()
+ RETURNS trigger
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'pg_catalog', 'ace'
+AS $function$
+declare v_old uuid; v_new uuid; c record;
+begin
+ if auth.uid() is null or not ace.is_admin_or_editor() then raise exception 'Configuration authoring permission required' using errcode='42501'; end if;
+ if tg_op<>'INSERT' then v_old:=old.exam_config_id; end if;
+ if tg_op<>'DELETE' then v_new:=new.exam_config_id; end if;
+ -- Shared parent locks serialize draft writes against activation's exclusive lock.
+ for c in select id,active from ace.exam_configs where id=any(array[v_old,v_new]) order by id for share loop
+  if c.active then raise exception 'Active exam composition is immutable; create a draft version' using errcode='42501'; end if;
+ end loop;
+ insert into ace.audit_events(actor_user_id,event_type,entity_type,entity_id,metadata)
+ values(auth.uid(),'exam_composition_changed','exam_config',coalesce(v_new,v_old),jsonb_build_object('operation',tg_op));
+ if tg_op='DELETE' then return old; end if;
+ return new;
+end;
 $function$;
 
 CREATE OR REPLACE FUNCTION ace.guard_syllabus_authoring()
@@ -1860,6 +1913,8 @@ declare
   required_questions integer;
   optional_question_counts jsonb;
   result jsonb;
+  v_min integer;
+  v_max integer;
 begin
   if auth.uid() is null or not ace.is_admin_or_editor() then
     raise exception 'Administrator/editor access required' using errcode='42501';
@@ -1889,6 +1944,28 @@ begin
   if required_count < 1 then result := jsonb_set(result,'{valid}','false'::jsonb); result := jsonb_set(result,'{errors}', (result->'errors') || jsonb_build_array('At least one required subject is required')); end if;
   if optional_count < 1 then result := jsonb_set(result,'{valid}','false'::jsonb); result := jsonb_set(result,'{errors}', (result->'errors') || jsonb_build_array('At least one optional subject is required')); end if;
   if exists (select 1 from ace.exam_config_subjects where exam_config_id=p_exam_config_id and question_count <= 0) then result := jsonb_set(result,'{valid}','false'::jsonb); result := jsonb_set(result,'{errors}', (result->'errors') || jsonb_build_array('All configured subject question counts must be positive')); end if;
+  if required_count<>1 or not exists(select 1 from ace.exam_config_subjects cs join ace.subjects sub on sub.id=cs.subject_id
+      where cs.exam_config_id=p_exam_config_id and cs.required and sub.code='ENG' and sub.active) then
+    result:=jsonb_set(result,'{valid}','false'::jsonb);
+    result:=jsonb_set(result,'{errors}',(result->'errors')||jsonb_build_array('Exactly one compulsory active English subject is required'));
+  end if;
+  if optional_count<3 then
+    result:=jsonb_set(result,'{valid}','false'::jsonb);
+    result:=jsonb_set(result,'{errors}',(result->'errors')||jsonb_build_array('At least three optional subjects are required'));
+  end if;
+  if exists(select 1 from ace.exam_config_subjects cs join ace.subjects sub on sub.id=cs.subject_id
+      where cs.exam_config_id=p_exam_config_id and not sub.active) then
+    result:=jsonb_set(result,'{valid}','false'::jsonb);
+    result:=jsonb_set(result,'{errors}',(result->'errors')||jsonb_build_array('Configured subjects must be active'));
+  end if;
+  select sum(question_count) into v_min from (select question_count from ace.exam_config_subjects
+    where exam_config_id=p_exam_config_id and not required order by question_count limit 3) x;
+  select sum(question_count) into v_max from (select question_count from ace.exam_config_subjects
+    where exam_config_id=p_exam_config_id and not required order by question_count desc limit 3) x;
+  if optional_count>=3 and (required_questions+v_min<>c.total_questions or required_questions+v_max<>c.total_questions) then
+    result:=jsonb_set(result,'{valid}','false'::jsonb);
+    result:=jsonb_set(result,'{errors}',(result->'errors')||jsonb_build_array('Every choice of three optional subjects must match the configured total'));
+  end if;
   return result;
 end;
 $function$;
@@ -2624,19 +2701,23 @@ CREATE POLICY "exam_config_subjects_manage_editor" ON ace."exam_config_subjects"
 CREATE POLICY "exam_config_subjects_read_authenticated" ON ace."exam_config_subjects" AS PERMISSIVE FOR SELECT TO "authenticated" USING (((EXISTS ( SELECT 1
    FROM (ace.exam_configs c
      JOIN ace.exam_seasons s ON ((s.id = c.season_id)))
-  WHERE ((c.id = exam_config_subjects.exam_config_id) AND (s.status = ANY (ARRAY['active'::text, 'closed'::text]))))) OR ace.is_admin_or_editor()));
+  WHERE ((c.id = exam_config_subjects.exam_config_id) AND c.active AND (s.status = ANY (ARRAY['active'::text, 'closed'::text]))))) OR ace.is_admin_or_editor()));
 
 CREATE POLICY "exam_configs_admin_all" ON ace."exam_configs" AS PERMISSIVE FOR ALL TO "authenticated" USING (ace.is_admin()) WITH CHECK (ace.is_admin());
 
-CREATE POLICY "exam_configs_public_read" ON ace."exam_configs" AS PERMISSIVE FOR SELECT TO "anon", "authenticated" USING ((active = true));
+CREATE POLICY "exam_configs_public_read" ON ace."exam_configs" AS PERMISSIVE FOR SELECT TO "anon", "authenticated" USING ((active AND (EXISTS ( SELECT 1
+   FROM ace.exam_seasons s
+  WHERE ((s.id = exam_configs.season_id) AND (s.status = ANY (ARRAY['active'::text, 'closed'::text])))))));
 
-CREATE POLICY "exam_configs_read_authenticated_v2" ON ace."exam_configs" AS PERMISSIVE FOR SELECT TO "authenticated" USING ((active OR ace.is_admin_or_editor()));
+CREATE POLICY "exam_configs_read_authenticated_v2" ON ace."exam_configs" AS PERMISSIVE FOR SELECT TO "authenticated" USING (((active AND (EXISTS ( SELECT 1
+   FROM ace.exam_seasons s
+  WHERE ((s.id = exam_configs.season_id) AND (s.status = ANY (ARRAY['active'::text, 'closed'::text])))))) OR ace.is_admin_or_editor()));
 
 CREATE POLICY "exam_seasons_admin_all" ON ace."exam_seasons" AS PERMISSIVE FOR ALL TO "authenticated" USING (ace.is_admin()) WITH CHECK (ace.is_admin());
 
 CREATE POLICY "exam_seasons_public_read" ON ace."exam_seasons" AS PERMISSIVE FOR SELECT TO "anon", "authenticated" USING ((status = ANY (ARRAY['active'::text, 'closed'::text])));
 
-CREATE POLICY "exam_seasons_read_authenticated_v2" ON ace."exam_seasons" AS PERMISSIVE FOR SELECT TO "authenticated" USING (((status = ANY (ARRAY['draft'::text, 'active'::text, 'closed'::text])) OR ace.is_admin_or_editor()));
+CREATE POLICY "exam_seasons_read_authenticated_v2" ON ace."exam_seasons" AS PERMISSIVE FOR SELECT TO "authenticated" USING (((status = ANY (ARRAY['active'::text, 'closed'::text])) OR ace.is_admin_or_editor()));
 
 CREATE POLICY "feature_flags_admin_all" ON ace."feature_flags" AS PERMISSIVE FOR ALL TO "authenticated" USING (ace.is_admin()) WITH CHECK (ace.is_admin());
 
@@ -2758,6 +2839,8 @@ CREATE POLICY "topics_editor_manage" ON ace."topics" AS PERMISSIVE FOR ALL TO PU
 
 CREATE POLICY "topics_public_read" ON ace."topics" AS PERMISSIVE FOR SELECT TO PUBLIC USING ((((active = true) AND ace.is_syllabus_version_public(syllabus_version_id)) OR ace.is_admin_or_editor()));
 
+CREATE TRIGGER guard_exam_composition BEFORE INSERT OR DELETE OR UPDATE ON ace.exam_config_subjects FOR EACH ROW EXECUTE FUNCTION ace.guard_exam_composition();
+
 CREATE TRIGGER profiles_touch_updated_at BEFORE UPDATE ON ace.profiles FOR EACH ROW EXECUTE FUNCTION ace.touch_profile_updated_at();
 
 CREATE TRIGGER student_preferences_touch_updated_at BEFORE UPDATE ON ace.student_preferences FOR EACH ROW EXECUTE FUNCTION ace.touch_preferences_updated_at();
@@ -2787,6 +2870,10 @@ GRANT INSERT, SELECT, UPDATE, DELETE ON ace."catalog_sources" TO authenticated;
 GRANT INSERT, SELECT, UPDATE ON ace."devices" TO authenticated;
 
 GRANT INSERT, SELECT, UPDATE, DELETE ON ace."exam_config_subjects" TO authenticated;
+
+GRANT SELECT ON ace."exam_configs" TO authenticated;
+
+GRANT SELECT ON ace."exam_seasons" TO authenticated;
 
 GRANT INSERT, SELECT, UPDATE, DELETE ON ace."institutions" TO authenticated;
 

@@ -1,4 +1,4 @@
--- Source review proposal only. NOT applied to production.
+-- Applied with explicit owner authorization as 20261028032933 on 2026-10-28.
 -- No official season dates, duration or question counts are asserted by these tests.
 begin;
 

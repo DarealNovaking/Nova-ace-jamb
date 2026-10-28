@@ -1,3 +1,15 @@
+# Approved security bundle — APPLIED and verified (28 October 2026)
+
+Both approved changes are live: `20261028002329_fcb_01_syllabus_version_identity` and `20261028032933_fcb_01_exam_config_security`. Do not request approval again or reapply them. Signup `20261027220044` remains complete.
+
+The migration permission is not read-only: app-specific setting is Allow all actions, and SQL reports postgres with transaction_read_only off. Both Supabase links enumerate the target project, but only the connection named Primary successfully completed the configuration migration. The other connection's Invalid or expired requestState remains an internal connector failure; its cause was not proven. Use Primary for authorized future migrations. No app permissions were widened or changed. Browser fallback was declined and closed.
+
+Independently compiled source exactly matches live definitions, policies, guard and API ACLs. Read-only authorization checks PASS; anonymous approval/direct trigger execution denied. All 48 tables retain RLS; 50 versions remain unchanged, zero topics/subtopics/attempts, no active configuration/season. Rollback artifacts below remain incident-only and restore known weaknesses. This rollout did not authorize content publication, broader CBT deployment, providers or release.
+
+---
+
+## Historical partial status (resolved; do not resume these failed requests)
+
 # Approved security bundle — partial application status (28 October 2026)
 
 The owner explicitly approved the two-proposal bundle. Do not request approval again for the same reviewed SQL.

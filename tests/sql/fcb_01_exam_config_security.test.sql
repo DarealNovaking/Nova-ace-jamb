@@ -1,5 +1,5 @@
 -- Disposable recovered schema only. No real exam configuration is represented.
-\i supabase/proposals/fcb_01_exam_config_security.sql
+\i supabase/migrations/20261028032933_fcb_01_exam_config_security.sql
 \i tests/sql/fixtures/fcb_01_exam_config.sql
 set local role authenticated;
 select set_config('request.jwt.claim.sub','82000000-0000-4000-8000-000000000002',true);
