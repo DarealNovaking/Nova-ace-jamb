@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs'
 import { test, expect } from '@playwright/test'
 
 const projectUrl = 'https://uokiqlgmzprqfbzmedaz.supabase.co'
@@ -2773,5 +2774,83 @@ test.describe('ACE JAMB draft subtopic corrections', () => {
     await expect(page.getByText('Subtopic changes saved', { exact: false })).toHaveCount(0)
     await expect(page.getByText('Nervous system', { exact: true })).toBeVisible()
     expect(writes).toHaveLength(1)
+  })
+})
+
+async function mockReviewedCorrectionBatch(page: import('@playwright/test').Page, options: { drift?: boolean; loseFirstResponse?: boolean } = {}) {
+  await mockFirstTimeStudent(page)
+  const patches = JSON.parse(readFileSync(new URL('../../src/data/fcb02RemainingCorrections.json', import.meta.url), 'utf8')) as Array<{ expected: Record<string, any>; changes: Record<string, unknown> }>
+  const rows = patches.map((p) => structuredClone(p.expected))
+  if (options.drift) rows[2].active = true
+  const versions = [...new Set(rows.map((r) => r.syllabus_version_id))].map((id, index) => ({ id, status: 'draft', rights_status: 'pending', version: 2, season_id: 'a0000000-0000-4000-8000-000000000010', subject_id: subjects[0].id, title: `Correction fixture ${index}`, source_url: 'https://example.test/source', source_title: 'Source', provenance: {} }))
+  const writes: Array<{ id: string; body: Record<string, unknown> }> = []
+  await page.route(`${projectUrl}/rest/v1/rpc/is_admin_or_editor`, (route) => route.fulfill({ json: true }))
+  await page.route(`${projectUrl}/rest/v1/rpc/is_admin`, (route) => route.fulfill({ json: true }))
+  await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/exam_seasons'), (route) => route.fulfill({ json: [{ id: versions[0].season_id, code: 'fixture', name: 'Fixture', exam_year: 2027, status: 'draft' }] }))
+  await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/syllabus_versions'), (route) => route.fulfill({ json: versions }))
+  await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/topics'), (route) => route.fulfill({ json: [] }))
+  await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/subtopics'), async (route) => {
+    const q = new URL(route.request().url()).searchParams
+    if (route.request().method() !== 'PATCH') return route.fulfill({ json: q.has('id') ? rows : [] })
+    const id = q.get('id')?.replace('eq.', '') ?? ''
+    const target = rows.find((r) => r.id === id)
+    const body = route.request().postDataJSON()
+    if (!target || q.get('active') !== 'eq.false' || q.get('syllabus_version_id') !== `eq.${target.syllabus_version_id}` || q.get('topic_id') !== `eq.${target.topic_id}` || q.get('name') !== `eq.${target.name}` || q.get('sort_order') !== `eq.${target.sort_order}` || q.get('description') !== (target.description === null ? 'is.null' : `eq.${target.description}`)) {
+      return route.fulfill({ status: 406, json: { message: 'Stale correction' } })
+    }
+    writes.push({ id, body })
+    Object.assign(target, body)
+    if (options.loseFirstResponse && writes.length === 1) return route.fulfill({ status: 503, json: { message: 'Private SQL details' } })
+    await route.fulfill({ json: { id } })
+  })
+  return { rows, writes }
+}
+
+test.describe('ACE JAMB remaining reviewed correction batch', () => {
+  test('applies only the three reviewed draft changes with no automatic writes', async ({ page }) => {
+    const { rows, writes } = await mockReviewedCorrectionBatch(page)
+    await page.goto('/admin-academic')
+    await expect(page.getByRole('heading', { name: 'Create a draft syllabus version' })).toBeVisible()
+    const panel = page.getByRole('region', { name: 'Finish reviewed corrections' })
+    await expect(panel).toBeVisible({ timeout: 1000 })
+    expect(writes).toHaveLength(0)
+    await panel.getByRole('button', { name: 'Apply reviewed corrections' }).click()
+    await expect(panel.getByRole('status')).toContainText('All reviewed corrections are saved')
+    expect(writes).toHaveLength(3)
+    expect(writes[0].body).toEqual({ name: 'Transition to the Fourth Republic' })
+    expect(writes[1].body).toEqual({ name: 'Nervous system and sense organs' })
+    expect(Object.keys(writes[2].body)).toEqual(['description'])
+    expect(rows.every((r) => r.active === false)).toBe(true)
+    await expect(panel.getByRole('button', { name: 'Apply reviewed corrections' })).toBeDisabled()
+  })
+
+  test('changed content blocks the whole preflight before any correction writes', async ({ page }) => {
+    const { writes } = await mockReviewedCorrectionBatch(page, { drift: true })
+    await page.goto('/admin-academic')
+    await expect(page.getByRole('heading', { name: 'Create a draft syllabus version' })).toBeVisible()
+    const panel = page.getByRole('region', { name: 'Finish reviewed corrections' })
+    await expect(panel).toBeVisible({ timeout: 1000 })
+    await panel.getByRole('button', { name: 'Apply reviewed corrections' }).click()
+    await expect(panel.getByRole('alert')).toBeVisible()
+    expect(writes).toHaveLength(0)
+    await expect(panel.getByRole('button', { name: 'Apply reviewed corrections' })).toBeDisabled()
+  })
+
+  test('checks an uncertain partial save before resuming without duplicating it', async ({ page }) => {
+    const { writes } = await mockReviewedCorrectionBatch(page, { loseFirstResponse: true })
+    await page.goto('/admin-academic')
+    await expect(page.getByRole('heading', { name: 'Create a draft syllabus version' })).toBeVisible()
+    const panel = page.getByRole('region', { name: 'Finish reviewed corrections' })
+    await expect(panel).toBeVisible({ timeout: 1000 })
+    await panel.getByRole('button', { name: 'Apply reviewed corrections' }).click()
+    await expect(panel.getByRole('alert')).toBeVisible()
+    await expect(panel.getByText('Private SQL details')).toHaveCount(0)
+    await expect(panel.getByRole('button', { name: 'Apply reviewed corrections' })).toBeDisabled()
+    await panel.getByRole('button', { name: 'Check corrections' }).click()
+    await expect(panel.getByRole('status')).toContainText('1 of 3')
+    await panel.getByRole('button', { name: 'Apply reviewed corrections' }).click()
+    await expect(panel.getByRole('status')).toContainText('All reviewed corrections are saved')
+    expect(writes).toHaveLength(3)
+    expect(writes.filter((w) => w.id === writes[0].id)).toHaveLength(1)
   })
 })
