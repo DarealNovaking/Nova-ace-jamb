@@ -1,5 +1,6 @@
 -- Synthetic content/auth fixture, disposable recovered database only; leaves transaction open.
 begin;
+\i tests/sql/fixtures/fcb_01_cbt_policy.sql
 insert into auth.users(id,email,raw_user_meta_data) values
  ('31000000-0000-4000-8000-000000000001','cbt-one@example.invalid','{}'),
  ('32000000-0000-4000-8000-000000000002','cbt-two@example.invalid','{}');

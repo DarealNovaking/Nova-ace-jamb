@@ -20,7 +20,8 @@ def seed(args, env):
       (select array_agg(column_name::text order by ordinal_position) from information_schema.columns
        where table_schema='auth' and table_name='users')=array['id','email','raw_user_meta_data']::text[]
       and (select count(*) from auth.users)=0 and (select count(*) from ace.questions)=0
-      and (select count(*) from ace.exam_seasons)=0 and (select count(*) from pg_tables where schemaname='ace')=48
+      and (select count(*) from ace.exam_seasons)=0 and (select count(*) from pg_tables where schemaname='ace')=51
+      and to_regclass('ace.cbt_start_usage') is not null
       then 'synthetic-approved' else 'refuse' end;""")
     if shape != 'synthetic-approved':
         raise RuntimeError('Refusing nonempty/non-synthetic database')
@@ -67,6 +68,23 @@ def main():
     try:
         race(args, env, 'READ COMMITTED')
         race(args, env, 'REPEATABLE READ')
+        query(args, env, "update ace.cbt_mode_access set enabled=false where mode='mock';")
+        locker = Session(args, env, 'disabled_mock_bank')
+        try:
+            locker.send('begin; lock table ace.questions in access exclusive mode;\n\\echo BANK_LOCKED\n')
+            locker.until('BANK_LOCKED')
+            # A disabled caller must be rejected before even waiting on the bank.
+            query(args, env, f"""begin; set local statement_timeout='2s'; set local role authenticated;
+              select set_config('request.jwt.claim.sub','{STUDENT}',true);
+              do $$ begin
+               begin perform ace.start_mock_attempt('{OTHER}',array(select subject_id from ace.exam_config_subjects where exam_config_id='{OTHER}'));
+                raise exception 'disabled mock reached bank' using errcode='Z0001';
+               exception when sqlstate '42501' then null; end;
+              end $$; rollback;""")
+            print('PASS disabled mock: denied before question-bank lock/selection')
+        finally:
+            locker.close()
+            query(args, env, "update ace.cbt_mode_access set enabled=true where mode='mock';")
     finally:
         query(args, env, f"delete from ace.attempts where user_id='{STUDENT}'; delete from ace.questions where subject_id in(select subject_id from ace.exam_config_subjects where exam_config_id='{FIRST}');")
         cleanup(args, env)

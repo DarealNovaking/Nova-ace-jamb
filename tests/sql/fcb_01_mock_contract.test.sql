@@ -88,5 +88,23 @@ do $$ begin
   and exam_config_snapshot->>'version'='1' and exam_config_snapshot->>'duration_seconds'='600') then
   raise exception 'old mock provenance changed'; end if;
 end $$;
+do $$ begin
+ if (select starts from ace.cbt_start_usage where user_id='86000000-0000-4000-8000-000000000003')<>1 then
+  raise exception 'mock consumed multiple starts'; end if;
+end $$;
+update ace.cbt_mode_access set enabled=false where mode='mock';
+set local role authenticated;
+do $$ begin
+ begin
+  perform ace.start_mock_attempt('85000000-0000-4000-8000-000000000001',array(select subject_id from ace.exam_config_subjects where exam_config_id='85000000-0000-4000-8000-000000000001'));
+  raise exception 'mock used free practice policy' using errcode='Z0001';
+ exception when sqlstate '42501' then null; end;
+end $$;
+reset role;
+update ace.cbt_mode_access set enabled=(mode<>'practice');
+set local role authenticated;
+-- A mock must not depend on practice being enabled, nor charge it a second time.
+select ace.start_mock_attempt('85000000-0000-4000-8000-000000000001',array(select subject_id from ace.exam_config_subjects where exam_config_id='85000000-0000-4000-8000-000000000001'));
+reset role;
 rollback;
 select 'FCB-01 approved mock contract tests passed' result;

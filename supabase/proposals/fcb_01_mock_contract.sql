@@ -59,6 +59,8 @@ begin
     or exists(select 1 from ace.exam_config_subjects where exam_config_id=c.id and required and not(subject_id=any(p_subject_ids))) then
   raise exception 'Choose configured English and three optional subjects' using errcode='22023';
  end if;
+ -- Deny disabled/unentitled/exhausted calls before scanning the question bank.
+ perform ace.reserve_cbt_start('mock',c.total_questions,c.duration_seconds);
  for r in select cs.* from ace.exam_config_subjects cs where cs.exam_config_id=c.id
    and cs.subject_id=any(p_subject_ids) order by cs.subject_id loop
   -- Freeze publication predicates through question capture. Future withdrawals still
@@ -91,7 +93,7 @@ begin
  end loop;
  -- Reuse owner, current-rights, paper snapshot and option shuffle code. The public
  -- generic endpoint rejects mode=mock, and clients have no attempt table writes.
- v_result:=ace.start_attempt('practice',null,c.total_questions,c.duration_seconds,v_ids);
+ v_result:=ace.create_attempt_internal('mock',null,c.total_questions,c.duration_seconds,v_ids,true);
  if (v_result->>'question_count')::integer<>c.total_questions then
   raise exception 'Incomplete approved paper' using errcode='P0002';
  end if;

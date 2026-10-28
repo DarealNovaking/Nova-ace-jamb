@@ -22,7 +22,8 @@ def seed(args,env):
       (select array_agg(column_name::text order by ordinal_position) from information_schema.columns
        where table_schema='auth' and table_name='users')=array['id','email','raw_user_meta_data']::text[]
       and (select count(*) from auth.users)=0 and (select count(*) from ace.questions)=0
-      and (select count(*) from ace.exam_seasons)=0 and (select count(*) from pg_tables where schemaname='ace')=48
+      and (select count(*) from ace.exam_seasons)=0 and (select count(*) from pg_tables where schemaname='ace')=51
+      and to_regclass('ace.cbt_start_usage') is not null
       then 'synthetic-approval-fixture' else 'refused' end;""")
     if shape!='synthetic-approval-fixture':
         raise RuntimeError('Refusing database: exact empty synthetic recovered fixture required')

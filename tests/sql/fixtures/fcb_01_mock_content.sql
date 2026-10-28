@@ -1,5 +1,6 @@
 -- Synthetic approved mock content; disposable database only; transaction left open.
 \i tests/sql/fixtures/fcb_01_exam_config.sql
+\i tests/sql/fixtures/fcb_01_cbt_policy.sql
 -- A real publication still needs documented source/rights and owner approval.
 insert into ace.syllabus_versions(season_id,subject_id,title,status,rights_status)
 select '83000000-0000-4000-8000-000000000001',id,'Synthetic mock syllabus','active','approved' from ace.subjects;

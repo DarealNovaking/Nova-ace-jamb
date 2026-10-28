@@ -134,8 +134,12 @@ jobs:
           fi
           grep -F 'schema "ace" already exists' /tmp/ace-replay-refusal.log
           python3 tests/sql/fcb_01_schema_parity.py
+      - name: Verify coordinated CBT metadata rollback and data refusal
+        run: python3 tests/sql/fcb_01_cbt_rollback.py
       - name: Test proposed secure CBT mutations against the full schema
         run: psql -X -v ON_ERROR_STOP=1 -f tests/sql/fcb_01_cbt_mutations.test.sql
+      - name: Test private CBT resource policies, entitlement and atomic reservations
+        run: psql -X -v ON_ERROR_STOP=1 -f tests/sql/fcb_01_cbt_resource_limits.test.sql
       - name: Test proposed signup referral collision guard
         run: psql -X -v ON_ERROR_STOP=1 -f tests/sql/fcb_01_signup_referral_collision.test.sql
       - name: Test immutable CBT paper versions and rights withdrawal
@@ -152,3 +156,5 @@ jobs:
         run: python3 tests/sql/fcb_01_mock_concurrency.py
       - name: Test native CBT submit replay and save races
         run: python3 tests/sql/fcb_01_cbt_concurrency.py
+      - name: Test native CBT start, active-slot and cooldown contention
+        run: python3 tests/sql/fcb_01_cbt_resource_concurrency.py
