@@ -1,7 +1,7 @@
 {
   "prepared_on": "2026-10-28",
   "scope": "Internal draft data validation, not runtime acceptance or academic/legal approval",
-  "draft_sha256": "dff823341da4098d5acf2cd83d0df9605990324f6a331a5641a074961e1bf1e6",
+  "draft_sha256": "05c1eccc2e0c0ff48683048eb42470790685fc8733e32c5b854fb0af179831f3",
   "source_documents_rechecked": 25,
   "source_hashes_and_page_counts": "PASS",
   "subject_codes_match_existing_inventory": "PASS",
@@ -15,7 +15,7 @@
   "parent_locator_checks": {
     "within_parent_span": 950,
     "exam_structure_cross_references": 3,
-    "ambiguous_heading_pending_review": 2
+    "editorial_heading_exceptions": 2
   },
   "exception_ids": [
     "PHE-03-02",
@@ -26,7 +26,10 @@
   ],
   "visual_spot_checks": [
     "Chemistry PDF page 15: numbered Astronomical Chemistry unit verified",
-    "PHE PDF page 4: ambiguous heading layout verified"
+    "PHE PDF page 4: ambiguous heading layout verified",
+    "Hausa PDF page 8: explicit 2026\u20132030 set-text heading",
+    "Yoruba PDF page 3: 2027 poetry pages 51\u201383",
+    "Arabic PDF page 4: bilingual modern-period date discrepancy"
   ],
   "runtime_tests": "NOT_RUN: data/documentation only; no application, SQL or deployment change",
   "by_subject": [
@@ -155,5 +158,6 @@
       "roots": 3,
       "subtopic_candidates": 17
     }
-  ]
+  ],
+  "editorial_review_note": "PHE grouping reviewed and retained as explicit source-heading exceptions, not an official erratum. Four duplicate labels contextualized. All 25 source year-marker scopes reviewed."
 }

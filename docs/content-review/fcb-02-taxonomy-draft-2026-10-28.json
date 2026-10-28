@@ -137,7 +137,8 @@
       ],
       "mapping_status": "not_bound_to_live_version_or_database_ids",
       "editorial_review_complete": false,
-      "source_2027_applicability": "subject_specific_confirmation_required"
+      "source_2027_applicability": "current_official_portal_document; no_explicit_2027_edition_marker_found_in_extracted_text",
+      "year_specific_evidence": []
     },
     {
       "subject_code": "ARA",
@@ -254,7 +255,8 @@
       ],
       "mapping_status": "not_bound_to_live_version_or_database_ids",
       "editorial_review_complete": false,
-      "source_2027_applicability": "subject_specific_confirmation_required"
+      "source_2027_applicability": "current_official_portal_document; no_explicit_2027_edition_marker_found_in_extracted_text",
+      "year_specific_evidence": []
     },
     {
       "subject_code": "ART",
@@ -339,7 +341,8 @@
       ],
       "mapping_status": "not_bound_to_live_version_or_database_ids",
       "editorial_review_complete": false,
-      "source_2027_applicability": "subject_specific_confirmation_required"
+      "source_2027_applicability": "current_official_portal_document; no_explicit_2027_edition_marker_found_in_extracted_text",
+      "year_specific_evidence": []
     },
     {
       "subject_code": "BIO",
@@ -449,7 +452,8 @@
       ],
       "mapping_status": "not_bound_to_live_version_or_database_ids",
       "editorial_review_complete": false,
-      "source_2027_applicability": "subject_specific_confirmation_required"
+      "source_2027_applicability": "current_official_portal_document; no_explicit_2027_edition_marker_found_in_extracted_text",
+      "year_specific_evidence": []
     },
     {
       "subject_code": "CHE",
@@ -780,7 +784,8 @@
       ],
       "mapping_status": "not_bound_to_live_version_or_database_ids",
       "editorial_review_complete": false,
-      "source_2027_applicability": "subject_specific_confirmation_required"
+      "source_2027_applicability": "current_official_portal_document; no_explicit_2027_edition_marker_found_in_extracted_text",
+      "year_specific_evidence": []
     },
     {
       "subject_code": "CRS",
@@ -904,7 +909,8 @@
       ],
       "mapping_status": "not_bound_to_live_version_or_database_ids",
       "editorial_review_complete": false,
-      "source_2027_applicability": "subject_specific_confirmation_required"
+      "source_2027_applicability": "current_official_portal_document; no_explicit_2027_edition_marker_found_in_extracted_text",
+      "year_specific_evidence": []
     },
     {
       "subject_code": "COM",
@@ -1192,7 +1198,8 @@
       ],
       "mapping_status": "not_bound_to_live_version_or_database_ids",
       "editorial_review_complete": false,
-      "source_2027_applicability": "subject_specific_confirmation_required"
+      "source_2027_applicability": "current_official_portal_document; no_explicit_2027_edition_marker_found_in_extracted_text",
+      "year_specific_evidence": []
     },
     {
       "subject_code": "CST",
@@ -1370,7 +1377,8 @@
       ],
       "mapping_status": "not_bound_to_live_version_or_database_ids",
       "editorial_review_complete": false,
-      "source_2027_applicability": "subject_specific_confirmation_required"
+      "source_2027_applicability": "current_official_portal_document; no_explicit_2027_edition_marker_found_in_extracted_text",
+      "year_specific_evidence": []
     },
     {
       "subject_code": "ECO",
@@ -1776,7 +1784,8 @@
       ],
       "mapping_status": "not_bound_to_live_version_or_database_ids",
       "editorial_review_complete": false,
-      "source_2027_applicability": "subject_specific_confirmation_required"
+      "source_2027_applicability": "current_official_portal_document; no_explicit_2027_edition_marker_found_in_extracted_text",
+      "year_specific_evidence": []
     },
     {
       "subject_code": "FRE",
@@ -1866,7 +1875,8 @@
       ],
       "mapping_status": "not_bound_to_live_version_or_database_ids",
       "editorial_review_complete": false,
-      "source_2027_applicability": "subject_specific_confirmation_required"
+      "source_2027_applicability": "current_official_portal_document; no_explicit_2027_edition_marker_found_in_extracted_text",
+      "year_specific_evidence": []
     },
     {
       "subject_code": "GEO",
@@ -1962,7 +1972,8 @@
       ],
       "mapping_status": "not_bound_to_live_version_or_database_ids",
       "editorial_review_complete": false,
-      "source_2027_applicability": "subject_specific_confirmation_required"
+      "source_2027_applicability": "current_official_portal_document; no_explicit_2027_edition_marker_found_in_extracted_text",
+      "year_specific_evidence": []
     },
     {
       "subject_code": "GOV",
@@ -2072,7 +2083,8 @@
       ],
       "mapping_status": "not_bound_to_live_version_or_database_ids",
       "editorial_review_complete": false,
-      "source_2027_applicability": "subject_specific_confirmation_required"
+      "source_2027_applicability": "current_official_portal_document; no_explicit_2027_edition_marker_found_in_extracted_text",
+      "year_specific_evidence": []
     },
     {
       "subject_code": "HAU",
@@ -2154,7 +2166,25 @@
       ],
       "mapping_status": "not_bound_to_live_version_or_database_ids",
       "editorial_review_complete": false,
-      "source_2027_applicability": "subject_specific_confirmation_required"
+      "source_2027_applicability": "scoped_year_evidence_only",
+      "year_specific_evidence": [
+        {
+          "scope": "set_text_list",
+          "covered_years": [
+            2026,
+            2027,
+            2028,
+            2029,
+            2030
+          ],
+          "source_locator": {
+            "pdf_page": 8,
+            "anchor": "LIST OF SET TEXTS FOR THE UTME 2026-2030"
+          },
+          "evidence_status": "explicit_cycle_in_source",
+          "limit": "Applies to the set-text list; does not independently approve every syllabus unit or any copying of books."
+        }
+      ]
     },
     {
       "subject_code": "HIS",
@@ -2310,7 +2340,8 @@
       ],
       "mapping_status": "not_bound_to_live_version_or_database_ids",
       "editorial_review_complete": false,
-      "source_2027_applicability": "subject_specific_confirmation_required"
+      "source_2027_applicability": "current_official_portal_document; no_explicit_2027_edition_marker_found_in_extracted_text",
+      "year_specific_evidence": []
     },
     {
       "subject_code": "HEC",
@@ -2407,7 +2438,8 @@
       ],
       "mapping_status": "not_bound_to_live_version_or_database_ids",
       "editorial_review_complete": false,
-      "source_2027_applicability": "subject_specific_confirmation_required"
+      "source_2027_applicability": "current_official_portal_document; no_explicit_2027_edition_marker_found_in_extracted_text",
+      "year_specific_evidence": []
     },
     {
       "subject_code": "IGB",
@@ -2519,7 +2551,8 @@
       ],
       "mapping_status": "not_bound_to_live_version_or_database_ids",
       "editorial_review_complete": false,
-      "source_2027_applicability": "subject_specific_confirmation_required"
+      "source_2027_applicability": "current_official_portal_document; no_explicit_2027_edition_marker_found_in_extracted_text",
+      "year_specific_evidence": []
     },
     {
       "subject_code": "ISS",
@@ -2596,7 +2629,8 @@
       ],
       "mapping_status": "not_bound_to_live_version_or_database_ids",
       "editorial_review_complete": false,
-      "source_2027_applicability": "subject_specific_confirmation_required"
+      "source_2027_applicability": "current_official_portal_document; no_explicit_2027_edition_marker_found_in_extracted_text",
+      "year_specific_evidence": []
     },
     {
       "subject_code": "LIT",
@@ -2695,7 +2729,8 @@
       ],
       "mapping_status": "not_bound_to_live_version_or_database_ids",
       "editorial_review_complete": false,
-      "source_2027_applicability": "subject_specific_confirmation_required"
+      "source_2027_applicability": "current_official_portal_document; no_explicit_2027_edition_marker_found_in_extracted_text",
+      "year_specific_evidence": []
     },
     {
       "subject_code": "MAT",
@@ -2804,7 +2839,8 @@
       ],
       "mapping_status": "not_bound_to_live_version_or_database_ids",
       "editorial_review_complete": false,
-      "source_2027_applicability": "subject_specific_confirmation_required"
+      "source_2027_applicability": "current_official_portal_document; no_explicit_2027_edition_marker_found_in_extracted_text",
+      "year_specific_evidence": []
     },
     {
       "subject_code": "MUS",
@@ -2915,7 +2951,8 @@
       ],
       "mapping_status": "not_bound_to_live_version_or_database_ids",
       "editorial_review_complete": false,
-      "source_2027_applicability": "subject_specific_confirmation_required"
+      "source_2027_applicability": "current_official_portal_document; no_explicit_2027_edition_marker_found_in_extracted_text",
+      "year_specific_evidence": []
     },
     {
       "subject_code": "PHY",
@@ -3325,7 +3362,7 @@
             {"review_id":"PHY-23-01","order":1,"label":"Pitch","source_locator":{"pdf_page":12,"anchor":"Pitch","anchor_verified":true},"parent_locator_check":"within_parent_span"},
             {"review_id":"PHY-23-02","order":2,"label":"Loudness","source_locator":{"pdf_page":12,"anchor":"Loudness","anchor_verified":true},"parent_locator_check":"within_parent_span"},
             {"review_id":"PHY-23-03","order":3,"label":"Quality","source_locator":{"pdf_page":12,"anchor":"Quality","anchor_verified":true},"parent_locator_check":"within_parent_span"},
-            {"review_id":"PHY-23-04","order":4,"label":"Resonance","source_locator":{"pdf_page":12,"anchor":"Resonance","anchor_verified":true},"parent_locator_check":"within_parent_span"}
+            {"review_id":"PHY-23-04","order":4,"label":"Acoustic resonance","source_locator":{"pdf_page":12,"anchor":"Resonance","anchor_verified":true},"parent_locator_check":"within_parent_span"}
           ],
           "label_kind": "editorial_navigation_candidate",
           "review_status": "candidate_only"
@@ -3573,7 +3610,7 @@
           "children": [
             {"review_id":"PHY-37-01","order":1,"label":"Resistance, inductance and capacitance","source_locator":{"pdf_page":17,"anchor":"inductance","anchor_verified":true},"parent_locator_check":"within_parent_span"},
             {"review_id":"PHY-37-02","order":2,"label":"Impedance","source_locator":{"pdf_page":18,"anchor":"Impedance","anchor_verified":true},"parent_locator_check":"within_parent_span"},
-            {"review_id":"PHY-37-03","order":3,"label":"Resonance","source_locator":{"pdf_page":18,"anchor":"Resonance","anchor_verified":true},"parent_locator_check":"within_parent_span"},
+            {"review_id":"PHY-37-03","order":3,"label":"AC circuit resonance","source_locator":{"pdf_page":18,"anchor":"Resonance","anchor_verified":true},"parent_locator_check":"within_parent_span"},
             {"review_id":"PHY-37-04","order":4,"label":"Power factor","source_locator":{"pdf_page":18,"anchor":"Power factor","anchor_verified":true},"parent_locator_check":"within_parent_span"}
           ],
           "label_kind": "editorial_navigation_candidate",
@@ -3654,7 +3691,8 @@
       ],
       "mapping_status": "not_bound_to_live_version_or_database_ids",
       "editorial_review_complete": false,
-      "source_2027_applicability": "subject_specific_confirmation_required"
+      "source_2027_applicability": "current_official_portal_document; no_explicit_2027_edition_marker_found_in_extracted_text",
+      "year_specific_evidence": []
     },
     {
       "subject_code": "PHE",
@@ -3716,8 +3754,8 @@
           },
           "children": [
             {"review_id":"PHE-03-01","order":1,"label":"Athletics","source_locator":{"pdf_page":3,"anchor":"Athletics","anchor_verified":true},"parent_locator_check":"within_parent_span"},
-            {"review_id":"PHE-03-02","order":2,"label":"Ball games","source_locator":{"pdf_page":4,"anchor":"Ball games","anchor_verified":true},"parent_locator_check":"ambiguous_heading_pending_review"},
-            {"review_id":"PHE-03-03","order":3,"label":"Racket games","source_locator":{"pdf_page":4,"anchor":"Racket games","anchor_verified":true},"parent_locator_check":"ambiguous_heading_pending_review"}
+            {"review_id":"PHE-03-02","order":2,"label":"Ball games","source_locator":{"pdf_page":4,"anchor":"Ball games","anchor_verified":true},"parent_locator_check":"editorial_heading_exception","editorial_parent_decision":{"decision":"retain_under_sports_and_games","basis":"Section C sports starts on PDF page 3; numbered games continue on page 4; actual food/nutrition/drug items restart on page 5. Source heading placement remains inconsistent.","source_pdf_pages":[3,4,5],"official_erratum_obtained":false,"independent_academic_approval":false}},
+            {"review_id":"PHE-03-03","order":3,"label":"Racket games","source_locator":{"pdf_page":4,"anchor":"Racket games","anchor_verified":true},"parent_locator_check":"editorial_heading_exception","editorial_parent_decision":{"decision":"retain_under_sports_and_games","basis":"Section C sports starts on PDF page 3; numbered games continue on page 4; actual food/nutrition/drug items restart on page 5. Source heading placement remains inconsistent.","source_pdf_pages":[3,4,5],"official_erratum_obtained":false,"independent_academic_approval":false}}
           ],
           "label_kind": "editorial_navigation_candidate",
           "review_status": "candidate_only"
@@ -3877,7 +3915,8 @@
       ],
       "mapping_status": "not_bound_to_live_version_or_database_ids",
       "editorial_review_complete": false,
-      "source_2027_applicability": "subject_specific_confirmation_required"
+      "source_2027_applicability": "current_official_portal_document; no_explicit_2027_edition_marker_found_in_extracted_text",
+      "year_specific_evidence": []
     },
     {
       "subject_code": "POA",
@@ -3992,7 +4031,7 @@
           },
           "children": [
             {"review_id":"POA-06-01","order":1,"label":"Profit or loss","source_locator":{"pdf_page":2,"anchor":"Statement of profit or loss","anchor_verified":true},"parent_locator_check":"within_parent_span"},
-            {"review_id":"POA-06-02","order":2,"label":"Financial position","source_locator":{"pdf_page":2,"anchor":"Statement of financial position","anchor_verified":true},"parent_locator_check":"within_parent_span"},
+            {"review_id":"POA-06-02","order":2,"label":"Sole-trader financial position","source_locator":{"pdf_page":2,"anchor":"Statement of financial position","anchor_verified":true},"parent_locator_check":"within_parent_span"},
             {"review_id":"POA-06-03","order":3,"label":"Bad debts","source_locator":{"pdf_page":2,"anchor":"bad and doubtful debt","anchor_verified":true},"parent_locator_check":"within_parent_span"},
             {"review_id":"POA-06-04","order":4,"label":"Depreciation","source_locator":{"pdf_page":2,"anchor":"Depreciation","anchor_verified":true},"parent_locator_check":"within_parent_span"},
             {"review_id":"POA-06-05","order":5,"label":"Accruals and prepayment","source_locator":{"pdf_page":2,"anchor":"Accruals and prepayment","anchor_verified":true},"parent_locator_check":"within_parent_span"}
@@ -4079,7 +4118,7 @@
           "children": [
             {"review_id":"POA-11-01","order":1,"label":"Receipts and payments","source_locator":{"pdf_page":3,"anchor":"Receipts and payments","anchor_verified":true},"parent_locator_check":"within_parent_span"},
             {"review_id":"POA-11-02","order":2,"label":"Income and expenditure","source_locator":{"pdf_page":3,"anchor":"Income and expenditure","anchor_verified":true},"parent_locator_check":"within_parent_span"},
-            {"review_id":"POA-11-03","order":3,"label":"Financial position","source_locator":{"pdf_page":3,"anchor":"Statement of financial position","anchor_verified":true},"parent_locator_check":"within_parent_span"}
+            {"review_id":"POA-11-03","order":3,"label":"Non-profit financial position","source_locator":{"pdf_page":3,"anchor":"Statement of financial position","anchor_verified":true},"parent_locator_check":"within_parent_span"}
           ],
           "label_kind": "editorial_navigation_candidate",
           "review_status": "candidate_only"
@@ -4208,7 +4247,8 @@
       ],
       "mapping_status": "not_bound_to_live_version_or_database_ids",
       "editorial_review_complete": false,
-      "source_2027_applicability": "subject_specific_confirmation_required"
+      "source_2027_applicability": "current_official_portal_document; no_explicit_2027_edition_marker_found_in_extracted_text",
+      "year_specific_evidence": []
     },
     {
       "subject_code": "ENG",
@@ -4282,7 +4322,8 @@
       ],
       "mapping_status": "not_bound_to_live_version_or_database_ids",
       "editorial_review_complete": false,
-      "source_2027_applicability": "subject_specific_confirmation_required"
+      "source_2027_applicability": "current_official_portal_document; no_explicit_2027_edition_marker_found_in_extracted_text",
+      "year_specific_evidence": []
     },
     {
       "subject_code": "YOR",
@@ -4357,7 +4398,23 @@
       ],
       "mapping_status": "not_bound_to_live_version_or_database_ids",
       "editorial_review_complete": false,
-      "source_2027_applicability": "subject_specific_confirmation_required"
+      "source_2027_applicability": "scoped_year_evidence_only",
+      "year_specific_evidence": [
+        {
+          "scope": "specified_poetry_page_selection",
+          "exam_year": 2027,
+          "book_pages": {
+            "from": 51,
+            "to": 83
+          },
+          "source_locator": {
+            "pdf_page": 3,
+            "anchor": "pp 51-83 (2027)"
+          },
+          "evidence_status": "explicit_assignment_in_source",
+          "limit": "Only this poetry page assignment is year-specific evidence; do not apply the page range to other works."
+        }
+      ]
     }
   ],
   "known_source_issues": [
@@ -4383,7 +4440,7 @@
         4,
         5
       ],
-      "issue": "Section D heading on page 4 precedes continued sports material in the source layout. Ball/racket-game candidates remain under sports as tentative editorial grouping, explicitly flagged ambiguous_heading_pending_review. They are not automatically publishable."
+      "issue": "Editorial review retains ball/racket games under sports using numbered continuation and the actual food/nutrition/drug items on the following page. The page-4 section heading remains inconsistent; both entries carry editorial_heading_exception. This is an editorial mapping decision, not an official erratum or publication approval."
     },
     {
       "subject_code": "PHY",
@@ -4431,6 +4488,13 @@
         15
       ],
       "issue": "Closer page review found numbered unit 18, Astronomical Chemistry, omitted from the initial 17-root pass. Added CHE-18 and four child concepts; verified the rendered source page. Historical counts of 213 roots are superseded by 214."
+    },
+    {
+      "subject_code": "ARA",
+      "pdf_pages": [
+        4
+      ],
+      "issue": "The Arabic line gives the modern period as 1798 onward, while the adjacent English line says 1978 to date. Rendered page confirms the discrepancy. Date-dependent lesson/question material must await authoritative clarification; draft keeps the neutral Modern-period literature label."
     }
   ],
   "coverage_limits": [
@@ -4443,7 +4507,7 @@
   "parent_locator_check_meanings": {
     "within_parent_span": "Short anchor located on cited page between this parent source heading and the next parent heading. Does not prove semantic completeness or independent academic review.",
     "exam_structure_cross_reference": "English comprehension/summary/cloze candidates refer to the later exam-structure section of the same PDF.",
-    "ambiguous_heading_pending_review": "PHE ball/racket games are tentatively grouped under sports despite the inconsistent food heading placement. Academic confirmation required."
+    "editorial_heading_exception": "PHE sports grouping retained after source review of PDF pages 3–5; inconsistent source heading remains unresolved as an official erratum. Not an unqualified official-heading claim."
   },
   "review_coverage": {
     "status": "first_pass_children_present_for_every_root",
@@ -4452,7 +4516,20 @@
     "source_page_locators": 1169,
     "within_parent_source_span": 950,
     "exam_structure_cross_references": 3,
-    "ambiguous_heading_pending_review": 2,
-    "academic_approval": false
+    "academic_approval": false,
+    "editorial_heading_exceptions": 2
+  },
+  "editorial_review": {
+    "reviewed_on": "2026-10-28",
+    "scope": "Source grouping, duplicate-label context, literal year markers across all 25 PDFs and prescribed-text source scope; not an exhaustive independent academic review.",
+    "duplicate_labels_contextualized": [
+      "PHY-23-04",
+      "PHY-37-03",
+      "POA-06-02",
+      "POA-11-03"
+    ],
+    "phe_parent_decision": "retained_as_editorial_exception; official_heading_inconsistency_disclosed",
+    "independent_academic_approval": false,
+    "season_applicability_report": "fcb-02-season-applicability-2026-10-28.json"
   }
 }

@@ -1,6 +1,6 @@
 # FCB-02 syllabus hierarchy review — 28 October 2026
 
-**First-pass hierarchy coverage across all 25 subjects. Draft only; FCB-02 remains IN PROGRESS.** The owner directed continuation using IBASS. This expands the earlier 213-root/39-child outline; it does not approve launch coverage, season applicability or publication.
+**First-pass hierarchy and bounded source-grouping/year-scope review across all 25 subjects. Draft only; FCB-02 remains IN PROGRESS.** The owner directed continuation using IBASS. This expands the earlier 213-root/39-child outline; it does not approve launch coverage, season applicability or publication.
 
 [Structured draft](fcb-02-taxonomy-draft-2026-10-28.json) · [Validation record](fcb-02-validation-2026-10-28.json) · [Exact-source manifest](../evidence/fcb-02-official-syllabus-documents-2026-10-28.json)
 
@@ -48,9 +48,9 @@ A page-level keyword hit alone can match an adjacent topic or a repeated overvie
 |---|---:|---|
 | Child anchor within its parent heading span | 950 | Source-page plus parent-span location verified; semantic completeness/academic approval not implied. |
 | English exam-structure cross-reference | 3 | Comprehension, summary and cloze candidates cite the later paper-structure section. |
-| PHE source-heading ambiguity | 2 | Ball/racket games tentatively remain under sports; source page 4 puts the food heading before continued sports entries. Academic confirmation required. |
+| PHE editorial source-heading exception | 2 | Retained under sports after checking pages 3–5; inconsistent heading disclosed, no official erratum or independent academic approval claimed. |
 
-The draft records the check on every child. The validation record identifies all five exceptions. PHE page 4 was rendered and inspected again; neither ambiguous entry is treated as approved. The English reading-text title remains an explicit blocker; no novel was inferred.
+The draft records the check on every child. The validation record identifies all five exceptions. PHE pages 3–5 were reviewed together; sports parentage is retained as an explicit editorial interpretation, with the source inconsistency preserved. Neither entry is publication-approved. The English reading-text title remains an explicit blocker; no novel was inferred.
 
 Other preserved issues: Computer Studies' overview and detailed-body section groupings differ; the draft follows the detailed body. Art's descriptive section labels are editorial. History reuses section letters across parts, so its part context must remain intact. Hausa locators now point at detailed culture/literature sections rather than the first-page overview. French and Government locators were tightened to avoid repeated overview or adjacent-section matches. Yoruba's poetry selection varies by year and still needs prescribed-text applicability review.
 
@@ -62,6 +62,8 @@ This is **not an import payload**: review IDs are not UUIDs; no live subject/ver
 
 ## Verification and exact continuation
 
-PASS: 25 existing subject codes; all 25 exact-source hashes/page counts; 1,169 page anchors; 214 nonempty root mappings; unique IDs and contiguous sibling ordering; 950 child matches inside parent spans; three documented English cross-references; two explicitly pending PHE exceptions; rights/publication flags withheld. The validation record is tied to the draft SHA-256. Visual spot checks: Chemistry page 15 and PHE page 4. No application/SQL/runtime files changed, so runtime suites were not rerun and no new runtime acceptance is claimed.
+PASS: 25 existing subject codes; all 25 exact-source hashes/page counts; 1,169 page anchors; 214 nonempty root mappings; unique IDs and contiguous sibling ordering; 950 child matches inside parent spans; three documented English cross-references; two explicit PHE editorial heading exceptions; rights/publication flags withheld. The validation record is tied to the draft SHA-256. Visual spot checks: Chemistry page 15 and PHE page 4. No application/SQL/runtime files changed, so runtime suites were not rerun and no new runtime acceptance is claimed.
 
-Next action: review hierarchy granularity and syllabus/season applicability, prioritizing the two flagged PHE parent assignments and subject-specific prescribed texts. First-pass expansion for the other 23 subjects is no longer pending. Documented reuse authority, launch coverage, final exam configuration and separately approved live publication still gate FCB-02 completion. No need to request the IBASS PDFs from the owner.
+The bounded grouping/year-scope review is now recorded in [the review report](FCB-02-GROUPING-AND-SEASON-REVIEW-2026-10-28.md) and [all-subject applicability data](fcb-02-season-applicability-2026-10-28.json). Hausa has a 2026–2030 set-text cycle; Yoruba has a specific 2027 poetry page assignment. Neither supports blanket annual approval of all subjects. The homepage-linked literature notice is explicitly effective from 2022 and is excluded for 2027. Arabic's modern-period bilingual dates conflict and remain flagged. Four repeated display labels were qualified without changing IDs/anchors. Independent academic approval remains pending.
+
+Next action: prepare a draft-only, version-bound import proposal against the existing database contract, carrying source/season limits and unresolved English/Arabic exclusions. Do not apply or publish it. Source-use authority, launch coverage, complete official exam configuration and separate production approval remain FCB-02 gates.
