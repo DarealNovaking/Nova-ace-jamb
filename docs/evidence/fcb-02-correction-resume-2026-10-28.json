@@ -1,0 +1,18 @@
+{
+  "run_id": "e3a1853b-8cc4-4299-866f-dd3ddb6e524d",
+  "status": "BLOCKED_EDITOR_CAPABILITY",
+  "duration_seconds": 232,
+  "authenticated_admin_access": true,
+  "sign_out_clicked": false,
+  "writes_completed": 0,
+  "limitation": "TinyFish cannot execute browser-side authenticated REST calls; existing academic UI has no rename controls. Do not repeat this attempt or request another sign-in.",
+  "postflight_before_terminal": {
+    "matching_corrected_rows": 0,
+    "subtopics": 954,
+    "active_topics": 0,
+    "active_subtopics": 0,
+    "active_versions": 0
+  },
+  "next_action": "Implement draft subtopic name/order editing through the existing Supabase client with bounded validation and optimistic concurrency. Verify then deploy approved preview and apply eight reviewed corrections with normal UI.",
+  "approval_persists": true
+}

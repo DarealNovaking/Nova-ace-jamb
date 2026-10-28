@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { BookOpen, CheckCircle2, CircleAlert, FilePlus2, Loader2, Plus, RefreshCw, ShieldCheck } from 'lucide-react'
 import AdminSyllabusReviewPackage from './AdminSyllabusReviewPackage'
 import { ace } from '../lib/supabase'
+import { normalizeSubtopicEdit } from '../lib/syllabusEdit'
 import { listSeasons, type ExamSeason, type SyllabusVersion, type SyllabusTopic, type SyllabusSubtopic } from '../lib/seasonService'
 
 type Subject = { id: string; code: string; name: string }
@@ -217,6 +218,28 @@ export default function AdminAcademicWorkspace({ canApprove = false }: { canAppr
     }, 'Subtopic saved as inactive draft content.')
   }
 
+  async function editSubtopic(event: React.FormEvent<HTMLFormElement>, item: SyllabusSubtopic) {
+    event.preventDefault()
+    if (!selectedVersion || !canEditDraft || !treeReady || busy || item.syllabus_version_id !== selectedVersion.id) return
+    const form = new FormData(event.currentTarget)
+    let changes: { name: string; sort_order: number }
+    try {
+      changes = normalizeSubtopicEdit(String(form.get('name') ?? ''), String(form.get('sort_order') ?? ''))
+    } catch {
+      setError('Enter a subtopic name of up to 200 characters and a whole display order from 0 to 2147483647.')
+      return
+    }
+    const versionId = selectedVersion.id
+    await runAction(async () => {
+      const { data, error: updateError } = await ace.from('subtopics').update(changes)
+        .eq('id', item.id).eq('syllabus_version_id', versionId).eq('topic_id', item.topic_id)
+        .eq('name', item.name).eq('sort_order', item.sort_order).select('id').single()
+      if (updateError) throw updateError
+      if (data?.id !== item.id) throw new Error('ACADEMIC_ROW_CHANGED')
+      try { await loadTree(versionId) } catch { throw new Error('ACADEMIC_RELOAD_FAILED') }
+    }, 'Subtopic changes saved. Publication status is unchanged.')
+  }
+
   async function toggleActive(kind: 'topic' | 'subtopic', id: string, active: boolean) {
     if (!selectedVersion || !canEditDraft || !treeReady || busy) return
     await runAction(async () => {
@@ -323,7 +346,17 @@ export default function AdminAcademicWorkspace({ canApprove = false }: { canAppr
               <label className="block text-sm text-white/70">Description (optional)<textarea className={inputClass} value={subtopicDescription} onChange={(e) => setSubtopicDescription(e.target.value)} rows={2} maxLength={2000}/></label>
               <button type="submit" className={buttonClass} disabled={busy || !treeReady || !selectedTopic}><Plus size={15}/> Add inactive subtopic</button>
             </form>
-            <ul className="mt-4 space-y-2">{subtopics.filter((item) => item.topic_id === selectedTopicId).map((item) => <li key={item.id} className="flex items-start justify-between gap-3 rounded-xl bg-white/[.035] p-3"><div><p className="font-semibold">{item.name}</p><p className="text-xs text-white/45">{item.active ? 'Active for review' : 'Inactive draft'} · order {item.sort_order}</p></div><button type="button" className={secondaryClass} onClick={() => void toggleActive('subtopic', item.id, !item.active)} disabled={busy || !treeReady}>{item.active ? 'Deactivate' : 'Mark active'}</button></li>)}</ul>
+            <ul className="mt-4 space-y-2">{subtopics.filter((item) => item.topic_id === selectedTopicId).map((item) => <li key={item.id} className="min-w-0 rounded-xl bg-white/[.035] p-3">
+              <div className="flex items-start justify-between gap-3"><div className="min-w-0"><p className="break-words font-semibold">{item.name}</p><p className="text-xs text-white/45">{item.active ? 'Active for review' : 'Inactive draft'} · order {item.sort_order}</p></div><button type="button" className={`${secondaryClass} shrink-0`} onClick={() => void toggleActive('subtopic', item.id, !item.active)} disabled={busy || !treeReady}>{item.active ? 'Deactivate' : 'Mark active'}</button></div>
+              <details className="mt-3" key={`${item.name}:${item.sort_order}`}>
+                <summary className="min-h-11 cursor-pointer py-3 text-sm font-semibold text-purple-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-purple-300">Edit name and order</summary>
+                <form onSubmit={(event) => void editSubtopic(event, item)} className="space-y-3">
+                  <label className="block text-sm text-white/70">Subtopic display name<input className={inputClass} name="name" defaultValue={item.name} maxLength={200} required disabled={busy || !treeReady}/></label>
+                  <label className="block text-sm text-white/70">Display order<input className={inputClass} name="sort_order" type="number" defaultValue={item.sort_order} min={0} max={2147483647} step={1} required disabled={busy || !treeReady}/></label>
+                  <button type="submit" className={`${buttonClass} min-h-11`} disabled={busy || !treeReady}>Save subtopic</button>
+                </form>
+              </details>
+            </li>)}</ul>
             {!subtopics.some((item) => item.topic_id === selectedTopicId) && <p className="mt-3 text-sm text-white/45">No subtopics for this topic yet.</p>}
           </div>
         </div>}
