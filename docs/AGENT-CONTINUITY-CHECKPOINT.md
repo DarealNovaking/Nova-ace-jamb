@@ -22,6 +22,8 @@
 - **Current source batch:** new fixed-package `manage_fcb02_draft` installer/uninstaller, admin staging panel/service and generated lazy client payload. No live helper/content/frontend installation. Digest now `bec10467d95efb5d1ca6db6d2d49c791fdcd847603210bfd5a22fc35b9513e1a`; new generator changes supersede the earlier import digest. 9 unit tests, local recovered-schema sequential SQL tests, typecheck/build PASS; native executor races and new browser controls still require CI. Chromium download blocked locally; existing CI is the alternative. Independent bounded review found no blocker; runtime owner RLS-bypass guard added.
 - **Current exact next action (supersedes earlier next-action bullets):** publish this source-only batch to PR #10, verify native SQL/demotion/reference races and desktop/mobile Playwright checks, fix reproduced defects, then present the reviewed helper-install/deploy/staging boundaries for specific approval. Do not apply production scripts, spoof claims, merge or deploy.
 
+- **Native CI investigation:** source `677503c00ebdde18c867ed259fb36ef4cfc4fa4a`, run 40674942708 passed all 37 sequential import/executor cases and original reference race, then the new RPC race stalled. Root cause: harness RPC string lacked the newline required to submit a psql command (unlike the original generated script). Fixed only that terminator; new race verification pending. No product SQL change or production effect.
+
 ---
 
 ## Historical checkpoint entries (superseded where newer evidence conflicts)

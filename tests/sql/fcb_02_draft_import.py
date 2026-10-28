@@ -158,7 +158,7 @@ def reference_race(p, executor=False):
         writer.send(f"begin;insert into ace.flashcards(id,topic_id,subject_id,front,back,active) values('{flashcard}','{topic['id']}','{topic['subject_id']}','Synthetic race','Synthetic answer',false);"+chr(10)+chr(92)+"echo REFERENCE_HELD"+chr(10))
         writer.until('REFERENCE_HELD')
         undo=sessions_module.Session(args,env,'fcb02_undo');sessions.append(undo)
-        undo.send('set log_min_error_statement=panic;'+undo_sql)
+        undo.send('set log_min_error_statement=panic;'+undo_sql+chr(10))
         deadline=time.monotonic()+10
         while time.monotonic()<deadline:
             waiting=run_psql(f"select wait_event_type from pg_stat_activity where pid={undo.backend_pid};")
