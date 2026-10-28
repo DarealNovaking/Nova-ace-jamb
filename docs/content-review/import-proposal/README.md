@@ -113,3 +113,10 @@ Cloudflare release remains **BLOCKED pending provider metadata**. Cloudflare Wor
 Direct Cloudflare access now works. Failed build 6f148286 successfully builds the app,then Wrangler 4.154.0 rejects missingpreviews{}. Actual provider branch is security/fcb-01-contract-audit with npxwranglerpreview; auto-build enabled,otherbranch previews disabled. Activeproduction809c6301(version641) remains100%,linked tomain17f29e1; previousversion640 is retained. No provider changes made.
 
 Source-only candidate `fix/fcb-02-cloudflare-preview-config` adds root wrangler.jsonc withpreviews{},./dist SPA assets,and currentWorkername/compatdate/observability. No extra app dependencies. Typecheck/build,Wranglerconfigreader/dryrun,and6local workerd route/filechecks PASS; independent configreview no blocker. Current connected branch is unchanged because applying the fix there creates an actualPreview. Specific approval for that preview run is next; main/prodrelease and contentstaging remain separate. [Direct diagnosis evidence](../../evidence/fcb-02-cloudflare-build-diagnosis-2026-10-28.json).
+
+
+## Approved isolated Preview verified
+
+Source **7b9ff4319924f415b594e0f20ac428f002952f84** is now on the connected review branch after specific owner approval. Cloudflare build02896185-963e-4062-a4a8-8f03ca0820de succeeded. [Stable Preview](https://security-fcb-01-contract-audit-nova-ace-jamb.novaking5002.workers.dev) · [Pinned deployment](https://7582fe37-nova-ace-jamb.novaking5002.workers.dev). Verify40726609816 PASS(42native scenarios/9units/alljobs); E2E40726609864 PASS(172tests),terminal logs inspected. Nine live GET route/asset/digest checks passed; no authenticated browser acceptance claimed.
+
+Production version809c6301 remains100%traffic,unchanged. No mainmerge,productiondeploy,contentstaging,Supabase mutation orrights approval. Next is legitimate signed-admin acceptance using Check review package on Preview/admin-academic; staging remains separately gated. [Verification evidence](../../evidence/fcb-02-preview-verification-2026-10-28.json) is saved on separate evidence branch so the connectedPreview stays pinned to the tested source.

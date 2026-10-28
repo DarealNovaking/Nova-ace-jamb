@@ -1,0 +1,111 @@
+{
+  "recorded_date": "2026-10-28",
+  "authorization": "Owner proceeded after explicit request to apply prepared config to connected review branch and run isolated Preview. No production/main/content authorization implied.",
+  "source_sha": "7b9ff4319924f415b594e0f20ac428f002952f84",
+  "connected_branch": "security/fcb-01-contract-audit",
+  "previous_head": "ec0b1198eca653035a11dfe4ce918bdf61889577",
+  "branch_update": "Fast-forward with expected-head lease; reviewed tree unchanged.",
+  "cloudflare": {
+    "worker": "nova-ace-jamb",
+    "build_id": "02896185-963e-4062-a4a8-8f03ca0820de",
+    "build_outcome": "success",
+    "build_status": "stopped",
+    "deploy_command": "npx wrangler preview",
+    "preview_url": "https://security-fcb-01-contract-audit-nova-ace-jamb.novaking5002.workers.dev",
+    "unique_deployment_url": "https://7582fe37-nova-ace-jamb.novaking5002.workers.dev",
+    "log_terminal_markers": [
+      "Success: Build command completed",
+      "Preview: security/fcb-01-contract-audit (updated)",
+      "Success: Deploy command completed",
+      "Success! Build completed."
+    ]
+  },
+  "production_before_after": {
+    "unchanged": true,
+    "deployment_id": "222bdd23-037d-4784-8d08-31a2db159015",
+    "version_id": "809c6301-c4b1-41a4-ae7e-b6e054aacc46",
+    "traffic_percentage": 100
+  },
+  "verification": {
+    "verify_run": 40726609816,
+    "verify": "PASS",
+    "native_job": 122951477978,
+    "native_scenarios": 42,
+    "generator_units": 9,
+    "e2e_run": 40726609864,
+    "e2e": "PASS",
+    "browser_job": 122951477691,
+    "browser_tests": 172,
+    "native_and_browser_terminal_logs_inspected": true,
+    "http_probe_count": 9,
+    "http": {
+      "preview_url": "https://security-fcb-01-contract-audit-nova-ace-jamb.novaking5002.workers.dev",
+      "unique_url": "https://7582fe37-nova-ace-jamb.novaking5002.workers.dev",
+      "checks": [
+        {
+          "url": "https://security-fcb-01-contract-audit-nova-ace-jamb.novaking5002.workers.dev/",
+          "status": 200,
+          "same_app_shell": true,
+          "sha256": "ef092de63b0319c1cfb635720dd6cbcd943966c8bf6bf08a30d989dde980007f"
+        },
+        {
+          "url": "https://security-fcb-01-contract-audit-nova-ace-jamb.novaking5002.workers.dev/admin",
+          "status": 200,
+          "same_app_shell": true,
+          "sha256": "ef092de63b0319c1cfb635720dd6cbcd943966c8bf6bf08a30d989dde980007f"
+        },
+        {
+          "url": "https://security-fcb-01-contract-audit-nova-ace-jamb.novaking5002.workers.dev/admin-academic",
+          "status": 200,
+          "same_app_shell": true,
+          "sha256": "ef092de63b0319c1cfb635720dd6cbcd943966c8bf6bf08a30d989dde980007f"
+        },
+        {
+          "url": "https://security-fcb-01-contract-audit-nova-ace-jamb.novaking5002.workers.dev/admin-import",
+          "status": 200,
+          "same_app_shell": true,
+          "sha256": "ef092de63b0319c1cfb635720dd6cbcd943966c8bf6bf08a30d989dde980007f"
+        },
+        {
+          "url": "https://7582fe37-nova-ace-jamb.novaking5002.workers.dev/",
+          "status": 200,
+          "same_app_shell": true,
+          "sha256": "ef092de63b0319c1cfb635720dd6cbcd943966c8bf6bf08a30d989dde980007f"
+        },
+        {
+          "url": "https://security-fcb-01-contract-audit-nova-ace-jamb.novaking5002.workers.dev/assets/index-Cndz2O0a.js",
+          "status": 200,
+          "expected_supabase_project": true,
+          "sha256": "7c98a1eb32b3247cd21cf024d56b038119b69a8a90374c93930f921e67c7b5f6"
+        },
+        {
+          "url": "https://security-fcb-01-contract-audit-nova-ace-jamb.novaking5002.workers.dev/assets/AcademicFoundationGate-CS_TjS9l.js",
+          "status": 200,
+          "review_rpc_present": true,
+          "sha256": "de393a822a3f4d55a6df5297a4c62428453c8c36e9184007f3c2daf499b0d796"
+        },
+        {
+          "url": "https://security-fcb-01-contract-audit-nova-ace-jamb.novaking5002.workers.dev/assets/fcb02ReviewPayload-D3nGjJ9-.js",
+          "status": 200,
+          "expected_review_digest": true,
+          "sha256": "662cf88654d842fb9c8a3116180dd1fb9247eb868c38e84d1147a13cdf5c3eba"
+        },
+        {
+          "url": "https://security-fcb-01-contract-audit-nova-ace-jamb.novaking5002.workers.dev/sw.js",
+          "status": 200,
+          "matches_source": true,
+          "sha256": "e45b9adf10236c941a35caba1695f46b92ec3d5f2f47b74ff4ab33100160bf5b"
+        }
+      ],
+      "scope": "Unauthenticated GETs only; no browser JS execution, token, login or API writes."
+    }
+  },
+  "limitations": [
+    "Live HTTP checks did not execute browser JavaScript or sign in.",
+    "Real signed-administrator package preview/staging acceptance remains unverified.",
+    "Preview uses configured production Supabase project; user actions there can mutate live data, so staging still requires separate approval.",
+    "No main merge or production Worker deployment, content staging, role/rights changes or Supabase writes performed."
+  ],
+  "record_storage": "Evidence committed on docs/fcb-02-preview-verification, leaving connected runtime branch pinned to the tested source to avoid another automatic Preview build.",
+  "next_action": "Legitimate signed-in administrator acceptance on preview /admin-academic using Check review package only; do not forge claims or stage/approve/publish content. Main/prod release and staging remain separately gated."
+}
