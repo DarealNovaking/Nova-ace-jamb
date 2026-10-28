@@ -1,0 +1,1214 @@
+{
+  "observed_on": "2026-10-28",
+  "project_id": "uokiqlgmzprqfbzmedaz",
+  "snapshot": {
+    "counts": {
+      "topics": 0,
+      "questions": 0,
+      "subtopics": 0
+    },
+    "columns": [
+      {
+        "type": "uuid",
+        "table": "subtopics",
+        "column": "id",
+        "default": "gen_random_uuid()",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "subtopics",
+        "column": "topic_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "subtopics",
+        "column": "name",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "subtopics",
+        "column": "description",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "integer",
+        "table": "subtopics",
+        "column": "sort_order",
+        "default": "0",
+        "nullable": "NO"
+      },
+      {
+        "type": "boolean",
+        "table": "subtopics",
+        "column": "active",
+        "default": "true",
+        "nullable": "NO"
+      },
+      {
+        "type": "timestamp with time zone",
+        "table": "subtopics",
+        "column": "created_at",
+        "default": "now()",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "subtopics",
+        "column": "syllabus_version_id",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "uuid",
+        "table": "syllabus_versions",
+        "column": "id",
+        "default": "gen_random_uuid()",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "syllabus_versions",
+        "column": "season_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "syllabus_versions",
+        "column": "subject_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "integer",
+        "table": "syllabus_versions",
+        "column": "version",
+        "default": "1",
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "syllabus_versions",
+        "column": "title",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "syllabus_versions",
+        "column": "source_url",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "text",
+        "table": "syllabus_versions",
+        "column": "source_title",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "text",
+        "table": "syllabus_versions",
+        "column": "rights_status",
+        "default": "'pending'::text",
+        "nullable": "NO"
+      },
+      {
+        "type": "jsonb",
+        "table": "syllabus_versions",
+        "column": "provenance",
+        "default": "'{}'::jsonb",
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "syllabus_versions",
+        "column": "status",
+        "default": "'draft'::text",
+        "nullable": "NO"
+      },
+      {
+        "type": "timestamp with time zone",
+        "table": "syllabus_versions",
+        "column": "activated_at",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "timestamp with time zone",
+        "table": "syllabus_versions",
+        "column": "created_at",
+        "default": "now()",
+        "nullable": "NO"
+      },
+      {
+        "type": "timestamp with time zone",
+        "table": "syllabus_versions",
+        "column": "updated_at",
+        "default": "now()",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "topics",
+        "column": "id",
+        "default": "gen_random_uuid()",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "topics",
+        "column": "subject_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "topics",
+        "column": "name",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "topics",
+        "column": "description",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "integer",
+        "table": "topics",
+        "column": "sort_order",
+        "default": "0",
+        "nullable": "NO"
+      },
+      {
+        "type": "boolean",
+        "table": "topics",
+        "column": "active",
+        "default": "true",
+        "nullable": "NO"
+      },
+      {
+        "type": "timestamp with time zone",
+        "table": "topics",
+        "column": "created_at",
+        "default": "now()",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "topics",
+        "column": "syllabus_version_id",
+        "default": null,
+        "nullable": "YES"
+      }
+    ],
+    "seasons": [
+      {
+        "id": "a3e9c810-bd81-48bd-84e0-9a987e061cc7",
+        "name": "JAMB UTME 2026",
+        "status": "closed",
+        "exam_year": 2026
+      },
+      {
+        "id": "23fc8eb7-2d2e-474f-b4db-c0a69f22cd62",
+        "name": "JAMB UTME 2027",
+        "status": "draft",
+        "exam_year": 2027
+      }
+    ],
+    "subjects": [
+      {
+        "id": "e0153c56-be67-4681-8286-4d948f651323",
+        "code": "AGR",
+        "name": "Agriculture",
+        "active": true
+      },
+      {
+        "id": "c9477ef6-c2c5-4f62-b2e3-5c2b60a45a2b",
+        "code": "ARA",
+        "name": "Arabic",
+        "active": true
+      },
+      {
+        "id": "24bf2dc5-77f5-405a-b723-050ee9069eee",
+        "code": "ART",
+        "name": "Art",
+        "active": true
+      },
+      {
+        "id": "e367a0d1-8e76-4289-bc44-bde0f01c88ae",
+        "code": "BIO",
+        "name": "Biology",
+        "active": true
+      },
+      {
+        "id": "6675c55e-5f41-457c-9039-705aa089ff80",
+        "code": "CHE",
+        "name": "Chemistry",
+        "active": true
+      },
+      {
+        "id": "c6fa4b3f-731b-4c53-ac08-290fbda8c122",
+        "code": "COM",
+        "name": "Commerce",
+        "active": true
+      },
+      {
+        "id": "1f93adfc-9967-4356-9be6-8bce6860d425",
+        "code": "CRS",
+        "name": "Christian Religious Studies",
+        "active": true
+      },
+      {
+        "id": "def40364-0c49-44e8-9ec3-a6a918e56913",
+        "code": "CST",
+        "name": "Computer Studies",
+        "active": true
+      },
+      {
+        "id": "7787e442-6482-498b-a9c5-ce335676f612",
+        "code": "ECO",
+        "name": "Economics",
+        "active": true
+      },
+      {
+        "id": "f4a4638d-5931-49fd-8d2a-57c9dc8a37a9",
+        "code": "ENG",
+        "name": "Use of English",
+        "active": true
+      },
+      {
+        "id": "58c6db9d-8d29-449c-b635-f3833de4736b",
+        "code": "FRE",
+        "name": "French",
+        "active": true
+      },
+      {
+        "id": "de829c17-0ff2-4524-9bf5-4fc23459d46e",
+        "code": "GEO",
+        "name": "Geography",
+        "active": true
+      },
+      {
+        "id": "07783b3d-b58c-4c7f-bcbe-b3d57bfec874",
+        "code": "GOV",
+        "name": "Government",
+        "active": true
+      },
+      {
+        "id": "ce974ac5-c12f-479c-99f6-c05f16cb98a3",
+        "code": "HAU",
+        "name": "Hausa",
+        "active": true
+      },
+      {
+        "id": "a368fb2e-8238-437d-93fc-bc1dbe4e6fd5",
+        "code": "HEC",
+        "name": "Home Economics",
+        "active": true
+      },
+      {
+        "id": "1a2616cf-2d4a-435c-a256-ef1f39dae36b",
+        "code": "HIS",
+        "name": "History",
+        "active": true
+      },
+      {
+        "id": "730b1365-14ff-42f7-a12a-e19e1e4fe84b",
+        "code": "IGB",
+        "name": "Igbo",
+        "active": true
+      },
+      {
+        "id": "b51338b6-bd03-4fd8-814b-3d1eb53d5cc9",
+        "code": "ISS",
+        "name": "Islamic Studies",
+        "active": true
+      },
+      {
+        "id": "57a5c31f-2847-43c6-82c1-7918aa1c98cc",
+        "code": "LIT",
+        "name": "Literature-in-English",
+        "active": true
+      },
+      {
+        "id": "40247f5b-cbe4-4e30-835b-f71c811de685",
+        "code": "MAT",
+        "name": "Mathematics",
+        "active": true
+      },
+      {
+        "id": "fd107ed1-a784-4443-bc46-e1f4f113c0de",
+        "code": "MUS",
+        "name": "Music",
+        "active": true
+      },
+      {
+        "id": "a5a5cabd-74b5-4bdd-aaf1-85b5a603f91c",
+        "code": "PHE",
+        "name": "Physical and Health Education",
+        "active": true
+      },
+      {
+        "id": "9be3e180-84f2-412a-bcaa-b3e002e757cc",
+        "code": "PHY",
+        "name": "Physics",
+        "active": true
+      },
+      {
+        "id": "85a9ed03-731b-48bf-b0be-c6fb9903426a",
+        "code": "POA",
+        "name": "Principles of Account",
+        "active": true
+      },
+      {
+        "id": "961e3534-3b5c-4bb1-a8f8-5291c0aa5b97",
+        "code": "YOR",
+        "name": "Yoruba",
+        "active": true
+      }
+    ],
+    "versions": [
+      {
+        "id": "3cf482f8-23a4-4d0b-908b-f1d4879907d9",
+        "title": "2027 JAMB UTME syllabus scaffold — Government",
+        "status": "draft",
+        "version": 1,
+        "season_id": "23fc8eb7-2d2e-474f-b4db-c0a69f22cd62",
+        "source_url": "https://jamb.gov.ng/",
+        "subject_id": "07783b3d-b58c-4c7f-bcbe-b3d57bfec874",
+        "source_title": "JAMB official website — pending 2027 publication/update",
+        "rights_status": "pending"
+      },
+      {
+        "id": "29aef43c-0ea7-4695-b294-976504ee0a84",
+        "title": "2027 JAMB UTME syllabus scaffold — History",
+        "status": "draft",
+        "version": 1,
+        "season_id": "23fc8eb7-2d2e-474f-b4db-c0a69f22cd62",
+        "source_url": "https://jamb.gov.ng/",
+        "subject_id": "1a2616cf-2d4a-435c-a256-ef1f39dae36b",
+        "source_title": "JAMB official website — pending 2027 publication/update",
+        "rights_status": "pending"
+      },
+      {
+        "id": "1a95e3e9-6dcb-46be-9e33-59b4fa74e413",
+        "title": "2027 JAMB UTME syllabus scaffold — Christian Religious Studies",
+        "status": "draft",
+        "version": 1,
+        "season_id": "23fc8eb7-2d2e-474f-b4db-c0a69f22cd62",
+        "source_url": "https://jamb.gov.ng/",
+        "subject_id": "1f93adfc-9967-4356-9be6-8bce6860d425",
+        "source_title": "JAMB official website — pending 2027 publication/update",
+        "rights_status": "pending"
+      },
+      {
+        "id": "e59407f5-3102-4594-96cc-3514429e58df",
+        "title": "2027 JAMB UTME syllabus scaffold — Art",
+        "status": "draft",
+        "version": 1,
+        "season_id": "23fc8eb7-2d2e-474f-b4db-c0a69f22cd62",
+        "source_url": "https://jamb.gov.ng/",
+        "subject_id": "24bf2dc5-77f5-405a-b723-050ee9069eee",
+        "source_title": "JAMB official website — pending 2027 publication/update",
+        "rights_status": "pending"
+      },
+      {
+        "id": "182fb52c-d9bd-4606-ba38-11a1b36c1a94",
+        "title": "2027 JAMB UTME syllabus scaffold — Mathematics",
+        "status": "draft",
+        "version": 1,
+        "season_id": "23fc8eb7-2d2e-474f-b4db-c0a69f22cd62",
+        "source_url": "https://jamb.gov.ng/",
+        "subject_id": "40247f5b-cbe4-4e30-835b-f71c811de685",
+        "source_title": "JAMB official website — pending 2027 publication/update",
+        "rights_status": "pending"
+      },
+      {
+        "id": "bc390bfa-bb14-41eb-a18d-0d72ebaa8973",
+        "title": "2027 JAMB UTME syllabus scaffold — Literature-in-English",
+        "status": "draft",
+        "version": 1,
+        "season_id": "23fc8eb7-2d2e-474f-b4db-c0a69f22cd62",
+        "source_url": "https://jamb.gov.ng/",
+        "subject_id": "57a5c31f-2847-43c6-82c1-7918aa1c98cc",
+        "source_title": "JAMB official website — pending 2027 publication/update",
+        "rights_status": "pending"
+      },
+      {
+        "id": "c3e70e77-3896-42fa-9a27-46f5f960b8fd",
+        "title": "2027 JAMB UTME syllabus scaffold — French",
+        "status": "draft",
+        "version": 1,
+        "season_id": "23fc8eb7-2d2e-474f-b4db-c0a69f22cd62",
+        "source_url": "https://jamb.gov.ng/",
+        "subject_id": "58c6db9d-8d29-449c-b635-f3833de4736b",
+        "source_title": "JAMB official website — pending 2027 publication/update",
+        "rights_status": "pending"
+      },
+      {
+        "id": "26b7171f-ef0b-4e93-adc8-bf1e3ced6baf",
+        "title": "2027 JAMB UTME syllabus scaffold — Chemistry",
+        "status": "draft",
+        "version": 1,
+        "season_id": "23fc8eb7-2d2e-474f-b4db-c0a69f22cd62",
+        "source_url": "https://jamb.gov.ng/",
+        "subject_id": "6675c55e-5f41-457c-9039-705aa089ff80",
+        "source_title": "JAMB official website — pending 2027 publication/update",
+        "rights_status": "pending"
+      },
+      {
+        "id": "443431c6-4dc4-463d-9e34-342e8ce896df",
+        "title": "2027 JAMB UTME syllabus scaffold — Igbo",
+        "status": "draft",
+        "version": 1,
+        "season_id": "23fc8eb7-2d2e-474f-b4db-c0a69f22cd62",
+        "source_url": "https://jamb.gov.ng/",
+        "subject_id": "730b1365-14ff-42f7-a12a-e19e1e4fe84b",
+        "source_title": "JAMB official website — pending 2027 publication/update",
+        "rights_status": "pending"
+      },
+      {
+        "id": "f89f458c-c686-4939-8720-da1fa4118d01",
+        "title": "2027 JAMB UTME syllabus scaffold — Economics",
+        "status": "draft",
+        "version": 1,
+        "season_id": "23fc8eb7-2d2e-474f-b4db-c0a69f22cd62",
+        "source_url": "https://jamb.gov.ng/",
+        "subject_id": "7787e442-6482-498b-a9c5-ce335676f612",
+        "source_title": "JAMB official website — pending 2027 publication/update",
+        "rights_status": "pending"
+      },
+      {
+        "id": "89f8f4d8-4ebe-452a-bd96-cbfc512846e6",
+        "title": "2027 JAMB UTME syllabus scaffold — Principles of Account",
+        "status": "draft",
+        "version": 1,
+        "season_id": "23fc8eb7-2d2e-474f-b4db-c0a69f22cd62",
+        "source_url": "https://jamb.gov.ng/",
+        "subject_id": "85a9ed03-731b-48bf-b0be-c6fb9903426a",
+        "source_title": "JAMB official website — pending 2027 publication/update",
+        "rights_status": "pending"
+      },
+      {
+        "id": "ed6af7fc-27b9-4848-b493-72c602271cb0",
+        "title": "2027 JAMB UTME syllabus scaffold — Yoruba",
+        "status": "draft",
+        "version": 1,
+        "season_id": "23fc8eb7-2d2e-474f-b4db-c0a69f22cd62",
+        "source_url": "https://jamb.gov.ng/",
+        "subject_id": "961e3534-3b5c-4bb1-a8f8-5291c0aa5b97",
+        "source_title": "JAMB official website — pending 2027 publication/update",
+        "rights_status": "pending"
+      },
+      {
+        "id": "4dc23f58-d075-4bf7-be13-58281cc847aa",
+        "title": "2027 JAMB UTME syllabus scaffold — Physics",
+        "status": "draft",
+        "version": 1,
+        "season_id": "23fc8eb7-2d2e-474f-b4db-c0a69f22cd62",
+        "source_url": "https://jamb.gov.ng/",
+        "subject_id": "9be3e180-84f2-412a-bcaa-b3e002e757cc",
+        "source_title": "JAMB official website — pending 2027 publication/update",
+        "rights_status": "pending"
+      },
+      {
+        "id": "32dd630e-477c-4ec1-8e9f-9bc1d31d5294",
+        "title": "2027 JAMB UTME syllabus scaffold — Home Economics",
+        "status": "draft",
+        "version": 1,
+        "season_id": "23fc8eb7-2d2e-474f-b4db-c0a69f22cd62",
+        "source_url": "https://jamb.gov.ng/",
+        "subject_id": "a368fb2e-8238-437d-93fc-bc1dbe4e6fd5",
+        "source_title": "JAMB official website — pending 2027 publication/update",
+        "rights_status": "pending"
+      },
+      {
+        "id": "eb09c8a9-58cf-45c2-b22d-a02da23d9b17",
+        "title": "2027 JAMB UTME syllabus scaffold — Physical and Health Education",
+        "status": "draft",
+        "version": 1,
+        "season_id": "23fc8eb7-2d2e-474f-b4db-c0a69f22cd62",
+        "source_url": "https://jamb.gov.ng/",
+        "subject_id": "a5a5cabd-74b5-4bdd-aaf1-85b5a603f91c",
+        "source_title": "JAMB official website — pending 2027 publication/update",
+        "rights_status": "pending"
+      },
+      {
+        "id": "76a3d961-5499-47d1-95a2-c11577ec99a1",
+        "title": "2027 JAMB UTME syllabus scaffold — Islamic Studies",
+        "status": "draft",
+        "version": 1,
+        "season_id": "23fc8eb7-2d2e-474f-b4db-c0a69f22cd62",
+        "source_url": "https://jamb.gov.ng/",
+        "subject_id": "b51338b6-bd03-4fd8-814b-3d1eb53d5cc9",
+        "source_title": "JAMB official website — pending 2027 publication/update",
+        "rights_status": "pending"
+      },
+      {
+        "id": "1a02ed67-7a2e-4a67-8596-f7e0caa229ff",
+        "title": "2027 JAMB UTME syllabus scaffold — Commerce",
+        "status": "draft",
+        "version": 1,
+        "season_id": "23fc8eb7-2d2e-474f-b4db-c0a69f22cd62",
+        "source_url": "https://jamb.gov.ng/",
+        "subject_id": "c6fa4b3f-731b-4c53-ac08-290fbda8c122",
+        "source_title": "JAMB official website — pending 2027 publication/update",
+        "rights_status": "pending"
+      },
+      {
+        "id": "e9f5fa1e-ae6a-4112-a250-7bf9f645f335",
+        "title": "2027 JAMB UTME syllabus scaffold — Arabic",
+        "status": "draft",
+        "version": 1,
+        "season_id": "23fc8eb7-2d2e-474f-b4db-c0a69f22cd62",
+        "source_url": "https://jamb.gov.ng/",
+        "subject_id": "c9477ef6-c2c5-4f62-b2e3-5c2b60a45a2b",
+        "source_title": "JAMB official website — pending 2027 publication/update",
+        "rights_status": "pending"
+      },
+      {
+        "id": "78bc481c-6569-41e9-878c-bc6ca3e2093d",
+        "title": "2027 JAMB UTME syllabus scaffold — Hausa",
+        "status": "draft",
+        "version": 1,
+        "season_id": "23fc8eb7-2d2e-474f-b4db-c0a69f22cd62",
+        "source_url": "https://jamb.gov.ng/",
+        "subject_id": "ce974ac5-c12f-479c-99f6-c05f16cb98a3",
+        "source_title": "JAMB official website — pending 2027 publication/update",
+        "rights_status": "pending"
+      },
+      {
+        "id": "f80a8968-6476-4d3f-9e4b-826405742ba0",
+        "title": "2027 JAMB UTME syllabus scaffold — Geography",
+        "status": "draft",
+        "version": 1,
+        "season_id": "23fc8eb7-2d2e-474f-b4db-c0a69f22cd62",
+        "source_url": "https://jamb.gov.ng/",
+        "subject_id": "de829c17-0ff2-4524-9bf5-4fc23459d46e",
+        "source_title": "JAMB official website — pending 2027 publication/update",
+        "rights_status": "pending"
+      },
+      {
+        "id": "86decadc-654d-4358-a0b4-904340a76f14",
+        "title": "2027 JAMB UTME syllabus scaffold — Computer Studies",
+        "status": "draft",
+        "version": 1,
+        "season_id": "23fc8eb7-2d2e-474f-b4db-c0a69f22cd62",
+        "source_url": "https://jamb.gov.ng/",
+        "subject_id": "def40364-0c49-44e8-9ec3-a6a918e56913",
+        "source_title": "JAMB official website — pending 2027 publication/update",
+        "rights_status": "pending"
+      },
+      {
+        "id": "0d4c0510-b62a-43cc-807d-6b3023dfa5a3",
+        "title": "2027 JAMB UTME syllabus scaffold — Agriculture",
+        "status": "draft",
+        "version": 1,
+        "season_id": "23fc8eb7-2d2e-474f-b4db-c0a69f22cd62",
+        "source_url": "https://jamb.gov.ng/",
+        "subject_id": "e0153c56-be67-4681-8286-4d948f651323",
+        "source_title": "JAMB official website — pending 2027 publication/update",
+        "rights_status": "pending"
+      },
+      {
+        "id": "d729ecee-31ca-4cc9-a5b6-bfbdd811138f",
+        "title": "2027 JAMB UTME syllabus scaffold — Biology",
+        "status": "draft",
+        "version": 1,
+        "season_id": "23fc8eb7-2d2e-474f-b4db-c0a69f22cd62",
+        "source_url": "https://jamb.gov.ng/",
+        "subject_id": "e367a0d1-8e76-4289-bc44-bde0f01c88ae",
+        "source_title": "JAMB official website — pending 2027 publication/update",
+        "rights_status": "pending"
+      },
+      {
+        "id": "0a1c8237-d93b-4958-ac2e-4a060075eed6",
+        "title": "2027 JAMB UTME syllabus scaffold — Use of English",
+        "status": "draft",
+        "version": 1,
+        "season_id": "23fc8eb7-2d2e-474f-b4db-c0a69f22cd62",
+        "source_url": "https://jamb.gov.ng/",
+        "subject_id": "f4a4638d-5931-49fd-8d2a-57c9dc8a37a9",
+        "source_title": "JAMB official website — pending 2027 publication/update",
+        "rights_status": "pending"
+      },
+      {
+        "id": "9586c898-3b92-43ce-8c6d-65d6d49e984c",
+        "title": "2027 JAMB UTME syllabus scaffold — Music",
+        "status": "draft",
+        "version": 1,
+        "season_id": "23fc8eb7-2d2e-474f-b4db-c0a69f22cd62",
+        "source_url": "https://jamb.gov.ng/",
+        "subject_id": "fd107ed1-a784-4443-bc46-e1f4f113c0de",
+        "source_title": "JAMB official website — pending 2027 publication/update",
+        "rights_status": "pending"
+      },
+      {
+        "id": "9ab6d516-2582-4d54-b4e4-8c7bb9c2ba87",
+        "title": "2026 JAMB UTME syllabus — Government",
+        "status": "draft",
+        "version": 1,
+        "season_id": "a3e9c810-bd81-48bd-84e0-9a987e061cc7",
+        "source_url": "https://ibass.jamb.gov.ng/",
+        "subject_id": "07783b3d-b58c-4c7f-bcbe-b3d57bfec874",
+        "source_title": "JAMB Integrated Brochure & Syllabus System (IBASS)",
+        "rights_status": "pending"
+      },
+      {
+        "id": "eda69279-ba31-46ed-9a55-4a6c21e1f083",
+        "title": "2026 JAMB UTME syllabus — History",
+        "status": "draft",
+        "version": 1,
+        "season_id": "a3e9c810-bd81-48bd-84e0-9a987e061cc7",
+        "source_url": "https://ibass.jamb.gov.ng/",
+        "subject_id": "1a2616cf-2d4a-435c-a256-ef1f39dae36b",
+        "source_title": "JAMB Integrated Brochure & Syllabus System (IBASS)",
+        "rights_status": "pending"
+      },
+      {
+        "id": "44df6cb7-fd7f-470d-885d-014bee27d8e5",
+        "title": "2026 JAMB UTME syllabus — Christian Religious Studies",
+        "status": "draft",
+        "version": 1,
+        "season_id": "a3e9c810-bd81-48bd-84e0-9a987e061cc7",
+        "source_url": "https://ibass.jamb.gov.ng/",
+        "subject_id": "1f93adfc-9967-4356-9be6-8bce6860d425",
+        "source_title": "JAMB Integrated Brochure & Syllabus System (IBASS)",
+        "rights_status": "pending"
+      },
+      {
+        "id": "16b95000-81c2-4278-87c4-c26be4040a37",
+        "title": "2026 JAMB UTME syllabus — Art",
+        "status": "draft",
+        "version": 1,
+        "season_id": "a3e9c810-bd81-48bd-84e0-9a987e061cc7",
+        "source_url": "https://ibass.jamb.gov.ng/",
+        "subject_id": "24bf2dc5-77f5-405a-b723-050ee9069eee",
+        "source_title": "JAMB Integrated Brochure & Syllabus System (IBASS)",
+        "rights_status": "pending"
+      },
+      {
+        "id": "0bf054b5-4de8-4f30-a722-c7ba9b8b2709",
+        "title": "2026 JAMB UTME syllabus — Mathematics",
+        "status": "draft",
+        "version": 1,
+        "season_id": "a3e9c810-bd81-48bd-84e0-9a987e061cc7",
+        "source_url": "https://ibass.jamb.gov.ng/",
+        "subject_id": "40247f5b-cbe4-4e30-835b-f71c811de685",
+        "source_title": "JAMB Integrated Brochure & Syllabus System (IBASS)",
+        "rights_status": "pending"
+      },
+      {
+        "id": "119f9a1f-3c61-4770-8997-e9b127bed845",
+        "title": "2026 JAMB UTME syllabus — Literature-in-English",
+        "status": "draft",
+        "version": 1,
+        "season_id": "a3e9c810-bd81-48bd-84e0-9a987e061cc7",
+        "source_url": "https://ibass.jamb.gov.ng/",
+        "subject_id": "57a5c31f-2847-43c6-82c1-7918aa1c98cc",
+        "source_title": "JAMB Integrated Brochure & Syllabus System (IBASS)",
+        "rights_status": "pending"
+      },
+      {
+        "id": "bcedc697-f1c9-44f5-b722-87a4816e920a",
+        "title": "2026 JAMB UTME syllabus — French",
+        "status": "draft",
+        "version": 1,
+        "season_id": "a3e9c810-bd81-48bd-84e0-9a987e061cc7",
+        "source_url": "https://ibass.jamb.gov.ng/",
+        "subject_id": "58c6db9d-8d29-449c-b635-f3833de4736b",
+        "source_title": "JAMB Integrated Brochure & Syllabus System (IBASS)",
+        "rights_status": "pending"
+      },
+      {
+        "id": "5ae1edcc-c8dc-43ab-9c21-cd8ea43d6def",
+        "title": "2026 JAMB UTME syllabus — Chemistry",
+        "status": "draft",
+        "version": 1,
+        "season_id": "a3e9c810-bd81-48bd-84e0-9a987e061cc7",
+        "source_url": "https://ibass.jamb.gov.ng/",
+        "subject_id": "6675c55e-5f41-457c-9039-705aa089ff80",
+        "source_title": "JAMB Integrated Brochure & Syllabus System (IBASS)",
+        "rights_status": "pending"
+      },
+      {
+        "id": "9febf2f3-0869-458d-803a-276de8405aeb",
+        "title": "2026 JAMB UTME syllabus — Igbo",
+        "status": "draft",
+        "version": 1,
+        "season_id": "a3e9c810-bd81-48bd-84e0-9a987e061cc7",
+        "source_url": "https://ibass.jamb.gov.ng/",
+        "subject_id": "730b1365-14ff-42f7-a12a-e19e1e4fe84b",
+        "source_title": "JAMB Integrated Brochure & Syllabus System (IBASS)",
+        "rights_status": "pending"
+      },
+      {
+        "id": "3859b9f5-11f4-4474-860a-e38c19711edb",
+        "title": "2026 JAMB UTME syllabus — Economics",
+        "status": "draft",
+        "version": 1,
+        "season_id": "a3e9c810-bd81-48bd-84e0-9a987e061cc7",
+        "source_url": "https://ibass.jamb.gov.ng/",
+        "subject_id": "7787e442-6482-498b-a9c5-ce335676f612",
+        "source_title": "JAMB Integrated Brochure & Syllabus System (IBASS)",
+        "rights_status": "pending"
+      },
+      {
+        "id": "34835427-395a-4f3a-93f6-32276046eef8",
+        "title": "2026 JAMB UTME syllabus — Principles of Account",
+        "status": "draft",
+        "version": 1,
+        "season_id": "a3e9c810-bd81-48bd-84e0-9a987e061cc7",
+        "source_url": "https://ibass.jamb.gov.ng/",
+        "subject_id": "85a9ed03-731b-48bf-b0be-c6fb9903426a",
+        "source_title": "JAMB Integrated Brochure & Syllabus System (IBASS)",
+        "rights_status": "pending"
+      },
+      {
+        "id": "b73883ac-3f90-4a02-a817-ce8d4ff2509a",
+        "title": "2026 JAMB UTME syllabus — Yoruba",
+        "status": "draft",
+        "version": 1,
+        "season_id": "a3e9c810-bd81-48bd-84e0-9a987e061cc7",
+        "source_url": "https://ibass.jamb.gov.ng/",
+        "subject_id": "961e3534-3b5c-4bb1-a8f8-5291c0aa5b97",
+        "source_title": "JAMB Integrated Brochure & Syllabus System (IBASS)",
+        "rights_status": "pending"
+      },
+      {
+        "id": "6a138d80-d169-4d47-aac0-079c7ffcc787",
+        "title": "2026 JAMB UTME syllabus — Physics",
+        "status": "draft",
+        "version": 1,
+        "season_id": "a3e9c810-bd81-48bd-84e0-9a987e061cc7",
+        "source_url": "https://ibass.jamb.gov.ng/",
+        "subject_id": "9be3e180-84f2-412a-bcaa-b3e002e757cc",
+        "source_title": "JAMB Integrated Brochure & Syllabus System (IBASS)",
+        "rights_status": "pending"
+      },
+      {
+        "id": "a3ec48ba-df79-4f4f-b200-55e7c9e10bec",
+        "title": "2026 JAMB UTME syllabus — Home Economics",
+        "status": "draft",
+        "version": 1,
+        "season_id": "a3e9c810-bd81-48bd-84e0-9a987e061cc7",
+        "source_url": "https://ibass.jamb.gov.ng/",
+        "subject_id": "a368fb2e-8238-437d-93fc-bc1dbe4e6fd5",
+        "source_title": "JAMB Integrated Brochure & Syllabus System (IBASS)",
+        "rights_status": "pending"
+      },
+      {
+        "id": "4f1e23c3-2bf0-41b3-80cc-915bbacde819",
+        "title": "2026 JAMB UTME syllabus — Physical and Health Education",
+        "status": "draft",
+        "version": 1,
+        "season_id": "a3e9c810-bd81-48bd-84e0-9a987e061cc7",
+        "source_url": "https://ibass.jamb.gov.ng/",
+        "subject_id": "a5a5cabd-74b5-4bdd-aaf1-85b5a603f91c",
+        "source_title": "JAMB Integrated Brochure & Syllabus System (IBASS)",
+        "rights_status": "pending"
+      },
+      {
+        "id": "8c96bf7c-b043-46fe-b24e-beeb664a78cd",
+        "title": "2026 JAMB UTME syllabus — Islamic Studies",
+        "status": "draft",
+        "version": 1,
+        "season_id": "a3e9c810-bd81-48bd-84e0-9a987e061cc7",
+        "source_url": "https://ibass.jamb.gov.ng/",
+        "subject_id": "b51338b6-bd03-4fd8-814b-3d1eb53d5cc9",
+        "source_title": "JAMB Integrated Brochure & Syllabus System (IBASS)",
+        "rights_status": "pending"
+      },
+      {
+        "id": "5bfb368d-37ab-4c31-86d1-55574455e8fd",
+        "title": "2026 JAMB UTME syllabus — Commerce",
+        "status": "draft",
+        "version": 1,
+        "season_id": "a3e9c810-bd81-48bd-84e0-9a987e061cc7",
+        "source_url": "https://ibass.jamb.gov.ng/",
+        "subject_id": "c6fa4b3f-731b-4c53-ac08-290fbda8c122",
+        "source_title": "JAMB Integrated Brochure & Syllabus System (IBASS)",
+        "rights_status": "pending"
+      },
+      {
+        "id": "fbae3bd2-8750-4d2e-aada-ca8d769fbedb",
+        "title": "2026 JAMB UTME syllabus — Arabic",
+        "status": "draft",
+        "version": 1,
+        "season_id": "a3e9c810-bd81-48bd-84e0-9a987e061cc7",
+        "source_url": "https://ibass.jamb.gov.ng/",
+        "subject_id": "c9477ef6-c2c5-4f62-b2e3-5c2b60a45a2b",
+        "source_title": "JAMB Integrated Brochure & Syllabus System (IBASS)",
+        "rights_status": "pending"
+      },
+      {
+        "id": "064f5bcc-92a5-4596-bf9d-54b46d7f4296",
+        "title": "2026 JAMB UTME syllabus — Hausa",
+        "status": "draft",
+        "version": 1,
+        "season_id": "a3e9c810-bd81-48bd-84e0-9a987e061cc7",
+        "source_url": "https://ibass.jamb.gov.ng/",
+        "subject_id": "ce974ac5-c12f-479c-99f6-c05f16cb98a3",
+        "source_title": "JAMB Integrated Brochure & Syllabus System (IBASS)",
+        "rights_status": "pending"
+      },
+      {
+        "id": "15a3ec14-eb6a-4d56-a550-6dd1989e2b44",
+        "title": "2026 JAMB UTME syllabus — Geography",
+        "status": "draft",
+        "version": 1,
+        "season_id": "a3e9c810-bd81-48bd-84e0-9a987e061cc7",
+        "source_url": "https://ibass.jamb.gov.ng/",
+        "subject_id": "de829c17-0ff2-4524-9bf5-4fc23459d46e",
+        "source_title": "JAMB Integrated Brochure & Syllabus System (IBASS)",
+        "rights_status": "pending"
+      },
+      {
+        "id": "1cc04bf8-c72f-42ff-8935-1dbadaa8530d",
+        "title": "2026 JAMB UTME syllabus — Computer Studies",
+        "status": "draft",
+        "version": 1,
+        "season_id": "a3e9c810-bd81-48bd-84e0-9a987e061cc7",
+        "source_url": "https://ibass.jamb.gov.ng/",
+        "subject_id": "def40364-0c49-44e8-9ec3-a6a918e56913",
+        "source_title": "JAMB Integrated Brochure & Syllabus System (IBASS)",
+        "rights_status": "pending"
+      },
+      {
+        "id": "e30bcfda-3bc0-4465-995d-dc9aa59308b5",
+        "title": "2026 JAMB UTME syllabus — Agriculture",
+        "status": "draft",
+        "version": 1,
+        "season_id": "a3e9c810-bd81-48bd-84e0-9a987e061cc7",
+        "source_url": "https://ibass.jamb.gov.ng/",
+        "subject_id": "e0153c56-be67-4681-8286-4d948f651323",
+        "source_title": "JAMB Integrated Brochure & Syllabus System (IBASS)",
+        "rights_status": "pending"
+      },
+      {
+        "id": "9d215ca8-fda8-4cee-aaa1-5d9bb5a14a26",
+        "title": "2026 JAMB UTME syllabus — Biology",
+        "status": "draft",
+        "version": 1,
+        "season_id": "a3e9c810-bd81-48bd-84e0-9a987e061cc7",
+        "source_url": "https://ibass.jamb.gov.ng/",
+        "subject_id": "e367a0d1-8e76-4289-bc44-bde0f01c88ae",
+        "source_title": "JAMB Integrated Brochure & Syllabus System (IBASS)",
+        "rights_status": "pending"
+      },
+      {
+        "id": "46d2ac15-1b13-4184-a88e-2e65199a2f61",
+        "title": "2026 JAMB UTME syllabus — Use of English",
+        "status": "draft",
+        "version": 1,
+        "season_id": "a3e9c810-bd81-48bd-84e0-9a987e061cc7",
+        "source_url": "https://ibass.jamb.gov.ng/",
+        "subject_id": "f4a4638d-5931-49fd-8d2a-57c9dc8a37a9",
+        "source_title": "JAMB Integrated Brochure & Syllabus System (IBASS)",
+        "rights_status": "pending"
+      },
+      {
+        "id": "5948e881-1360-4128-aba9-c8b7c15b12bc",
+        "title": "2026 JAMB UTME syllabus — Music",
+        "status": "draft",
+        "version": 1,
+        "season_id": "a3e9c810-bd81-48bd-84e0-9a987e061cc7",
+        "source_url": "https://ibass.jamb.gov.ng/",
+        "subject_id": "fd107ed1-a784-4443-bc46-e1f4f113c0de",
+        "source_title": "JAMB Integrated Brochure & Syllabus System (IBASS)",
+        "rights_status": "pending"
+      }
+    ],
+    "constraints": [
+      {
+        "name": "subtopics_parent_version_fkey",
+        "table": "subtopics",
+        "definition": "FOREIGN KEY (topic_id, syllabus_version_id) REFERENCES ace.topics(id, syllabus_version_id) ON DELETE CASCADE"
+      },
+      {
+        "name": "subtopics_pkey",
+        "table": "subtopics",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "name": "subtopics_syllabus_version_id_fkey",
+        "table": "subtopics",
+        "definition": "FOREIGN KEY (syllabus_version_id) REFERENCES ace.syllabus_versions(id) ON DELETE RESTRICT"
+      },
+      {
+        "name": "subtopics_topic_id_fkey",
+        "table": "subtopics",
+        "definition": "FOREIGN KEY (topic_id) REFERENCES ace.topics(id) ON DELETE CASCADE"
+      },
+      {
+        "name": "subtopics_topic_id_name_key",
+        "table": "subtopics",
+        "definition": "UNIQUE (topic_id, name)"
+      },
+      {
+        "name": "syllabus_versions_id_subject_key",
+        "table": "syllabus_versions",
+        "definition": "UNIQUE (id, subject_id)"
+      },
+      {
+        "name": "syllabus_versions_pkey",
+        "table": "syllabus_versions",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "name": "syllabus_versions_rights_status_check",
+        "table": "syllabus_versions",
+        "definition": "CHECK ((rights_status = ANY (ARRAY['pending'::text, 'approved'::text, 'restricted'::text, 'rejected'::text])))"
+      },
+      {
+        "name": "syllabus_versions_season_id_fkey",
+        "table": "syllabus_versions",
+        "definition": "FOREIGN KEY (season_id) REFERENCES ace.exam_seasons(id) ON DELETE RESTRICT"
+      },
+      {
+        "name": "syllabus_versions_season_id_subject_id_version_key",
+        "table": "syllabus_versions",
+        "definition": "UNIQUE (season_id, subject_id, version)"
+      },
+      {
+        "name": "syllabus_versions_status_check",
+        "table": "syllabus_versions",
+        "definition": "CHECK ((status = ANY (ARRAY['draft'::text, 'active'::text, 'archived'::text])))"
+      },
+      {
+        "name": "syllabus_versions_subject_id_fkey",
+        "table": "syllabus_versions",
+        "definition": "FOREIGN KEY (subject_id) REFERENCES ace.subjects(id) ON DELETE RESTRICT"
+      },
+      {
+        "name": "syllabus_versions_version_check",
+        "table": "syllabus_versions",
+        "definition": "CHECK ((version > 0))"
+      },
+      {
+        "name": "topics_id_version_key",
+        "table": "topics",
+        "definition": "UNIQUE (id, syllabus_version_id)"
+      },
+      {
+        "name": "topics_pkey",
+        "table": "topics",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "name": "topics_subject_id_fkey",
+        "table": "topics",
+        "definition": "FOREIGN KEY (subject_id) REFERENCES ace.subjects(id) ON DELETE CASCADE"
+      },
+      {
+        "name": "topics_syllabus_version_id_fkey",
+        "table": "topics",
+        "definition": "FOREIGN KEY (syllabus_version_id) REFERENCES ace.syllabus_versions(id) ON DELETE RESTRICT"
+      },
+      {
+        "name": "topics_version_name_key",
+        "table": "topics",
+        "definition": "UNIQUE (syllabus_version_id, name)"
+      },
+      {
+        "name": "topics_version_subject_fkey",
+        "table": "topics",
+        "definition": "FOREIGN KEY (syllabus_version_id, subject_id) REFERENCES ace.syllabus_versions(id, subject_id) ON DELETE RESTRICT"
+      }
+    ],
+    "incoming_foreign_keys": [
+      {
+        "table": "flashcards",
+        "schema": "ace",
+        "target": "subtopics",
+        "columns": [
+          "subtopic_id"
+        ],
+        "constraint": "flashcards_subtopic_id_fkey",
+        "definition": "FOREIGN KEY (subtopic_id) REFERENCES ace.subtopics(id) ON DELETE SET NULL",
+        "target_columns": [
+          "id"
+        ]
+      },
+      {
+        "table": "flashcards",
+        "schema": "ace",
+        "target": "topics",
+        "columns": [
+          "topic_id"
+        ],
+        "constraint": "flashcards_topic_id_fkey",
+        "definition": "FOREIGN KEY (topic_id) REFERENCES ace.topics(id) ON DELETE SET NULL",
+        "target_columns": [
+          "id"
+        ]
+      },
+      {
+        "table": "learning_progress",
+        "schema": "ace",
+        "target": "subtopics",
+        "columns": [
+          "subtopic_id"
+        ],
+        "constraint": "learning_progress_subtopic_id_fkey",
+        "definition": "FOREIGN KEY (subtopic_id) REFERENCES ace.subtopics(id) ON DELETE CASCADE",
+        "target_columns": [
+          "id"
+        ]
+      },
+      {
+        "table": "learning_progress",
+        "schema": "ace",
+        "target": "topics",
+        "columns": [
+          "topic_id"
+        ],
+        "constraint": "learning_progress_topic_id_fkey",
+        "definition": "FOREIGN KEY (topic_id) REFERENCES ace.topics(id) ON DELETE CASCADE",
+        "target_columns": [
+          "id"
+        ]
+      },
+      {
+        "table": "questions",
+        "schema": "ace",
+        "target": "subtopics",
+        "columns": [
+          "subtopic_id"
+        ],
+        "constraint": "questions_subtopic_id_fkey",
+        "definition": "FOREIGN KEY (subtopic_id) REFERENCES ace.subtopics(id)",
+        "target_columns": [
+          "id"
+        ]
+      },
+      {
+        "table": "questions",
+        "schema": "ace",
+        "target": "topics",
+        "columns": [
+          "topic_id"
+        ],
+        "constraint": "questions_topic_id_fkey",
+        "definition": "FOREIGN KEY (topic_id) REFERENCES ace.topics(id)",
+        "target_columns": [
+          "id"
+        ]
+      },
+      {
+        "table": "study_plan_items",
+        "schema": "ace",
+        "target": "subtopics",
+        "columns": [
+          "subtopic_id"
+        ],
+        "constraint": "study_plan_items_subtopic_id_fkey",
+        "definition": "FOREIGN KEY (subtopic_id) REFERENCES ace.subtopics(id) ON DELETE SET NULL",
+        "target_columns": [
+          "id"
+        ]
+      },
+      {
+        "table": "study_plan_items",
+        "schema": "ace",
+        "target": "topics",
+        "columns": [
+          "topic_id"
+        ],
+        "constraint": "study_plan_items_topic_id_fkey",
+        "definition": "FOREIGN KEY (topic_id) REFERENCES ace.topics(id) ON DELETE SET NULL",
+        "target_columns": [
+          "id"
+        ]
+      },
+      {
+        "table": "subtopics",
+        "schema": "ace",
+        "target": "topics",
+        "columns": [
+          "topic_id",
+          "syllabus_version_id"
+        ],
+        "constraint": "subtopics_parent_version_fkey",
+        "definition": "FOREIGN KEY (topic_id, syllabus_version_id) REFERENCES ace.topics(id, syllabus_version_id) ON DELETE CASCADE",
+        "target_columns": [
+          "id",
+          "syllabus_version_id"
+        ]
+      },
+      {
+        "table": "subtopics",
+        "schema": "ace",
+        "target": "syllabus_versions",
+        "columns": [
+          "syllabus_version_id"
+        ],
+        "constraint": "subtopics_syllabus_version_id_fkey",
+        "definition": "FOREIGN KEY (syllabus_version_id) REFERENCES ace.syllabus_versions(id) ON DELETE RESTRICT",
+        "target_columns": [
+          "id"
+        ]
+      },
+      {
+        "table": "subtopics",
+        "schema": "ace",
+        "target": "topics",
+        "columns": [
+          "topic_id"
+        ],
+        "constraint": "subtopics_topic_id_fkey",
+        "definition": "FOREIGN KEY (topic_id) REFERENCES ace.topics(id) ON DELETE CASCADE",
+        "target_columns": [
+          "id"
+        ]
+      },
+      {
+        "table": "topics",
+        "schema": "ace",
+        "target": "syllabus_versions",
+        "columns": [
+          "syllabus_version_id"
+        ],
+        "constraint": "topics_syllabus_version_id_fkey",
+        "definition": "FOREIGN KEY (syllabus_version_id) REFERENCES ace.syllabus_versions(id) ON DELETE RESTRICT",
+        "target_columns": [
+          "id"
+        ]
+      },
+      {
+        "table": "topics",
+        "schema": "ace",
+        "target": "syllabus_versions",
+        "columns": [
+          "syllabus_version_id",
+          "subject_id"
+        ],
+        "constraint": "topics_version_subject_fkey",
+        "definition": "FOREIGN KEY (syllabus_version_id, subject_id) REFERENCES ace.syllabus_versions(id, subject_id) ON DELETE RESTRICT",
+        "target_columns": [
+          "id",
+          "subject_id"
+        ]
+      }
+    ]
+  },
+  "execution_context_preflight": {
+    "observed_on": "2026-10-28",
+    "database_role": "postgres",
+    "transaction_read_only": "off",
+    "has_authenticated_actor": false,
+    "actor_is_admin": false,
+    "result": "Connection is write-enabled; proposal guard intentionally refuses absent verified administrator identity. No production claims or roles were set."
+  }
+}

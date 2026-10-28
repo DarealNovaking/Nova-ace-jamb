@@ -1,0 +1,92 @@
+{
+  "recorded_date": "2026-10-28",
+  "project_id": "uokiqlgmzprqfbzmedaz",
+  "approval": "User proceeded after explicit helper-only installation request; no content staging or deployment approved.",
+  "source_sha": "319fb18bf795ec7244ddcfeaf66d87f2dd2c89f4",
+  "review_digest": "aa9340d4f81bdf5253c322b14a9a091f8b0cd638a6593fd3805b207ee1453ef3",
+  "installer_sha256": "a07a244340fc414e4f8701cc75714cc6496b6e978842500e14e765837386f580",
+  "migration": {
+    "name": "fcb02_fixed_review_admin_executor",
+    "version": "20261028133030",
+    "statement_count": 1
+  },
+  "migration_ledger_count": 53,
+  "helper": {
+    "acl": [
+      "postgres=X/postgres",
+      "authenticated=X/postgres"
+    ],
+    "name": "manage_fcb02_draft",
+    "owner": "postgres",
+    "config": [
+      "search_path=pg_catalog, pg_temp",
+      "lock_timeout=3s"
+    ],
+    "schema": "ace",
+    "language": "plpgsql",
+    "arguments": "p_action text, p_review_digest text, p_package text",
+    "body_sha256": "4e6cd804d74557376587677d6d8cef4ebe10f467e38ac70f87863f719803ad60",
+    "return_type": "jsonb",
+    "anon_execute": false,
+    "argument_names": [
+      "p_action",
+      "p_review_digest",
+      "p_package"
+    ],
+    "public_execute": false,
+    "security_definer": true,
+    "authenticated_execute": true
+  },
+  "ace_function_count": 40,
+  "rls_table_count": 51,
+  "unchanged": {
+    "versions": 50,
+    "topics": 0,
+    "subtopics": 0,
+    "questions": 0,
+    "attempts": 0,
+    "audit_events": 4,
+    "version_rows_hash": "19fa19ad51a2670b3ef81d70bd93550613c5f22005aaca51cb29f26742cb855e",
+    "roles_hash": "57bfea31287d84ceca612528c33ed6ffcf4d533cca95112324439b559600c744",
+    "table_rls_flags": true
+  },
+  "negative_live_checks": {
+    "identity_free_authenticated_denied": true,
+    "anonymous_denied": true,
+    "claims_set": false
+  },
+  "advisor_delta": {
+    "added": [
+      {
+        "name": "authenticated_security_definer_function_executable",
+        "level": "WARN",
+        "metadata": {
+          "name": "manage_fcb02_draft",
+          "schema": "ace",
+          "language": "plpgsql",
+          "arguments": "p_action text, p_review_digest text, p_package text",
+          "security_definer": true
+        },
+        "detail": "Function `ace.manage_fcb02_draft(p_action text, p_review_digest text, p_package text)` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/manage_fcb02_draft`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+        "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable"
+      }
+    ],
+    "removed": []
+  },
+  "connector_recovery": "First apply_migration returned invalid requestState; live helper/ledger both confirmed absent; same exact approved installer retry succeeded.",
+  "not_performed": [
+    "Content staging",
+    "Role changes",
+    "Rights/publication approval",
+    "Main merge",
+    "Frontend deployment",
+    "Live signed-administrator PostgREST stage/undo"
+  ],
+  "verification": {
+    "source_native_scenarios": 42,
+    "source_browser_tests": 172,
+    "source_verify_run": 40693456640,
+    "source_browser_run": 40693456615
+  },
+  "next_action": "Prepare the existing PR for owner-approved frontend integration/release; authenticated staging remains separately gated."
+}

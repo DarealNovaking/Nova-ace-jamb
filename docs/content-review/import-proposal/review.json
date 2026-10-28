@@ -1,0 +1,186 @@
+{
+  "format_version": 1,
+  "project_id": "uokiqlgmzprqfbzmedaz",
+  "target_season": {
+    "id": "23fc8eb7-2d2e-474f-b4db-c0a69f22cd62",
+    "name": "JAMB UTME 2027",
+    "status": "draft",
+    "exam_year": 2027
+  },
+  "draft_content_sha256": "d2cabac7ddee8ea6fc6163c48fbcaad71580492a293f4031bf6d00bb74ec18db",
+  "generator_sha256": "154e47277b5871900293fc28d2780145e99a8fa3a3a85bd1c3d8c7aea433dc85",
+  "review_digest": "aa9340d4f81bdf5253c322b14a9a091f8b0cd638a6593fd3805b207ee1453ef3",
+  "bindings": [
+    {
+      "subject_code": "AGR",
+      "subject_id": "e0153c56-be67-4681-8286-4d948f651323",
+      "preserved_version_id": "0d4c0510-b62a-43cc-807d-6b3023dfa5a3",
+      "new_version_id": "23d1c9d7-0bfb-5ddf-a733-574250ff4fb7"
+    },
+    {
+      "subject_code": "ARA",
+      "subject_id": "c9477ef6-c2c5-4f62-b2e3-5c2b60a45a2b",
+      "preserved_version_id": "e9f5fa1e-ae6a-4112-a250-7bf9f645f335",
+      "new_version_id": "6d397acc-cfca-5ddc-a749-07a8ed1aada9"
+    },
+    {
+      "subject_code": "ART",
+      "subject_id": "24bf2dc5-77f5-405a-b723-050ee9069eee",
+      "preserved_version_id": "e59407f5-3102-4594-96cc-3514429e58df",
+      "new_version_id": "c0729259-83da-5172-8bdb-9bee5d78263e"
+    },
+    {
+      "subject_code": "BIO",
+      "subject_id": "e367a0d1-8e76-4289-bc44-bde0f01c88ae",
+      "preserved_version_id": "d729ecee-31ca-4cc9-a5b6-bfbdd811138f",
+      "new_version_id": "0e3d49eb-1d45-50e7-beca-2906c19e7a1c"
+    },
+    {
+      "subject_code": "CHE",
+      "subject_id": "6675c55e-5f41-457c-9039-705aa089ff80",
+      "preserved_version_id": "26b7171f-ef0b-4e93-adc8-bf1e3ced6baf",
+      "new_version_id": "5ee6196e-b0ca-584a-93f3-37bf931d0be8"
+    },
+    {
+      "subject_code": "CRS",
+      "subject_id": "1f93adfc-9967-4356-9be6-8bce6860d425",
+      "preserved_version_id": "1a95e3e9-6dcb-46be-9e33-59b4fa74e413",
+      "new_version_id": "a398b860-c07a-50c9-9eb3-747ef6e55090"
+    },
+    {
+      "subject_code": "COM",
+      "subject_id": "c6fa4b3f-731b-4c53-ac08-290fbda8c122",
+      "preserved_version_id": "1a02ed67-7a2e-4a67-8596-f7e0caa229ff",
+      "new_version_id": "248f740a-2e4c-5b7e-a809-b656b24d17aa"
+    },
+    {
+      "subject_code": "CST",
+      "subject_id": "def40364-0c49-44e8-9ec3-a6a918e56913",
+      "preserved_version_id": "86decadc-654d-4358-a0b4-904340a76f14",
+      "new_version_id": "60d593a1-c330-5781-a575-2a1bfc248606"
+    },
+    {
+      "subject_code": "ECO",
+      "subject_id": "7787e442-6482-498b-a9c5-ce335676f612",
+      "preserved_version_id": "f89f458c-c686-4939-8720-da1fa4118d01",
+      "new_version_id": "11a6e24e-4b65-578a-b54e-df67a4216a43"
+    },
+    {
+      "subject_code": "FRE",
+      "subject_id": "58c6db9d-8d29-449c-b635-f3833de4736b",
+      "preserved_version_id": "c3e70e77-3896-42fa-9a27-46f5f960b8fd",
+      "new_version_id": "195651c8-cab0-5434-93f9-aa2e7cf6c6dd"
+    },
+    {
+      "subject_code": "GEO",
+      "subject_id": "de829c17-0ff2-4524-9bf5-4fc23459d46e",
+      "preserved_version_id": "f80a8968-6476-4d3f-9e4b-826405742ba0",
+      "new_version_id": "8ec5abeb-a3d1-5d37-8055-6ff15450036f"
+    },
+    {
+      "subject_code": "GOV",
+      "subject_id": "07783b3d-b58c-4c7f-bcbe-b3d57bfec874",
+      "preserved_version_id": "3cf482f8-23a4-4d0b-908b-f1d4879907d9",
+      "new_version_id": "fc03e2b7-9b5c-5dab-aa4d-b3d0fed75355"
+    },
+    {
+      "subject_code": "HAU",
+      "subject_id": "ce974ac5-c12f-479c-99f6-c05f16cb98a3",
+      "preserved_version_id": "78bc481c-6569-41e9-878c-bc6ca3e2093d",
+      "new_version_id": "4485f04a-b978-5631-b879-beb38d98e122"
+    },
+    {
+      "subject_code": "HIS",
+      "subject_id": "1a2616cf-2d4a-435c-a256-ef1f39dae36b",
+      "preserved_version_id": "29aef43c-0ea7-4695-b294-976504ee0a84",
+      "new_version_id": "54a533a3-b3f4-5e10-9de7-552517031c1f"
+    },
+    {
+      "subject_code": "HEC",
+      "subject_id": "a368fb2e-8238-437d-93fc-bc1dbe4e6fd5",
+      "preserved_version_id": "32dd630e-477c-4ec1-8e9f-9bc1d31d5294",
+      "new_version_id": "b866a7f4-ccca-5a20-ac6b-59abefe92b5b"
+    },
+    {
+      "subject_code": "IGB",
+      "subject_id": "730b1365-14ff-42f7-a12a-e19e1e4fe84b",
+      "preserved_version_id": "443431c6-4dc4-463d-9e34-342e8ce896df",
+      "new_version_id": "d9c787d6-af6b-5ee5-be3f-5461a9de9574"
+    },
+    {
+      "subject_code": "ISS",
+      "subject_id": "b51338b6-bd03-4fd8-814b-3d1eb53d5cc9",
+      "preserved_version_id": "76a3d961-5499-47d1-95a2-c11577ec99a1",
+      "new_version_id": "1bafa0e8-8d7e-5d94-b73f-40befd15c4f9"
+    },
+    {
+      "subject_code": "LIT",
+      "subject_id": "57a5c31f-2847-43c6-82c1-7918aa1c98cc",
+      "preserved_version_id": "bc390bfa-bb14-41eb-a18d-0d72ebaa8973",
+      "new_version_id": "9809a547-a454-51b1-b81d-6dd3eca0cbda"
+    },
+    {
+      "subject_code": "MAT",
+      "subject_id": "40247f5b-cbe4-4e30-835b-f71c811de685",
+      "preserved_version_id": "182fb52c-d9bd-4606-ba38-11a1b36c1a94",
+      "new_version_id": "8c67f11b-9c71-5e05-8d53-ebb13349598a"
+    },
+    {
+      "subject_code": "MUS",
+      "subject_id": "fd107ed1-a784-4443-bc46-e1f4f113c0de",
+      "preserved_version_id": "9586c898-3b92-43ce-8c6d-65d6d49e984c",
+      "new_version_id": "48b71581-c3b8-53cb-88a4-0bbd89a196bc"
+    },
+    {
+      "subject_code": "PHY",
+      "subject_id": "9be3e180-84f2-412a-bcaa-b3e002e757cc",
+      "preserved_version_id": "4dc23f58-d075-4bf7-be13-58281cc847aa",
+      "new_version_id": "e1910121-1034-57b8-aefe-66b8b2d65b4f"
+    },
+    {
+      "subject_code": "PHE",
+      "subject_id": "a5a5cabd-74b5-4bdd-aaf1-85b5a603f91c",
+      "preserved_version_id": "eb09c8a9-58cf-45c2-b22d-a02da23d9b17",
+      "new_version_id": "a09f896e-8278-5898-aa3a-2b52dbdaa372"
+    },
+    {
+      "subject_code": "POA",
+      "subject_id": "85a9ed03-731b-48bf-b0be-c6fb9903426a",
+      "preserved_version_id": "89f8f4d8-4ebe-452a-bd96-cbfc512846e6",
+      "new_version_id": "95f719de-b643-5884-a514-7ed90a9d3e3d"
+    },
+    {
+      "subject_code": "ENG",
+      "subject_id": "f4a4638d-5931-49fd-8d2a-57c9dc8a37a9",
+      "preserved_version_id": "0a1c8237-d93b-4958-ac2e-4a060075eed6",
+      "new_version_id": "14afa758-0fba-5ca6-99d6-346f36a6dd30"
+    },
+    {
+      "subject_code": "YOR",
+      "subject_id": "961e3534-3b5c-4bb1-a8f8-5291c0aa5b97",
+      "preserved_version_id": "ed6af7fc-27b9-4848-b493-72c602271cb0",
+      "new_version_id": "759c1a21-2641-5123-b3fd-f93e42a3404c"
+    }
+  ],
+  "exclusions": [
+    {
+      "review_id": "ENG-01-04",
+      "reason": "Approved English reading-text title is not identified by the source."
+    }
+  ],
+  "counts": {
+    "versions": 25,
+    "topics": 214,
+    "subtopics": 954
+  },
+  "publication_allowed": false,
+  "generated_files": {
+    "apply.sql": "ee3823579eb18fec9ec0883600f8a3564703b565afb3826e5b84e0c8dcb875d1",
+    "fcb02ReviewPayload.json": "f41a3faa3e363ea68e9612f61f07b338692b214afa49d1218ad21f89527a861d",
+    "install-executor.sql": "a07a244340fc414e4f8701cc75714cc6496b6e978842500e14e765837386f580",
+    "preview.sql": "631870b14c15ec9d995000955a25e86a3adcb596173aeee8d14ec2960ed452d7",
+    "proposal.json": "0ff9631ef7897b207c525cfced1d68f6e5e33715a7c8bae5db572f70fb617ff1",
+    "rollback.sql": "f27e754470ec9e60b4fde2639877653e38ff04d13c94939916636cd5ccf6c1f3",
+    "uninstall-executor.sql": "a8dcdfdba3dbb938727b6c4202f177f7b26852dad040f7c63296a76d843fe3d0"
+  }
+}

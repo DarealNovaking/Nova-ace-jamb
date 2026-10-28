@@ -1,0 +1,104 @@
+{
+  "recorded_date": "2026-10-28",
+  "project": "Nova-ace-jamb",
+  "repository": "DarealNovaking/Nova-ace-jamb",
+  "pr": 10,
+  "pr_url": "https://github.com/DarealNovaking/Nova-ace-jamb/pull/10",
+  "verified_source_sha": "66e06c5f14aa6d2fcfb10a1b77f5256e6247ec06",
+  "base_main_sha": "17f29e137a483066789e0242f20637c89beeae08",
+  "source_status": {
+    "open": true,
+    "draft": false,
+    "mergeable": true,
+    "main_is_ancestor": true,
+    "changed_files_at_verified_source": 80,
+    "runtime_files": 7,
+    "submitted_github_reviews": 0,
+    "github_review_threads": 0
+  },
+  "verification": {
+    "verify_run": 40697812911,
+    "verify": "PASS",
+    "native_job": 122849177437,
+    "native_scenarios": 42,
+    "native_terminal_log_inspected": true,
+    "applied_migration_exact_generator_diff": "PASS",
+    "e2e_run": 40697812905,
+    "e2e": "PASS",
+    "browser_job": 122849178011,
+    "browser_tests": 172,
+    "browser_terminal_log_inspected": true,
+    "typecheck": "PASS in Verify/E2E",
+    "build": "PASS in Verify/E2E",
+    "independent_runtime_review": "No concrete blocker found in seven runtime changes; source/tests read only."
+  },
+  "frontend_changes": [
+    "Separate administrator privilege check in academic access gate",
+    "Restrict editor writes to pending drafts and keep rights/activation admin-only",
+    "Private review package panel and typed RPC client",
+    "Lazy generated fixed package payload",
+    "Alias questions.stem into existing question_text view models"
+  ],
+  "installed_backend": {
+    "helper_migration": "20261028133030_fcb02_fixed_review_admin_executor",
+    "helper": "ace.manage_fcb02_draft(text,text,text)",
+    "installation_evidence": "docs/evidence/fcb-02-helper-install-2026-10-28.json",
+    "no_reapply_required": true
+  },
+  "deployment": {
+    "provider_from_handoff": "Cloudflare Workers",
+    "documented_url": "https://nova-ace-jamb.novaking5002.workers.dev",
+    "url_current_identity": "UNVERIFIED; historical owner-supplied URL only",
+    "repository_deployment_workflow": false,
+    "repository_wrangler_configuration": false,
+    "plugin_search_query": "Cloudflare Workers",
+    "plugin_search_results": 0,
+    "github_commit_status_cloudflare_evidence": [],
+    "production_build_branch": "UNVERIFIED",
+    "auto_build_on_main_merge": "UNVERIFIED; external provider integration may exist",
+    "build_environment": "UNVERIFIED",
+    "current_deployed_commit": "UNVERIFIED",
+    "rollback_deployment_version": "UNVERIFIED",
+    "direct_admin_academic_route_on_provider": "UNVERIFIED",
+    "authenticated_live_preview": "UNVERIFIED",
+    "github_check_run_evidence": {
+      "main": {
+        "check_id": 122456058417,
+        "source_sha": "17f29e137a483066789e0242f20637c89beeae08",
+        "conclusion": "success",
+        "build_id": "99ddf614-8a81-41e6-b9fe-aa72d82edd2f",
+        "version_id": "809c6301-c4b1-41a4-ae7e-b6e054aacc46",
+        "details_url": "https://dash.cloudflare.com/a2812f47dffc2f372d582b67bffb5334/workers/services/view/nova-ace-jamb/production/builds/99ddf614-8a81-41e6-b9fe-aa72d82edd2f"
+      },
+      "candidate": {
+        "check_id": 122849757177,
+        "source_sha": "66e06c5f14aa6d2fcfb10a1b77f5256e6247ec06",
+        "conclusion": "failure",
+        "build_id": "6f148286-5a67-4787-abf2-5ee544915c25",
+        "details_url": "https://dash.cloudflare.com/a2812f47dffc2f372d582b67bffb5334/workers/services/view/nova-ace-jamb/production/builds/6f148286-5a67-4787-abf2-5ee544915c25",
+        "annotations_count": 0,
+        "error_log_available_in_github_summary": false
+      },
+      "worker": "nova-ace-jamb",
+      "app": "Cloudflare Workers and Pages",
+      "source": "GitHub full check-runs API; legacy combined statuses alone returned empty."
+    },
+    "external_github_app_build_integration": true,
+    "rollback_candidate_from_historical_success": "809c6301-c4b1-41a4-ae7e-b6e054aacc46 (retention/activation unverified)"
+  },
+  "performed": [
+    "Read current source/main/PR and full workflow conclusions",
+    "Inspect terminal native/browser logs",
+    "Independent bounded runtime integration review",
+    "Update PR title/description to current implementation and release boundaries"
+  ],
+  "not_performed": [
+    "Main merge",
+    "Cloudflare deployment",
+    "Content staging",
+    "Role or publication changes",
+    "Authentication fallback or credential handling"
+  ],
+  "next_action": "Obtain the actual failure log from Cloudflare build6f148286-5a67-4787-abf2-5ee544915c25; diagnose root cause before changes, merge, deployment or staging. GitHub summary has no error log/annotations and no Cloudflare log connector was found.",
+  "release_status": "BLOCKED: failed external Cloudflare Worker build on verified runtime source"
+}

@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs'
 import { test, expect } from '@playwright/test'
 
 const projectUrl = 'https://uokiqlgmzprqfbzmedaz.supabase.co'
@@ -671,6 +672,7 @@ test.describe('ACE JAMB persistent CBT', () => {
     const attemptId = '40000000-0000-4000-8000-000000000001'
     const startedAt = new Date().toISOString()
     let observedResponseMs: number | null = null
+    let questionSelection: string[] = []
 
     await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/start_attempt'), async (route) => {
       await route.fulfill({ json: {
@@ -689,6 +691,13 @@ test.describe('ACE JAMB persistent CBT', () => {
       } })
     })
     await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/questions'), async (route) => {
+      questionSelection = (new URL(route.request().url()).searchParams.get('select') ?? '').split(',')
+      // The deployed schema stores the prompt as stem; PostgREST supplies the client alias.
+      // A permissive fixture would otherwise hide a request for the nonexistent question_text column.
+      if (!questionSelection.includes('question_text:stem')) {
+        await route.fulfill({ status: 400, json: { code: '42703', message: 'column questions.question_text does not exist' } })
+        return
+      }
       await route.fulfill({ json: [{
         id: questionId, question_text: 'Which option is correct?',
         options: [{ key: 'A', text: 'First answer' }, { key: 'B', text: 'Second answer' }],
@@ -716,6 +725,7 @@ test.describe('ACE JAMB persistent CBT', () => {
     await expect(page.getByRole('heading', { name: 'JAMB simulation' })).toBeVisible()
     await expect(page.getByRole('timer', { name: 'Time remaining 00:30:00' })).toBeVisible()
     await expect(page.getByRole('group', { name: 'Which option is correct?' })).toBeVisible()
+    expect(questionSelection).toEqual(['id', 'question_text:stem', 'options', 'subject_id', 'topic_id', 'difficulty'])
     await expect(page.locator('#cbt-question-title')).toHaveCSS('white-space', 'pre-wrap')
     await expect(page.getByRole('button', { name: 'B. First answer' }).locator('span').last()).toHaveCSS('white-space', 'pre-wrap')
     await expect(page.getByRole('button', { name: 'Go to question 1, unanswered' })).toHaveAttribute('aria-current', 'step')
@@ -1024,7 +1034,13 @@ test.describe('ACE JAMB admin question review pagination', () => {
       active: false, subject_id: subjects[0].id, topic_id: null,
     }))
     await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/questions'), async (route) => {
+      if (route.request().method() === 'HEAD') return route.fallback()
       const search = new URL(route.request().url()).searchParams
+      const projection = search.get('select')
+      if (projection !== 'id,question_text:stem,review_status,active,subject_id,topic_id') {
+        await route.fulfill({ status: 400, json: { code: '42703', message: 'Invalid question review projection; prompt column is stem' } })
+        return
+      }
       const offset = Number(search.get('offset') ?? 0)
       const limit = Number(search.get('limit') ?? 30)
       requestedOffsets.push(offset)
@@ -1091,10 +1107,17 @@ test.describe('ACE JAMB administrator review full text', () => {
   test('offers accessible full-question disclosure without publication actions', async ({ page }) => {
     await mockPreparedStudent(page)
     const fullQuestion = 'Verified question context. '.repeat(20) + 'Important final source detail.'
+    let questionProjection = ''
     await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/is_admin'), async (route) => {
       await route.fulfill({ json: true })
     })
     await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/questions'), async (route) => {
+      if (route.request().method() === 'HEAD') return route.fallback()
+      questionProjection = new URL(route.request().url()).searchParams.get('select') ?? ''
+      if (questionProjection !== 'id,question_text:stem,review_status,active,subject_id,topic_id') {
+        await route.fulfill({ status: 400, json: { code: '42703', message: 'Invalid question review projection; prompt column is stem' } })
+        return
+      }
       await route.fulfill({ json: [{
         id: '98000000-0000-4000-8000-000000000098',
         question_text: fullQuestion, review_status: 'draft', active: false,
@@ -1107,11 +1130,108 @@ test.describe('ACE JAMB administrator review full text', () => {
     await expect(review.getByText(fullQuestion, { exact: true })).not.toBeVisible()
     await review.getByText('Read full question text').click()
     await expect(review.getByText(fullQuestion, { exact: true })).toBeVisible()
+    expect(questionProjection).toBe('id,question_text:stem,review_status,active,subject_id,topic_id')
     await expect(review.getByRole('button', { name: /Publish question/ })).toHaveCount(0)
   })
 })
 
+async function mockAcademicReview(page: import('@playwright/test').Page, isAdmin: boolean) {
+  await mockFirstTimeStudent(page)
+  const seasonId = 'a0000000-0000-4000-8000-000000000010'
+  const states = ['pending', 'approved', 'restricted', 'rejected'] as const
+  const versions = states.map((rights, index) => ({
+    id: `a0000000-0000-4000-8000-00000000002${index}`, season_id: seasonId,
+    subject_id: subjects[0].id, version: index + 1, title: `${rights} review fixture`,
+    status: 'draft', rights_status: rights, source_title: 'Authorized test fixture',
+    source_url: 'https://example.test/syllabus', provenance: {},
+  }))
+  const writes: Array<{ path: string; payload: Record<string, unknown> }> = []
+  await page.route(`${projectUrl}/rest/v1/rpc/is_admin_or_editor`, (route) => route.fulfill({ json: true }))
+  await page.route(`${projectUrl}/rest/v1/rpc/is_admin`, (route) => route.fulfill({ json: isAdmin }))
+  await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/exam_seasons'), (route) => route.fulfill({ json: [{ id: seasonId, code: 'fixture', name: 'Fixture season', exam_year: 2027, status: 'draft' }] }))
+  await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/syllabus_versions'), async (route) => {
+    if (route.request().method() !== 'GET') {
+      const payload = route.request().postDataJSON()
+      writes.push({ path: 'syllabus_versions', payload })
+      const selectedId = new URL(route.request().url()).searchParams.get('id')?.replace('eq.', '')
+      const version = versions.find((item) => item.id === selectedId)
+      if (version && payload.rights_status) version.rights_status = payload.rights_status
+      await route.fulfill({ status: 204 })
+    } else await route.fulfill({ json: versions })
+  })
+  await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/topics'), async (route) => {
+    if (route.request().method() === 'GET') {
+      const selectedId = new URL(route.request().url()).searchParams.get('syllabus_version_id')?.replace('eq.', '')
+      await route.fulfill({ json: [{ id: 'b0000000-0000-4000-8000-000000000010', subject_id: subjects[0].id, syllabus_version_id: selectedId, name: 'Existing review topic', active: true, sort_order: 10, description: null }] })
+    } else {
+      writes.push({ path: 'topics', payload: route.request().postDataJSON() })
+      await route.fulfill({ status: 201, json: [] })
+    }
+  })
+  await page.route(`${projectUrl}/rest/v1/rpc/activate_syllabus_version`, async (route) => {
+    writes.push({ path: 'activate_syllabus_version', payload: route.request().postDataJSON() })
+    await route.fulfill({ json: null })
+  })
+  return { versions, writes }
+}
+
 test.describe('ACE JAMB academic editor access', () => {
+  test('editor authors pending drafts but cannot review rights, activate or edit reviewed drafts', async ({ page }) => {
+    const { versions, writes } = await mockAcademicReview(page, false)
+    await page.goto('/admin-academic')
+    await expect(page.getByRole('heading', { name: 'Academic Structure' })).toBeVisible()
+    await expect(page.getByRole('combobox', { name: 'Rights review', exact: true })).toHaveCount(0)
+    await expect(page.getByRole('button', { name: 'Activate version' })).toHaveCount(0)
+    await page.getByLabel('Topic name', { exact: true }).fill('Source-backed draft topic')
+    await page.getByRole('button', { name: 'Add inactive topic' }).click()
+    await expect(page.getByRole('status')).toContainText('Topic saved as inactive draft content')
+    expect(writes).toEqual([{ path: 'topics', payload: expect.objectContaining({ name: 'Source-backed draft topic', active: false, syllabus_version_id: versions[0].id }) }])
+    for (const version of versions.slice(1)) {
+      await page.getByLabel('Syllabus version').selectOption(version.id)
+      await expect(page.getByText('Existing review topic', { exact: true })).toHaveCount(0)
+      await expect(page.getByRole('button', { name: 'Add inactive topic' })).toHaveCount(0)
+      await expect(page.getByRole('button', { name: 'Add inactive subtopic' })).toHaveCount(0)
+      await expect(page.getByRole('combobox', { name: 'Rights review', exact: true })).toHaveCount(0)
+      await expect(page.getByRole('button', { name: 'Activate version' })).toHaveCount(0)
+    }
+    expect(writes).toHaveLength(1)
+  })
+
+  test('administrator can review rights and activate approved draft content', async ({ page }) => {
+    const { versions, writes } = await mockAcademicReview(page, true)
+    await page.goto('/admin-academic')
+    await expect(page.getByRole('combobox', { name: 'Rights review', exact: true })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Activate version' })).toBeDisabled()
+    page.on('dialog', (dialog) => dialog.accept())
+    await page.getByRole('combobox', { name: 'Rights review', exact: true }).selectOption('approved')
+    await expect(page.getByRole('status')).toContainText('Rights status updated to approved')
+    expect(writes[0]).toEqual({ path: 'syllabus_versions', payload: expect.objectContaining({ rights_status: 'approved' }) })
+    await page.getByLabel('Syllabus version').selectOption(versions[1].id)
+    await expect(page.getByRole('button', { name: 'Activate version' })).toBeEnabled()
+    await expect(page.getByRole('button', { name: 'Add inactive topic' })).toBeEnabled()
+    await page.getByRole('button', { name: 'Activate version' }).click()
+    await expect(page.getByRole('status')).toContainText('Syllabus version activated through the server-side validation function')
+    expect(writes[1]).toEqual({ path: 'activate_syllabus_version', payload: { p_syllabus_version_id: versions[1].id } })
+    expect(writes).toHaveLength(2)
+  })
+
+  test('administrator role lookup failure blocks all tools until a verified retry', async ({ page }) => {
+    await mockAcademicReview(page, false)
+    let failAdminCheck = true
+    await page.route(`${projectUrl}/rest/v1/rpc/is_admin`, async (route) => {
+      if (failAdminCheck) await route.fulfill({ status: 400, json: { message: 'private role lookup error' } })
+      else await route.fulfill({ json: false })
+    })
+    await page.goto('/admin-academic')
+    await expect(page.getByText('Unable to verify academic editor access. Please try again.')).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Academic Structure' })).toHaveCount(0)
+    await expect(page.getByText('private role lookup error')).toHaveCount(0)
+    failAdminCheck = false
+    await page.getByRole('button', { name: 'Retry academic editor verification' }).click()
+    await expect(page.getByRole('heading', { name: 'Academic Structure' })).toBeVisible()
+    await expect(page.getByRole('combobox', { name: 'Rights review', exact: true })).toHaveCount(0)
+  })
+
   test('announces academic workspace loading while the season list resolves', async ({ page }) => {
     await mockFirstTimeStudent(page)
     let releaseSeasonRequest!: () => void
@@ -2514,4 +2634,254 @@ test.describe('ACE JAMB reduced-motion accessibility', () => {
     expect(motionStyles.transitionMilliseconds).toBeLessThanOrEqual(0.1)
     expect(motionStyles.animationMilliseconds).toBeLessThanOrEqual(0.1)
   })
+})
+
+test.describe('FCB-02 private review package', () => {
+  test('admin explicitly stages and removes private review drafts', async ({ page }) => {
+    await mockAcademicReview(page, true)
+    const actions: string[] = []
+    let staged = false
+    await page.route(`${projectUrl}/rest/v1/rpc/manage_fcb02_draft`, async (route) => {
+      const body = route.request().postDataJSON()
+      expect(body.p_review_digest).toMatch(/^[a-f0-9]{64}$/)
+      expect(JSON.parse(body.p_package).topics).toHaveLength(214)
+      actions.push(body.p_action)
+      if (body.p_action === 'stage') staged = true
+      if (body.p_action === 'undo') staged = false
+      await route.fulfill({ json: { state: staged ? 'staged' : 'not_staged', can_stage: !staged, can_undo: staged, changed: body.p_action !== 'preview', versions: staged ? 25 : 0, topics: staged ? 214 : 0, subtopics: staged ? 954 : 0, target_year: 2027, publication_allowed: false, rights_status: 'pending' } })
+    })
+    await page.goto('/admin-academic')
+    const panel = page.getByRole('region', { name: 'IBASS private review package' })
+    await expect(panel.getByText('Ready for private review staging.')).toBeVisible()
+    await expect(panel.getByRole('button', { name: 'Stage private review drafts' })).toBeDisabled()
+    expect(actions.every(action => action === 'preview')).toBeTruthy()
+    await panel.getByLabel('I understand these drafts still need rights and academic approval.').check()
+    await panel.getByRole('button', { name: 'Stage private review drafts' }).focus()
+    await page.keyboard.press('Enter')
+    await expect(panel.getByText('Private review drafts are staged.')).toBeVisible()
+    await expect(panel.getByRole('button', { name: 'Remove unchanged review drafts' })).toBeDisabled()
+    await panel.getByLabel('Remove only this unchanged, unused review package.').check()
+    await panel.getByRole('button', { name: 'Remove unchanged review drafts' }).click()
+    await expect(panel.getByText('Ready for private review staging.')).toBeVisible()
+    expect(actions.filter(a => a !== 'preview')).toEqual(['stage', 'undo'])
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy()
+  })
+
+  test('unavailable helper and failed write allow safe retry without leaking database details', async ({ page }) => {
+    await mockAcademicReview(page, true)
+    let available = false
+    let writeCalls = 0
+    await page.route(`${projectUrl}/rest/v1/rpc/manage_fcb02_draft`, async (route) => {
+      const { p_action } = route.request().postDataJSON()
+      if (!available) return route.fulfill({ status: 404, json: { code: 'PGRST202', message: 'secret database detail' } })
+      if (p_action !== 'preview') {
+        writeCalls++
+        return route.fulfill({ status: 400, json: { message: 'secret database detail' } })
+      }
+      await route.fulfill({ json: { state: 'not_staged', can_stage: true, can_undo: false, changed: false, versions: 0, topics: 0, subtopics: 0, target_year: 2027, publication_allowed: false, rights_status: 'pending' } })
+    })
+    await page.goto('/admin-academic')
+    const panel = page.getByRole('region', { name: 'IBASS private review package' })
+    await expect(panel.getByRole('alert')).toContainText('Bulk syllabus staging isn’t available yet.')
+    await expect(page.getByRole('heading', { name: 'Create a draft syllabus version' })).toBeVisible()
+    available = true
+    await panel.getByRole('button', { name: 'Check review package' }).click()
+    await panel.getByLabel('I understand these drafts still need rights and academic approval.').check()
+    await panel.getByRole('button', { name: 'Stage private review drafts' }).click()
+    await expect(panel.getByRole('alert')).toContainText('could not be confirmed')
+    await expect(panel.getByRole('button', { name: 'Stage private review drafts' })).toHaveCount(0)
+    await panel.getByRole('button', { name: 'Check review package' }).click()
+    await expect(panel.getByRole('button', { name: 'Stage private review drafts' })).toBeDisabled()
+    expect(writeCalls).toBe(1)
+    await expect(page.getByText('secret database detail')).toHaveCount(0)
+  })
+
+  test('referenced drafts cannot be removed in bulk', async ({ page }) => {
+    await mockAcademicReview(page, true)
+    const actions: string[] = []
+    await page.route(`${projectUrl}/rest/v1/rpc/manage_fcb02_draft`, async route => {
+      actions.push(route.request().postDataJSON().p_action)
+      await route.fulfill({ json: { state: 'staged', can_stage: false, can_undo: false, changed: false, versions: 25, topics: 214, subtopics: 954, target_year: 2027, publication_allowed: false, rights_status: 'pending' } })
+    })
+    await page.goto('/admin-academic')
+    const panel = page.getByRole('region', { name: 'IBASS private review package' })
+    await expect(panel.getByText(/bulk removal is unavailable/)).toBeVisible()
+    await expect(panel.getByRole('button', { name: 'Remove unchanged review drafts' })).toHaveCount(0)
+    expect(actions.every(action => action === 'preview')).toBeTruthy()
+    await page.screenshot({ path: test.info().outputPath('private-review-package.png'), fullPage: true })
+  })
+
+  test('content editor never loads the bulk package or sees staging controls', async ({ page }) => {
+    await mockAcademicReview(page, false)
+    let calls = 0
+    await page.route(`${projectUrl}/rest/v1/rpc/manage_fcb02_draft`, async (route) => { calls++; await route.abort() })
+    await page.goto('/admin-academic')
+    await expect(page.getByRole('heading', { name: 'Create a draft syllabus version' })).toBeVisible()
+    await expect(page.getByRole('region', { name: 'IBASS private review package' })).toHaveCount(0)
+    expect(calls).toBe(0)
+  })
+})
+
+async function mockSubtopicCorrection(page: import('@playwright/test').Page, rejectSave = false) {
+  const { versions } = await mockAcademicReview(page, true)
+  const row = { id: 'c0000000-0000-4000-8000-000000000088', topic_id: 'b0000000-0000-4000-8000-000000000010', syllabus_version_id: versions[0].id, name: 'Nervous system', description: 'Source-backed draft', sort_order: 40, active: false }
+  const writes: Array<{ body: Record<string, unknown>; query: URLSearchParams }> = []
+  await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/subtopics'), async (route) => {
+    if (route.request().method() === 'PATCH') {
+      const body = route.request().postDataJSON()
+      writes.push({ body, query: new URL(route.request().url()).searchParams })
+      if (rejectSave) {
+        await route.fulfill({ status: 406, json: { code: 'PGRST116', message: 'Private database details must not appear' } })
+      } else {
+        Object.assign(row, body)
+        await route.fulfill({ json: { id: row.id } })
+      }
+    } else await route.fulfill({ json: [row] })
+  })
+  return { row, writes }
+}
+
+test.describe('ACE JAMB draft subtopic corrections', () => {
+  test('saves corrected name and order within the selected draft without changing publication', async ({ page }) => {
+    const { row, writes } = await mockSubtopicCorrection(page)
+    await page.goto('/admin-academic')
+    const item = page.getByRole('listitem').filter({ has: page.getByText('Nervous system', { exact: true }) })
+    await item.getByText('Edit name and order', { exact: true }).click()
+    await item.getByLabel('Subtopic display name').fill('  Nervous system and sense organs  ')
+    await item.getByLabel('Display order').fill('41')
+    await item.getByRole('button', { name: 'Save subtopic' }).click()
+    await expect(page.getByRole('status')).toContainText('Subtopic changes saved')
+    await expect(page.getByText('Nervous system and sense organs', { exact: true })).toBeVisible()
+    await expect(page.getByText('Inactive draft · order 41', { exact: true })).toBeVisible()
+    expect(writes).toHaveLength(1)
+    expect(writes[0].body).toEqual({ name: 'Nervous system and sense organs', sort_order: 41 })
+    expect(writes[0].query.get('id')).toBe(`eq.${row.id}`)
+    expect(writes[0].query.get('syllabus_version_id')).toBe(`eq.${row.syllabus_version_id}`)
+    expect(writes[0].query.get('topic_id')).toBe(`eq.${row.topic_id}`)
+    expect(writes[0].query.get('name')).toBe('eq.Nervous system')
+    expect(writes[0].query.get('sort_order')).toBe('eq.40')
+  })
+
+  test('a rejected or stale correction stays unsaved and hides database details', async ({ page }) => {
+    const { writes } = await mockSubtopicCorrection(page, true)
+    await page.goto('/admin-academic')
+    const item = page.getByRole('listitem').filter({ has: page.getByText('Nervous system', { exact: true }) })
+    await item.getByText('Edit name and order', { exact: true }).click()
+    await item.getByLabel('Subtopic display name').fill('Corrected source label')
+    await item.getByRole('button', { name: 'Save subtopic' }).click()
+    await expect(page.getByRole('alert').filter({ hasText: 'The operation could not be completed' })).toBeVisible()
+    await expect(page.getByText('Private database details must not appear')).toHaveCount(0)
+    await expect(page.getByText('Subtopic changes saved', { exact: false })).toHaveCount(0)
+    await expect(page.getByText('Nervous system', { exact: true })).toBeVisible()
+    expect(writes).toHaveLength(1)
+  })
+})
+
+async function mockReviewedCorrectionBatch(page: import('@playwright/test').Page, options: { drift?: boolean; loseFirstResponse?: boolean } = {}) {
+  await mockFirstTimeStudent(page)
+  const patches = JSON.parse(readFileSync(new URL('../../src/data/fcb02RemainingCorrections.json', import.meta.url), 'utf8')) as Array<{ expected: Record<string, any>; changes: Record<string, unknown> }>
+  const rows = patches.map((p) => structuredClone(p.expected))
+  if (options.drift) rows[2].active = true
+  const versions = [...new Set(rows.map((r) => r.syllabus_version_id))].map((id, index) => ({ id, status: 'draft', rights_status: 'pending', version: 2, season_id: 'a0000000-0000-4000-8000-000000000010', subject_id: subjects[0].id, title: `Correction fixture ${index}`, source_url: 'https://example.test/source', source_title: 'Source', provenance: {} }))
+  const writes: Array<{ id: string; body: Record<string, unknown> }> = []
+  await page.route(`${projectUrl}/rest/v1/rpc/is_admin_or_editor`, (route) => route.fulfill({ json: true }))
+  await page.route(`${projectUrl}/rest/v1/rpc/is_admin`, (route) => route.fulfill({ json: true }))
+  await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/exam_seasons'), (route) => route.fulfill({ json: [{ id: versions[0].season_id, code: 'fixture', name: 'Fixture', exam_year: 2027, status: 'draft' }] }))
+  await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/syllabus_versions'), (route) => route.fulfill({ json: versions }))
+  await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/topics'), (route) => route.fulfill({ json: [] }))
+  await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/subtopics'), async (route) => {
+    const q = new URL(route.request().url()).searchParams
+    if (route.request().method() !== 'PATCH') return route.fulfill({ json: q.has('id') ? rows : [] })
+    const id = q.get('id')?.replace('eq.', '') ?? ''
+    const target = rows.find((r) => r.id === id)
+    const body = route.request().postDataJSON()
+    if (!target || q.get('active') !== 'eq.false' || q.get('syllabus_version_id') !== `eq.${target.syllabus_version_id}` || q.get('topic_id') !== `eq.${target.topic_id}` || q.get('name') !== `eq.${target.name}` || q.get('sort_order') !== `eq.${target.sort_order}` || q.get('description') !== (target.description === null ? 'is.null' : `eq.${target.description}`)) {
+      return route.fulfill({ status: 406, json: { message: 'Stale correction' } })
+    }
+    writes.push({ id, body })
+    Object.assign(target, body)
+    if (options.loseFirstResponse && writes.length === 1) return route.fulfill({ status: 503, json: { message: 'Private SQL details' } })
+    await route.fulfill({ json: { id } })
+  })
+  return { rows, writes }
+}
+
+test.describe('ACE JAMB remaining reviewed correction batch', () => {
+  test('applies only the three reviewed draft changes with no automatic writes', async ({ page }) => {
+    const { rows, writes } = await mockReviewedCorrectionBatch(page)
+    await page.goto('/admin-academic')
+    await expect(page.getByRole('heading', { name: 'Create a draft syllabus version' })).toBeVisible()
+    const panel = page.getByRole('region', { name: 'Finish reviewed corrections' })
+    await expect(panel).toBeVisible({ timeout: 1000 })
+    expect(writes).toHaveLength(0)
+    await panel.getByRole('button', { name: 'Apply reviewed corrections' }).click()
+    await expect(panel.getByRole('status')).toContainText('All reviewed corrections are saved')
+    expect(writes).toHaveLength(3)
+    expect(writes[0].body).toEqual({ name: 'Transition to the Fourth Republic' })
+    expect(writes[1].body).toEqual({ name: 'Nervous system and sense organs' })
+    expect(Object.keys(writes[2].body)).toEqual(['description'])
+    expect(rows.every((r) => r.active === false)).toBe(true)
+    await expect(panel.getByRole('button', { name: 'Apply reviewed corrections' })).toBeDisabled()
+  })
+
+  test('changed content blocks the whole preflight before any correction writes', async ({ page }) => {
+    const { writes } = await mockReviewedCorrectionBatch(page, { drift: true })
+    await page.goto('/admin-academic')
+    await expect(page.getByRole('heading', { name: 'Create a draft syllabus version' })).toBeVisible()
+    const panel = page.getByRole('region', { name: 'Finish reviewed corrections' })
+    await expect(panel).toBeVisible({ timeout: 1000 })
+    await panel.getByRole('button', { name: 'Apply reviewed corrections' }).click()
+    await expect(panel.getByRole('alert')).toBeVisible()
+    expect(writes).toHaveLength(0)
+    await expect(panel.getByRole('button', { name: 'Apply reviewed corrections' })).toBeDisabled()
+  })
+
+  test('checks an uncertain partial save before resuming without duplicating it', async ({ page }) => {
+    const { writes } = await mockReviewedCorrectionBatch(page, { loseFirstResponse: true })
+    await page.goto('/admin-academic')
+    await expect(page.getByRole('heading', { name: 'Create a draft syllabus version' })).toBeVisible()
+    const panel = page.getByRole('region', { name: 'Finish reviewed corrections' })
+    await expect(panel).toBeVisible({ timeout: 1000 })
+    await panel.getByRole('button', { name: 'Apply reviewed corrections' }).click()
+    await expect(panel.getByRole('alert')).toBeVisible()
+    await expect(panel.getByText('Private SQL details')).toHaveCount(0)
+    await expect(panel.getByRole('button', { name: 'Apply reviewed corrections' })).toBeDisabled()
+    await panel.getByRole('button', { name: 'Check corrections' }).click()
+    await expect(panel.getByRole('status')).toContainText('1 of 3')
+    await panel.getByRole('button', { name: 'Apply reviewed corrections' }).click()
+    await expect(panel.getByRole('status')).toContainText('All reviewed corrections are saved')
+    expect(writes).toHaveLength(3)
+    expect(writes.filter((w) => w.id === writes[0].id)).toHaveLength(1)
+  })
+})
+
+test('finishing reviewed corrections refreshes the currently selected syllabus version', async ({ page }) => {
+  const { rows, writes } = await mockReviewedCorrectionBatch(page)
+  let release: () => void = () => undefined
+  const gate = new Promise<void>((resolve) => { release = resolve })
+  const topicReads: string[] = []
+  await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/topics'), async (route) => {
+    topicReads.push(new URL(route.request().url()).searchParams.get('syllabus_version_id') ?? '')
+    await route.fulfill({ json: [] })
+  })
+  await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/subtopics'), async (route) => {
+    const q = new URL(route.request().url()).searchParams
+    if (route.request().method() === 'GET' && q.has('id') && writes.length === 3) await gate
+    await route.fallback()
+  })
+  await page.goto('/admin-academic')
+  await expect(page.getByRole('heading', { name: 'Create a draft syllabus version' })).toBeVisible()
+  const panel = page.getByRole('region', { name: 'Finish reviewed corrections' })
+  await expect(panel).toBeVisible({ timeout: 1000 })
+  await panel.getByRole('button', { name: 'Apply reviewed corrections' }).click()
+  await expect.poll(() => writes.length).toBe(3)
+  const target = rows[1].syllabus_version_id
+  await page.getByLabel('Syllabus version').selectOption(target)
+  await expect.poll(() => topicReads.at(-1)).toBe(`eq.${target}`)
+  const before = topicReads.length
+  release()
+  await expect(panel.getByRole('status')).toContainText('All reviewed corrections are saved')
+  await expect.poll(() => topicReads.length).toBeGreaterThan(before)
+  expect(topicReads.at(-1)).toBe(`eq.${target}`)
+  await expect(page.getByLabel('Syllabus version')).toHaveValue(target)
 })

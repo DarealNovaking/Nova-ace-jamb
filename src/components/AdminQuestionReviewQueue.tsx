@@ -27,7 +27,7 @@ export default function AdminQuestionReviewQueue() {
     setError('')
     try {
       const { data, error: readError } = await ace.from('questions')
-        .select('id,question_text,review_status,active,subject_id,topic_id')
+        .select('id,question_text:stem,review_status,active,subject_id,topic_id')
         .order('id', { ascending: false })
         // Fetch one extra item solely to determine whether another page exists.
         .range(pageNumber * pageSize, (pageNumber + 1) * pageSize)

@@ -24,9 +24,9 @@ jobs:
         with:
           node-version: 20
           cache: npm
-          cache-dependency-path: package.json
-      - run: npm install
-      - run: node --test tests/catalog-parser.test.mjs tests/review-only-stage.test.mjs tests/catalog-import-contract.test.mjs tests/pwa-contract.test.mjs tests/pwa-runtime.test.mjs
+          cache-dependency-path: package-lock.json
+      - run: npm ci
+      - run: node --test tests/catalog-parser.test.mjs tests/review-only-stage.test.mjs tests/catalog-import-contract.test.mjs tests/pwa-contract.test.mjs tests/pwa-runtime.test.mjs tests/syllabus-edit.test.mjs tests/reviewed-corrections.test.mjs
       - uses: denoland/setup-deno@v2
       - run: deno check --no-check=remote supabase/functions/ibass-catalog-stage/index.ts
       - run: deno check --no-check=remote supabase/functions/catalog-import/index.ts
@@ -69,3 +69,136 @@ jobs:
         env:
           PGPASSWORD: postgres
         run: psql -h 127.0.0.1 -U postgres -d postgres -v ON_ERROR_STOP=1 -f tests/sql/syllabus_publication_visibility.test.sql
+      - name: Test FCB-01 RPC owner and approval boundaries
+        env:
+          PGPASSWORD: postgres
+        run: psql -h 127.0.0.1 -U postgres -d postgres -v ON_ERROR_STOP=1 -f tests/sql/fcb_01_rpc_security.test.sql
+      - name: Test competing administrator demotions in native PostgreSQL
+        env:
+          PGHOST: 127.0.0.1
+          PGPORT: '5432'
+          PGUSER: postgres
+          PGDATABASE: postgres
+          PGPASSWORD: postgres
+        run: python3 tests/sql/fcb_01_role_concurrency.py
+      - name: Test FCB-01 syllabus authoring authorization
+        env:
+          PGPASSWORD: postgres
+        run: psql -h 127.0.0.1 -U postgres -d postgres -v ON_ERROR_STOP=1 -f tests/sql/fcb_01_syllabus_authorization.test.sql
+      - name: Test FCB-01 question rights and attempt bounds
+        env:
+          PGPASSWORD: postgres
+        run: psql -h 127.0.0.1 -U postgres -d postgres -v ON_ERROR_STOP=1 -f tests/sql/fcb_01_question_rights.test.sql
+      - name: Test proposed owner-scoped answer-key-free question delivery
+        env:
+          PGPASSWORD: postgres
+        run: psql -h 127.0.0.1 -U postgres -d postgres -v ON_ERROR_STOP=1 -f tests/sql/fcb_01_attempt_delivery.test.sql
+
+  recovered-schema-baseline:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: pgvector/pgvector:0.8.7-pg17
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      PGHOST: 127.0.0.1
+      PGUSER: postgres
+      PGDATABASE: postgres
+      PGPASSWORD: postgres
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install PostgreSQL client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+      - name: Verify deterministic baseline rendering
+        run: |
+          python3 scripts/render-ace-schema-baseline.py
+          git diff --exit-code -- supabase/schema/ace-2026-10-27.sql
+      - name: Replay recovered schema and test real auth trigger
+        run: psql -X -v ON_ERROR_STOP=1 -f tests/sql/fcb_01_schema_baseline.test.sql
+      - name: Verify every recovered catalog definition and API privilege
+        run: python3 tests/sql/fcb_01_schema_parity.py
+      - name: Verify recovery refuses an existing schema
+        run: |
+          if psql -X -v ON_ERROR_STOP=1 -f supabase/schema/ace-2026-10-27.sql > /tmp/ace-replay-refusal.log 2>&1; then
+            echo 'Recovery unexpectedly accepted existing schema'
+            exit 1
+          fi
+          grep -F 'schema "ace" already exists' /tmp/ace-replay-refusal.log
+          python3 tests/sql/fcb_01_schema_parity.py
+      - name: Verify coordinated CBT metadata rollback and data refusal
+        run: python3 tests/sql/fcb_01_cbt_rollback.py
+      - name: Test proposed secure CBT mutations against the full schema
+        run: psql -X -v ON_ERROR_STOP=1 -f tests/sql/fcb_01_cbt_mutations.test.sql
+      - name: Test private CBT resource policies, entitlement and atomic reservations
+        run: psql -X -v ON_ERROR_STOP=1 -f tests/sql/fcb_01_cbt_resource_limits.test.sql
+      - name: Test proposed signup referral collision guard
+        run: psql -X -v ON_ERROR_STOP=1 -f tests/sql/fcb_01_signup_referral_collision.test.sql
+      - name: Test immutable CBT paper versions and rights withdrawal
+        run: psql -X -v ON_ERROR_STOP=1 -f tests/sql/fcb_01_cbt_snapshots.test.sql
+      - name: Test syllabus version identity and parent-child consistency
+        run: psql -X -v ON_ERROR_STOP=1 -f tests/sql/fcb_01_syllabus_version_identity.test.sql
+      - name: Test administrator approval and English-plus-three configuration boundaries
+        run: psql -X -v ON_ERROR_STOP=1 -f tests/sql/fcb_01_exam_config_security.test.sql
+      - name: Test native configuration and season approval races
+        run: python3 tests/sql/fcb_01_exam_config_concurrency.py
+      - name: Test approved-configuration mock paper contracts
+        run: psql -X -v ON_ERROR_STOP=1 -f tests/sql/fcb_01_mock_contract.test.sql
+      - name: Test native mock capture versus administrator approval
+        run: python3 tests/sql/fcb_01_mock_concurrency.py
+      - name: Test native CBT submit replay and save races
+        run: python3 tests/sql/fcb_01_cbt_concurrency.py
+      - name: Test native CBT start, active-slot and cooldown contention
+        run: python3 tests/sql/fcb_01_cbt_resource_concurrency.py
+
+  fcb02-draft-import:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: pgvector/pgvector:0.8.7-pg17
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: fcb02_review_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d fcb02_review_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      PGHOST: 127.0.0.1
+      PGUSER: postgres
+      PGDATABASE: fcb02_review_test
+      PGPASSWORD: postgres
+      ACE_FCB02_DISPOSABLE_TEST: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install PostgreSQL client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+      - name: Test draft-only payload generation and refusal paths
+        run: python3 -m unittest discover -s tests/content -p 'test_*.py'
+      - name: Generate the exact reviewed import package without connecting to a database
+        run: |
+          python3 scripts/prepare-fcb02-import.py --output-dir /tmp/fcb02-import-proposal
+          diff -u docs/content-review/import-proposal/review.json /tmp/fcb02-import-proposal/review.json
+          diff -u src/data/fcb02ReviewPayload.json /tmp/fcb02-import-proposal/fcb02ReviewPayload.json
+          diff -u supabase/migrations/20261028133030_fcb02_fixed_review_admin_executor.sql /tmp/fcb02-import-proposal/install-executor.sql
+      - name: Prepare empty isolated recovered PostgreSQL schema
+        run: psql -X -v ON_ERROR_STOP=1 -f tests/sql/fcb_01_schema_baseline.test.sql
+      - name: Test staging, refusal, privacy, guarded rollback and concurrent references
+        run: python3 tests/sql/fcb_02_draft_import.py --output-dir /tmp/fcb02-import-proposal
+      - name: Retain the unexecuted production review scripts and test evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: fcb02-draft-import-review
+          path: /tmp/fcb02-import-proposal/
+          retention-days: 14

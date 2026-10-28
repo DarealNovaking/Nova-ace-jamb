@@ -1,0 +1,120 @@
+{
+  "verified_on": "2026-10-28",
+  "source_sha": "2490040196c71901348e4409975bb08f1de20fde",
+  "pr": 12,
+  "source_branch": "fix/fcb02-subtopic-edit",
+  "scope": "Draft subtopic name and order editing through existing client/RLS; no schema, privilege, content or production changes.",
+  "verification": {
+    "local_node_tests": 36,
+    "typecheck": "PASS",
+    "build": "PASS",
+    "independent_code_review": "No blocker",
+    "red_browser_run": 40746489018,
+    "red_result": "172 existing PASS /4new expected FAIL at missing edit control",
+    "green_browser_run": 40748548475,
+    "green_browser_job": 123028727708,
+    "green_browser_result": "176 PASS (4.0m), terminal log inspected",
+    "verify_run": 40748548480,
+    "verify_result": "All4jobs PASS",
+    "native_import_job": 123028728552,
+    "native_result": "9 generator units /42native SQL scenarios PASS, terminal log inspected"
+  },
+  "preview": {
+    "build_id": "ab622ae7-2667-4c3c-bbaf-6f24bd905d84",
+    "build_result": "success",
+    "worker_id": "d94d2a25f876477aa50a2bac80ca7022",
+    "preview_id": "1c52be0a1a6b4429898ae8ed2d03f9f2",
+    "deployment_id": "8570f8c8-1de5-4cea-8c8b-2b751e1ec171",
+    "stable_url": "https://fix-fcb02-subtopic-edit-nova-ace-jamb.novaking5002.workers.dev",
+    "unique_url": "https://8570f8c8-nova-ace-jamb.novaking5002.workers.dev",
+    "http_checks": [
+      {
+        "url": "https://fix-fcb02-subtopic-edit-nova-ace-jamb.novaking5002.workers.dev/",
+        "status": 200,
+        "same_app_shell": true,
+        "sha256": "92fb581a89a07c928139325964215af617f05c00bae4099d1a30d18c96599095"
+      },
+      {
+        "url": "https://fix-fcb02-subtopic-edit-nova-ace-jamb.novaking5002.workers.dev/admin",
+        "status": 200,
+        "same_app_shell": true,
+        "sha256": "92fb581a89a07c928139325964215af617f05c00bae4099d1a30d18c96599095"
+      },
+      {
+        "url": "https://fix-fcb02-subtopic-edit-nova-ace-jamb.novaking5002.workers.dev/admin-academic",
+        "status": 200,
+        "same_app_shell": true,
+        "sha256": "92fb581a89a07c928139325964215af617f05c00bae4099d1a30d18c96599095"
+      },
+      {
+        "url": "https://fix-fcb02-subtopic-edit-nova-ace-jamb.novaking5002.workers.dev/admin-import",
+        "status": 200,
+        "same_app_shell": true,
+        "sha256": "92fb581a89a07c928139325964215af617f05c00bae4099d1a30d18c96599095"
+      },
+      {
+        "url": "https://8570f8c8-nova-ace-jamb.novaking5002.workers.dev/",
+        "status": 200,
+        "same_app_shell": true,
+        "sha256": "92fb581a89a07c928139325964215af617f05c00bae4099d1a30d18c96599095"
+      },
+      {
+        "url": "https://fix-fcb02-subtopic-edit-nova-ace-jamb.novaking5002.workers.dev/assets/index-BbWzoUW0.js",
+        "status": 200,
+        "expected_supabase_project": true,
+        "sha256": "1ef512ac3a445ed9cb4f72f52b051d8c95e248ddab2d2d144a51fd03ba9cbef9"
+      },
+      {
+        "url": "https://fix-fcb02-subtopic-edit-nova-ace-jamb.novaking5002.workers.dev/assets/AcademicFoundationGate-BD7DcfCu.js",
+        "status": 200,
+        "review_rpc_present": true,
+        "sha256": "822644b03999c8bbee2f5f4ed25bf2710b0a6d1afb9ff359b5b9645305d5f10b"
+      },
+      {
+        "url": "https://fix-fcb02-subtopic-edit-nova-ace-jamb.novaking5002.workers.dev/assets/fcb02ReviewPayload-D3nGjJ9-.js",
+        "status": 200,
+        "expected_review_digest": true,
+        "sha256": "662cf88654d842fb9c8a3116180dd1fb9247eb868c38e84d1147a13cdf5c3eba"
+      },
+      {
+        "url": "https://fix-fcb02-subtopic-edit-nova-ace-jamb.novaking5002.workers.dev/sw.js",
+        "status": 200,
+        "matches_source": true,
+        "sha256": "e45b9adf10236c941a35caba1695f46b92ec3d5f2f47b74ff4ab33100160bf5b"
+      }
+    ],
+    "editor_asset_present": true
+  },
+  "provider_provenance_correction": {
+    "parent_worker_id": "d94d2a25f876477aa50a2bac80ca7022",
+    "parent_build_branch": "main",
+    "parent_auto_build": true,
+    "parent_previews_enabled": true,
+    "parent_build_command": "npm run build",
+    "parent_deploy_command": "npx wrangler deploy",
+    "previously_inspected_bbb0_id": "Preview ID for security/fcb-01-contract-audit, not the parent Worker; its branch-specific build settings were previously overgeneralized.",
+    "effect": "New branches can automatically build previews; main changes can deploy production. No provider settings changed."
+  },
+  "production": {
+    "deployment_id": "222bdd23-037d-4784-8d08-31a2db159015",
+    "version_id": "809c6301-c4b1-41a4-ae7e-b6e054aacc46",
+    "percentage": 100,
+    "changed": false
+  },
+  "authenticated_ui_attempt": {
+    "run_id": "76c7873e-6610-4e7c-b470-fa8dc9d607cd",
+    "duration_seconds": 10,
+    "result": "New preview origin requires sign-in; stopped immediately, no writes.",
+    "user_setup": "Authorized setup window opened for stable fix-fcb02-subtopic-edit origin. Do not save handoff URL in source.",
+    "approval": "All eight draft corrections remain approved. No further approval request."
+  },
+  "live_postflight": {
+    "corrected_rows": 0,
+    "topics": 214,
+    "subtopics": 954,
+    "active_topics": 0,
+    "active_subtopics": 0,
+    "active_versions": 0
+  },
+  "next_action": "After user signs in and saves profile at stable preview origin, use visible UI to apply3Arabic renames+2adds then other3renames. For adds use actual app-generated UUIDs, record and verify them; set orders161/162. No APIs, sign-out, claims changes or bulk stage/undo."
+}

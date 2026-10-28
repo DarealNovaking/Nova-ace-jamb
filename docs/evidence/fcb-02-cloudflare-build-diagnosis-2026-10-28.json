@@ -1,0 +1,140 @@
+{
+  "recorded_date": "2026-10-28",
+  "provider": "Cloudflare Workers",
+  "worker": "nova-ace-jamb",
+  "worker_tag": "bbb0f9fc9d7a48558333acc249957562",
+  "account_id": "a2812f47dffc2f372d582b67bffb5334",
+  "inspection": "Read-only authenticated Cloudflare API; no browser fallback or credentials requested.",
+  "failed_build": {
+    "id": "6f148286-5a67-4787-abf2-5ee544915c25",
+    "source_sha": "66e06c5f14aa6d2fcfb10a1b77f5256e6247ec06",
+    "branch": "security/fcb-01-contract-audit",
+    "outcome": "fail",
+    "build_command": "npm run build",
+    "build_result": "SUCCESS; Vite built1656modules in4.95seconds",
+    "deploy_command": "npx wrangler preview",
+    "wrangler_version": "4.154.0",
+    "first_error": "Your Wrangler configuration is missing a `previews` block to run this command.",
+    "logs_complete": true
+  },
+  "current_build_configuration": {
+    "git_branch": "security/fcb-01-contract-audit",
+    "production_settings": {
+      "build_command": "npm run build",
+      "deploy_command": "npx wrangler preview",
+      "root_directory": "/",
+      "environment_variable_names": [
+        "VITE_SUPABASE_PUBLISHABLE_KEY",
+        "VITE_SUPABASE_URL"
+      ]
+    },
+    "auto_build_enabled": true,
+    "previews_enabled": false,
+    "triggers": [
+      {
+        "id": "c1b9027e-3e7d-4649-9392-6f5ef052aad0",
+        "tag": "bbb0f9fc9d7a48558333acc249957562",
+        "name": "security/fcb-01-contract-audit",
+        "branch_includes": [
+          "security/fcb-01-contract-audit"
+        ],
+        "branch_excludes": [],
+        "deploy_command": "npx wrangler preview"
+      }
+    ]
+  },
+  "active_production": {
+    "deployment_id": "222bdd23-037d-4784-8d08-31a2db159015",
+    "versions": [
+      {
+        "version_id": "809c6301-c4b1-41a4-ae7e-b6e054aacc46",
+        "percentage": 100
+      }
+    ],
+    "source_sha": "17f29e137a483066789e0242f20637c89beeae08",
+    "successful_build_id": "99ddf614-8a81-41e6-b9fe-aa72d82edd2f",
+    "successful_build_branch": "main",
+    "successful_build_deploy_command": "npx wrangler deploy",
+    "version_number": 641,
+    "compatibility_date": "2026-10-23",
+    "assets_not_found_handling": "single-page-application",
+    "bindings": [],
+    "observability": {
+      "enabled": true,
+      "head_sampling_rate": 1
+    }
+  },
+  "previous_retained_version": {
+    "id": "bbb25d60-1a0c-4003-8f1f-5607995327d9",
+    "number": 640,
+    "api_get_succeeded": true,
+    "rollback_not_executed": true
+  },
+  "source_fix": {
+    "branch": "fix/fcb-02-cloudflare-preview-config",
+    "base": "ec0b1198eca653035a11dfe4ce918bdf61889577",
+    "configuration": "wrangler.jsonc",
+    "effect": "Add explicit previews{} and distSPA assets; preserve actual Worker name/date/observability. Ignore local Wrangler/dev-var files.",
+    "no_new_project_dependencies": true,
+    "publication_isolated_from_verified_exact_branch_trigger": true,
+    "configuration_sha256": "65d79f756a395c16443e4679975f0c504f1805790332a0faf4081713ec53a711"
+  },
+  "verification": {
+    "typecheck": "PASS",
+    "vite_build": "PASS",
+    "wrangler_config_reader": "PASS using4.154.0",
+    "wrangler_deploy_dry_run": "PASS;20assetfiles;no upload/no bindings",
+    "local_workerd_http": "PASS;4SPAroutes plus builtJS/service-worker file-byte checks",
+    "local_scope": "No browser/auth or Supabase mutation; local engine used default request.cf placeholder after metadata fetch timeout.",
+    "independent_config_review": "No blocker found; installedschema and Wrangler source inspected.",
+    "local_checks": [
+      {
+        "path": "/",
+        "status": 200,
+        "same_app_shell": true
+      },
+      {
+        "path": "/admin",
+        "status": 200,
+        "same_app_shell": true
+      },
+      {
+        "path": "/admin-academic",
+        "status": 200,
+        "same_app_shell": true
+      },
+      {
+        "path": "/admin-import",
+        "status": 200,
+        "same_app_shell": true
+      },
+      {
+        "path": "/assets/index-DfLQGoLj.js",
+        "status": 200,
+        "matches_built_file": true,
+        "sha256": "c47c81291d33f4a6939cf606466b2533f752a86366c72370858a1206ef3ae6ed"
+      },
+      {
+        "path": "/sw.js",
+        "status": 200,
+        "matches_built_file": true,
+        "sha256": "e45b9adf10236c941a35caba1695f46b92ec3d5f2f47b74ff4ab33100160bf5b"
+      }
+    ]
+  },
+  "live_actions_performed": [],
+  "not_performed": [
+    "Cloudflare configuration update",
+    "Build retry",
+    "Preview creation",
+    "Production deployment",
+    "Main merge",
+    "Content staging",
+    "Supabase changes"
+  ],
+  "next_action": "Approve applying the configuration fix to the connected review branch only, which will run its existing wranglerpreview build; verify isolated Preview and unchanged production version afterwards. Main/prod changes and content staging remain separate approvals.",
+  "docs": [
+    "https://developers.cloudflare.com/workers/previews/configuration/",
+    "https://developers.cloudflare.com/workers/static-assets/binding/"
+  ]
+}
