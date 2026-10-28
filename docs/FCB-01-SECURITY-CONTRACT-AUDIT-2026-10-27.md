@@ -1,8 +1,8 @@
 # FCB-01 security and backend-contract evidence
 
-Current reviewed source: `6ce26be683375cfcd4c510ddc747f6aed15582d4`, PR #10.
-Verify [40606756714](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40606756714) PASS: 13 SQL suites, 12 native concurrency cases, deterministic full-schema recovery/parity, Node/Deno, typecheck/build.
-E2E [40606756727](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40606756727) PASS, **164 desktop/mobile tests, zero failures**; actual job `122548059746` log inspected (`164 passed (3.7m)`).
+Current reviewed source: `e9f0769b9a141255497e7e63de46f43cadab3d3b`, PR #10.
+Verify [40612879826](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40612879826) PASS: 13 SQL suites, 12 native concurrency cases, deterministic full-schema recovery/parity, Node/Deno, typecheck/build.
+E2E [40612879590](https://github.com/DarealNovaking/Nova-ace-jamb/actions/runs/40612879590) PASS, **164 desktop/mobile tests, zero failures**; actual job `122568417583` log inspected (`164 passed (3.7m)`).
 Production includes five authorized migrations, latest syllabus identity `20261028002329`; signup `20261027220044` remains complete. Configuration/season hardening is authorized but connector-blocked and unapplied. Broader CBT/mock proposals remain unapplied. No deployment/content/provider activation in this continuation. FCB-01 acceptance remains OPEN.
 
 The older audit and append-only evidence below describe their stated points in time. Their initial “not applied” and old-SHA claims must not override this opening or the current continuity checkpoint.
