@@ -96,3 +96,10 @@ Owner approved helper-only installation. Migration **20261028133030_fcb02_fixed_
 Security advisors added only the expected [authenticated SECURITY DEFINER exposure notice](https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable) for this deliberately callable API, protected internally by the verified real-administrator/role-lock checks. No unrelated advisory changed.
 
 The helper is live; the new administrator panel is still source-only. Main merge/frontend deployment, signed-admin integration and content staging remain separately gated. Earlier unapplied-installer/approval-pending statements describe preparation history and are superseded by this installation record. Content import, publication and rights approval are still unapplied.
+
+
+## Admin-panel release preparation
+
+PR10 is source-prepared and now describes the final implementation. Source66e06c5 passed Verify40697812911,including42native scenarios and exact applied-migration comparison; E2E40697812905 passed172desktop/mobile tests. Both terminal logs inspected. Independent review of7runtime files against main found no blocker; PR is open,non-draft,mergeable and main is its ancestor. No application code changed during this preparation.
+
+Cloudflare release remains **BLOCKED pending provider metadata**. Cloudflare Workers is the documented provider, but there is no deployment workflow/Wrangler config in this repository, plugin discovery returned no Cloudflare integration, and commit statuses supplied no provider deployment evidence. Actual build branch/trigger, deployed SHA/version, environment and rollback reference must be verified before merge; external build integration might deploy on a main update. No merge, deployment, authentication fallback or content staging performed. [Release-readiness evidence](../../evidence/fcb-02-admin-release-readiness-2026-10-28.json).

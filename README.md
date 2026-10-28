@@ -25,7 +25,7 @@ The GitHub repository is the source of truth. The current frontend uses React, T
 
 ## Current milestone status
 
-**ONE final completion batch, FCB-01 through FCB-12, is active.** The canonical remaining work and dependencies are in `docs/ACE-JAMB-MASTER-HANDOFF.md` under “FINAL MASTER COMPLETION BATCH — ALL REMAINING ACE JAMB WORK”. FCB-01 is the security, migration and backend-contract audit. Preserve the existing frontend baseline (158 mocked desktop/mobile Playwright tests), compulsory English plus three subjects, and catalogue-independent onboarding. The security remediation is reviewed source until separately authorized and verified in production; no full-product completion is claimed. Current audit evidence: `docs/FCB-01-SECURITY-CONTRACT-AUDIT-2026-10-27.md`.
+**ONE final completion batch, FCB-01 through FCB-12, is active.** The canonical remaining work and dependencies are in `docs/ACE-JAMB-MASTER-HANDOFF.md` under “FINAL MASTER COMPLETION BATCH — ALL REMAINING ACE JAMB WORK”. FCB-01’s audited security, migration and backend-contract baseline is verified complete. FCB-02 is in progress: its fixed-package administrator helper is installed, while the admin-panel release, actual content staging and rights/publication acceptance remain gated. The current source has 172 passing mocked desktop/mobile Playwright tests. Preserve compulsory English plus three subjects and catalogue-independent onboarding; no full-product completion is claimed. Current audit evidence: `docs/FCB-01-SECURITY-CONTRACT-AUDIT-2026-10-27.md`.
 
 Production migrations, content publication, deployments and billable provider activation require explicit approval at their documented FCB gates. Legacy deployment assets were removed; no production deployment workflow is currently enabled in this repository.
 
@@ -56,4 +56,4 @@ GitHub Actions also runs parser/contract tests and SQL policy/migration tests ag
 
 ## Frontend Phase 3
 
-Current work prioritizes accessible async feedback, keyboard/semantic navigation, measurable performance, and frontend UX improvements backed by existing contracts. See the master handoff and continuity checkpoint for current status. Do not deploy, modify backend/database state, revive catalogue UI, or fabricate JAMB content/provider outcomes.
+The verified frontend foundation is retained while the approved FCB programme continues. See the master handoff and continuity checkpoint for current scope and acceptance. Production changes and release remain subject to their specific approval gates; the retired catalogue UI stays retired, and official content/provider outcomes must never be fabricated.
