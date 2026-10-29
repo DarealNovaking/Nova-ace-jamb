@@ -121,7 +121,7 @@ export function createQuestionMediaUploadHandler(deps: UploadDependencies): (req
       const bytes = await readBounded(req)
       if (!bytes) return reply(413, 'Request too large')
       form = await new Request('https://private.invalid/upload', {
-        method: 'POST', headers: { 'content-type': mediaType }, body: bytes,
+        method: 'POST', headers: { 'content-type': mediaType }, body: bytes.buffer as ArrayBuffer,
       }).formData()
     } catch { return reply(400, 'Invalid upload') }
 
