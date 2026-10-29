@@ -194,6 +194,8 @@ jobs:
           diff -u supabase/migrations/20261028133030_fcb02_fixed_review_admin_executor.sql /tmp/fcb02-import-proposal/install-executor.sql
       - name: Prepare empty isolated recovered PostgreSQL schema
         run: psql -X -v ON_ERROR_STOP=1 -f tests/sql/fcb_01_schema_baseline.test.sql
+      - name: Test fixed 2026 practice draft creation and refusal paths
+        run: python3 tests/sql/fcb02_2026_practice.py
       - name: Test staging, refusal, privacy, guarded rollback and concurrent references
         run: python3 tests/sql/fcb_02_draft_import.py --output-dir /tmp/fcb02-import-proposal
       - name: Retain the unexecuted production review scripts and test evidence

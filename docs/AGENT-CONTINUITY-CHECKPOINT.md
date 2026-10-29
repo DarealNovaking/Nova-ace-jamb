@@ -2,6 +2,12 @@
 
 > **Current-state rule:** this opening section is authoritative. Entries below the historical divider are evidence history and do not override this section.
 
+## 2026 practice draft implementation started — 2026-10-29
+
+Branch feat/fcb02-2026-practice-draft. Implementing fixed admin-only check/create RPC, no activation/publication. SQL behavior test first RED on inert stub (no complete draft), then14isolated PostgreSQL-compatible cases PASS pending nativeCI confirmation. NativeCI step added. Three new browser cases pending RED (panel absent), implementation follows after reproduced failure. Source installer supabase/proposals/fcb02_2026_practice_draft.sql not installed live. Target exact candidate396d1910-d458-5d5f-8484-380bc8c71919; all previous content/format decisions preserved. Next native/browser RED check, minimal admin panel, full verification/review, exact installer/front-end release and genuine admin creation. No live mutation yet.
+
+### Baseline decision
+
 ## Owner selected 2026 preparation baseline — 2026-10-29
 
 Use verified 2026 rules for preparation: 2hours/180questions/4options; English60 plus3subjects at40. Owner instruction supersedes waiting for official2027 settings as a baseline prerequisite. Label UTME practice — 2026 rules, source_year2026/official_2027_confirmedfalse; unconfirmed dates null. Preserve closed historical2026 record and annual reading-text qualifications. Exact prepared inactive config/25subject candidate: docs/content-review/fcb-02-2026-baseline-proposal-2026-10-29.json; decision/evidence docs/FCB-02-2026-BASELINE-DECISION-2026-10-29.md. Fresh live source snapshot matches; all2024 three-optional-subject combinations and25unique IDs checked. No live writes/activation or publication; no server validation claimed. Config root grants SELECT only and composition trigger requires genuine actor; no create-config RPC currently exists. Next independent implementation: reviewed genuine-admin draft configuration creation route using this fixed candidate, without broad grants/claims spoofing; source-use/publication/student acceptance gates remain. Do not repeat2027 research or ask for this same baseline choice again.
