@@ -25,6 +25,8 @@ begin
  end if;
 end
 $fixture$;
+-- Published syllabus fixtures require a genuine administrative role in the fixture.
+select set_config('request.jwt.claim.sub','04000000-0000-4000-8000-000000000002',true);
 insert into ace.syllabus_versions(id,season_id,subject_id,version,title,rights_status,status,activated_at)values
  ('04000000-0000-4000-8000-000000000008',
   '03000000-0000-4000-8000-000000000009',
@@ -34,6 +36,7 @@ insert into ace.topics(id,subject_id,syllabus_version_id,name,active)values
   '04000000-0000-4000-8000-000000000005',
   '04000000-0000-4000-8000-000000000008','Numbers',true);
 
+select set_config('request.jwt.claim.sub','04000000-0000-4000-8000-000000000001',true);
 select ace.manage_question('save','04000000-0000-4000-8000-000000000004',0,
  jsonb_build_object(
   'subject_id','04000000-0000-4000-8000-000000000005',
