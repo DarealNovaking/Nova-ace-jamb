@@ -430,7 +430,7 @@ test.describe('ACE JAMB persistent CBT', () => {
         correct_count: 0, answered_count: 0,
       } })
     })
-    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/questions'), async (route) => {
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/get_attempt_questions'), async (route) => {
       await route.fulfill({ json: [{
         id: questionId, question_text: 'Recovery test question',
         options: [{ key: 'A', text: 'Answer A' }],
@@ -480,7 +480,7 @@ test.describe('ACE JAMB persistent CBT', () => {
         correct_count: 0, answered_count: 0,
       } })
     })
-    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/questions'), async (route) => {
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/get_attempt_questions'), async (route) => {
       await route.fulfill({ json: [{
         id: questionId, question_text: 'Recovered original CBT question',
         options: [{ key: 'A', text: 'Answer A' }], subject_id: null, topic_id: null, difficulty: 'easy',
@@ -534,7 +534,7 @@ test.describe('ACE JAMB persistent CBT', () => {
         option_order: { [questionId]: ['A'] }, question_count: 1,
       } })
     })
-    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/questions'), async (route) => {
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/get_attempt_questions'), async (route) => {
       await route.fulfill({ json: [{
         id: questionId, question_text: 'Newly started CBT after obsolete pointer',
         options: [{ key: 'A', text: 'Answer A' }], subject_id: null, topic_id: null, difficulty: 'easy',
@@ -568,7 +568,7 @@ test.describe('ACE JAMB persistent CBT', () => {
         correct_count: 0, answered_count: 0,
       } })
     })
-    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/questions'), async (route) => {
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/get_attempt_questions'), async (route) => {
       await route.fulfill({ json: [{
         id: questionId, question_text: 'Monotonic countdown test question',
         options: [{ key: 'A', text: 'Answer A' }], subject_id: null, topic_id: null, difficulty: 'easy',
@@ -608,7 +608,7 @@ test.describe('ACE JAMB persistent CBT', () => {
         answers: [], score: null, correct_count: 0, answered_count: 0,
       } })
     })
-    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/questions'), async (route) => {
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/get_attempt_questions'), async (route) => {
       await route.fulfill({ json: questionIds.map((id, index) => ({
         id, question_text: 'Reviewed question ' + (index + 1),
         options: [{ key: 'A', text: 'Option A' }], subject_id: null, topic_id: null, difficulty: 'easy',
@@ -658,7 +658,7 @@ test.describe('ACE JAMB persistent CBT', () => {
         option_order: {}, answers: [], score: 80, correct_count: 4, answered_count: 5,
       } })
     })
-    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/questions'), async (route) => {
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/get_attempt_questions'), async (route) => {
       questionFetches += 1
       await route.fulfill({ json: [] })
     })
@@ -695,7 +695,7 @@ test.describe('ACE JAMB persistent CBT', () => {
         correct_count: 0, answered_count: 0,
       } })
     })
-    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/questions'), async (route) => {
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/get_attempt_questions'), async (route) => {
       questionSelection = (new URL(route.request().url()).searchParams.get('select') ?? '').split(',')
       // The deployed schema stores the prompt as stem; PostgREST supplies the client alias.
       // A permissive fixture would otherwise hide a request for the nonexistent question_text column.
@@ -783,7 +783,7 @@ test.describe('ACE JAMB CBT sign-in and expiry recovery', () => {
           option_order: { [questionId]: ['A'] }, answers: [], score: null,
           correct_count: 0, answered_count: 0,
         } })
-      } else if (url.pathname.endsWith('/rest/v1/questions')) {
+      } else if (url.pathname.endsWith('/rest/v1/rpc/get_attempt_questions')) {
         await route.fulfill({ json: [{ id: questionId, question_text: 'Practice sign-in fixture', options: [{ key: 'A', text: 'Answer A' }], subject_id: null, topic_id: null, difficulty: 'easy' }] })
       } else {
         await route.fulfill({ status: 200, contentType: 'application/json', json: [] })
@@ -801,12 +801,13 @@ test.describe('ACE JAMB CBT sign-in and expiry recovery', () => {
     expect(await page.evaluate(() => localStorage.getItem('ace-cbt-active-attempt:aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa'))).toBeNull()
   })
 
-  test('expired CBT auto-submits and a transient submit failure can be retried', async ({ page }) => {
+  test('expired CBT auto-submits and a transient submit failure can be retried', async ({ page }, testInfo) => {
     await mockPreparedStudent(page)
     const questionId = '30000000-0000-4000-8000-000000000006'
     const attemptId = '40000000-0000-4000-8000-000000000006'
     const expiredAt = new Date(Date.now() - 10000).toISOString()
     let submitCalls = 0
+    let expiredDeliveryReads = 0
 
     await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/start_attempt'), async (route) => {
       await route.fulfill({ json: {
@@ -824,8 +825,9 @@ test.describe('ACE JAMB CBT sign-in and expiry recovery', () => {
         correct_count: 0, answered_count: 0,
       } })
     })
-    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/questions'), async (route) => {
-      await route.fulfill({ json: [{ id: questionId, question_text: 'Expired CBT fixture', options: [{ key: 'A', text: 'Answer A' }], subject_id: null, topic_id: null, difficulty: 'easy' }] })
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/get_attempt_questions'), async (route) => {
+      expiredDeliveryReads += 1
+      await route.fulfill({status:400,json:{code:'P0002',message:'Attempt unavailable'}})
     })
     await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/submit_attempt'), async (route) => {
       submitCalls += 1
@@ -845,10 +847,12 @@ test.describe('ACE JAMB CBT sign-in and expiry recovery', () => {
     await expect(page.getByRole('heading', { name: 'JAMB simulation' })).toBeVisible()
     await expect.poll(() => submitCalls).toBe(1)
     await expect(page.getByText(/Your saved answers have been kept; please retry/)).toBeVisible()
+    await page.screenshot({path:testInfo.outputPath('expired-session-retry.png')})
     await page.getByRole('button', { name: 'Submit CBT' }).click()
     await expect(page.getByText('0%', { exact: true })).toBeVisible()
     await expect(page.getByText('0/1 correct')).toBeVisible()
     expect(submitCalls).toBe(2)
+    expect(expiredDeliveryReads).toBe(0)
   })
 })
 
@@ -1921,11 +1925,11 @@ test.describe('ACE JAMB preparation workspaces', () => {
     await mockSyllabusPublicationState(page, 'approved')
     const topicId = '70000000-0000-4000-8000-000000000001'
     const questionId = '98000000-0000-4000-8000-000000000001'
-    let questionQuery = ''
+    let questionQuery: Record<string, unknown> = {}
     let payload: Record<string, unknown> | null = null
-    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/questions'), async (route) => {
-      questionQuery = new URL(route.request().url()).search
-      await route.fulfill({ json: [{ id: questionId }] })
+    await page.route((url) => ['/rest/v1/rpc/published_topic_questions','/rest/v1/rpc/student_question_topics'].includes(new URL(url).pathname), async (route) => {
+      questionQuery = route.request().postDataJSON()
+      await route.fulfill({ json: [questionId] })
     })
     await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/start_attempt'), async (route) => {
       payload = route.request().postDataJSON()
@@ -1939,11 +1943,7 @@ test.describe('ACE JAMB preparation workspaces', () => {
     await expect(page).toHaveURL(/[?&]focus=topic/)
     await expect(page).toHaveURL(new RegExp('topic=' + topicId))
     await expect.poll(() => payload).not.toBeNull()
-    const params = new URLSearchParams(questionQuery)
-    expect(params.get('subject_id')).toBe('eq.' + subjects[0].id)
-    expect(params.get('topic_id')).toBe('eq.' + topicId)
-    expect(params.get('active')).toBe('eq.true')
-    expect(params.get('review_status')).toBe('eq.published')
+    expect(questionQuery).toEqual({p_subject_id:subjects[0].id,p_topic_id:topicId,p_subtopic_id:null,p_limit:20})
     expect(payload).toMatchObject({
       p_mode: 'practice', p_subject_id: subjects[0].id,
       p_question_count: 1, p_question_ids: [questionId],
@@ -1955,7 +1955,7 @@ test.describe('ACE JAMB preparation workspaces', () => {
     await mockSyllabusPublicationState(page, 'approved')
     const topicId = '70000000-0000-4000-8000-000000000001'
     const subtopicId = '79000000-0000-4000-8000-000000000001'
-    let questionQuery = ''
+    let questionQuery: Record<string, unknown> = {}
     let attemptsStarted = 0
     await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/subtopics'), async (route) => {
       await route.fulfill({ json: [{
@@ -1964,8 +1964,8 @@ test.describe('ACE JAMB preparation workspaces', () => {
         name: 'Reading details', description: 'Test-only', sort_order: 1, active: true,
       }] })
     })
-    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/questions'), async (route) => {
-      questionQuery = new URL(route.request().url()).search
+    await page.route((url) => ['/rest/v1/rpc/published_topic_questions','/rest/v1/rpc/student_question_topics'].includes(new URL(url).pathname), async (route) => {
+      questionQuery = route.request().postDataJSON()
       await route.fulfill({ json: [] })
     })
     await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/start_attempt'), async (route) => {
@@ -1981,9 +1981,7 @@ test.describe('ACE JAMB preparation workspaces', () => {
     await expect(page).toHaveURL(/[?&]focus=subtopic/)
     await expect(page.getByRole('heading', { name: 'No reviewed questions published for this topic yet' })).toBeVisible()
     expect(attemptsStarted).toBe(0)
-    const params = new URLSearchParams(questionQuery)
-    expect(params.get('topic_id')).toBe('eq.' + topicId)
-    expect(params.get('subtopic_id')).toBe('eq.' + subtopicId)
+    expect(questionQuery).toMatchObject({p_topic_id:topicId,p_subtopic_id:subtopicId})
   })
 
   test('approved topic insight uses saved question history and starts topic-specific practice', async ({ page }) => {
@@ -1997,9 +1995,9 @@ test.describe('ACE JAMB preparation workspaces', () => {
         { question_id: questionId, attempts: 10, correct_count: 3, incorrect_count: 7, last_answered_at: '2026-10-26T08:00:00Z' },
       ] })
     })
-    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/questions'), async (route) => {
-      const url = new URL(route.request().url())
-      await route.fulfill({ json: url.searchParams.has('topic_id') ? [] : [{ id: questionId, subject_id: subjects[0].id, topic_id: topicId }] })
+    await page.route((url) => ['/rest/v1/rpc/published_topic_questions','/rest/v1/rpc/student_question_topics'].includes(new URL(url).pathname), async (route) => {
+      const topicRequest=new URL(route.request().url()).pathname.endsWith('/published_topic_questions')
+      await route.fulfill({ json: topicRequest ? [] : [{id:questionId,subject_id:subjects[0].id,topic_id:topicId,subtopic_id:null}] })
     })
     await page.goto('/?view=progress')
     await expect(page.getByRole('heading', { name: 'Observed topic review priorities' })).toBeVisible()
@@ -2028,10 +2026,10 @@ test.describe('ACE JAMB preparation workspaces', () => {
         question_id: question, attempts: 10, correct_count: 3, incorrect_count: 7, last_answered_at: '2026-10-27T00:00:00Z',
       }] })
     })
-    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/questions'), async (route) => {
-      const params = new URL(route.request().url()).searchParams
-      if (params.has('subtopic_id')) {
-        requestedSubtopic = params.get('subtopic_id') ?? ''
+    await page.route((url) => ['/rest/v1/rpc/published_topic_questions','/rest/v1/rpc/student_question_topics'].includes(new URL(url).pathname), async (route) => {
+      const params = route.request().postDataJSON()
+      if (new URL(route.request().url()).pathname.endsWith('/published_topic_questions')) {
+        requestedSubtopic = params.p_subtopic_id ?? ''
         await route.fulfill({ json: [] })
         return
       }
@@ -2044,7 +2042,7 @@ test.describe('ACE JAMB preparation workspaces', () => {
     await expect(page).toHaveURL(/[?&]focus=subtopic/)
     await expect(page).toHaveURL(new RegExp('subtopic=' + subtopic))
     await expect(page.getByRole('heading', { name: 'No reviewed questions published for this topic yet' })).toBeVisible()
-    expect(requestedSubtopic).toBe('eq.' + subtopic)
+    expect(requestedSubtopic).toBe(subtopic)
   })
 
   test('study plan recommends only a qualifying approved subtopic and links to focused practice', async ({ page }) => {
@@ -2064,10 +2062,10 @@ test.describe('ACE JAMB preparation workspaces', () => {
         question_id: question, attempts: 10, correct_count: 2, incorrect_count: 8, last_answered_at: '2026-10-27T00:00:00Z',
       }] })
     })
-    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/questions'), async (route) => {
-      const params = new URL(route.request().url()).searchParams
-      if (params.has('subtopic_id')) {
-        filtered = params.get('subtopic_id') === 'eq.' + subtopic
+    await page.route((url) => ['/rest/v1/rpc/published_topic_questions','/rest/v1/rpc/student_question_topics'].includes(new URL(url).pathname), async (route) => {
+      const params = route.request().postDataJSON()
+      if (new URL(route.request().url()).pathname.endsWith('/published_topic_questions')) {
+        filtered = params.p_subtopic_id === subtopic
         await route.fulfill({ json: [] })
         return
       }
@@ -3441,5 +3439,46 @@ test('dashboard anchor destinations restore after delayed loading from study pag
     await page.getByRole('link',{name:label,exact:true}).click()
     await expect(page).toHaveURL(new RegExp('/#'+target+'$'))
     await expect(page.locator('#'+target)).toBeFocused()
+  }
+})
+
+test.describe('FCB03 sealed student question delivery',()=>{
+  const attemptId='40000000-0000-4000-8000-000000000081'
+  const questionId='30000000-0000-4000-8000-000000000081'
+  const frozen={id:questionId,question_text:'Frozen reviewed exercise',options:[{key:'A',text:'First choice'},{key:'B',text:'Second choice'}],subject_id:null,topic_id:null,difficulty:'easy'}
+  async function setup(page:import('@playwright/test').Page){
+    await mockPreparedStudent(page)
+    const counts={starts:0,direct:0,deliveries:0}
+    await page.addInitScript(({id,uid})=>localStorage.setItem('ace-cbt-active-attempt:'+uid,id),{id:attemptId,uid:userId})
+    await page.route((url)=>new URL(url).pathname.endsWith('/rest/v1/questions'),async route=>{counts.direct++;await route.fulfill({status:403,json:{code:'42501',message:'permission denied for table questions'}})})
+    await page.route((url)=>new URL(url).pathname.endsWith('/rest/v1/rpc/start_attempt'),async route=>{counts.starts++;await route.fulfill({status:400,json:{code:'P0001',message:'Unexpected new attempt'}})})
+    await page.route((url)=>new URL(url).pathname.endsWith('/rest/v1/rpc/resume_attempt'),async route=>route.fulfill({json:{attempt_id:attemptId,status:'active',mode:'cbt',subject_id:null,started_at:new Date().toISOString(),completed_at:null,duration_seconds:600,remaining_seconds:590,random_seed:1,question_order:[questionId],option_order:{[questionId]:['B','A']},answers:[],score:null,correct_count:0,answered_count:0}}))
+    return counts
+  }
+  test('loads the owned attempt RPC while direct question-table access is forbidden',async({page})=>{
+    const counts=await setup(page);let request:unknown=null
+    await page.route((url)=>new URL(url).pathname.endsWith('/rest/v1/rpc/get_attempt_questions'),async route=>{counts.deliveries++;request=route.request().postDataJSON();await route.fulfill({json:[frozen]})})
+    await page.goto('/?cbt=1')
+    await expect(page.getByRole('heading',{name:frozen.question_text})).toBeVisible()
+    await expect(page.getByRole('button',{name:'A. Second choice',exact:true})).toBeVisible()
+    expect(request).toEqual({p_attempt_id:attemptId});expect(counts.direct).toBe(0);expect(counts.starts).toBe(0)
+  })
+  for(const kind of ['partial','private-fields','withdrawn']){
+    test('refuses '+kind+' readback without fallback or creating another attempt',async({page})=>{
+      const counts=await setup(page)
+      await page.route((url)=>new URL(url).pathname.endsWith('/rest/v1/rpc/get_attempt_questions'),async route=>{
+        counts.deliveries++
+        if(kind==='withdrawn')await route.fulfill({status:400,json:{code:'P0002',message:'Attempt questions unavailable: private database detail'}})
+        else await route.fulfill({json:kind==='partial'?[]:[{...frozen,correct_option_key:'A',explanation:'Private answer explanation'}]})
+      })
+      await page.goto('/?cbt=1')
+      await expect(page.getByRole('alert')).toContainText('We could not load this CBT session')
+      await expect(page.getByRole('heading',{name:frozen.question_text})).toHaveCount(0)
+      await expect(page.getByText('Private answer explanation',{exact:true})).toHaveCount(0)
+      await page.getByRole('button',{name:'Retry',exact:true}).click()
+      await expect.poll(()=>counts.deliveries).toBeGreaterThanOrEqual(2)
+      expect(counts.direct).toBe(0);expect(counts.starts).toBe(0)
+      expect(await page.evaluate(uid=>localStorage.getItem('ace-cbt-active-attempt:'+uid),userId)).toBe(attemptId)
+    })
   }
 })

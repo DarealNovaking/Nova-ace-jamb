@@ -1,3 +1,4 @@
+import { questionDeliveryPhase } from '../lib/studentQuestionDelivery'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Clock3, Loader2, Trophy } from 'lucide-react'
 import {
@@ -79,6 +80,8 @@ export default function PersistentCBT({ attemptId = null, questionCount = 20, du
 
   async function load(attemptToResume?: string) {
     setLoading(true)
+    setAttempt(null)
+    setQuestions([])
     setError('')
     setResult(null)
     setConfirmSubmit(false)
@@ -107,7 +110,8 @@ export default function PersistentCBT({ attemptId = null, questionCount = 20, du
         state = await resumeCbt(started.attempt_id)
       }
       if (state.status === 'completed' && storageKey) window.localStorage.removeItem(storageKey)
-      const loadedQuestions = state.status === 'completed' ? [] : await loadCbtQuestions(state.question_order)
+      const loadedQuestions = questionDeliveryPhase(state.status, state.remaining_seconds) === 'load'
+        ? await loadCbtQuestions(state.attempt_id, state.question_order) : []
       // Local review marks help navigation but never affect authoritative answers.
       // Ignore flags for questions not on this server-owned attempt.
       const reviewKey = 'ace-cbt-review-flags:' + state.attempt_id
@@ -257,6 +261,8 @@ export default function PersistentCBT({ attemptId = null, questionCount = 20, du
     setConfirmSubmit(false)
   }
 
+  const sessionTitle = focus === 'mistakes' ? 'Mistake review practice' : focus === 'repeated' ? 'Repeated-mistake practice' : focus === 'speed' ? 'Speed practice' : focus === 'subject' ? 'Subject practice' : focus === 'topic' ? 'Topic practice' : focus === 'subtopic' ? 'Subtopic practice' : 'JAMB simulation'
+
   if (loading) return <div aria-busy="true" className="glass-card rounded-3xl p-8 text-center"><div role="status" aria-live="polite" aria-atomic="true"><Loader2 aria-hidden="true" className="mx-auto animate-spin"/><p className="mt-3 text-sm text-white/50">Restoring CBT session…</p></div></div>
   if (error && !attempt) return <div className="glass-card rounded-3xl p-6"><p className="font-semibold">CBT unavailable</p><p role="alert" className="mt-2 text-sm text-white/50">{error}</p><button type="button" className="mt-5 rounded-xl bg-white px-4 py-3 font-bold text-black" onClick={() => void load(attemptId ?? undefined)}>Retry</button></div>
   if (result) return <section aria-labelledby="cbt-result-title" className="glass-card mx-auto max-w-lg rounded-3xl p-8 text-center">
@@ -273,6 +279,14 @@ export default function PersistentCBT({ attemptId = null, questionCount = 20, du
     <p className="mt-4 break-all text-xs text-white/30">Saved server-side as attempt {result.attempt_id}</p>
   </section>
   if (attempt && attempt.status !== 'active') return <div className="glass-card rounded-3xl p-6"><p className="font-semibold">This CBT attempt is no longer active.</p><p className="mt-2 text-sm text-white/50">Your saved result remains attached to your account when the attempt is completed. You can start a new attempt when published questions are available.</p><button type="button" onClick={() => void load()} className="mt-5 rounded-xl bg-white px-4 py-3 font-bold text-black">Start a new CBT</button></div>
+  if (attempt?.status === 'active' && remaining === 0 && !questions.length) return <section className="glass-card rounded-3xl p-6">
+    <h1 className="text-3xl font-black">{sessionTitle}</h1>
+    <h2 className="mt-4 text-xl font-bold">Time has ended</h2>
+    <p className="mt-3 text-sm leading-6 text-white/60">Your saved answers are ready for server scoring. Question content is no longer requested after the attempt expires.</p>
+    {error && <p role="alert" className="mt-4 text-sm text-red-100">{error}</p>}
+    {submitting && <p role="status" className="mt-4 text-sm text-purple-200">Submitting your CBT…</p>}
+    <button type="button" disabled={submitting} className="mt-5 min-h-11 rounded-xl bg-purple-300 px-5 py-3 font-bold text-[#120b1c]" onClick={() => void finish()}>{submitting ? 'Submitting…' : 'Submit CBT'}</button>
+  </section>
   if (!attempt || !question) return <div className="glass-card rounded-3xl p-6">No CBT questions are currently available.</div>
 
   const optionKeys = attempt.option_order[question.id] ?? question.options.map((o) => o.key)
@@ -283,7 +297,7 @@ export default function PersistentCBT({ attemptId = null, questionCount = 20, du
 
   return <div className="space-y-5">
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-      <div><p className="text-xs uppercase tracking-[.2em] text-purple-300/70">Persistent CBT</p><h1 className="mt-1 text-3xl font-black">{focus === 'mistakes' ? 'Mistake review practice' : focus === 'repeated' ? 'Repeated-mistake practice' : focus === 'speed' ? 'Speed practice' : focus === 'subject' ? 'Subject practice' : focus === 'topic' ? 'Topic practice' : focus === 'subtopic' ? 'Subtopic practice' : 'JAMB simulation'}</h1></div>
+      <div><p className="text-xs uppercase tracking-[.2em] text-purple-300/70">Persistent CBT</p><h1 className="mt-1 text-3xl font-black">{sessionTitle}</h1></div>
       <div role="timer" aria-label={`Time remaining ${formatTime(remaining)}`} className={`rounded-xl px-4 py-2 font-mono ${remaining < 60 ? 'bg-red-500/20 text-red-200' : 'bg-white/5'}`}><Clock3 aria-hidden="true" className="mr-2 inline" size={16}/>{formatTime(remaining)}</div>
     </div>
     {error && <div role="alert" className="rounded-xl border border-red-400/20 bg-red-500/10 p-3 text-sm text-red-100">{error}</div>}

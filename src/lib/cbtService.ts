@@ -1,4 +1,5 @@
 import { ace } from './supabase'
+import { parseAttemptQuestions, validateAttemptQuestionRequest } from './studentQuestionDelivery'
 
 export type CbtMode = 'practice' | 'cbt' | 'mock' | 'learning' | 'revision' | 'ai_practice'
 
@@ -70,27 +71,11 @@ export async function resumeCbt(attemptId: string) {
   return data as CbtAttemptState
 }
 
-export async function loadCbtQuestions(questionIds: string[]) {
-  if (!questionIds.length) return [] as CbtQuestion[]
-  const { data, error } = await ace
-    .from('questions')
-    .select('id,question_text:stem,options,subject_id,topic_id,difficulty')
-    .in('id', questionIds)
+export async function loadCbtQuestions(attemptId: string, questionIds: string[]): Promise<CbtQuestion[]> {
+  const id = validateAttemptQuestionRequest(attemptId, questionIds)
+  const { data, error } = await ace.rpc('get_attempt_questions', { p_attempt_id: id })
   if (error) throw error
-  const byId = new Map((data ?? []).map((q: any) => [q.id, q]))
-  return questionIds.flatMap((id) => {
-    const q: any = byId.get(id)
-    if (!q) return []
-    const options = Array.isArray(q.options) ? q.options : []
-    return [{
-      id: q.id,
-      text: q.question_text ?? '',
-      options: options.map((o: any) => ({ key: String(o.key), text: String(o.text ?? o.label ?? '') })),
-      subject_id: q.subject_id ?? null,
-      topic_id: q.topic_id ?? null,
-      difficulty: q.difficulty ?? null,
-    }]
-  })
+  return parseAttemptQuestions(data, questionIds)
 }
 
 export async function saveCbtAnswer(

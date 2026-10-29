@@ -1,0 +1,13 @@
+# FCB-03 student delivery integration
+
+Owner directed continuing FCB03; routine design choices remain delegated. Read-only live evidence found authenticated/anon have no table/column grants on ace.questions, while cbtService and practiceService still query it. Existing ace.get_attempt_questions(uuid) is installed, postgres-owned, authenticated-only and checks actual owner/active unexpired attempt, immutable snapshot, whole-paper publication/rights and option allowlists. Body MD5e45c9fbac60bdaf1a3c58a26173c53bd. Reuse it unchanged.
+
+Implement a prerequisite delivery correction before extending rich content: CBT calls the existing endpoint with server attempt ID and strictly validates complete paper membership/order and public fields. Reject partial/mismatched/malformed/private answer fields; no direct-table fallback or extra attempt creation on delivery failure. Completed attempts continue to skip question fetching.
+
+Add two proposal-only guarded read RPCs: published_topic_questions(subject UUID,topic UUID,subtopic UUID nullable,limit integer1..20), returning only ordered UUIDs under active approved season/taxonomy and published/rights-cleared question gates; student_question_topics(UUID[]1..80), returning id/subject/topic/subtopic only for the caller's tracked student_question_stats and active approved published taxonomy. Require identity, trusted owner, fixed pg_catalog/pg_temp search_path, read committed and3s lock timeout; revoke PUBLIC/anon grants. No table grants, writes, role changes or alteration of existing attempt/grading/workflow functions.
+
+Keep existing UI states and API signatures for practiceService callers. Distinguish unavailable requests from honest empty results. Preserve all auth/admin/editor, frozen grading/takedown and duplicate review guards. Existing text CSV/editor and real profiles untouched.
+
+Alternatives: restoring SELECT on questions would bypass the deliberate private-answer boundary; rebuilding the attempt endpoint duplicates verified FCB01 work. Chosen: wire existing safe endpoint plus minimal metadata-only RPCs.
+
+Acceptance: parser/service tests RED→GREEN; isolated SQL owner/anon/rights/taxonomy/limits and whole existing history/workflow suites; full unfiltered desktop/mobile Playwright with direct questions GET denied, exact attempt ID asserted, corrupted/partial/withdrawn paper refusals and unchanged metadata topic/progress behavior. Typecheck/build, screenshots where relevant and independent review. Production proposal installation and release require a separate concrete approval; FCB03 remains in progress. Formula/table/image/storage/moderation work follows; this correction is not rich-content completion.
