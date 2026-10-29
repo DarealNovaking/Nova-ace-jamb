@@ -1,0 +1,110 @@
+{
+  "date": "2026-10-29 Africa/Lagos",
+  "source": "814a911d710bdfb987ec9765ffa92b5b96fae17b",
+  "main_merge": "b45c4d772362cedb897aa701faa152baff23b53c",
+  "tested_and_merged_tree": "e8f512349318272cdb8167de44a9f77de4cb48be",
+  "pr": 12,
+  "verification": {
+    "Verify": {
+      "run": 40759431969,
+      "all_four_jobs": "PASS",
+      "native_import_job": 123067027083,
+      "native_scenarios": 42
+    },
+    "E2E": {
+      "run": 40759431770,
+      "job": 123067025376,
+      "cases_passed": 184,
+      "scope": "Full desktop/mobile suite, unfiltered"
+    },
+    "local": "43 Node tests, typecheck and build PASS",
+    "review": "Independent bounded reviewer found no remaining blocker; read-only"
+  },
+  "production": {
+    "url": "https://nova-ace-jamb.novaking5002.workers.dev/admin-academic",
+    "build": "a534ec00-f99c-4a2a-8c3a-0c5d6806e121",
+    "build_result": "success",
+    "deployment": "cde9a3d9-65f1-499f-b5aa-9e2020367758",
+    "version": "fc17ae88-5863-41d2-9ed8-481a22a82190",
+    "percentage": 100,
+    "http_checks": [
+      {
+        "url": "https://nova-ace-jamb.novaking5002.workers.dev/",
+        "status": 200,
+        "same_app_shell": true,
+        "sha256": "39e7fbdc87d6caf6c6c9f34a7d0a566198b668ac1b88a7511a9513445e8eb4a0"
+      },
+      {
+        "url": "https://nova-ace-jamb.novaking5002.workers.dev/admin",
+        "status": 200,
+        "same_app_shell": true,
+        "sha256": "39e7fbdc87d6caf6c6c9f34a7d0a566198b668ac1b88a7511a9513445e8eb4a0"
+      },
+      {
+        "url": "https://nova-ace-jamb.novaking5002.workers.dev/admin-academic",
+        "status": 200,
+        "same_app_shell": true,
+        "sha256": "39e7fbdc87d6caf6c6c9f34a7d0a566198b668ac1b88a7511a9513445e8eb4a0"
+      },
+      {
+        "url": "https://nova-ace-jamb.novaking5002.workers.dev/admin-import",
+        "status": 200,
+        "same_app_shell": true,
+        "sha256": "39e7fbdc87d6caf6c6c9f34a7d0a566198b668ac1b88a7511a9513445e8eb4a0"
+      },
+      {
+        "url": "https://46de4af5-nova-ace-jamb.novaking5002.workers.dev/",
+        "status": 200,
+        "same_app_shell": true,
+        "sha256": "39e7fbdc87d6caf6c6c9f34a7d0a566198b668ac1b88a7511a9513445e8eb4a0"
+      },
+      {
+        "url": "https://nova-ace-jamb.novaking5002.workers.dev/assets/index-DqDgftkz.js",
+        "status": 200,
+        "expected_supabase_project": true,
+        "sha256": "6adc4fd52c32a9287b391ce40fe9d685d6e7bd3074e1f69e8b4af840ebb8094d"
+      },
+      {
+        "url": "https://nova-ace-jamb.novaking5002.workers.dev/assets/AcademicFoundationGate-CPccjcua.js",
+        "status": 200,
+        "review_rpc_present": true,
+        "sha256": "92e1ec1cd03725d1de4dbfeed4f1b2b93f930bb734e020ac9b71e5bef29cc5fb"
+      },
+      {
+        "url": "https://nova-ace-jamb.novaking5002.workers.dev/assets/fcb02ReviewPayload-D3nGjJ9-.js",
+        "status": 200,
+        "expected_review_digest": true,
+        "sha256": "662cf88654d842fb9c8a3116180dd1fb9247eb868c38e84d1147a13cdf5c3eba"
+      },
+      {
+        "url": "https://nova-ace-jamb.novaking5002.workers.dev/sw.js",
+        "status": 200,
+        "matches_source": true,
+        "sha256": "e45b9adf10236c941a35caba1695f46b92ec3d5f2f47b74ff4ab33100160bf5b"
+      }
+    ],
+    "http_scope": "Unauthenticated GETs only; no browser JS execution, token, login or API writes."
+  },
+  "live_readback": {
+    "topics": 214,
+    "active_topics": 0,
+    "subtopics": 956,
+    "active_subtopics": 0,
+    "v2_draft_pending": 25,
+    "subtopics_fingerprint": "e5380bea7564102134b8720bece5a771",
+    "remaining_fields": [
+      "HIS-04-10 name",
+      "PHE-02-04 name",
+      "ARA-03-22 actual row description"
+    ]
+  },
+  "user_action": "Apply reviewed corrections on regular admin-academic page in genuine admin session. No further approval requested.",
+  "not_done": [
+    "Final three field updates",
+    "Final source-use basis",
+    "Official2027 configuration",
+    "Published student acceptance"
+  ],
+  "database_mutations_in_release": false,
+  "milestone": "FCB-02 IN PROGRESS"
+}

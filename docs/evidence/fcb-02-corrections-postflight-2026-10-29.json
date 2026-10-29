@@ -1,0 +1,60 @@
+{
+  "topics": {
+    "count": 214,
+    "active": 0,
+    "fingerprint": "2012de2bfc6beeebcc1e31a232037c54"
+  },
+  "versions": [
+    {
+      "count": 1,
+      "status": "draft",
+      "version": 1,
+      "rights_status": "approved"
+    },
+    {
+      "count": 49,
+      "status": "draft",
+      "version": 1,
+      "rights_status": "pending"
+    },
+    {
+      "count": 25,
+      "status": "draft",
+      "version": 2,
+      "rights_status": "pending"
+    }
+  ],
+  "subtopics": {
+    "count": 956,
+    "active": 0,
+    "fingerprint": "86806e7337523a601427debd19e26888"
+  },
+  "corrected_rows": [
+    {
+      "id": "2f6c5f55-2982-4efd-acd5-ff753402f262",
+      "name": "Conditional sentences",
+      "active": false,
+      "sort_order": 162,
+      "description": "EDITORIAL REVIEW DRAFT ARA-03-22. Source PDF page 3; anchor: Conditional sentence. Source SHA-256: 438cc6e7369bdb4548c2a068ac1c82df7d42b3cbe53cafc2b7d8db29d1b0cfc5. Added by source-based navigation review; rights and publication approval remain pending."
+    },
+    {
+      "id": "5f724972-4528-5ad4-8d68-11870b04ce3f",
+      "name": "Nervous system and sense organs",
+      "active": false,
+      "sort_order": 40,
+      "description": "EDITORIAL REVIEW DRAFT PHE-02-04. Source PDF page 2; anchor: Nervous system. Source SHA-256: a6f02706da5daa5e0ad27542e4f2edeade64297deff63d5278809181e2de6345. Parent mapping: within_parent_span. Not academically or rights approved; do not publish automatically."
+    },
+    {
+      "id": "d1e47474-bb6f-58b4-9f81-52dba2df1116",
+      "name": "Transition to the Fourth Republic",
+      "active": false,
+      "sort_order": 100,
+      "description": "EDITORIAL REVIEW DRAFT HIS-04-10. Source PDF page 7; anchor: Transition to the Fourth Republic. Source SHA-256: 7d79d865f6a5a51850a9060bf15f819c8c1d27d65a0ee1bca12f5dc6689ac7dc. Parent mapping: within_parent_span. Not academically or rights approved; do not publish automatically."
+    }
+  ],
+  "date": "2026-10-29 Africa/Lagos",
+  "status": "PASS — all eight reviewed corrections saved",
+  "verification": "Read-only database readback; entire seven-field subtopic projection matches precomputed final target. Original topic projection unchanged.",
+  "database_writes_by_connector": false,
+  "main_ci": "All six checks on merged b45c4d7 now completed SUCCESS, including production Cloudflare and full browser suite."
+}

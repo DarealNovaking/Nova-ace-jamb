@@ -2,6 +2,32 @@
 
 > **Current-state rule:** this opening section is authoritative. Entries below the historical divider are evidence history and do not override this section.
 
+## FCB-02 external-evidence investigation — 2026-10-29
+
+All8corrections verified complete; do not repeat that work. Fresh official-source investigation and live read-only season/config/rights check are recorded in docs/FCB-02-EXTERNAL-EVIDENCE-2026-10-29.md.2027 remains draft/null dates/no config; closed2026 historical config inactive.25v2draft/pending,zeroactive taxonomy. Officialcalendar/third-party pages maintenance; indexedIBASS registration announcement pending. Final2027 facts and applicable source-use basis not established. Statutory concepts/data exclusions and context-dependent fair dealing were checked; do not assert that all short labels require a licence or that government material is automatically reusable. Existing compilation not cleared by this research.
+
+Prepared precise UNSENT support request docs/FCB-02-JAMB-REQUEST-DRAFT-2026-10-29.md. No external messages, database/schema/rights/config/publication or runtime changes. Canonical acceptance unchanged: FCB-02 BLOCKED_EXTERNAL_EVIDENCE, not DONE. Exact next action: obtain rights/use-basis and final2027 documentary clarification through official contact or supplied valid evidence, then genuine-admin activation/publication and actual student/rollback/takedown acceptance. No repeat approval needed for already-authorized development; missing facts/rights cannot be supplied by another generic proceed. Current user action, if seeking that route, is to submit prepared request through officialsupport; sending has not been authorized. Do not silently substitute a provisional season/practice config to mark this batch done.
+
+### Earlier correction evidence
+
+## FCB-02 correction postflight — 2026-10-29 (Africa/Lagos)
+
+Owner reported Apply reviewed corrections done. Fresh read-only SQL confirms all eight reviewed corrections now saved, including History/PHE names and Conditional sentences source note. Entire956-row seven-field subtopic projection equals precomputed final target86806e7337523a601427debd19e26888;214-topic projection remains2012de2bfc6beeebcc1e31a232037c54. All214topics/956subtopics inactive.25v2 versions remain draft/rights pending;50v1 scaffolds unchanged in grouped state (one approved draft/49pending drafts). No connector writes, role/schema/config/rights/publication change. Evidence docs/evidence/fcb-02-corrections-postflight-2026-10-29.json. Merged main b45c4d7 now has all6 GitHub checks completed SUCCESS, including full browser suite and production Cloudflare.
+
+Correction work COMPLETE; no further user click/sign-in/paid automation or staging replay required. FCB-02 overall remains IN PROGRESS because documented source-use basis, official2027 season/config and legitimate published student acceptance remain open. Human subject-teacher prerequisite was withdrawn; do not reinstate it. Exact next action: resolve/document remaining launch source-use and official2027 configuration evidence, preserving inactive drafts until supported publication/activation. Do not claim missing official facts or mark the whole milestone complete.
+
+### Previous release state (superseded by postflight above)
+
+## FCB-02 frontend released — 2026-10-29 (Africa/Lagos)
+
+PR12 merged as b45c4d772362cedb897aa701faa152baff23b53c; its tree e8f512349318272cdb8167de44a9f77de4cb48be exactly matches tested source814a911d710bdfb987ec9765ffa92b5b96fae17b/local a5857ee. PR10 became merged by ancestry; do not merge/replay its older source separately. Full unfiltered E2E40759431770/job123067025376 passed184 desktop/mobile cases (4.2m). Verify40759431969 passed all4jobs; native job123067027083 confirms42SQL scenarios.43localNode tests/typecheck/build passed. Final bounded reviewer found no blocker in callback-ref fix/selection-race regression/full workflow.
+
+Cloudflare production build a534ec00-f99c-4a2a-8c3a-0c5d6806e121 succeeded from main b45c4d7 using npm run build / npx wrangler deploy. Active deployment cde9a3d9-65f1-499f-b5aa-9e2020367758 serves version fc17ae88-5863-41d2-9ed8-481a22a82190 at100%; prior809c6301 retained. Preview build94a8b2b1 succeeded/deployment46de4af5;9preview HTTP asset/route/digest checks passed. 9production HTTP asset/route/digest checks also passed; new correction panel is present in served JS (unauthenticated GET evidence, not live browser execution). No new live schema/roles/claims/rights/config/publication mutation.
+
+Live readback still214inactive topics/956inactive subtopics; current full subtopic projection e5380bea7564102134b8720bece5a771. History/PHE labels and Conditional description remain pending.25v2 remain draft/rights pending. Final target projection86806e7337523a601427debd19e26888. TinyFish exhausted; do not launch further paid runs or top up automatically. The user has already authorized these corrections. Exact next action: user opens regular /admin-academic and presses Apply reviewed corrections under Finish reviewed corrections; then read-only verify target projection and inactive/version state. This is execution in the genuine user session, not another approval request. FCB-02 stays IN PROGRESS pending those fields, source-use basis, official2027 config and published student acceptance.
+
+### Previous checkpoint (superseded by release state above)
+
 - **Updated:** 2026-10-28 — FCB-01 VERIFIED COMPLETE; FCB-02 authenticated administrator helper INSTALLED after specific approval; isolated frontend Preview DEPLOYED/VERIFIED; signed-admin Preview acceptance and existing private staging VERIFIED; production release and publication remain pending.
 - **Latest live correction progress:** fourrenames+twoadds saved throughrealadmin;2labels+1sourcenote pending.214topics/956children/allinactive; actualaddIDs and whole-projectionchecksums in fcb-02-live-corrections-progress-2026-10-28.json. TinyFishcreditexhausted; no newrunsstartedafterlimit. Guardedadmincompletionactioninprogress, no source/rights/season facts invented.
 - **Latest editor acceptance:** source2490040 on fix/fcb02-subtopic-edit /PR12.176browserchecksPASS,allVerifyjobsPASS(42native),36localNode/typecheck/buildPASS,independentreviewclear.9liveHTTPchecksPASS. No live draftcorrectionsyet; stableoriginneedsuserlogin. Production unchanged. ParentCloudflareWorkerIDd94d2a25f876477aa50a2bac80ca7022tracksMAIN;oldbbb0IDwasPREVIEWconfig,notglobalproviderstate. Evidence fcb-02-subtopic-editor-verification-2026-10-28.json.
