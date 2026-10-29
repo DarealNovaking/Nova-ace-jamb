@@ -1,0 +1,44 @@
+{
+  "date": "2026-10-29 Africa/Lagos",
+  "student": {
+    "run_id": "07b99cf3-7354-48fb-a4d7-ad4712bab40b",
+    "profile_id": "prof_71146dfad171406c",
+    "status": "PASS",
+    "steps": 10,
+    "duration_seconds": 101,
+    "observations": [
+      "Authenticated dashboard and published syllabus visible",
+      "32 approved topics reported for the selected four subjects",
+      "Learning topic availability and practice empty state visible; no attempt started",
+      "Student denied /admin-questions; no authoring/import or answer-key controls exposed"
+    ]
+  },
+  "administrator": {
+    "run_id": "243422c1-ad60-4502-ba6c-0e84754de138",
+    "profile_id": "prof_7d8a04d909144650",
+    "status": "PASS",
+    "steps": 10,
+    "duration_seconds": 161,
+    "observations": [
+      "Authorized question workspace and zero-record empty state",
+      "Importer/template/source instructions/25 approved subject options visible",
+      "Topic/subtopic selectors present; specific topic selection not verified by this run",
+      "Question editor opened and closed without saving"
+    ]
+  },
+  "scope": "Genuine saved sessions; read-only inspection only; no question upload/save/review/publication, signout, role or preference change",
+  "preserve_sessions": "Owner explicitly requires no signouts/session clearing; switch saved profiles only",
+  "budget": {
+    "approved_total_usd": 2,
+    "agent_steps": 20,
+    "browser_seconds": 262,
+    "listed_agent_usd_per_step": 0.016,
+    "listed_browser_usd_per_minute": 0.002,
+    "estimated_metered_usd": 0.328733,
+    "wallet_before": 10,
+    "wallet_after_observed": 10.68,
+    "posted_total_charge": "Not reported by provider; wallet delta cannot determine charge because balance increased",
+    "further_metered_runs": false,
+    "limiter_note": "Account ignored max_steps/strict settings; do not rely on these as a hard cost cap. Both bounded-scope runs completed. No further paid run started."
+  }
+}
