@@ -2,6 +2,14 @@
 
 > **Current-state rule:** this opening section is authoritative. Entries below the historical divider are evidence history and do not override this section.
 
+## FCB-02 external-evidence investigation — 2026-10-29
+
+All8corrections verified complete; do not repeat that work. Fresh official-source investigation and live read-only season/config/rights check are recorded in docs/FCB-02-EXTERNAL-EVIDENCE-2026-10-29.md.2027 remains draft/null dates/no config; closed2026 historical config inactive.25v2draft/pending,zeroactive taxonomy. Officialcalendar/third-party pages maintenance; indexedIBASS registration announcement pending. Final2027 facts and applicable source-use basis not established. Statutory concepts/data exclusions and context-dependent fair dealing were checked; do not assert that all short labels require a licence or that government material is automatically reusable. Existing compilation not cleared by this research.
+
+Prepared precise UNSENT support request docs/FCB-02-JAMB-REQUEST-DRAFT-2026-10-29.md. No external messages, database/schema/rights/config/publication or runtime changes. Canonical acceptance unchanged: FCB-02 BLOCKED_EXTERNAL_EVIDENCE, not DONE. Exact next action: obtain rights/use-basis and final2027 documentary clarification through official contact or supplied valid evidence, then genuine-admin activation/publication and actual student/rollback/takedown acceptance. No repeat approval needed for already-authorized development; missing facts/rights cannot be supplied by another generic proceed. Current user action, if seeking that route, is to submit prepared request through officialsupport; sending has not been authorized. Do not silently substitute a provisional season/practice config to mark this batch done.
+
+### Earlier correction evidence
+
 ## FCB-02 correction postflight — 2026-10-29 (Africa/Lagos)
 
 Owner reported Apply reviewed corrections done. Fresh read-only SQL confirms all eight reviewed corrections now saved, including History/PHE names and Conditional sentences source note. Entire956-row seven-field subtopic projection equals precomputed final target86806e7337523a601427debd19e26888;214-topic projection remains2012de2bfc6beeebcc1e31a232037c54. All214topics/956subtopics inactive.25v2 versions remain draft/rights pending;50v1 scaffolds unchanged in grouped state (one approved draft/49pending drafts). No connector writes, role/schema/config/rights/publication change. Evidence docs/evidence/fcb-02-corrections-postflight-2026-10-29.json. Merged main b45c4d7 now has all6 GitHub checks completed SUCCESS, including full browser suite and production Cloudflare.
