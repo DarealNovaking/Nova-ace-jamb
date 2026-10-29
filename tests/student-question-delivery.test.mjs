@@ -5,12 +5,14 @@ import ts from'typescript'
 const data=s=>'data:text/javascript;base64,'+Buffer.from(s).toString('base64')
 const compile=p=>ts.transpileModule(readFileSync(new URL(p,import.meta.url),'utf8'),{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText
 const parserSource=data(compile('../src/lib/studentQuestionDelivery.ts'))
-const {validateAttemptQuestionRequest,parseAttemptQuestions,parsePublishedQuestionIds,parseStudentQuestionTopics,questionDeliveryPhase}=await import(parserSource)
+const {validateAttemptQuestionRequest,parseAttemptQuestions:parsePaper,parsePublishedQuestionIds,parseStudentQuestionTopics,questionDeliveryPhase}=await import(parserSource)
 const attempt='04000000-0000-4000-8000-000000000001',first='03000000-0000-4000-8000-000000000001',second='03000000-0000-4000-8000-000000000002'
+const order=ids=>Object.fromEntries(ids.map(id=>[id,['A','B']]))
+const parseAttemptQuestions=(value,ids,keys=order(ids))=>parsePaper(value,ids,keys)
 const row=id=>({id,question_text:'A reviewed frozen question',options:[{key:'A',text:'First'},{key:'B',text:'Second'}],subject_id:null,topic_id:null,difficulty:'easy'})
 test('validates attempt request identity, bounded paper and unique UUIDs',()=>{
- assert.equal(validateAttemptQuestionRequest(attempt,[first]),attempt)
- for(const [a,ids]of [[null,[first]],['x',[first]],[attempt,[]],[attempt,[first,first]],[attempt,Array(501).fill(first)],[attempt,['bad']]])assert.throws(()=>validateAttemptQuestionRequest(a,ids))
+ assert.equal(validateAttemptQuestionRequest(attempt,[first],order([first])),attempt)
+ for(const [a,ids]of [[null,[first]],['x',[first]],[attempt,[]],[attempt,[first,first]],[attempt,Array(501).fill(first)],[attempt,['bad']]])assert.throws(()=>validateAttemptQuestionRequest(a,ids,order(ids)))
 })
 test('strictly parses complete frozen paper in server-owned attempt order',()=>{
  const result=parseAttemptQuestions([row(second),row(first)],[second,first]);assert.deepEqual(result.map(x=>x.id),[second,first]);assert.equal(result[0].text,'A reviewed frozen question');assert.equal(result[0].options[1].key,'B')
@@ -19,7 +21,7 @@ test('rejects missing, extra, duplicate and reordered paper records',()=>{
  for(const value of [null,{},[],[row(first)],[row(first),row(first)],[row(second),row(first)],[row(first),row(second),row(attempt)]])assert.throws(()=>parseAttemptQuestions(value,[first,second]))
 })
 test('refuses answer leakage, invalid options, oversized text and malformed taxonomy',()=>{
- for(const change of [{correct_option_key:'A'},{explanation:'Private explanation'},{question_text:''},{question_text:'x'.repeat(20001)},{options:[]},{options:[{key:'A',text:'First',is_correct:true}]},{options:[{key:'A',text:'First'},{key:'A',text:'Again'}]},{subject_id:'bad'},{difficulty:'unknown'}])assert.throws(()=>parseAttemptQuestions([{...row(first),...change}],[first]))
+ for(const change of [{correct_option_key:'A'},{explanation:'Private explanation'},{question_text:''},{question_text:'x'.repeat(20001)},{options:[]},{options:[{key:'A',text:'First',is_correct:true}]},{options:[{key:'A',text:'First'},{key:'A',text:'Again'}]},{subject_id:'bad'},{difficulty:'unknown'},{difficulty:['easy']}])assert.throws(()=>parseAttemptQuestions([{...row(first),...change}],[first]))
 })
 test('published metadata IDs are bounded distinct UUIDs, not question records',()=>{
  assert.deepEqual(parsePublishedQuestionIds([first,second],2),[first,second]);assert.deepEqual(parsePublishedQuestionIds([],20),[])
@@ -35,10 +37,10 @@ const fake=data(`export const ace={rpc:async(name,args)=>{const s=globalThis.__a
 const serviceCode=compile('../src/lib/cbtService.ts').replace("from './supabase'",'from '+JSON.stringify(fake)).replace("from './studentQuestionDelivery'",'from '+JSON.stringify(parserSource))
 const {loadCbtQuestions}=await import(data(serviceCode))
 test('CBT service sends actual attempt ID to the installed RPC and never queries questions',async()=>{
- state.calls=[];state.error=null;state.data=[row(first)];const result=await loadCbtQuestions(attempt,[first]);assert.equal(result[0].id,first);assert.deepEqual(state.calls,[{name:'get_attempt_questions',args:{p_attempt_id:attempt}}])
+ state.calls=[];state.error=null;state.data=[row(first)];const result=await loadCbtQuestions(attempt,[first],order([first]));assert.equal(result[0].id,first);assert.deepEqual(state.calls,[{name:'get_attempt_questions',args:{p_attempt_id:attempt}}])
 })
 test('delivery refusal propagates without another RPC, fallback or partial paper',async()=>{
- state.calls=[];state.data=null;state.error={code:'P0002',message:'Attempt questions unavailable'};await assert.rejects(loadCbtQuestions(attempt,[first]));assert.equal(state.calls.length,1);state.error=null;state.data=[];await assert.rejects(loadCbtQuestions(attempt,[first]))
+ state.calls=[];state.data=null;state.error={code:'P0002',message:'Attempt questions unavailable'};await assert.rejects(loadCbtQuestions(attempt,[first],order([first])));assert.equal(state.calls.length,1);state.error=null;state.data=[];await assert.rejects(loadCbtQuestions(attempt,[first],order([first])))
 })
 
 test('expired or closed attempts do not request unavailable question snapshots',()=>{
@@ -57,4 +59,9 @@ test('topic service distinguishes empty results from provider errors and malform
  state.calls=[];state.error=null;state.data=[];assert.deepEqual(await listPublishedTopicQuestionIds(attempt,second),[])
  state.error={message:'unavailable'};await assert.rejects(listPublishedTopicQuestionIds(attempt,second));state.error=null;state.data=[{id:first}];await assert.rejects(listPublishedTopicQuestionIds(attempt,second))
  state.calls=[];await assert.rejects(listPublishedTopicQuestionIds(attempt,second,null,NaN));assert.equal(state.calls.length,0)
+})
+
+test('paper options must exactly match the attempt snapshot keys',()=>{
+ for(const options of [[{key:'A',text:'Only one'}],[{key:'A',text:'First'},{key:'C',text:'Substituted'}],[{key:'A',text:'First'},{key:'B',text:'Second'},{key:'C',text:'Extra'}]])assert.throws(()=>parseAttemptQuestions([{...row(first),options}],[first],order([first])))
+ for(const keys of [null,{}, {[first]:['A','A']}, {[first]:['bad']}, {[first]:[]}, {[first]:['A','B'],[second]:['A','B']}])assert.throws(()=>parseAttemptQuestions([row(first)],[first],keys))
 })

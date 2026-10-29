@@ -71,11 +71,11 @@ export async function resumeCbt(attemptId: string) {
   return data as CbtAttemptState
 }
 
-export async function loadCbtQuestions(attemptId: string, questionIds: string[]): Promise<CbtQuestion[]> {
-  const id = validateAttemptQuestionRequest(attemptId, questionIds)
+export async function loadCbtQuestions(attemptId: string, questionIds: string[], optionOrder: Record<string, string[]>): Promise<CbtQuestion[]> {
+  const id = validateAttemptQuestionRequest(attemptId, questionIds, optionOrder)
   const { data, error } = await ace.rpc('get_attempt_questions', { p_attempt_id: id })
   if (error) throw error
-  return parseAttemptQuestions(data, questionIds)
+  return parseAttemptQuestions(data, questionIds, optionOrder)
 }
 
 export async function saveCbtAnswer(

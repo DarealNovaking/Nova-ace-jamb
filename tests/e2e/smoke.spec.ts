@@ -677,7 +677,7 @@ test.describe('ACE JAMB persistent CBT', () => {
     const attemptId = '40000000-0000-4000-8000-000000000001'
     const startedAt = new Date().toISOString()
     let observedResponseMs: number | null = null
-    let questionSelection: string[] = []
+    let questionRequest: unknown = null
 
     await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/start_attempt'), async (route) => {
       await route.fulfill({ json: {
@@ -696,13 +696,7 @@ test.describe('ACE JAMB persistent CBT', () => {
       } })
     })
     await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/get_attempt_questions'), async (route) => {
-      questionSelection = (new URL(route.request().url()).searchParams.get('select') ?? '').split(',')
-      // The deployed schema stores the prompt as stem; PostgREST supplies the client alias.
-      // A permissive fixture would otherwise hide a request for the nonexistent question_text column.
-      if (!questionSelection.includes('question_text:stem')) {
-        await route.fulfill({ status: 400, json: { code: '42703', message: 'column questions.question_text does not exist' } })
-        return
-      }
+      questionRequest = route.request().postDataJSON()
       await route.fulfill({ json: [{
         id: questionId, question_text: 'Which option is correct?',
         options: [{ key: 'A', text: 'First answer' }, { key: 'B', text: 'Second answer' }],
@@ -730,7 +724,7 @@ test.describe('ACE JAMB persistent CBT', () => {
     await expect(page.getByRole('heading', { name: 'JAMB simulation' })).toBeVisible()
     await expect(page.getByRole('timer', { name: 'Time remaining 00:30:00' })).toBeVisible()
     await expect(page.getByRole('group', { name: 'Which option is correct?' })).toBeVisible()
-    expect(questionSelection).toEqual(['id', 'question_text:stem', 'options', 'subject_id', 'topic_id', 'difficulty'])
+    expect(questionRequest).toEqual({p_attempt_id:attemptId})
     await expect(page.locator('#cbt-question-title')).toHaveCSS('white-space', 'pre-wrap')
     await expect(page.getByRole('button', { name: 'B. First answer' }).locator('span').last()).toHaveCSS('white-space', 'pre-wrap')
     await expect(page.getByRole('button', { name: 'Go to question 1, unanswered' })).toHaveAttribute('aria-current', 'step')
@@ -3463,13 +3457,13 @@ test.describe('FCB03 sealed student question delivery',()=>{
     await expect(page.getByRole('button',{name:'A. Second choice',exact:true})).toBeVisible()
     expect(request).toEqual({p_attempt_id:attemptId});expect(counts.direct).toBe(0);expect(counts.starts).toBe(0)
   })
-  for(const kind of ['partial','private-fields','withdrawn']){
+  for(const kind of ['partial','private-fields','missing-options','substituted-options','withdrawn']){
     test('refuses '+kind+' readback without fallback or creating another attempt',async({page})=>{
       const counts=await setup(page)
       await page.route((url)=>new URL(url).pathname.endsWith('/rest/v1/rpc/get_attempt_questions'),async route=>{
         counts.deliveries++
         if(kind==='withdrawn')await route.fulfill({status:400,json:{code:'P0002',message:'Attempt questions unavailable: private database detail'}})
-        else await route.fulfill({json:kind==='partial'?[]:[{...frozen,correct_option_key:'A',explanation:'Private answer explanation'}]})
+        else await route.fulfill({json:kind==='partial'?[]:kind==='missing-options'?[{...frozen,options:[frozen.options[0]]}]:kind==='substituted-options'?[{...frozen,options:[frozen.options[0],{key:'C',text:'Substitution'}]}]:[{...frozen,correct_option_key:'A',explanation:'Private answer explanation'}]})
       })
       await page.goto('/?cbt=1')
       await expect(page.getByRole('alert')).toContainText('We could not load this CBT session')
