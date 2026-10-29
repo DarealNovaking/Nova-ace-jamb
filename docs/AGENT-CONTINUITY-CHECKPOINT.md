@@ -2,11 +2,13 @@
 
 > **Current-state rule:** this opening section is authoritative. Entries below the historical divider are evidence history and do not override this section.
 
-## Current: FCB-03 question workflow under implementation — 29 October 2026
+## Current: FCB-03 text-question workspace implemented; final verification running — 29 October 2026
 
-FCB-02 remains VERIFIED COMPLETE (the original index restored and active). FCB-03 live read-only inventory: 0 questions/versions/media/sources, no storage buckets, no question authoring RPCs and no client table grants. Existing queue is read-only. Prepared UNAPPLIED secure workflow proposal with private drafts, independent administrator approval, explicit publication/withdrawal, role locking, READ COMMITTED, expected revisions, validated taxonomy/content/source evidence, serialized duplicate checks, immutable snapshots and atomic audits. Local recovered-schema PGlite tests: 37 PASS after inert-stub RED; 7 frontend validation tests PASS after RED; typecheck/build PASS. No production changes.
+FCB-02 remains VERIFIED COMPLETE and the original index active. PR18/feat/fcb03-question-workflow implements the existing-schema text-question authoring/review/publication vertical slice. UNAPPLIED fixed RPC proposal: validated private drafts, different-administrator approval, publish/withdraw, expected revision, source evidence, active taxonomy, serialized duplicates, immutable snapshots and atomic audit. Privileged paginated read avoids restoring answer-key table grants. Administrator/editor UI is available in source at /admin-questions (existing academic gate reused), with the administrator queue also upgraded, safe errors, filtered server pages and stale-response lockout.
 
-PR source is being published to feat/fcb03-question-workflow for native PostgreSQL and focused browser RED. Browser command is TEMPORARILY scoped to FCB-03 with no retries; restore the full command before final acceptance. New editor UI is not implemented yet. No production installation/deployment or bank publication is authorized by these checks. Exact next: observe native/browser results, implement existing-workspace editor and restore full browser suite. Later FCB-03 rich content/media/import/moderation/first lawful reviewed dataset gates remain; this slice does not close FCB-03.
+Evidence: inert SQL stub RED then 37 local full-schema PGlite PASS; native CI job123359936653 PASS all37 (Verify40847936518 all7jobsPASS); frontend validation stubs RED then61fullNodePASS; typecheck/buildPASS. Focused browser RED40847936674/job123359936435 confirmed all8desktop/mobilecases fail at missingNewquestion/Submit/Approve/source-detailcontrols. The UI is now implemented. Full unfiltered browser command RESTORED; new native four-contention cases are included in the final CI run. Final full-browser/native races and independent review pending. No production installation, content mutations, release or paid browser calls.
+
+Exact next action: inspect final CI and independent review, fix material findings, then prepare the concrete installer/release authorization. Do not treat this text-only slice as all FCB-03: rich media/storage, imports/moderation/version restoration and the first lawful independently reviewed dataset remain open. Do not restart FCB-02. No user action currently required.
 
 ### Previous verified state
 

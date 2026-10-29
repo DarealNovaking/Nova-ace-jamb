@@ -82,7 +82,7 @@ create function ace.manage_question(p_action text,p_id uuid,p_expected_version i
 returns jsonb language plpgsql security definer
 set search_path=pg_catalog,pg_temp set lock_timeout='3s' as $$
 declare actor uuid:=auth.uid(); actor_role text; q ace.questions%rowtype; data jsonb;
- old_version integer; was_new boolean; next_state text; next_rights text; reason text; prior jsonb;
+ old_version integer; was_new boolean; reason text; prior jsonb;
 begin
  if actor is null then raise exception 'Question authoring permission required'using errcode='42501';end if;
  if current_setting('transaction_isolation')<>'read committed'then raise exception 'Read committed transaction required'using errcode='25001';end if;

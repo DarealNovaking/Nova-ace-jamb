@@ -9,5 +9,5 @@ export async function listQuestionReview(status: QuestionStatus | null, page: nu
 export async function mutateQuestion(action: QuestionAction,id: string,revision: number,payload: QuestionDraft | {reason: string} | Record<string,never> = {}) {
   const {data,error}=await ace.rpc('manage_question',{p_action:action,p_id:id,p_expected_version:revision,p_payload:action==='save'?validateQuestionDraft(payload):payload})
   if(error) throw error
-  return parseSavedQuestion(data,id,revision)
+  return parseSavedQuestion(data,id,revision,action)
 }

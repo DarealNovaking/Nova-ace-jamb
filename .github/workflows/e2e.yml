@@ -39,7 +39,7 @@ jobs:
       - name: Install Playwright browser
         run: npx playwright install chromium
       - name: Run browser tests
-        run: npm run e2e -- --grep FCB-03 --retries=0 --timeout=10000
+        run: npm run e2e
       - name: Upload Playwright report
         if: always()
         uses: actions/upload-artifact@v4

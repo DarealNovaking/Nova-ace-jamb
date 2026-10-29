@@ -64,9 +64,11 @@ function parseQuestion(value: unknown): QuestionRow {
   validateQuestionDraft(questionDraftFromRow(row))
   return row
 }
-export function parseSavedQuestion(value: unknown, expectedId: string, previousVersion: number): QuestionRow {
+export function parseSavedQuestion(value: unknown, expectedId: string, previousVersion: number, action?: QuestionAction): QuestionRow {
   const row=parseQuestion(value)
   if(row.id!==expectedId||row.content_version!==previousVersion+1) throw Error('The saved revision could not be confirmed. Reload before retrying.')
+  const states: Record<QuestionAction,QuestionStatus>={save:'draft',submit:'in_review',approve:'approved',reject:'rejected',publish:'published',withdraw:'approved'}
+  if(action&&row.review_status!==states[action]) throw Error('The requested question state could not be confirmed.')
   return row
 }
 export function parseQuestionQueue(value: unknown, expectedPage: number): QuestionQueue {

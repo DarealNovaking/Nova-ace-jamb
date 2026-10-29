@@ -4,6 +4,8 @@ import json
 import os
 from pathlib import Path
 import subprocess
+import importlib.util
+import time
 
 ROOT = Path(__file__).resolve().parents[2]
 AUTHOR = '03000000-0000-4000-8000-000000000001'
@@ -84,8 +86,45 @@ insert into ace.subtopics(id,topic_id,syllabus_version_id,name,active)values('%s
     add('snapshot-owner-denial-does-not-enable-history-edit',create+"delete from ace.question_versions;",'permission denied')
     return dict(fixture=fixture,cases=cases)
 
+def races(command, env, run):
+    spec=importlib.util.spec_from_file_location('question_sessions',ROOT/'tests/sql/fcb_01_role_concurrency.py')
+    sessions=importlib.util.module_from_spec(spec);spec.loader.exec_module(sessions)
+    def must(sql):
+        result=run(sql)
+        if result.returncode:raise RuntimeError(result.stderr)
+        # psql's default table display is avoided for the observer's scalar queries.
+        return result.stdout
+    def contend(name, first_sql, second_sql, error=None):
+        first=sessions.Session(command,env,'question_'+name+'_first');second=sessions.Session(command,env,'question_'+name+'_second')
+        try:
+            first.send(first_sql+'\n\\echo FIRST_HELD\n');first.until('FIRST_HELD')
+            second.send(second_sql+'commit;\n')
+            deadline=time.monotonic()+5
+            while time.monotonic()<deadline:
+                if 'Lock' in must('select wait_event_type from pg_stat_activity where pid='+str(second.backend_pid)+';'):break
+                time.sleep(.05)
+            else:raise RuntimeError(name+' did not wait for the expected lock')
+            first.send('commit;\n')
+            if first.finish()!=0:raise RuntimeError(first.output[-2000:])
+            code=second.finish()
+            if error:
+                if code==0 or error not in second.output:raise RuntimeError(name+': '+second.output[-2000:])
+            elif code!=0:raise RuntimeError(name+': '+second.output[-2000:])
+            print('PASS native-contention-'+name,flush=True)
+        finally:first.close();second.close()
+    must('begin;'+plan()['fixture']+'commit;')
+    create=call('save',0,payload())
+    contend('duplicate-create','begin;'+context(AUTHOR)+create,'begin;'+context(AUTHOR)+call('save',0,payload(),qid='03000000-0000-4000-8000-000000000099'),'Duplicate question')
+    contend('stale-edit','begin;'+context(AUTHOR)+call('save',1,payload(stem='First concurrent edit')),'begin;'+context(AUTHOR)+call('save',1,payload(stem='Second concurrent edit')),'Question revision changed')
+    demote="begin;update ace.roles set role='student'where user_id='"+AUTHOR+"';"
+    edit='begin;'+context(AUTHOR)+call('save',2,payload(stem='Authorized before demotion'))
+    contend('authoring-before-demotion',edit,demote)
+    must("update ace.roles set role='editor'where user_id='"+AUTHOR+"';")
+    contend('demotion-before-authoring',demote,'begin;'+context(AUTHOR)+call('save',3,payload(stem='Refused after demotion')),'Question authoring permission required')
+    must("do $$begin if(select content_version from ace.questions where id='"+Q+"')<>3 or(select count(*)from ace.question_versions)<>3 then raise exception 'Concurrent revisions were lost or duplicated';end if;end$$;")
+
 if __name__ == '__main__':
-    parser=argparse.ArgumentParser();parser.add_argument('--emit',action='store_true');args=parser.parse_args()
+    parser=argparse.ArgumentParser();parser.add_argument('--emit',action='store_true');parser.add_argument('--races',action='store_true');args=parser.parse_args()
     if args.emit:
         print(json.dumps(plan()));raise SystemExit
     # A full recovered schema may only be tested in the explicitly named disposable database.
@@ -96,7 +135,7 @@ if __name__ == '__main__':
     env={k:v for k,v in os.environ.items()if not k.startswith('PG')}
     if 'PGPASSWORD'in os.environ:env['PGPASSWORD']=os.environ['PGPASSWORD']
     env['PGCONNECT_TIMEOUT']='5'
-    command=['psql','-X','--no-password','--host=127.0.0.1','--port='+port,'--username=postgres','--dbname=fcb03_question_test','-v','ON_ERROR_STOP=1']
+    command=['psql','-X','-qAt','--no-password','--host=127.0.0.1','--port='+port,'--username=postgres','--dbname=fcb03_question_test','-v','ON_ERROR_STOP=1']
     def run(sql):return subprocess.run(command,input=sql,text=True,capture_output=True,cwd=ROOT,env=env,timeout=30)
     preflight=run("do $$begin if(select array_agg(column_name::text order by ordinal_position)from information_schema.columns where table_schema='auth'and table_name='users')is distinct from array['id','email','raw_user_meta_data']::text[] or exists(select 1 from auth.users)or exists(select 1 from ace.questions)or exists(select 1 from ace.subjects)then raise exception 'Empty recovered disposable database required';end if;end$$;")
     if preflight.returncode:raise SystemExit(preflight.stderr)
@@ -106,3 +145,4 @@ if __name__ == '__main__':
         result=run(case['sql']);error=case['error']
         if (error and (result.returncode==0 or error not in result.stderr))or(not error and result.returncode):raise SystemExit(case['name']+': '+result.stderr)
         print('PASS '+case['name'])
+    if args.races:races(command,env,run)

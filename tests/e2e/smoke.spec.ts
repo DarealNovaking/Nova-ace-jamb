@@ -1026,43 +1026,37 @@ test.describe('ACE JAMB administrator question review visibility', () => {
 })
 
 test.describe('ACE JAMB admin question review pagination', () => {
-  test('navigates server-backed 30-question pages without exposing publish actions', async ({ page }) => {
+  test('navigates server-backed 30-question pages and filters the full bank', async ({ page }) => {
     await mockPreparedStudent(page)
     await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/is_admin'), async (route) => {
       await route.fulfill({ json: true })
     })
     const requestedOffsets: number[] = []
-    const records = Array.from({ length: 32 }, (_, index) => ({
+    const records = Array.from({ length: 32 }, (_, index) => workflowQuestion({
       id: `98000000-0000-4000-8000-${String(index + 1).padStart(12, '0')}`,
-      question_text: `Review item ${index + 1}`,
-      review_status: index % 2 === 0 ? 'draft' : 'pending',
-      active: false, subject_id: subjects[0].id, topic_id: null,
+      stem: `Review item ${index + 1}`,
+      review_status: index % 2 === 0 ? 'draft' : 'in_review',
     }))
-    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/questions'), async (route) => {
-      if (route.request().method() === 'HEAD') return route.fallback()
-      const search = new URL(route.request().url()).searchParams
-      const projection = search.get('select')
-      if (projection !== 'id,question_text:stem,review_status,active,subject_id,topic_id') {
-        await route.fulfill({ status: 400, json: { code: '42703', message: 'Invalid question review projection; prompt column is stem' } })
-        return
-      }
-      const offset = Number(search.get('offset') ?? 0)
-      const limit = Number(search.get('limit') ?? 30)
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/review_questions'), async route => {
+      const data=route.request().postDataJSON()
+      const offset=data.p_page*30
       requestedOffsets.push(offset)
-      await route.fulfill({ json: records.slice(offset, offset + limit) })
+      const filtered=records.filter(row=>!data.p_status||row.review_status===data.p_status)
+      await route.fulfill({json:{questions:filtered.slice(offset,offset+30),page:data.p_page,has_next:filtered.length>offset+30,actor_role:'admin'}})
     })
     await page.goto('/admin')
     const review = page.locator('section[aria-labelledby="admin-review-questions-heading"]')
     await expect(review.getByText('Review item 1', { exact: true })).toBeVisible()
     await expect(review.getByText('Review item 30', { exact: true })).toBeVisible()
     await expect(review.getByText('Review item 31', { exact: true })).toHaveCount(0)
-    await expect(review.getByText('30 of 30 records on page 1 shown.')).toBeVisible()
+    await expect(review.getByText('30 records on page 1 shown. Status filtering applies to the full question bank.')).toBeVisible()
     await review.getByLabel('Filter review status').selectOption('draft')
-    await expect(review.getByText('15 of 30 records on page 1 shown.')).toBeVisible()
+    await expect(review.getByText('16 records on page 1 shown. Status filtering applies to the full question bank.')).toBeVisible()
+    await review.getByLabel('Filter review status').selectOption('all')
     await review.getByRole('button', { name: 'Next questions' }).click()
     await expect(review.getByText('Review item 31', { exact: true })).toBeVisible()
     await expect(review.getByText('Review item 32', { exact: true })).toBeVisible()
-    await expect(review.getByText('2 of 2 records on page 2 shown.')).toBeVisible()
+    await expect(review.getByText('2 records on page 2 shown. Status filtering applies to the full question bank.')).toBeVisible()
     await expect(review.getByRole('button', { name: 'Next questions' })).toBeDisabled()
     await review.getByRole('button', { name: 'Previous questions' }).click()
     await expect(review.getByText('Review item 1', { exact: true })).toBeVisible()
@@ -1103,7 +1097,7 @@ test.describe('FCB-03 question authoring workflow',()=>{
     await mockQuestionWorkspace(page,records)
     let saved: Record<string,any> | null=null
     await page.route((url)=>new URL(url).pathname.endsWith('/rest/v1/rpc/manage_question'),async route=>{
-      saved=route.request().postDataJSON();const row=workflowQuestion({...saved!.p_payload,id:saved!.p_id});records.push(row);await route.fulfill({json:row})
+      saved=route.request().postDataJSON();const row=workflowQuestion({...saved!.p_payload,id:saved!.p_id,provenance:{...saved!.p_payload.provenance,last_content_editor:userId}});records.push(row);await route.fulfill({json:row})
     })
     await page.goto('/admin')
     await page.getByRole('button',{name:'New question',exact:true}).click()

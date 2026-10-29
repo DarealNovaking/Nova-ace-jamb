@@ -24,6 +24,7 @@ test('requires correct saved identity and a new revision',()=>{
  assert.throws(()=>parseSavedQuestion(row(),reviewer,0))
  assert.throws(()=>parseSavedQuestion(row(),author,1))
  assert.throws(()=>parseSavedQuestion({...row(),active:true},author,0))
+  assert.throws(()=>parseSavedQuestion(row(),author,0,'publish'))
 })
 test('validates bounded server pages and refuses malformed rows',()=>{
  const q=parseQuestionQueue({questions:[row()],page:0,has_next:false,actor_role:'editor'},0);assert.equal(q.questions.length,1)

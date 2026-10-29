@@ -93,6 +93,7 @@ export default function AdminFoundationGate() {
           <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-5"><p className="text-xs uppercase tracking-wider text-white/35">Publication gate</p><p className="mt-2 text-xl font-black">Source + rights review</p></div>
         </div>
 
+        <a href="/admin-questions" className="inline-flex min-h-11 items-center rounded-xl border border-purple-300/30 px-4 py-2 text-sm font-semibold text-purple-100">Question editor workspace</a>
         <AdminOperationsOverview />
         <AdminQuestionReviewQueue />
       </div>
