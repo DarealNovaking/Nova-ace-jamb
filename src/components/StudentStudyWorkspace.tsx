@@ -6,7 +6,7 @@ import StudentQuickRevision from './StudentQuickRevision'
 import { ArrowLeft, BookOpen, Brain, CalendarDays, CheckCircle2, Clock3, Layers3, ListChecks, Sparkles, Target, Trophy } from 'lucide-react'
 
 type Subject = { id: string; name: string; code: string }
-type Topic = { id: string; subject_id?: string; name: string; description: string | null; subjectName: string; sort_order: number; subtopics?: Array<{ id: string; name: string; description: string | null }> }
+type Topic = { independentStudyIndex?: boolean; sourceUrl?: string | null; id: string; subject_id?: string; name: string; description: string | null; subjectName: string; sort_order: number; subtopics?: Array<{ id: string; name: string; description: string | null }> }
 export type StudentWorkspaceMode = 'learn' | 'practice' | 'revision' | 'flashcards' | 'progress' | 'plan'
 type Props = {
   mode: StudentWorkspaceMode
@@ -79,6 +79,7 @@ export default function StudentStudyWorkspace({ mode, subjects, topics, onBack, 
           })}
         </nav>
 
+        {topics.some(topic => topic.independentStudyIndex) && <p className="mb-5 rounded-2xl border border-purple-300/20 bg-purple-300/5 p-4 text-sm leading-6 text-white/70">ACE’s original study index references JAMB topic coverage. It is not an official JAMB publication or a complete lesson. Practice uses the verified 2026 format; 2027 dates and prescribed texts remain unconfirmed.</p>}
         <div id="workspace-content" tabIndex={-1} className="outline-none">
         {mode === 'learn' && <section className="grid gap-5 lg:grid-cols-[.85fr_1.15fr]">
           <div className="glass-card rounded-3xl p-5 sm:p-6">
@@ -106,6 +107,7 @@ export default function StudentStudyWorkspace({ mode, subjects, topics, onBack, 
               <p className="text-xs uppercase tracking-[.2em] text-purple-200/70">{selectedTopic.subjectName} · Approved syllabus outline</p>
               <h2 className="mt-3 text-2xl font-black">{selectedTopic.name}</h2>
               <p className="mt-4 whitespace-pre-wrap leading-7 text-white/65">{selectedTopic.description || 'No approved topic description is published yet.'}</p>
+              {selectedTopic.independentStudyIndex && selectedTopic.sourceUrl && <a className="mt-3 inline-block text-sm text-purple-200 underline" href={selectedTopic.sourceUrl} target="_blank" rel="noopener noreferrer">Official JAMB coverage reference (PDF)</a>}
               <button type="button" onClick={() => {
                 const s = subjects.find((s) => s.id === selectedTopic.subject_id || s.name === selectedTopic.subjectName)
                 if (s) onStartCbt('practice', 'topic', s.id, selectedTopic.id)

@@ -2972,3 +2972,67 @@ test('student outline excludes reserved editorial notes from display and search'
   await expect(page.getByText('No approved subtopic description is published yet.')).toBeVisible()
   await expect(page.getByText(note, { exact: true })).toHaveCount(0)
 })
+
+test.describe('ACE original study-index publication', () => {
+  test('publishes only on explicit action, verifies readback and withdraws', async ({ page }) => {
+    await mockReviewedCorrectionBatch(page)
+    const actions: string[] = []
+    let state = 'absent'
+    const digest = '77045759503d5b89be336dad2942bebc9eb67540c1c63c81d75db5324370ba7f'
+    await page.route(`${projectUrl}/rest/v1/rpc/manage_fcb02_study_index`, async route => {
+      const body = route.request().postDataJSON()
+      expect(body.p_digest).toBe(digest)
+      expect(JSON.parse(body.p_package).index.topics).toHaveLength(108)
+      actions.push(body.p_action)
+      if (body.p_action === 'publish') state = 'published'
+      if (body.p_action === 'withdraw') state = 'withdrawn'
+      await route.fulfill({ json: { state, changed: false, digest, versions: state === 'absent' ? 0 : 25, topics: state === 'absent' ? 0 : state === 'withdrawn' ? 109 : 108, concepts: state === 'absent' ? 0 : 1167, source_year: 2026 } })
+    })
+    await page.goto('/admin-academic')
+    const panel = page.getByRole('region', { name: 'ACE study index publication' })
+    await expect(panel).toBeVisible()
+    expect(actions).toEqual([])
+    await panel.getByRole('button', { name: 'Publish ACE study index' }).click()
+    await expect(panel.getByRole('status')).toContainText('published and checked')
+    expect(actions).toEqual(['publish', 'check'])
+    await expect(page.getByRole('region', { name: '2026 practice baseline' })).toHaveCount(0)
+    await panel.getByRole('button', { name: 'Withdraw ACE study index' }).click()
+    await expect(panel.getByRole('status')).toContainText('withdrawn and checked')
+    expect(actions).toEqual(['publish', 'check', 'withdraw', 'check'])
+    await expect(page.getByRole('region', { name: '2026 practice baseline' })).toBeVisible()
+  })
+
+  test('uncertain publication blocks retry, preserves withdrawal and hides server details', async ({ page }) => {
+    await mockReviewedCorrectionBatch(page)
+    await page.route(`${projectUrl}/rest/v1/rpc/manage_fcb02_study_index`, route => route.fulfill({ status: 503, json: { message: 'private study database details' } }))
+    await page.goto('/admin-academic')
+    const panel = page.getByRole('region', { name: 'ACE study index publication' })
+    await panel.getByRole('button', { name: 'Publish ACE study index' }).click()
+    await expect(panel.getByRole('alert')).toContainText('final state could not be confirmed')
+    await expect(panel.getByRole('button', { name: 'Publish ACE study index' })).toBeDisabled()
+    await expect(panel.getByRole('button', { name: 'Withdraw ACE study index' })).toBeEnabled()
+    await expect(panel).not.toContainText('private study database details')
+  })
+
+  test('editors cannot see publication controls', async ({ page }) => {
+    await mockReviewedCorrectionBatch(page)
+    await page.route(`${projectUrl}/rest/v1/rpc/is_admin`, route => route.fulfill({ json: false }))
+    await page.goto('/admin-academic')
+    await expect(page.getByRole('heading', { name: 'Create a draft syllabus version' })).toBeVisible()
+    await expect(page.getByRole('region', { name: 'ACE study index publication' })).toHaveCount(0)
+  })
+})
+
+test('original index explains its scope and links to official coverage', async ({ page }) => {
+  await mockSyllabusPublicationState(page, 'approved')
+  await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/syllabus_versions'), route => route.fulfill({ json: [{
+    id: '60000000-0000-4000-8000-000000000001', season_id: '50000000-0000-4000-8000-000000000001', subject_id: subjects[0].id,
+    status: 'active', rights_status: 'approved', provenance: { package: 'fcb-02-original-study-index' }, source_url: 'https://ibass.jamb.gov.ng/static/media/English.abc.pdf',
+  }] }))
+  await page.goto('/')
+  await page.getByRole('button', { name: /Learn Approved syllabus topics/ }).click()
+  await expect(page.getByText(/ACE’s original study index references JAMB topic coverage/)).toBeVisible()
+  await expect(page.getByText(/2027 dates and prescribed texts remain unconfirmed/)).toBeVisible()
+  await page.getByRole('button', { name: /Verified comprehension fixture/ }).click()
+  await expect(page.getByRole('link', { name: 'Official JAMB coverage reference (PDF)' })).toHaveAttribute('href', 'https://ibass.jamb.gov.ng/static/media/English.abc.pdf')
+})

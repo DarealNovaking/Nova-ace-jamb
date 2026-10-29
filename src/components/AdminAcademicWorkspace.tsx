@@ -3,6 +3,8 @@ import { BookOpen, CheckCircle2, CircleAlert, FilePlus2, Loader2, Plus, RefreshC
 import AdminSyllabusReviewPackage from './AdminSyllabusReviewPackage'
 import ReviewedDraftCorrections from './ReviewedDraftCorrections'
 import AdminPracticeBaseline from './AdminPracticeBaseline'
+import AdminStudyPublication from './AdminStudyPublication'
+import type { StudyState } from '../lib/studyPublication'
 import { ace } from '../lib/supabase'
 import { normalizeSubtopicEdit } from '../lib/syllabusEdit'
 import { listSeasons, type ExamSeason, type SyllabusVersion, type SyllabusTopic, type SyllabusSubtopic } from '../lib/seasonService'
@@ -15,6 +17,7 @@ const buttonClass = 'inline-flex items-center justify-center gap-2 rounded-xl bg
 const secondaryClass = 'inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 px-3 py-2 text-sm font-semibold text-white/80 transition hover:bg-white/5 disabled:opacity-40'
 
 export default function AdminAcademicWorkspace({ canApprove = false }: { canApprove?: boolean }) {
+  const [indexPublicationState, setIndexPublicationState] = useState<StudyState | null>(null)
   const [seasons, setSeasons] = useState<ExamSeason[]>([])
   const [subjects, setSubjects] = useState<Subject[]>([])
   const [versions, setVersions] = useState<VersionRow[]>([])
@@ -290,7 +293,7 @@ export default function AdminAcademicWorkspace({ canApprove = false }: { canAppr
 
   return (
     <div className="space-y-6">
-      {canApprove && <AdminPracticeBaseline/>}
+      {canApprove && <>{!(indexPublicationState === 'published' || (indexPublicationState === null && versions.some(version => version.provenance?.package === 'fcb-02-original-study-index' && version.status === 'active'))) && <AdminPracticeBaseline/>}<AdminStudyPublication onConfirmed={setIndexPublicationState}/></>}
       {canApprove && <ReviewedDraftCorrections onChanged={() => { if (selectedVersionId) void loadTree(selectedVersionId).catch(() => setError('Corrections were saved, but the topic list could not be refreshed. Refresh the workspace.')) }}/>}
       {canApprove && <AdminSyllabusReviewPackage onChanged={() => { void loadWorkspace() }}/>}
       {error && <div role="alert" className="flex gap-3 rounded-2xl border border-red-400/20 bg-red-500/10 p-4 text-sm text-red-100"><CircleAlert className="shrink-0" size={18}/><p>{error}</p></div>}
