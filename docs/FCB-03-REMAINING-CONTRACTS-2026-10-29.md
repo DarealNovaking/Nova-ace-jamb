@@ -23,3 +23,8 @@ Dashboard redesign PR21 is merged as8a107e3832b59f67c58ccdf1b649054e22cad66d and
 ## Student delivery prerequisite — PR22
 
 Read-only live audit found direct student question reads blocked by deliberately revoked table/column grants. PR22 replaces those reads with existing sealed attempt delivery plus two bounded metadata-only RPC proposals, strict complete-paper/option validation and expired-session submit retry. Code/database checks pass; all258desktop/mobile browser tests pass and expired-session retry screenshots were inspected. See docs/FCB-03-STUDENT-DELIVERY-RELEASE-2026-10-29.md. No production install/deployment/content changes yet. This repair precedes the rich-content/media work and does not complete it.
+
+
+## Rich-content v1 source-only candidate — 29 October 2026
+
+A bounded v1 parser and accessible escaped React renderer were added to `feat/fcb03-rich-content-contract`; see `docs/FCB-03-RICH-CONTENT-V1-IMPLEMENTATION-2026-10-29.md`. These are not wired to the existing plain-text RPC/editor/CBT. Server-side validation, private media binding, storage, student signed delivery, retention, ownership/rights checks, and production release remain OPEN. CI pending; no live changes performed. The existing strict rejection of unsupported rich fields remains intentional.
