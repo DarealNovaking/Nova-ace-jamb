@@ -20,7 +20,7 @@ function ensureReady(): Promise<void> {
   if (!initialization) initialization = (async () => {
     // Exact mechanism recommended for Supabase's Edge/WASM runtime.
     const wasm = await Deno.readFile(
-      new URL('magick.wasm', import.meta.resolve('npm:@imagemagick/magick-wasm@0.0.44')),
+      new URL('x86/magick.wasm', import.meta.resolve('npm:@imagemagick/magick-wasm@0.0.44')),
     )
     await initializeImageMagick(wasm)
     // The default ImageMagick policy is broader than an untrusted file uploader.
