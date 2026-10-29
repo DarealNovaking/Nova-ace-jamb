@@ -1,0 +1,63 @@
+{
+  "date": "2026-10-29 Africa/Lagos",
+  "pr": 19,
+  "source": "d4494b24efedcf9149852943ac6db4206b8032ce",
+  "application_source": "375b231455f97499f88b023c99f7d831328dfaed",
+  "scope": "UTF-8 CSV up to 100 questions/1 MiB, per-topic preview, private draft saves through existing guarded RPC, stop on uncertain readback, receipt, no publication",
+  "owner_acceptance": {
+    "existing_deployed_question_workspace_opens": "Confirmed by owner in chat",
+    "production_save_and_independent_review": "Not manually verified",
+    "bulk_import": "Not deployed"
+  },
+  "local": {
+    "node_tests": 72,
+    "typecheck": "PASS",
+    "build": "PASS",
+    "browser_collection": 224,
+    "local_browser": "Unavailable: browser download was truncated; executed browsers in GitHub CI"
+  },
+  "red": {
+    "unit": "Inert parser/runner failed expected behavioral assertions",
+    "render": "Real queue server rendering lacked Import questions entry before implementation",
+    "browser": {
+      "run": 40877145402,
+      "job": 123458768120,
+      "finding": "locator.click timeout waiting for Import questions before UI existed; run subsequently canceled by implementation push"
+    }
+  },
+  "ci": {
+    "verify_run": 40878284522,
+    "verify_jobs": 7,
+    "verify_status": "PASS",
+    "node20_passed": 60,
+    "node24_passed": 12,
+    "native_question_job": 123462680497,
+    "native_question_scenarios": 61,
+    "native_sequential": 57,
+    "native_contention": 4,
+    "browser_run": 40878284412,
+    "browser_job": 123463430904,
+    "browser_status": "PASS",
+    "browser_passed": 224,
+    "browser_unfiltered": true,
+    "browser_duration": "5.1m",
+    "artifact": 12900055392,
+    "artifact_sha256": "16587ed24be84fa462ee5065c846fe4c96f9afd997045d1d2ee25736bb6aa55d"
+  },
+  "review": {
+    "independent": "No material findings; 11 importer tests independently passed",
+    "deferred_minors": [
+      "Deterministic delayed File.arrayBuffer stale-read browser regression",
+      "Exact-limit acceptance and multibyte UTF-8 byte-limit parser regressions"
+    ],
+    "guard_inspection": "Corresponding generation/byte bounds present; browser/accessibility execution not claimed by reviewer",
+    "layout": "Passing desktop and mobile import screenshots inspected; readable controls, wrapping and no horizontal overflow"
+  },
+  "release": {
+    "status": "Not merged or deployed; explicit production approval required by AGENTS.md",
+    "no_database_migration": true,
+    "no_production_content_mutation": true,
+    "no_questions_published": true
+  },
+  "source_identity": "All seven application/test/CI blob hashes match the local verified worktree"
+}

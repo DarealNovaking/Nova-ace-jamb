@@ -166,9 +166,79 @@
     "advisor_assessment": "Only the two expected authenticated SECURITY DEFINER RPC notices were added; prior findings unchanged."
   },
   "release": {
-    "main_merge": "pending",
-    "production_deployment": "pending",
-    "previous_production_version": "5e377d6f-7845-4b5b-835b-108743f6ba53"
+    "main_merge": "91f610f83df92edf0b03fda735848571fc3a0bd1",
+    "pr_merged": true,
+    "production_deployment": "PASS",
+    "failed_build": "4ac3635e-6662-4997-a3e5-b155e0db93a4",
+    "build_passed": true,
+    "deploy_error": {
+      "stage": "assets-upload-session",
+      "code": 10013,
+      "message": "An unknown error has occurred"
+    },
+    "production_version": "074a87c2-dfae-4e39-9a72-e74d404cf64a",
+    "production_percentage": 100,
+    "retry": "Explicitly approved by owner; one exact-commit retry succeeded",
+    "exact_retry": {
+      "trigger": "0e4b50fc-9c5e-4cde-bdd4-cede32aed57e",
+      "commit": "91f610f83df92edf0b03fda735848571fc3a0bd1"
+    },
+    "production_deployment_id": "931f2f95-efc8-4c71-8c16-f3ecf6f80254",
+    "retry_build": "5b390bf3-40ea-4a7b-893d-f4bee10284b5",
+    "retry_completed_utc": "2026-10-29T12:22:27.378Z",
+    "http_verification": {
+      "status": "PASS",
+      "base": "https://nova-ace-jamb.novaking5002.workers.dev",
+      "checks": [
+        {
+          "path": "/",
+          "status": 200,
+          "sha256": "d472f336ca7a158b0a42a3d63a56fafe3af44ad22b88216a06628ea424901293"
+        },
+        {
+          "path": "/admin",
+          "status": 200,
+          "sha256": "d472f336ca7a158b0a42a3d63a56fafe3af44ad22b88216a06628ea424901293"
+        },
+        {
+          "path": "/admin-academic",
+          "status": 200,
+          "sha256": "d472f336ca7a158b0a42a3d63a56fafe3af44ad22b88216a06628ea424901293"
+        },
+        {
+          "path": "/admin-import",
+          "status": 200,
+          "sha256": "d472f336ca7a158b0a42a3d63a56fafe3af44ad22b88216a06628ea424901293"
+        },
+        {
+          "path": "/admin-questions",
+          "status": 200,
+          "sha256": "d472f336ca7a158b0a42a3d63a56fafe3af44ad22b88216a06628ea424901293"
+        },
+        {
+          "path": "/assets/index-DNaYAtzI.js",
+          "status": 200,
+          "sha256": "95732f379f98033af2ada1bc05ed67072a0d35060be8350a6c86cb7c8531da5c"
+        },
+        {
+          "path": "/assets/AcademicFoundationGate-qhbhp8rm.js",
+          "status": 200,
+          "sha256": "a7d4239fd8e862946d7e1a137892914a3d0e4027e9aea982814b130d04996d85"
+        },
+        {
+          "path": "/assets/AdminQuestionReviewQueue-Bj4kmkjj.js",
+          "status": 200,
+          "sha256": "b3373ae4d05fa97932afb44f25d070768e5750867f65feeb872eeeab05ebca10"
+        },
+        {
+          "path": "/sw.js",
+          "status": 200,
+          "sha256": "e45b9adf10236c941a35caba1695f46b92ec3d5f2f47b74ff4ab33100160bf5b"
+        }
+      ],
+      "route_and_question_rpc_assets_present": true,
+      "scope": "Unauthenticated HTTP GET only; actual signed-in production author/reviewer acceptance pending."
+    }
   },
   "scope": "Text-question authoring/review/publication slice only. FCB-03 remains IN PROGRESS; media/rich-content, import/moderation/version restoration, first lawful reviewed dataset and actual signed-in production acceptance remain."
 }

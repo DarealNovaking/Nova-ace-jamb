@@ -1178,6 +1178,107 @@ test.describe('FCB-03 question authoring workflow',()=>{
   })
 })
 
+const importColumns=['question','option_a','option_b','option_c','option_d','correct_option','explanation','difficulty','attribution','exam_year','source_kind','source_title','author','source_url','rights_evidence']
+function questionCsv(stems=['What is 3 + 4?']) {
+  return [importColumns,...stems.map(stem=>[stem,'5','6','7','8','C','Adding four to three gives seven.','easy','ACE practice','','original','ACE arithmetic','ACE team','','Original exercise.'])].map(row=>row.map(value=>'"'+value.replaceAll('"','""')+'"').join(',')).join('\r\n')
+}
+async function openQuestionImport(page: import('@playwright/test').Page) {
+  await page.goto('/admin-questions')
+  await page.getByRole('button',{name:'Import questions',exact:true}).click()
+  const panel=page.getByRole('region',{name:'Bulk question import',exact:true})
+  await panel.getByRole('combobox',{name:'Import subject',exact:true}).selectOption(subjects[1].id)
+  await panel.getByRole('combobox',{name:'Import syllabus topic',exact:true}).selectOption(workflowTopic)
+  return panel
+}
+async function previewCsv(panel: import('@playwright/test').Locator, text: string) {
+  await panel.getByLabel('Question CSV file',{exact:true}).setInputFiles({name:'questions.csv',mimeType:'text/csv',buffer:Buffer.from(text)})
+  await panel.getByRole('button',{name:'Preview CSV',exact:true}).click()
+}
+test.describe('FCB-03 CSV question intake',()=>{
+  test('previews safely, downloads an empty template and saves only private drafts',async({page},testInfo)=>{
+    const records:ReturnType<typeof workflowQuestion>[]=[]
+    await mockQuestionWorkspace(page,records)
+    const calls:Record<string,any>[]=[]
+    await page.route((url)=>new URL(url).pathname.endsWith('/rest/v1/rpc/manage_question'),async route=>{
+      const data=route.request().postDataJSON();calls.push(data)
+      const row=workflowQuestion({...data.p_payload,id:data.p_id,provenance:{...data.p_payload.provenance,last_content_editor:userId}})
+      records.push(row);await route.fulfill({json:row})
+    })
+    const panel=await openQuestionImport(page)
+    const download=await panel.getByRole('link',{name:'Download CSV template'}).getAttribute('href')
+    expect(decodeURIComponent(download!.split(',').slice(1).join(','))).toBe(importColumns.join(',')+'\r\n')
+    await previewCsv(panel,questionCsv(['Which says "yes", on line 2?\n<img src=x onerror=alert(1)> π','Second exercise']))
+    await expect(panel.getByText('2 valid questions ready for private-draft import.',{exact:true})).toBeVisible()
+    expect(calls).toHaveLength(0);await expect(panel.locator('img')).toHaveCount(0)
+    await expect(panel.getByRole('button',{name:'Save 2 private drafts'})).toBeDisabled()
+    await panel.getByRole('checkbox').check()
+    expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true)
+    await panel.screenshot({path:testInfo.outputPath('question-import.png')})
+    await panel.getByRole('button',{name:'Save 2 private drafts'}).click()
+    await expect(panel.getByText('2 confirmed saved · 0 unconfirmed · 0 not attempted',{exact:true})).toBeVisible()
+    expect(calls).toHaveLength(2)
+    for(const data of calls){expect(data.p_action).toBe('save');expect(data.p_expected_version).toBe(0);expect(data.p_payload.exam).toBe('ACE practice');expect(data.p_payload).not.toHaveProperty('active')}
+    await panel.getByRole('button',{name:'Close import and refresh questions'}).click()
+    await expect(page.getByRole('button',{name:'Submit for review',exact:true})).toHaveCount(2)
+  })
+  test('blocks invalid and duplicate records without a write and invalidates changed context',async({page})=>{
+    await mockQuestionWorkspace(page)
+    const panel=await openQuestionImport(page)
+    await previewCsv(panel,questionCsv(['Duplicate','  duplicate  ']))
+    await expect(panel.getByRole('alert').filter({hasText:'Duplicate question text'})).toBeVisible()
+    await expect(panel.getByRole('button',{name:/Save \d+ private draft/})).toBeDisabled()
+    await previewCsv(panel,questionCsv())
+    await expect(panel.getByText('1 valid question ready for private-draft import.',{exact:true})).toBeVisible()
+    await panel.getByRole('combobox',{name:'Import syllabus topic',exact:true}).selectOption('')
+    await expect(panel.getByRole('button',{name:/Save \d+ private draft/})).toHaveCount(0)
+    await expect(panel.getByRole('button',{name:'Preview CSV',exact:true})).toBeDisabled()
+  })
+  test('rejects oversized and malformed CSV while retaining a recovery path',async({page})=>{
+    await mockQuestionWorkspace(page)
+    const panel=await openQuestionImport(page)
+    await previewCsv(panel,questionCsv()+'\r\n"unfinished')
+    await expect(panel.getByRole('alert')).toContainText('not closed')
+    await previewCsv(panel,'x'.repeat(1048577))
+    await expect(panel.getByRole('alert')).toContainText('1 MiB')
+    await previewCsv(panel,questionCsv())
+    await expect(panel.getByText('1 valid question ready for private-draft import.',{exact:true})).toBeVisible()
+  })
+  test('stops after an unconfirmed row and preserves confirmed IDs without replay',async({page})=>{
+    await mockQuestionWorkspace(page)
+    let writes=0
+    await page.route((url)=>new URL(url).pathname.endsWith('/rest/v1/rpc/manage_question'),async route=>{
+      writes++;const data=route.request().postDataJSON()
+      if(writes===2)return route.fulfill({status:409,json:{code:'23505',message:'sensitive internal detail'}})
+      await route.fulfill({json:workflowQuestion({...data.p_payload,id:data.p_id,provenance:{...data.p_payload.provenance,last_content_editor:userId}})})
+    })
+    const panel=await openQuestionImport(page);await previewCsv(panel,questionCsv(['First','Second','Third']))
+    await panel.getByRole('checkbox').check();await panel.getByRole('button',{name:'Save 3 private drafts'}).click()
+    await expect(panel.getByText('1 confirmed saved · 1 unconfirmed · 1 not attempted',{exact:true})).toBeVisible()
+    await expect(panel.getByRole('alert')).toContainText('Check the question list before retrying')
+    await expect(panel.getByText('sensitive internal detail')).toHaveCount(0)
+    await expect(panel.getByRole('button',{name:'Save 3 private drafts'})).toBeDisabled()
+    await expect(panel.getByLabel('Question CSV file',{exact:true})).toBeDisabled()
+    expect(writes).toBe(2)
+  })
+  test('signout during a batch clears the preview and prevents subsequent writes',async({page})=>{
+    await mockQuestionWorkspace(page)
+    let release:()=>void=()=>{};let writes=0
+    const wait=new Promise<void>(resolve=>{release=resolve})
+    await page.route((url)=>new URL(url).pathname.endsWith('/rest/v1/rpc/manage_question'),async route=>{
+      writes++;const data=route.request().postDataJSON();await wait
+      await route.fulfill({json:workflowQuestion({...data.p_payload,id:data.p_id,provenance:{...data.p_payload.provenance,last_content_editor:userId}})})
+    })
+    const panel=await openQuestionImport(page);await previewCsv(panel,questionCsv(['First','Second']))
+    await panel.getByRole('checkbox').check();await panel.getByRole('button',{name:'Save 2 private drafts'}).click()
+    await expect.poll(()=>writes).toBe(1)
+    await page.evaluate(()=>{const key='sb-uokiqlgmzprqfbzmedaz-auth-token';localStorage.removeItem(key);const channel=new BroadcastChannel(key);channel.postMessage({event:'SIGNED_OUT',session:null});channel.close()})
+    await expect(page.getByRole('heading',{name:'Academic editor access required'})).toBeVisible()
+    await expect(panel).toHaveCount(0)
+    const unexpected=page.waitForRequest(request=>new URL(request.url()).pathname.endsWith('/rest/v1/rpc/manage_question'),{timeout:500})
+    release();await expect(unexpected).rejects.toThrow();expect(writes).toBe(1)
+  })
+})
+
 test.describe('ACE JAMB admin operations count recovery', () => {
   test('does not report unavailable counts as zero and recovers on refresh', async ({ page }) => {
     await mockPreparedStudent(page)

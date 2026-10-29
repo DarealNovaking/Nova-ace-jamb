@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { FileQuestion, Loader2, RefreshCw } from 'lucide-react'
 import { getCurrentUser } from '../lib/authService'
 import { listQuestionReview, mutateQuestion } from '../lib/questionWorkflowService'
 import { questionActions, type QuestionAction, type QuestionQueue, type QuestionRow, type QuestionStatus } from '../lib/questionWorkflow'
 import AdminQuestionEditor from './AdminQuestionEditor'
+const AdminQuestionImport = lazy(() => import('./AdminQuestionImport'))
 
 const button='min-h-11 rounded-xl border border-white/15 px-4 py-2 text-sm font-semibold disabled:opacity-40'
 const labels: Record<Exclude<QuestionAction,'save'>,string>={submit:'Submit for review',approve:'Approve question',reject:'Reject question',publish:'Publish question',withdraw:'Withdraw question'}
@@ -19,6 +20,7 @@ export default function AdminQuestionReviewQueue() {
   const [notice,setNotice]=useState('')
   const [mustReload,setMustReload]=useState(false)
   const [editor,setEditor]=useState<QuestionRow|null|undefined>(undefined)
+  const [importing,setImporting]=useState(false)
   const [notes,setNotes]=useState<Record<string,string>>({})
   const sequence=useRef(0)
   async function refresh() {
@@ -40,15 +42,16 @@ export default function AdminQuestionReviewQueue() {
     finally{setBusy(false)}
   }
   function saved() {setEditor(undefined);setNotice('Private draft saved. Submit it for independent review when ready.');void refresh()}
-  const disabled=loading||busy||mustReload||editor!==undefined
+  const disabled=loading||busy||mustReload||editor!==undefined||importing
   return <section aria-labelledby="admin-review-questions-heading" className="mt-6 rounded-3xl border border-white/10 bg-white/[.025] p-5 sm:p-7">
     <div className="flex flex-wrap items-start justify-between gap-4"><div><div className="flex items-center gap-2"><FileQuestion className="text-purple-200" size={21} aria-hidden="true"/><h2 id="admin-review-questions-heading" className="text-xl font-black">Question publication review</h2></div><p className="mt-2 max-w-2xl text-sm leading-6 text-white/60">Author private text questions against the approved syllabus. A different administrator reviews each question before publication. Choices, answers, explanations and source evidence remain restricted to the editorial team.</p></div>
-      <div className="flex flex-wrap gap-2"><button type="button" disabled={loading||busy||editor!==undefined} onClick={()=>void refresh()} className={`${button} inline-flex items-center gap-2`}><RefreshCw size={16} aria-hidden="true"/>Refresh questions</button><button type="button" disabled={disabled||!queue} className={`${button} bg-purple-300 text-[#120b1c]`} onClick={()=>{setNotice('');setEditor(null)}}>New question</button></div>
+      <div className="flex flex-wrap gap-2"><button type="button" disabled={loading||busy||editor!==undefined||importing} onClick={()=>void refresh()} className={`${button} inline-flex items-center gap-2`}><RefreshCw size={16} aria-hidden="true"/>Refresh questions</button><button type="button" disabled={disabled||!queue} className={button} onClick={()=>{setNotice('');setImporting(true)}}>Import questions</button><button type="button" disabled={disabled||!queue} className={`${button} bg-purple-300 text-[#120b1c]`} onClick={()=>{setNotice('');setEditor(null)}}>New question</button></div>
     </div>
     {error&&<div role="alert" className="mt-4 rounded-xl border border-red-400/20 bg-red-500/10 p-4 text-sm text-red-100">{error}{!mustReload&&<button type="button" className="ml-3 underline" onClick={()=>void refresh()}>Retry question review</button>}</div>}
     {notice&&<p role="status" className="mt-4 rounded-xl bg-purple-500/10 p-4 text-sm text-purple-100">{notice}</p>}
     {loading&&<p role="status" className="mt-5 flex items-center gap-2 text-sm text-white/60"><Loader2 size={17} className="animate-spin" aria-hidden="true"/>Loading question review records…</p>}
     {editor!==undefined&&<AdminQuestionEditor key={editor?.id??'new'} initial={editor} onSaved={saved} onCancel={()=>setEditor(undefined)} onUncertain={()=>setMustReload(true)}/>}
+    {importing&&<Suspense fallback={<p role="status" className="mt-5 text-sm">Loading question import…</p>}><AdminQuestionImport onClose={()=>{setImporting(false);void refresh()}}/></Suspense>}
     {!loading&&queue&&<>
       <label className="mt-5 block max-w-xs text-sm font-semibold text-white/70">Filter review status<select disabled={disabled} className="field mt-2" value={status??'all'} onChange={e=>{setPage(0);setStatus(e.target.value==='all'?null:e.target.value as QuestionStatus)}}><option value="all">All statuses</option>{['draft','in_review','approved','published','rejected'].map(s=><option key={s} value={s}>{s.replaceAll('_',' ')}</option>)}</select></label>
       <p className="mt-3 text-xs text-white/50">{queue.questions.length} records on page {page+1} shown. Status filtering applies to the full question bank.</p>
