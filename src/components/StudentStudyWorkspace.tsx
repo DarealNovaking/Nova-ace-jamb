@@ -62,7 +62,7 @@ export default function StudentStudyWorkspace({ mode, subjects, topics, onBack, 
   return (
     <DashboardShell area="student" activeId={mode} onStudentNavigate={(next) => { if (next === 'home') onBack(); else window.dispatchEvent(new CustomEvent('ace-workspace-navigate', { detail: next })) }}>
     <main className="dashboard-content">
-      <a className="skip-link" href="#workspace-content">Skip to workspace content</a>
+      
       <div className="min-w-0">
         <header className="dashboard-heading">
           <div>

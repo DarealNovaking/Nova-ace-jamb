@@ -3336,11 +3336,17 @@ test.describe('ACE JAMB organized dashboard interface', () => {
     const nav = page.getByRole('navigation', { name: 'Preparation tools' })
     await expect(nav.getByRole('button', { name: /Overview/ })).toHaveAttribute('aria-current', 'page')
     await expect(page.getByRole('link', { name: 'Account & settings' })).toBeVisible()
+    await page.keyboard.press('Tab')
+    await expect(page.getByRole('link', { name: 'Skip to dashboard content' })).toBeFocused()
     await page.getByRole('link', { name: 'Account & settings' }).click()
     await expect(page.locator('#account')).toBeFocused()
     await page.getByRole('button', { name: /Learn Approved syllabus topics/ }).click()
     await expect(page.getByRole('heading', { name: 'Learn', exact: true })).toBeFocused()
     await expect(nav.getByRole('button', { name: 'Learn', exact: true })).toHaveAttribute('aria-current','page')
+    await page.getByRole('link', { name: 'Account & settings' }).click()
+    await expect(page).toHaveURL(/\/#account$/)
+    await expect(page.locator('#account')).toBeFocused()
+    await page.getByRole('button', { name: /Learn Approved syllabus topics/ }).click()
     await page.getByRole('button', { name: 'Dashboard', exact: true }).click()
     await expect(page.getByRole('heading', { name: 'Welcome back, Test Futarian.' })).toBeFocused()
     await page.evaluate(() => window.scrollTo(0,0))
@@ -3407,4 +3413,19 @@ test.describe('ACE JAMB organized dashboard interface', () => {
       }
     }
   })
+})
+
+test('dashboard anchor destinations restore after delayed loading from study pages',async({page})=>{
+  await mockPreparedStudent(page)
+  await page.route((url)=>new URL(url).pathname.endsWith('/rest/v1/rpc/get_active_exam_blueprint'),async route=>{
+    await new Promise(resolve=>setTimeout(resolve,200))
+    await route.fulfill({json:null})
+  })
+  for(const [label,target] of [['Account & settings','account'],['Learning support','learning-support']]){
+    await page.goto('/?view=learn')
+    await expect(page.getByRole('heading',{name:'Learn',exact:true})).toBeVisible()
+    await page.getByRole('link',{name:label,exact:true}).click()
+    await expect(page).toHaveURL(new RegExp('/#'+target+'$'))
+    await expect(page.locator('#'+target)).toBeFocused()
+  }
 })

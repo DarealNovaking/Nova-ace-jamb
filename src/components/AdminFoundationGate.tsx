@@ -90,7 +90,7 @@ export default function AdminFoundationGate() {
 
   return (
     <DashboardShell area="admin" activeId="overview">
-      <a className="skip-link" href="#admin-content">Skip to admin content</a>
+      
       <main id="admin-content" tabIndex={-1} className="dashboard-content">
         <header className="dashboard-heading">
           <div><p className="dashboard-eyebrow">Your administration workspace</p><h1 className="dashboard-title">Admin Dashboard</h1><p className="dashboard-description">Manage learning content, review questions and keep an eye on your services.</p></div>

@@ -28,3 +28,8 @@ test('identity is safely escaped and navigation never includes a signout mutatio
  const html=render({area:'student',activeId:'learn',displayName:'<script>alert(1)</script>',onStudentNavigate(){}})
  assert.ok(!html.includes('<script>'));assert.match(html,/&lt;script&gt;/);assert.doesNotMatch(html,/Sign out/)
 })
+test('skip link precedes the workspace navigation in keyboard order',()=>{
+ const html=render({area:'student',activeId:'home',onStudentNavigate(){}})
+ assert.ok(html.indexOf('Skip to dashboard content')>=0)
+ assert.ok(html.indexOf('Skip to dashboard content')<html.indexOf('ACE JAMB home'))
+})

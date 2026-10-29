@@ -111,6 +111,7 @@ export default function StudentDashboard() {
       const mode = (event as CustomEvent<StudentWorkspaceMode>).detail
       if (!validModes.includes(mode)) return
       const url = new URL(window.location.href)
+      url.hash = ''
       url.searchParams.set('view', mode)
       url.searchParams.delete('cbt')
       window.history.pushState({}, '', url)
@@ -124,8 +125,17 @@ export default function StudentDashboard() {
     }
   }, [])
 
+  useEffect(() => {
+    if (loading || activeView !== 'home') return
+    // These anchors can arrive from a study route before async account loading
+    // has mounted their targets. Restore the destination without changing auth.
+    const target = window.location.hash === '#account' ? 'account' : window.location.hash === '#learning-support' ? 'learning-support' : null
+    if (target) document.getElementById(target)?.focus()
+  }, [loading, activeView])
+
   const startCbt = (mode: 'cbt' | 'practice' = 'cbt', focus?: 'mistakes' | 'repeated' | 'speed' | 'subject' | 'topic' | 'subtopic', subjectId?: string, topicId?: string, subtopicId?: string) => {
     const url = new URL(window.location.href)
+    url.hash = ''
     url.searchParams.set('cbt', '1')
     url.searchParams.delete('view')
     if (mode === 'practice') url.searchParams.set('mode', 'practice')
@@ -145,11 +155,11 @@ export default function StudentDashboard() {
 
   if (loading) return <main id="main-content" aria-busy="true" className="grid min-h-[70vh] place-items-center text-white"><div role="status" aria-live="polite" aria-atomic="true" className="text-center"><Loader2 aria-hidden="true" className="mx-auto animate-spin" /><p className="mt-3 text-sm text-white/50">Loading your preparation dashboard…</p></div></main>
 
-  if (activeView !== 'home') return <Suspense fallback={<main id="workspace-content" aria-busy="true" className="grid min-h-[50vh] place-items-center bg-[#07050d] px-5 text-white"><p role="status" aria-live="polite" aria-atomic="true">Loading your study workspace…</p></main>}><StudentStudyWorkspace mode={activeView} subjects={subjects} topics={topics} onBack={() => { const url = new URL(window.location.href); url.searchParams.delete('view'); window.history.pushState({}, '', url); setActiveView('home') }} onStartCbt={startCbt} /></Suspense>
+  if (activeView !== 'home') return <Suspense fallback={<main id="workspace-content" aria-busy="true" className="grid min-h-[50vh] place-items-center bg-[#07050d] px-5 text-white"><p role="status" aria-live="polite" aria-atomic="true">Loading your study workspace…</p></main>}><StudentStudyWorkspace mode={activeView} subjects={subjects} topics={topics} onBack={() => { const url = new URL(window.location.href); url.hash = ''; url.searchParams.delete('view'); window.history.pushState({}, '', url); setActiveView('home') }} onStartCbt={startCbt} /></Suspense>
 
   return (
     <DashboardShell area="student" activeId="home" displayName={name} onStudentNavigate={(mode) => { if (mode !== 'home') window.dispatchEvent(new CustomEvent('ace-workspace-navigate', { detail: mode })) }}>
-      <a className="skip-link" href="#dashboard-content">Skip to dashboard content</a>
+      
       <main id="dashboard-content" tabIndex={-1} className="dashboard-content">
         <header className="dashboard-heading">
           <div><p className="dashboard-eyebrow">Let’s make progress</p><h1 ref={dashboardHeadingRef} tabIndex={-1} className="dashboard-title">Welcome back, {name}.</h1><p className="dashboard-description">Your subjects, your study space. Pick up where you want to begin.</p></div>

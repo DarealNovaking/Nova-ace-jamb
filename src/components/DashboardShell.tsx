@@ -32,6 +32,7 @@ export default function DashboardShell({ area, activeId, displayName, onStudentN
   const currentLabel = student ? studentItems.find(item => item.id === activeId)?.label : adminItems.find(item => item.id === activeId)?.label
   return (
     <div className={`dashboard-shell dashboard-shell--${student ? 'student' : 'admin'}`}>
+      <a className="skip-link" href={student ? activeId === 'home' ? '#dashboard-content' : '#workspace-content' : activeId === 'overview' ? '#admin-content' : '#editorial-content'}>{student && activeId === 'home' ? 'Skip to dashboard content' : !student && activeId === 'overview' ? 'Skip to admin content' : 'Skip to workspace content'}</a>
       <aside className="dashboard-sidebar" aria-label={student ? 'Student workspace' : 'Editorial workspace'}>
         <a href={student ? '/' : area === 'admin' ? '/admin' : '/admin-academic'} className="dashboard-brand" aria-label="ACE JAMB home">
           <span className="dashboard-brand-mark"><GraduationCap size={23} aria-hidden="true" /></span>
