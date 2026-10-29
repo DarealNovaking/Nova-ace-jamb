@@ -26,10 +26,11 @@ jobs:
           cache: npm
           cache-dependency-path: package-lock.json
       - run: npm ci
-      - run: node --test tests/catalog-parser.test.mjs tests/review-only-stage.test.mjs tests/catalog-import-contract.test.mjs tests/pwa-contract.test.mjs tests/pwa-runtime.test.mjs tests/syllabus-edit.test.mjs tests/reviewed-corrections.test.mjs tests/practice-baseline.test.mjs tests/student-syllabus.test.mjs tests/study-publication.test.mjs tests/question-workflow.test.mjs tests/question-import.test.mjs tests/question-import-render.test.mjs tests/question-history.test.mjs tests/question-history-render.test.mjs tests/dashboard-shell-render.test.mjs tests/student-question-delivery.test.mjs tests/rich-content.test.mjs
+      - run: node --test tests/catalog-parser.test.mjs tests/review-only-stage.test.mjs tests/catalog-import-contract.test.mjs tests/pwa-contract.test.mjs tests/pwa-runtime.test.mjs tests/syllabus-edit.test.mjs tests/reviewed-corrections.test.mjs tests/practice-baseline.test.mjs tests/student-syllabus.test.mjs tests/study-publication.test.mjs tests/question-workflow.test.mjs tests/question-import.test.mjs tests/question-import-render.test.mjs tests/question-history.test.mjs tests/question-history-render.test.mjs tests/dashboard-shell-render.test.mjs tests/student-question-delivery.test.mjs tests/rich-content.test.mjs tests/media-storage-flow.test.mjs
       - uses: denoland/setup-deno@v2
       - run: deno check --no-check=remote supabase/functions/ibass-catalog-stage/index.ts
       - run: deno check --no-check=remote supabase/functions/catalog-import/index.ts
+      - run: deno check supabase/functions/_shared/questionMedia.ts
       - run: npm run typecheck
       - name: Build and report bundle module attribution
         env:
