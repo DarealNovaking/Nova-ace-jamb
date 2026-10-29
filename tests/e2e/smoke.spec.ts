@@ -1082,7 +1082,7 @@ function workflowQuestion(overrides: Record<string, unknown> = {}) {
 }
 async function mockQuestionWorkspace(page: import('@playwright/test').Page, records: ReturnType<typeof workflowQuestion>[] = []) {
   await mockPreparedStudent(page)
-  await page.route((url)=>new URL(url).pathname.endsWith('/rest/v1/rpc/is_admin'), route=>route.fulfill({json:true}))
+  await page.route((url)=>['/rest/v1/rpc/is_admin','/rest/v1/rpc/is_admin_or_editor'].includes(new URL(url).pathname), route=>route.fulfill({json:true}))
   await page.route((url)=>new URL(url).pathname.endsWith('/rest/v1/rpc/get_active_exam_blueprint'),route=>route.fulfill({json:{season:{id:workflowSeason},config:{rules:{source_year:2026}}}}))
   await page.route((url)=>new URL(url).pathname.endsWith('/rest/v1/syllabus_versions'),route=>route.fulfill({json:[{id:workflowVersion,season_id:workflowSeason,subject_id:subjects[1].id,status:'active',rights_status:'approved',version:3}]}))
   await page.route((url)=>new URL(url).pathname.endsWith('/rest/v1/topics'),route=>route.fulfill({json:[{id:workflowTopic,subject_id:subjects[1].id,syllabus_version_id:workflowVersion,name:'Numbers',active:true,sort_order:1,description:null}]}))
@@ -1157,13 +1157,14 @@ test.describe('FCB-03 question authoring workflow',()=>{
     await expect(page.getByText('Question published.',{exact:true})).toBeVisible()
     expect(actions).toEqual(['approve','publish'])
   })
-  test('clears cached question answers after another tab signs out',async({page,context})=>{
+  for (const [path,title] of [['/admin','Admin access required'],['/admin-questions','Academic editor access required']]) test(`clears cached question answers after another tab signs out (${path})`,async({page,context})=>{
     await mockQuestionWorkspace(page,[workflowQuestion()])
-    await page.goto('/admin')
+    await page.goto(path)
     const review=page.getByRole('region',{name:'Question publication review'})
     await review.getByText('Review answer, explanation and source').click()
     await expect(review.getByText('Correct answer: C')).toBeVisible()
     const other=await context.newPage()
+    await mockPreparedStudent(other)
     await other.goto('/')
     await other.evaluate(()=>{
       const key='sb-uokiqlgmzprqfbzmedaz-auth-token'
@@ -1171,7 +1172,7 @@ test.describe('FCB-03 question authoring workflow',()=>{
       const channel=new BroadcastChannel(key)
       channel.postMessage({event:'SIGNED_OUT',session:null});channel.close()
     })
-    await expect(page.getByRole('heading',{name:'Admin access required'})).toBeVisible()
+    await expect(page.getByRole('heading',{name:title})).toBeVisible()
     await expect(page.getByText('Correct answer: C')).toHaveCount(0)
     await other.close()
   })

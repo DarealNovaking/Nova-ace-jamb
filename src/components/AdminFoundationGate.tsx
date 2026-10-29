@@ -12,6 +12,15 @@ export default function AdminFoundationGate() {
 
   useEffect(() => {
     let active = true
+    let checkedUserId: string | null = null
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_OUT' || (event === 'SIGNED_IN' && checkedUserId && session?.user.id !== checkedUserId)) {
+        active = false
+        setAllowed(false)
+        setChecking(false)
+        setError('Administrator access is required.')
+      }
+    })
 
     const check = async () => {
       setChecking(true)
@@ -19,6 +28,7 @@ export default function AdminFoundationGate() {
       setError(null)
       try {
         const user = await getCurrentUser()
+        checkedUserId = user?.id ?? null
         if (!user) {
           if (active) setAllowed(false)
           return
@@ -49,6 +59,7 @@ export default function AdminFoundationGate() {
     void check()
     return () => {
       active = false
+      authListener.subscription.unsubscribe()
     }
   }, [retryCount])
 

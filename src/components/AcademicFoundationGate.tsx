@@ -14,6 +14,16 @@ export default function AcademicFoundationGate({ workspace = 'academic' }: { wor
 
   useEffect(() => {
     let active = true
+    let checkedUserId: string | null = null
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_OUT' || (event === 'SIGNED_IN' && checkedUserId && session?.user.id !== checkedUserId)) {
+        active = false
+        setSignedIn(false)
+        setAllowed(false)
+        setCanApprove(false)
+        setChecking(false)
+      }
+    })
     setChecking(true)
     setSignedIn(false)
     setAllowed(false)
@@ -22,6 +32,7 @@ export default function AcademicFoundationGate({ workspace = 'academic' }: { wor
     async function check() {
       try {
         const user = await getCurrentUser()
+        checkedUserId = user?.id ?? null
         if (!user) return
         if (active) setSignedIn(true)
         const { data, error: roleError } = await ace.rpc('is_admin_or_editor')
@@ -43,7 +54,7 @@ export default function AcademicFoundationGate({ workspace = 'academic' }: { wor
       }
     }
     void check()
-    return () => { active = false }
+    return () => { active = false; authListener.subscription.unsubscribe() }
   }, [retryCount])
 
   async function signOut() {

@@ -23,16 +23,16 @@
 ## Task 1: Server lifecycle and full-schema tests
 Files: supabase/proposals/fcb03_question_workflow.sql; tests/sql/fcb03_question_workflow.py; tests/sql/fcb03_question_workflow_runner.mjs.
 Interfaces: ace.manage_question(text,uuid,integer,jsonb) returns the saved question; ace.review_questions(text,integer) returns paginated privileged rows.
-- [ ] Write isolated recovered-schema cases for authoring, transitions, denied access, bad content, taxonomy, immutable history, private student visibility, stale updates, duplicates and rollback.
-- [ ] Run against an inert stub and observe the expected missing mutation failure.
-- [ ] Implement the lifecycle and bounded privileged read RPCs without broad grants.
-- [ ] Run all cases locally; wire native PostgreSQL execution into CI with an empty disposable-database guard.
+- [x] Write isolated recovered-schema cases for authoring, transitions, denied access, bad content, taxonomy, immutable history, private student visibility, stale updates, duplicates and rollback.
+- [x] Run against an inert stub and observe the expected missing mutation failure.
+- [x] Implement the lifecycle and bounded privileged read RPCs without broad grants.
+- [x] Run all cases locally; wire native PostgreSQL execution into CI with an empty disposable-database guard.
 
 ## Task 2: Existing administrator workspace
 Files: src/components/AdminQuestionReviewQueue.tsx; src/lib/questionWorkflow.ts; src/lib/questionWorkflowService.ts; tests/question-workflow.test.mjs; tests/e2e/smoke.spec.ts.
 Interfaces: call the exact RPCs from Task 1; typed validation/readback adapters; reuse subject/taxonomy services.
-- [ ] Add failing unit/browser cases for draft creation, validation, review transitions, stale/denied saves and recovery.
-- [ ] Implement accessible bounded editor, status filters and transition controls with loading/error/empty/success states.
+- [x] Add failing unit/browser cases for draft creation, validation, review transitions, stale/denied saves and recovery.
+- [x] Implement accessible bounded editor, status filters and transition controls with loading/error/empty/success states.
 - [ ] Run Node tests, typecheck, build and desktop/mobile browser checks.
 
 ## Task 3: Review and continuity
