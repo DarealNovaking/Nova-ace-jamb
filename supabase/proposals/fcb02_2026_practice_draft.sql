@@ -12,6 +12,7 @@ declare
  actual jsonb; result_state text; validation jsonb; source_row ace.exam_configs%rowtype;
 begin
  if auth.uid() is null or not ace.is_admin() then raise exception 'Authenticated administrator context required' using errcode='42501';end if;
+ if current_setting('transaction_isolation')<>'read committed'then raise exception 'Read committed transaction required'using errcode='25001';end if;
  if not exists(select 1 from pg_catalog.pg_roles where rolname=current_user and (rolsuper or rolbypassrls))then raise exception 'Trusted executor owner required'using errcode='42501';end if;
  perform 1 from ace.roles where user_id=auth.uid() and role='admin'for share;
  if not found then raise exception 'Authenticated administrator context required'using errcode='42501';end if;

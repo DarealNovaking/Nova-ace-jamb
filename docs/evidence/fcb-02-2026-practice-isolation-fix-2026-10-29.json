@@ -1,0 +1,22 @@
+{
+  "reason": "Final reviewer found stale composition visibility under repeatable-read snapshots; normal browser read-committed path unaffected.",
+  "regression": "Unsupported repeatable-read case failed against first helper, then repeatable-read and serializable cases pass with explicit isolation restriction.",
+  "migration": "20261029005504_fcb02_practice_read_committed",
+  "previous_body_sha256": "c98e06501cc60463043899afa76e6307396cfe6f0c76e7f536f2974aa2cda9ff",
+  "body_sha256": "4551d7f09a78c2d71fcfa08b52758d9aff3a2386f44e7c01293c64f0ad703c1e",
+  "owner": "postgres",
+  "definer": true,
+  "search_path": [
+    "pg_catalog",
+    "pg_temp"
+  ],
+  "anon_execute": false,
+  "authenticated_execute": true,
+  "ledger_count": 55,
+  "config_count": 1,
+  "candidate_exists": false,
+  "local_sql_cases": 20,
+  "upgrade": "Historical applied migration preserved; replacement refuses a changed original helper contract; canonical initial installer and guarded upgrade reach same body.",
+  "native_contention": "Five cases added; final CI pending.",
+  "runtime_scope": "No configuration/content/activation/rights mutation."
+}
