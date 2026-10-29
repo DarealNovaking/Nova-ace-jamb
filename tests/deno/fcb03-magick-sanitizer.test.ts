@@ -16,6 +16,9 @@ async function denied(bytes: Uint8Array, mime: string): Promise<void> {
 }
 
 Deno.test('real WASM decoder re-encodes legitimate still PNG with correct pixel dimensions', async () => {
+  // Diagnose the actual processor separately: the public upload boundary intentionally masks internal exceptions.
+  const direct = await magickQuestionSanitizer.sanitize(image, 'image/png')
+  check(direct.width === 2 && direct.height === 3, 'Direct decoder dimensions mismatch')
   const prepared = await prepareQuestionImage(image, 'image/png', magickQuestionSanitizer)
   check(prepared.width === 2 && prepared.height === 3, 'Decoded dimensions mismatch')
   check(prepared.mime === 'image/png', 'MIME changed unexpectedly')
