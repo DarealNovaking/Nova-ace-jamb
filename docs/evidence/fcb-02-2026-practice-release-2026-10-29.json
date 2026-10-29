@@ -1,0 +1,220 @@
+{
+  "date": "2026-10-29 Africa/Lagos",
+  "status": "RELEASED_AWAITING_GENUINE_ADMIN_CREATE",
+  "source_head": "195f8461dee0927196ee544acca990b216f06a2d",
+  "main_merge": "898cc577b68f43246d824186192b8606274599f1",
+  "tested_and_merged_tree": "4ebde726f05975b692d42375e54646a926ba0040",
+  "pull_request": 15,
+  "verification": {
+    "Verify": {
+      "run": 40797396665,
+      "jobs_passed": 5
+    },
+    "practice_native": {
+      "job": 123197086902,
+      "cases_passed": 25,
+      "includes": [
+        "source composition race",
+        "target composition race",
+        "concurrent exact creation",
+        "demotion-first",
+        "operation-first",
+        "unsupported isolation refusal",
+        "guarded upgrade refusal"
+      ]
+    },
+    "existing_native_import": {
+      "job": 123197086962,
+      "cases_passed": 42
+    },
+    "browser": {
+      "run": 40797396676,
+      "job": 123197087279,
+      "cases_passed": 192,
+      "scope": "Full unfiltered desktop/mobile suite; log inspected"
+    },
+    "local": "47 Node tests,10Python tests,20SQL cases,typecheck/build PASS",
+    "review": "Independent whole-branch review; test transport and stale snapshot findings reproduced RED and fixed with regression coverage. No additional blockers reported."
+  },
+  "production": {
+    "build": "2592521e-8d06-4a39-9987-e0c8a07deee9",
+    "build_result": "success",
+    "commit": "898cc577b68f43246d824186192b8606274599f1",
+    "deployment": "507e5e6e-ce1c-487a-ae3e-b98d567d3ae4",
+    "version": "9dfd94df-c0cf-4c23-8632-3a9a99c4f161",
+    "percentage": 100,
+    "prior_version": "2978cf64-24c9-459e-97c7-00413ff83ddb",
+    "http": {
+      "preview_url": "https://nova-ace-jamb.novaking5002.workers.dev",
+      "unique_url": "https://531cf3bd-nova-ace-jamb.novaking5002.workers.dev",
+      "checks": [
+        {
+          "url": "https://nova-ace-jamb.novaking5002.workers.dev/",
+          "status": 200,
+          "same_app_shell": true,
+          "sha256": "106e2026edf2f9a162f363ee441535c654021251252d146716955c3a871909db"
+        },
+        {
+          "url": "https://nova-ace-jamb.novaking5002.workers.dev/admin",
+          "status": 200,
+          "same_app_shell": true,
+          "sha256": "106e2026edf2f9a162f363ee441535c654021251252d146716955c3a871909db"
+        },
+        {
+          "url": "https://nova-ace-jamb.novaking5002.workers.dev/admin-academic",
+          "status": 200,
+          "same_app_shell": true,
+          "sha256": "106e2026edf2f9a162f363ee441535c654021251252d146716955c3a871909db"
+        },
+        {
+          "url": "https://nova-ace-jamb.novaking5002.workers.dev/admin-import",
+          "status": 200,
+          "same_app_shell": true,
+          "sha256": "106e2026edf2f9a162f363ee441535c654021251252d146716955c3a871909db"
+        },
+        {
+          "url": "https://531cf3bd-nova-ace-jamb.novaking5002.workers.dev/",
+          "status": 200,
+          "same_app_shell": true,
+          "sha256": "106e2026edf2f9a162f363ee441535c654021251252d146716955c3a871909db"
+        },
+        {
+          "url": "https://nova-ace-jamb.novaking5002.workers.dev/assets/index-Bl_7UCiF.js",
+          "status": 200,
+          "expected_supabase_project": true,
+          "sha256": "28b8e9c694b118c05fd41aebab8ece97c18c588ff81d1eabc5810ccb9e988f71"
+        },
+        {
+          "url": "https://nova-ace-jamb.novaking5002.workers.dev/assets/AcademicFoundationGate-Duq6UiFq.js",
+          "status": 200,
+          "review_rpc_present": true,
+          "sha256": "96f2519cd3e45477c0586ae90fdf3e313db9664d57f0b7b8856eecb52e7f7fe5"
+        },
+        {
+          "url": "https://nova-ace-jamb.novaking5002.workers.dev/assets/fcb02ReviewPayload-D3nGjJ9-.js",
+          "status": 200,
+          "expected_review_digest": true,
+          "sha256": "662cf88654d842fb9c8a3116180dd1fb9247eb868c38e84d1147a13cdf5c3eba"
+        },
+        {
+          "url": "https://nova-ace-jamb.novaking5002.workers.dev/sw.js",
+          "status": 200,
+          "matches_source": true,
+          "sha256": "e45b9adf10236c941a35caba1695f46b92ec3d5f2f47b74ff4ab33100160bf5b"
+        }
+      ],
+      "scope": "Unauthenticated GETs only; no browser JS execution, token, login or API writes."
+    }
+  },
+  "preview": {
+    "build": "9575d91a-c2f1-4280-ad5a-e64effd0d034",
+    "deployment": "531cf3bd-3d14-43fb-a2fa-c16cc60c1858",
+    "http": {
+      "preview_url": "https://feat-fcb02-2026-practice-draft-nova-ace-jamb.novaking5002.workers.dev",
+      "unique_url": "https://531cf3bd-nova-ace-jamb.novaking5002.workers.dev",
+      "checks": [
+        {
+          "url": "https://feat-fcb02-2026-practice-draft-nova-ace-jamb.novaking5002.workers.dev/",
+          "status": 200,
+          "same_app_shell": true,
+          "sha256": "106e2026edf2f9a162f363ee441535c654021251252d146716955c3a871909db"
+        },
+        {
+          "url": "https://feat-fcb02-2026-practice-draft-nova-ace-jamb.novaking5002.workers.dev/admin",
+          "status": 200,
+          "same_app_shell": true,
+          "sha256": "106e2026edf2f9a162f363ee441535c654021251252d146716955c3a871909db"
+        },
+        {
+          "url": "https://feat-fcb02-2026-practice-draft-nova-ace-jamb.novaking5002.workers.dev/admin-academic",
+          "status": 200,
+          "same_app_shell": true,
+          "sha256": "106e2026edf2f9a162f363ee441535c654021251252d146716955c3a871909db"
+        },
+        {
+          "url": "https://feat-fcb02-2026-practice-draft-nova-ace-jamb.novaking5002.workers.dev/admin-import",
+          "status": 200,
+          "same_app_shell": true,
+          "sha256": "106e2026edf2f9a162f363ee441535c654021251252d146716955c3a871909db"
+        },
+        {
+          "url": "https://531cf3bd-nova-ace-jamb.novaking5002.workers.dev/",
+          "status": 200,
+          "same_app_shell": true,
+          "sha256": "106e2026edf2f9a162f363ee441535c654021251252d146716955c3a871909db"
+        },
+        {
+          "url": "https://feat-fcb02-2026-practice-draft-nova-ace-jamb.novaking5002.workers.dev/assets/index-Bl_7UCiF.js",
+          "status": 200,
+          "expected_supabase_project": true,
+          "sha256": "28b8e9c694b118c05fd41aebab8ece97c18c588ff81d1eabc5810ccb9e988f71"
+        },
+        {
+          "url": "https://feat-fcb02-2026-practice-draft-nova-ace-jamb.novaking5002.workers.dev/assets/AcademicFoundationGate-Duq6UiFq.js",
+          "status": 200,
+          "review_rpc_present": true,
+          "sha256": "96f2519cd3e45477c0586ae90fdf3e313db9664d57f0b7b8856eecb52e7f7fe5"
+        },
+        {
+          "url": "https://feat-fcb02-2026-practice-draft-nova-ace-jamb.novaking5002.workers.dev/assets/fcb02ReviewPayload-D3nGjJ9-.js",
+          "status": 200,
+          "expected_review_digest": true,
+          "sha256": "662cf88654d842fb9c8a3116180dd1fb9247eb868c38e84d1147a13cdf5c3eba"
+        },
+        {
+          "url": "https://feat-fcb02-2026-practice-draft-nova-ace-jamb.novaking5002.workers.dev/sw.js",
+          "status": 200,
+          "matches_source": true,
+          "sha256": "e45b9adf10236c941a35caba1695f46b92ec3d5f2f47b74ff4ab33100160bf5b"
+        }
+      ],
+      "scope": "Unauthenticated GETs only; no browser JS execution, token, login or API writes."
+    }
+  },
+  "server": {
+    "migrations": [
+      "20261029004531_fcb02_2026_practice_draft",
+      "20261029005504_fcb02_practice_read_committed"
+    ],
+    "body_sha256": "4551d7f09a78c2d71fcfa08b52758d9aff3a2386f44e7c01293c64f0ad703c1e",
+    "owner": "postgres",
+    "security_definer": true,
+    "search_path": [
+      "pg_catalog",
+      "pg_temp"
+    ],
+    "lock_timeout": "3s",
+    "supported_isolation": "read committed",
+    "anonymous_and_PUBLIC_execute": false,
+    "authenticated_execute": "Allowed only after genuine admin/locked-role check",
+    "ledger_count": 55,
+    "advisors": "4notices before/after; no new names/levels/metadata"
+  },
+  "live_before_create": {
+    "candidate_exists": false,
+    "historical_config_projection_sha256": "0dbb29b684d68024a96cad55dcf6dec0b378ad22ea56a50b5a89309e72975b7d",
+    "config_count": 1,
+    "active_configs": 0,
+    "active_seasons": 0,
+    "active_topics": 0,
+    "active_subtopics": 0,
+    "subtopic_projection": "86806e7337523a601427debd19e26888"
+  },
+  "required_user_action": {
+    "url": "https://nova-ace-jamb.novaking5002.workers.dev/admin-academic",
+    "region": "2026 practice baseline",
+    "button": "Create 2026 practice draft",
+    "reason": "Existing production authoring guards require a genuine signed-in administrator. Connector has no authenticated actor; no claims were spoofed. TinyFish credit exhausted; no further paid runs started."
+  },
+  "postflight_expected": {
+    "candidate_id": "396d1910-d458-5d5f-8484-380bc8c71919",
+    "total_configs": 2,
+    "candidate_subject_rows": 25,
+    "total_composition_rows": 50,
+    "candidate_active": false,
+    "season_status": "draft",
+    "creation_audit_events": 1,
+    "source_historical_projection": "0dbb29b684d68024a96cad55dcf6dec0b378ad22ea56a50b5a89309e72975b7d"
+  },
+  "milestone": "FCB-02 IN PROGRESS; source-use/rights basis, actual publication, student visibility and activation acceptance remain open. Final2027 announcement is not a baseline prerequisite after owner selection."
+}

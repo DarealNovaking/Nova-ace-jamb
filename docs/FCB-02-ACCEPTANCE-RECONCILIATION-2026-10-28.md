@@ -1,15 +1,15 @@
 # FCB-02 acceptance reconciliation — 28 October 2026
 
-Status: **IN PROGRESS — external acceptance blocked.** This is the acceptance checklist for the existing canonical FCB-02 scope, not a replacement plan.
+Status: **IN PROGRESS — labelled2026 baseline selected; authenticated draft creation ready; publication acceptance open.** This is the acceptance checklist for the existing canonical FCB-02 scope, not a replacement plan.
 
 | Acceptance item | Verified state | Remaining evidence/action |
 |---|---|---|
-| Source identity and private taxonomy staging | PASS: all25 v2 subject IDs, exact document links and per-subject counts reconcile;214 topics/954 subtopics, inactive | Full semantic completeness and independent academic approval are not implied. |
+| Source identity and private taxonomy staging | PASS: all25 v2 subject IDs, exact document links and per-subject counts reconcile;214 topics/956 subtopics, inactive; all8corrections verified | Full semantic completeness and independent academic approval are not implied. |
 | Signed administrator entry point | PASS: TinyFish run51089e50-4fcc-4068-849e-129ee6738dd0, saved user session, Check review package succeeded | No repeated staging needed. |
 | Rights/provenance | All25 v2 drafts pending; existing2026 Agriculture scaffold approved by user, still draft | Record source-use authority for chosen launch subjects. Generic official-source links alone do not resolve this. |
 | Academic/year review | Engineering locator/grouping review done; all25 source mappings documented | Independent review; English reading-text title unresolved/excluded, Arabic date conflict retained, PHE heading exceptions disclosed, subject-specific text cycles remain qualified. |
 | Launch coverage |25 draft subjects available | Owner must choose and approve launch coverage; English is compulsory. |
-| Active2027 season/config | BLOCKED:2027 draft has no config; only one inactive historical2026 config exists | Establish official2027 timing/composition/date evidence; review proposed config before authorizing activation. |
+| Preparation season/config | Owner chose verified2026-format practice baseline; fixed inactive draft creation action is released, candidate not yet created | Click Create2026practice draft in admin; verify readback. Activation remains gated by approved published trees. No wait for official2027 format confirmation for this baseline. |
 | Published approved topic trees | None active;0 active topics/subtopics | Rights/academic approval then separately authorized publication. |
 | Actual student selectors/visibility/season switch/rollback/takedown | Prior automated security evidence exists; real published-record journey UNVERIFIED | Run authenticated acceptance against legitimately approved published launch records. Do not fabricate approval to make a test pass. |
 
@@ -23,7 +23,7 @@ An indexed brochure copyright notice is not treated as syllabus-specific licensi
 
 ## Exact next action
 
-Obtain the documented source-use basis and independent academic sign-off for the chosen launch subjects. Final2027 config evidence and specific publication/activation approval remain required. Until those are supplied, FCB-02 cannot honestly meet its canonical active-season/published-content acceptance. Continue dependent source-only work only when directed; no staging replay, rights toggle, activation or deployment is needed to preserve this verified package.
+Use the released **Create 2026 practice draft** administrator action, then verify its saved inactive rows. Resolve the documented source-use basis and publication/activation acceptance through supported evidence and genuine administrator controls. The earlier blanket human-signature requirement was withdrawn. Do not replay staging, fabricate official2027 facts or request the owner's2026-format decision again.
 
 Evidence: [machine-readable reconciliation](evidence/fcb-02-acceptance-reconciliation-2026-10-28.json). Subject-level expected counts below were compared with the read-only live grouped query; no complete live row equality is claimed.
 
