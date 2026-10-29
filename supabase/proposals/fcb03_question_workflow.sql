@@ -1,6 +1,12 @@
 -- UNAPPLIED: reviewed-source proposal only. No question data is created here.
 begin;
 
+-- Keep required-field and duplicate normalization consistent with String.trim/\s.
+create function ace.question_trim(value text)returns text language sql immutable
+set search_path=pg_catalog,pg_temp as $$select btrim(value,chr(9)||chr(10)||chr(11)||chr(12)||chr(13)||chr(32)||chr(160)||chr(5760)||chr(8192)||chr(8193)||chr(8194)||chr(8195)||chr(8196)||chr(8197)||chr(8198)||chr(8199)||chr(8200)||chr(8201)||chr(8202)||chr(8232)||chr(8233)||chr(8239)||chr(8287)||chr(12288)||chr(65279))$$;
+create function ace.question_normalize(value text)returns text language sql immutable
+set search_path=pg_catalog,pg_temp as $$select regexp_replace(lower(ace.question_trim(value)),'['||chr(9)||chr(10)||chr(11)||chr(12)||chr(13)||chr(32)||chr(160)||chr(5760)||chr(8192)||chr(8193)||chr(8194)||chr(8195)||chr(8196)||chr(8197)||chr(8198)||chr(8199)||chr(8200)||chr(8201)||chr(8202)||chr(8232)||chr(8233)||chr(8239)||chr(8287)||chr(12288)||chr(65279)||']+',' ','g')$$;
+
 create function ace.validate_question_draft(p jsonb) returns jsonb
 language plpgsql set search_path=pg_catalog,pg_temp as $$
 declare item jsonb; proof jsonb; keys text[]; v_year integer; source_kind text;
@@ -9,8 +15,8 @@ begin
  or exists(select 1 from jsonb_object_keys(p)k where k not in('subject_id','topic_id','subtopic_id','stem','options','correct_option_key','explanation','difficulty','exam','exam_year','provenance'))then
   raise exception 'Invalid question payload' using errcode='22023';
  end if;
- if jsonb_typeof(p->'stem')is distinct from'string' or length(btrim(p->>'stem'))not between 1 and 20000
- or jsonb_typeof(p->'explanation')is distinct from'string' or length(btrim(p->>'explanation'))not between 1 and 20000
+ if jsonb_typeof(p->'stem')is distinct from'string' or length(ace.question_trim(p->>'stem'))not between 1 and 20000
+ or jsonb_typeof(p->'explanation')is distinct from'string' or length(ace.question_trim(p->>'explanation'))not between 1 and 20000
  or p->>'difficulty'is null or p->>'difficulty'not in('easy','medium','hard')
  or p->>'exam'is null or p->>'exam'not in('JAMB','ACE practice')
  or jsonb_typeof(p->'options')is distinct from'array' then
@@ -19,23 +25,23 @@ begin
  if jsonb_array_length(p->'options')<>4 then raise exception 'Invalid question options'using errcode='22023';end if;
  for item in select value from jsonb_array_elements(p->'options')loop
   if jsonb_typeof(item)<>'object' or jsonb_typeof(item->'key')is distinct from'string'
-  or jsonb_typeof(item->'text')is distinct from'string' or length(btrim(item->>'text'))not between 1 and 4000
+  or jsonb_typeof(item->'text')is distinct from'string' or length(ace.question_trim(item->>'text'))not between 1 and 4000
   or exists(select 1 from jsonb_object_keys(item)k where k not in('key','text'))then
    raise exception 'Invalid question option'using errcode='22023';
   end if;
  end loop;
  select array_agg(x->>'key'order by x->>'key')into keys from jsonb_array_elements(p->'options')x;
  if keys is distinct from array['A','B','C','D'] or p->>'correct_option_key'is null or not(p->>'correct_option_key'=any(keys))
- or(select count(distinct regexp_replace(lower(btrim(x->>'text')),'[[:space:]]+',' ','g'))from jsonb_array_elements(p->'options')x)<>4 then
+ or(select count(distinct ace.question_normalize(x->>'text'))from jsonb_array_elements(p->'options')x)<>4 then
   raise exception 'Invalid question options or answer'using errcode='22023';
  end if;
  proof:=p->'provenance';
  if jsonb_typeof(proof)is distinct from'object' then raise exception 'Invalid question source evidence'using errcode='22023';end if;
  source_kind:=proof->>'source_kind';
  if source_kind is null or source_kind not in('original','licensed','permitted')
- or jsonb_typeof(proof->'source_title')is distinct from'string' or length(btrim(proof->>'source_title'))not between 1 and 500
- or jsonb_typeof(proof->'author_label')is distinct from'string' or length(btrim(proof->>'author_label'))not between 1 and 200
- or jsonb_typeof(proof->'rights_evidence')is distinct from'string' or length(btrim(proof->>'rights_evidence'))not between 1 and 4000
+ or jsonb_typeof(proof->'source_title')is distinct from'string' or length(ace.question_trim(proof->>'source_title'))not between 1 and 500
+ or jsonb_typeof(proof->'author_label')is distinct from'string' or length(ace.question_trim(proof->>'author_label'))not between 1 and 200
+ or jsonb_typeof(proof->'rights_evidence')is distinct from'string' or length(ace.question_trim(proof->>'rights_evidence'))not between 1 and 4000
  or exists(select 1 from jsonb_object_keys(proof)k where k not in('source_kind','source_title','author_label','source_url','rights_evidence'))then
   raise exception 'Invalid question source evidence'using errcode='22023';
  end if;
@@ -52,11 +58,11 @@ begin
  if p->>'exam'='JAMB'and v_year is null then raise exception 'Invalid question year'using errcode='22023';end if;
  if p->>'subject_id'is null or p->>'topic_id'is null then raise exception 'Invalid question taxonomy'using errcode='22023';end if;
  perform(p->>'subject_id')::uuid,(p->>'topic_id')::uuid,(p->>'subtopic_id')::uuid;
- return p||jsonb_build_object('stem',btrim(p->>'stem'),'explanation',btrim(p->>'explanation'),
-  'options',(select jsonb_agg(jsonb_build_object('key',x->>'key','text',btrim(x->>'text'))order by x->>'key')from jsonb_array_elements(p->'options')x),
+ return p||jsonb_build_object('stem',ace.question_trim(p->>'stem'),'explanation',ace.question_trim(p->>'explanation'),
+  'options',(select jsonb_agg(jsonb_build_object('key',x->>'key','text',ace.question_trim(x->>'text'))order by x->>'key')from jsonb_array_elements(p->'options')x),
   'exam_year',v_year,'subtopic_id',(p->>'subtopic_id')::uuid,
-  'provenance',jsonb_build_object('source_kind',source_kind,'source_title',btrim(proof->>'source_title'),'author_label',btrim(proof->>'author_label'),
-  'source_url',proof->>'source_url','rights_evidence',btrim(proof->>'rights_evidence')));
+  'provenance',jsonb_build_object('source_kind',source_kind,'source_title',ace.question_trim(proof->>'source_title'),'author_label',ace.question_trim(proof->>'author_label'),
+  'source_url',proof->>'source_url','rights_evidence',ace.question_trim(proof->>'rights_evidence')));
 exception when invalid_text_representation then raise exception 'Invalid question identifier'using errcode='22023';
 end;$$;
 
@@ -112,7 +118,7 @@ begin
  else
   if p_payload is null or jsonb_typeof(p_payload)<>'object'or exists(select 1 from jsonb_object_keys(p_payload)k where k<>'reason')then raise exception 'Invalid question action payload'using errcode='22023';end if;
   if p_action in('reject','withdraw')then
-   reason:=btrim(p_payload->>'reason');
+   reason:=ace.question_trim(p_payload->>'reason');
    if jsonb_typeof(p_payload->'reason')is distinct from'string'or reason is null or length(reason)not between 1 and 2000 then raise exception 'Review reason required'using errcode='22023';end if;
   elsif p_payload<>'{}'::jsonb then raise exception 'Invalid question action payload'using errcode='22023';end if;
   if p_action='submit'then
@@ -145,7 +151,7 @@ begin
    raise exception 'Invalid question taxonomy; select an active approved syllabus'using errcode='23514';
   end if;
   if exists(select 1 from ace.questions x where x.id<>p_id and x.subject_id=q.subject_id
-   and regexp_replace(lower(btrim(x.stem)),'[[:space:]]+',' ','g')=regexp_replace(lower(btrim(q.stem)),'[[:space:]]+',' ','g'))then raise exception 'Duplicate question; edit the existing record'using errcode='23505';end if;
+   and ace.question_normalize(x.stem)=ace.question_normalize(q.stem))then raise exception 'Duplicate question; edit the existing record'using errcode='23505';end if;
  end if;
  if p_action in('submit','approve','publish')then
   -- Every approval/publication revalidates the complete stored text, not client flags.
@@ -188,7 +194,7 @@ end;$$;
 
 -- Keep question answers/history private. Only privileged RPCs return full records.
 revoke all on ace.questions,ace.question_versions,ace.question_media from public,anon,authenticated;
-revoke all on function ace.validate_question_draft(jsonb),ace.guard_question_workflow(),ace.guard_question_history(),
+revoke all on function ace.question_trim(text),ace.question_normalize(text),ace.validate_question_draft(jsonb),ace.guard_question_workflow(),ace.guard_question_history(),
  ace.manage_question(text,uuid,integer,jsonb),ace.review_questions(text,integer)from public,anon,authenticated;
 grant execute on function ace.manage_question(text,uuid,integer,jsonb),ace.review_questions(text,integer)to authenticated;
 commit;

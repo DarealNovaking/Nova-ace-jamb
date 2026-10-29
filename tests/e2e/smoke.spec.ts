@@ -998,15 +998,15 @@ test.describe('ACE JAMB administrator question review visibility', () => {
     await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/is_admin'), async (route) => {
       await route.fulfill({ json: true })
     })
-    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/questions'), async (route) => {
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/review_questions'), async (route) => {
       questionReads += 1
-      await route.fulfill({ json: [{ id: reviewedId, question_text: 'Rights review sample', review_status: 'draft', active: false, subject_id: subjects[0].id, topic_id: null }] })
+      await route.fulfill({ json: {questions:[workflowQuestion({id:reviewedId,stem:'Rights review sample'})],page:0,has_next:false,actor_role:'admin'} })
     })
     await page.goto('/admin')
     await expect(page.getByRole('heading', { name: 'Admin Dashboard' })).toBeVisible()
     await expect(page.getByRole('heading', { name: 'Question publication review' })).toBeVisible()
     await expect(page.getByText('Rights review sample')).toBeVisible()
-    await expect(page.getByText('Inactive record')).toBeVisible()
+    await expect(page.getByText('Revision 1 · Private')).toBeVisible()
     await expect(page.getByRole('button', { name: /Publish question/ })).toHaveCount(0)
     expect(questionReads).toBeGreaterThan(0)
   })
@@ -1014,7 +1014,7 @@ test.describe('ACE JAMB administrator question review visibility', () => {
   test('non-admin students never request the protected question review queue', async ({ page }) => {
     await mockPreparedStudent(page)
     let questionReads = 0
-    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/questions'), async (route) => {
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/review_questions'), async (route) => {
       questionReads += 1
       await route.fulfill({ json: [] })
     })
@@ -1199,18 +1199,9 @@ test.describe('ACE JAMB administrator review full text', () => {
     await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/is_admin'), async (route) => {
       await route.fulfill({ json: true })
     })
-    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/questions'), async (route) => {
-      if (route.request().method() === 'HEAD') return route.fallback()
-      questionProjection = new URL(route.request().url()).searchParams.get('select') ?? ''
-      if (questionProjection !== 'id,question_text:stem,review_status,active,subject_id,topic_id') {
-        await route.fulfill({ status: 400, json: { code: '42703', message: 'Invalid question review projection; prompt column is stem' } })
-        return
-      }
-      await route.fulfill({ json: [{
-        id: '98000000-0000-4000-8000-000000000098',
-        question_text: fullQuestion, review_status: 'draft', active: false,
-        subject_id: subjects[0].id, topic_id: null,
-      }] })
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/review_questions'), async route => {
+      questionProjection = JSON.stringify(route.request().postDataJSON())
+      await route.fulfill({json:{questions:[workflowQuestion({id:'98000000-0000-4000-8000-000000000098',stem:fullQuestion})],page:0,has_next:false,actor_role:'admin'}})
     })
     await page.goto('/admin')
     const review = page.locator('section[aria-labelledby="admin-review-questions-heading"]')
@@ -1218,7 +1209,7 @@ test.describe('ACE JAMB administrator review full text', () => {
     await expect(review.getByText(fullQuestion, { exact: true })).not.toBeVisible()
     await review.getByText('Read full question text').click()
     await expect(review.getByText(fullQuestion, { exact: true })).toBeVisible()
-    expect(questionProjection).toBe('id,question_text:stem,review_status,active,subject_id,topic_id')
+    expect(JSON.parse(questionProjection)).toEqual({p_status:null,p_page:0})
     await expect(review.getByRole('button', { name: /Publish question/ })).toHaveCount(0)
   })
 })

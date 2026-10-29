@@ -79,6 +79,12 @@ insert into ace.subtopics(id,topic_id,syllabus_version_id,name,active)values('%s
     for name,data in [('blank-stem',payload(stem=' ')),('bad-answer',payload(correct_option_key='E')),('repeated-option',payload(options=[{'key':k,'text':'same'}for k in 'ABCD'])),('missing-explanation',payload(explanation='')),('unknown-field',payload(active=True)),('oversized-stem',payload(stem='x'*20001)),('wrong-ancestry',payload(subject_id=STUDENT)),('unsupported-media',payload(media=[{'url':'https://example.invalid'}])),('false-past-year',payload(exam_year=2026)),('rights-notes-missing',payload(provenance={}))]:
         add(name+'-refused',context(AUTHOR)+call('save',0,data),'Invalid question')
     add('inactive-taxonomy-refused',"update ace.topics set active=false;"+context(AUTHOR)+call('save',0,payload()),'Invalid question taxonomy')
+    for value,label in [('\t\n','ascii'),('\u00a0','nbsp'),('\ufeff','bom'),('\u2028','line-separator')]:
+        for field in ['stem','explanation']:
+            add(label+'-blank-'+field+'-refused',context(AUTHOR)+call('save',0,payload(**{field:value})),'Invalid question')
+        add(label+'-blank-source-refused',context(AUTHOR)+call('save',0,payload(provenance=payload()['provenance']|{'rights_evidence':value})),'Invalid question')
+        add(label+'-duplicate-stem-refused',create+call('save',0,payload(stem=value+'WHAT is 3 + 4?'+value),qid='03000000-0000-4000-8000-000000000099'),'Duplicate question')
+        add(label+'-duplicate-option-refused',context(AUTHOR)+call('save',0,payload(options=[{'key':'A','text':'5'},{'key':'B','text':value+'5'+value},{'key':'C','text':'7'},{'key':'D','text':'8'}])),'Invalid question')
     add('untrusted-executor-refused',"alter function ace.manage_question(text,uuid,integer,jsonb)owner to authenticated;"+create,'Trusted executor owner required')
     add('repeatable-read-refused',create,'Read committed transaction required','repeatable read')
     add('listing-paginates-and-filters',create+"do $$declare r jsonb;begin r:=ace.review_questions('draft',0);if jsonb_array_length(r->'questions')<>1 or(r->>'has_next')::boolean then raise exception 'Incorrect queue';end if;end$$;")
