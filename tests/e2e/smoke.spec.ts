@@ -1092,7 +1092,7 @@ async function mockQuestionWorkspace(page: import('@playwright/test').Page, reco
   })
 }
 test.describe('FCB-03 question authoring workflow',()=>{
-  test('creates a private original draft using approved taxonomy',async({page})=>{
+  test('creates a private original draft using approved taxonomy',async({page},testInfo)=>{
     const records: ReturnType<typeof workflowQuestion>[]=[]
     await mockQuestionWorkspace(page,records)
     let saved: Record<string,any> | null=null
@@ -1111,6 +1111,8 @@ test.describe('FCB-03 question authoring workflow',()=>{
     await editor.getByLabel('Source title',{exact:true}).fill('ACE original arithmetic')
     await editor.getByLabel('Author or rights holder',{exact:true}).fill('ACE team')
     await editor.getByLabel('Usage-rights evidence',{exact:true}).fill('Original exercise.')
+    expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true)
+    await editor.screenshot({path:testInfo.outputPath('question-editor.png')})
     await editor.getByRole('button',{name:'Save private draft'}).click()
     await expect(page.getByText('Private draft saved. Submit it for independent review when ready.',{exact:true})).toBeVisible()
     expect(saved?.p_action).toBe('save');expect(saved?.p_expected_version).toBe(0)
@@ -1154,6 +1156,24 @@ test.describe('FCB-03 question authoring workflow',()=>{
     await page.getByRole('button',{name:'Publish question',exact:true}).click()
     await expect(page.getByText('Question published.',{exact:true})).toBeVisible()
     expect(actions).toEqual(['approve','publish'])
+  })
+  test('clears cached question answers after another tab signs out',async({page,context})=>{
+    await mockQuestionWorkspace(page,[workflowQuestion()])
+    await page.goto('/admin')
+    const review=page.getByRole('region',{name:'Question publication review'})
+    await review.getByText('Review answer, explanation and source').click()
+    await expect(review.getByText('Correct answer: C')).toBeVisible()
+    const other=await context.newPage()
+    await other.goto('/')
+    await other.evaluate(()=>{
+      const key='sb-uokiqlgmzprqfbzmedaz-auth-token'
+      localStorage.removeItem(key)
+      const channel=new BroadcastChannel(key)
+      channel.postMessage({event:'SIGNED_OUT',session:null});channel.close()
+    })
+    await expect(page.getByRole('heading',{name:'Admin access required'})).toBeVisible()
+    await expect(page.getByText('Correct answer: C')).toHaveCount(0)
+    await other.close()
   })
 })
 
