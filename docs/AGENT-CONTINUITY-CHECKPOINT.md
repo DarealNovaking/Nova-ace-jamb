@@ -2,6 +2,22 @@
 
 > **Current-state rule:** this opening section is authoritative. Entries below the historical divider are evidence history and do not override this section.
 
+## Current: ACE study publication controls released — 29 October 2026
+
+PR17 merged d1e3cca60c3d9aefe05e8e1d03cf2f33d27f41dd; tree437846a00becc2f17abcb4cecc6cb2527ad82852 exactly equals tested source7d05f173c82db9605d4b32109d82c15515a48a39. All6VerifyjobsPASS (40835010709), including24native PostgreSQL cases with4real contention scenarios (job123317640073; logs inspected). Full unfiltered202desktop/mobile testsPASS (40835010609/job123317639436;202/4.5min log inspected).42selectedNode/15Python/typecheck/buildPASS. Independent security/UI review has no remaining blockers; count-drift withdrawal reporting finding was reproduced RED and fixed. Final frontend update hides inactive draft-creation controls after confirmed publication. No temporary browser filters.
+
+Cloudflare production build9e7d9842-9323-4db5-b1b2-e6993fdc01ee SUCCESS from merge d1e3cca6. Active deploymentd7f78b7e-3001-4a8d-b5d8-fd3184aa3071 servesf4a3928a-d62c-4a9d-bfe9-25aa1c6b3a2e at100%. Final preview10GETchecksPASS; production10GETchecksPASS (routes/shell/project/RPC/digest/assets/service worker; no auth execution). No provider configuration/secrets changes.
+
+Helper installed as20261029023824_fcb02_original_study_publication. BodySHAe27729207c20d1975add819c45a5604e168ec7fb1eb77dc636e886291711c90e matches reviewed source; postgres/definer/pg_catalog+pg_temp/3s/privateACL/genuine-admin role lock/READCOMMITTED. Identity-free operation denied. Ledger56. Fresh prepublication read:75versions, zero new index versions, zero active topics/subtopics/configs/seasons, zero publication audits. No content/rights/activation writes by connector. Publication package77045759503d5b89be336dad2942bebc9eb67540c1c63c81d75db5324370ba7f/458704bytes, candidatec2b54cf4c6c877cab38e5fbeae6057ff09544aa56093eb0fcd2d34611e19fb20.25newv3/108groups/1167concepts retain1170source IDs. Narrow concept-name/original-arrangement scope only, no JAMB licence claim; annual reading texts and2027dates unconfirmed. Old75review/scaffold versions remain private/unchanged. Withdrawal is scoped/no-delete and survives content drift; republishing requires exact validation.
+
+**Exact next action:** owner refreshes the regular https://nova-ace-jamb.novaking5002.workers.dev/admin-academic page and clicks **Publish ACE study index** in **ACE study index publication**. This must use the actual signed-in administrator session; it is an execution gesture, not another approval. Do not use preview links, Create2026practice, the old rights dropdowns, fixed staging, identity spoofing or paid TinyFish runs. TinyFish wallet remains exhausted; no top-up or provider switch authorized.
+
+After the click, independently read-only verify100versions total (new25active/approved; old75unchanged),322topics/2123subtopics total and108/1167active, savedbaselineactive/25compositionrows, preparationseasonactive/null dates, exactlyone publication audit with genuine canonicaladmin actor, expected candidate metadata/rows and preserved historical/source checksums. Then complete actual student/season/withdrawal/restore acceptance. **FCB-02 remains IN PROGRESS, not done from deployment alone.** Evidence: docs/evidence/fcb-02-study-publication-release-2026-10-29.json and original-study-helper-install evidence.
+
+An unrelated pre-existing working-tree edit to docs/FRONTEND-PHASE-3-CURRENT-HANDOFF-2026-10-23.md was preserved and excluded from these commits.
+
+### Previous verified state
+
 ## Current: original-index preparation merged; publication implementation under test — 29 October 2026
 
 PR16 merged3006635cdb73a079cc21eaf1def435d315557f50, tree1e4e338248f886ff9a1537fd57eb43ba235dbf6d equals tested7f723ddf21ffa32087e6b5088108d6a5c69d8a38. Full194desktop/mobile tests PASS (40806009533/job123225019661, log inspected), all5VerifyjobsPASS (40806009575). Original candidate25/108/1167,1170lineage and student-note filtering complete. Cloudflare auto deployment not yet inspected.

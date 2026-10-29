@@ -1,0 +1,177 @@
+{
+  "date": "2026-10-29 Africa/Lagos",
+  "pr": 17,
+  "source": "7d05f173c82db9605d4b32109d82c15515a48a39",
+  "merge": "d1e3cca60c3d9aefe05e8e1d03cf2f33d27f41dd",
+  "tree": "437846a00becc2f17abcb4cecc6cb2527ad82852",
+  "verify_run": 40835010709,
+  "verify_jobs": 6,
+  "native_job": 123317640073,
+  "native_cases": 24,
+  "native_contention_cases": 4,
+  "browser_run": 40835010609,
+  "browser_job": 123317639436,
+  "browser_passed": 202,
+  "local": {
+    "node": 42,
+    "python": 15,
+    "typecheck": "PASS",
+    "build": "PASS"
+  },
+  "cloudflare": {
+    "build": "9e7d9842-9323-4db5-b1b2-e6993fdc01ee",
+    "outcome": "success",
+    "deployment": "d7f78b7e-3001-4a8d-b5d8-fd3184aa3071",
+    "version": "f4a3928a-d62c-4a9d-bfe9-25aa1c6b3a2e",
+    "percentage": 100,
+    "preview_build": "f7af8522-e003-4f8c-8bf2-9b5cea85fe14",
+    "preview_deployment": "4fcdb949-e8f7-4a6a-8b9e-625032732881"
+  },
+  "prepublication": {
+    "versions": 75,
+    "active_topics": 0,
+    "active_configs": 0,
+    "active_seasons": 0,
+    "active_subtopics": 0,
+    "helper_body_sha256": "e27729207c20d1975add819c45a5604e168ec7fb1eb77dc636e886291711c90e",
+    "new_index_versions": 0,
+    "publication_audits": 0
+  },
+  "scope": "Installed guarded RPC and deployed controls; authenticated publication has NOT occurred. FCB-02 remains IN PROGRESS pending real administrator publication, read-only postflight and actual student/withdrawal acceptance.",
+  "http": {
+    "preview": {
+      "preview_url": "https://feat-fcb02-study-publication-nova-ace-jamb.novaking5002.workers.dev",
+      "unique_url": "https://4fcdb949-nova-ace-jamb.novaking5002.workers.dev",
+      "checks": [
+        {
+          "url": "https://feat-fcb02-study-publication-nova-ace-jamb.novaking5002.workers.dev/",
+          "status": 200,
+          "same_app_shell": true,
+          "sha256": "4f5014554a0c6ab51132785a212361ca80c59fc819d1555d5c6798ec1e47c742"
+        },
+        {
+          "url": "https://feat-fcb02-study-publication-nova-ace-jamb.novaking5002.workers.dev/admin",
+          "status": 200,
+          "same_app_shell": true,
+          "sha256": "4f5014554a0c6ab51132785a212361ca80c59fc819d1555d5c6798ec1e47c742"
+        },
+        {
+          "url": "https://feat-fcb02-study-publication-nova-ace-jamb.novaking5002.workers.dev/admin-academic",
+          "status": 200,
+          "same_app_shell": true,
+          "sha256": "4f5014554a0c6ab51132785a212361ca80c59fc819d1555d5c6798ec1e47c742"
+        },
+        {
+          "url": "https://feat-fcb02-study-publication-nova-ace-jamb.novaking5002.workers.dev/admin-import",
+          "status": 200,
+          "same_app_shell": true,
+          "sha256": "4f5014554a0c6ab51132785a212361ca80c59fc819d1555d5c6798ec1e47c742"
+        },
+        {
+          "url": "https://4fcdb949-nova-ace-jamb.novaking5002.workers.dev/",
+          "status": 200,
+          "same_app_shell": true,
+          "sha256": "4f5014554a0c6ab51132785a212361ca80c59fc819d1555d5c6798ec1e47c742"
+        },
+        {
+          "url": "https://feat-fcb02-study-publication-nova-ace-jamb.novaking5002.workers.dev/assets/index-B1cndGcZ.js",
+          "status": 200,
+          "expected_supabase_project": true,
+          "sha256": "9241d4b5d0cccc435754060543fcd618f4b71769b93badd19e67289b49c54c45"
+        },
+        {
+          "url": "https://feat-fcb02-study-publication-nova-ace-jamb.novaking5002.workers.dev/assets/AcademicFoundationGate-C8SeehkK.js",
+          "status": 200,
+          "review_rpc_present": true,
+          "sha256": "5c9775246b77e184bb521c840f154c4d2f3c595593020d742380f7c4dd4a1653"
+        },
+        {
+          "url": "https://feat-fcb02-study-publication-nova-ace-jamb.novaking5002.workers.dev/assets/fcb02ReviewPayload-D3nGjJ9-.js",
+          "status": 200,
+          "expected_review_digest": true,
+          "sha256": "662cf88654d842fb9c8a3116180dd1fb9247eb868c38e84d1147a13cdf5c3eba"
+        },
+        {
+          "url": "https://feat-fcb02-study-publication-nova-ace-jamb.novaking5002.workers.dev/assets/fcb02StudyPublication-CIpm0W6J.js",
+          "status": 200,
+          "exact_publication_digest": true,
+          "sha256": "58e636d9fa7f9389636a37d7be1e20b453fc55c039f03cef3777e197e9658905"
+        },
+        {
+          "url": "https://feat-fcb02-study-publication-nova-ace-jamb.novaking5002.workers.dev/sw.js",
+          "status": 200,
+          "matches_source": true,
+          "sha256": "e45b9adf10236c941a35caba1695f46b92ec3d5f2f47b74ff4ab33100160bf5b"
+        }
+      ],
+      "scope": "Unauthenticated GETs only; no browser JS execution, token, login or API writes."
+    },
+    "production": {
+      "preview_url": "https://nova-ace-jamb.novaking5002.workers.dev",
+      "unique_url": "https://4fcdb949-nova-ace-jamb.novaking5002.workers.dev",
+      "checks": [
+        {
+          "url": "https://nova-ace-jamb.novaking5002.workers.dev/",
+          "status": 200,
+          "same_app_shell": true,
+          "sha256": "4f5014554a0c6ab51132785a212361ca80c59fc819d1555d5c6798ec1e47c742"
+        },
+        {
+          "url": "https://nova-ace-jamb.novaking5002.workers.dev/admin",
+          "status": 200,
+          "same_app_shell": true,
+          "sha256": "4f5014554a0c6ab51132785a212361ca80c59fc819d1555d5c6798ec1e47c742"
+        },
+        {
+          "url": "https://nova-ace-jamb.novaking5002.workers.dev/admin-academic",
+          "status": 200,
+          "same_app_shell": true,
+          "sha256": "4f5014554a0c6ab51132785a212361ca80c59fc819d1555d5c6798ec1e47c742"
+        },
+        {
+          "url": "https://nova-ace-jamb.novaking5002.workers.dev/admin-import",
+          "status": 200,
+          "same_app_shell": true,
+          "sha256": "4f5014554a0c6ab51132785a212361ca80c59fc819d1555d5c6798ec1e47c742"
+        },
+        {
+          "url": "https://4fcdb949-nova-ace-jamb.novaking5002.workers.dev/",
+          "status": 200,
+          "same_app_shell": true,
+          "sha256": "4f5014554a0c6ab51132785a212361ca80c59fc819d1555d5c6798ec1e47c742"
+        },
+        {
+          "url": "https://nova-ace-jamb.novaking5002.workers.dev/assets/index-B1cndGcZ.js",
+          "status": 200,
+          "expected_supabase_project": true,
+          "sha256": "9241d4b5d0cccc435754060543fcd618f4b71769b93badd19e67289b49c54c45"
+        },
+        {
+          "url": "https://nova-ace-jamb.novaking5002.workers.dev/assets/AcademicFoundationGate-C8SeehkK.js",
+          "status": 200,
+          "review_rpc_present": true,
+          "sha256": "5c9775246b77e184bb521c840f154c4d2f3c595593020d742380f7c4dd4a1653"
+        },
+        {
+          "url": "https://nova-ace-jamb.novaking5002.workers.dev/assets/fcb02ReviewPayload-D3nGjJ9-.js",
+          "status": 200,
+          "expected_review_digest": true,
+          "sha256": "662cf88654d842fb9c8a3116180dd1fb9247eb868c38e84d1147a13cdf5c3eba"
+        },
+        {
+          "url": "https://nova-ace-jamb.novaking5002.workers.dev/assets/fcb02StudyPublication-CIpm0W6J.js",
+          "status": 200,
+          "exact_publication_digest": true,
+          "sha256": "58e636d9fa7f9389636a37d7be1e20b453fc55c039f03cef3777e197e9658905"
+        },
+        {
+          "url": "https://nova-ace-jamb.novaking5002.workers.dev/sw.js",
+          "status": 200,
+          "matches_source": true,
+          "sha256": "e45b9adf10236c941a35caba1695f46b92ec3d5f2f47b74ff4ab33100160bf5b"
+        }
+      ],
+      "scope": "Unauthenticated GETs only; no browser JS execution, token, login or API writes."
+    }
+  }
+}
