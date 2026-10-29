@@ -187,8 +187,14 @@
     "passed": 7
   },
   "remaining": {
-    "actual_signed_in_student_browser": "UNVERIFIED",
+    "actual_signed_in_student_browser": "PASS — owner-reported 2026-10-29: I can see topics and subtopics; no automated signed-in browser run claimed",
     "live_withdrawal_and_restore": "UNVERIFIED; existing native test evidence retained; not executed against production in this turn"
   },
-  "status": "Publication and activation verified; FCB-02 remains IN PROGRESS pending live acceptance"
+  "status": "Publication, activation and owner-reported student display verified; FCB-02 awaits controlled live withdrawal/restoration",
+  "student_acceptance": {
+    "status": "PASS",
+    "method": "owner_report",
+    "date": "2026-10-29 Africa/Lagos",
+    "statement": "I can see topics and subtopics"
+  }
 }
