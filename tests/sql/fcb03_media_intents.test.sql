@@ -15,11 +15,17 @@ update ace.roles set role='admin' where user_id='04000000-0000-4000-8000-0000000
 select set_config('request.jwt.claim.sub','04000000-0000-4000-8000-000000000001',true);
 insert into ace.subjects(id,code,name,active)values
  ('04000000-0000-4000-8000-000000000005','MDR','Media Diagram Reasoning',true);
-insert into ace.exam_seasons(id,code,name,exam_year,status)values
- ('04000000-0000-4000-8000-000000000009','media-test','Preparation',2027,'active');
+-- Reuse the isolated question-workflow test season: only one active season
+-- is allowed by the real production schema. These changes roll back below.
+do $begin
+ if not exists(select 1 from ace.exam_seasons
+   where id='03000000-0000-4000-8000-000000000009' and status='active')then
+  raise exception 'Expected disposable workflow fixture not present';
+ end if;
+end$;
 insert into ace.syllabus_versions(id,season_id,subject_id,version,title,rights_status,status,activated_at)values
  ('04000000-0000-4000-8000-000000000008',
-  '04000000-0000-4000-8000-000000000009',
+  '03000000-0000-4000-8000-000000000009',
   '04000000-0000-4000-8000-000000000005',3,'Original index','approved','active',now());
 insert into ace.topics(id,subject_id,syllabus_version_id,name,active)values
  ('04000000-0000-4000-8000-000000000006',
