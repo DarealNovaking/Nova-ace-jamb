@@ -19,3 +19,7 @@ The source catalogue recheck did not retrieve valid exact EPUB bytes. No externa
 ## After the approved dashboard release
 
 Dashboard redesign PR21 is merged as8a107e3832b59f67c58ccdf1b649054e22cad66d and deployed through the existing main trigger. Resume the canonical FCB-03 sequence with a versioned rich-content contract, then private media/storage delivery and dedicated reporting/moderation. The40drafts remain unreviewed and unpublished; a genuinely different administrator is still required. Production content, new migrations/storage resources and future releases retain their specific authorization boundary.
+
+## Student delivery prerequisite — PR22
+
+Read-only live audit found direct student question reads blocked by deliberately revoked table/column grants. PR22 replaces those reads with existing sealed attempt delivery plus two bounded metadata-only RPC proposals, strict complete-paper/option validation and expired-session submit retry. Code/database checks pass; all258desktop/mobile browser tests pass and expired-session retry screenshots were inspected. See docs/FCB-03-STUDENT-DELIVERY-RELEASE-2026-10-29.md. No production install/deployment/content changes yet. This repair precedes the rich-content/media work and does not complete it.

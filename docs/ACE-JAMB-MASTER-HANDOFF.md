@@ -4894,3 +4894,14 @@ Evidence: docs/evidence/dashboard-release-2026-10-29.json. This post-release rec
 
 **Exact next action:** implement and verify FCB-03 rich-content/media/storage and then reporting/moderation against the audited contracts. Obtain separate concrete approval for any future production migration/storage creation/content intake/release. Forty original AI-assisted drafts remain unreviewed/unpublished; a genuinely different administrator must review before publication. Restore student browser sign-in when the owner is available without disturbing the working admin session. FCB-02 remains VERIFIED COMPLETE.
 
+
+## Current: FCB-03 student delivery prerequisite repaired in PR22 — 29 October 2026
+
+Read-only live contract inspection found student CBT/topic/evidence services directly queried ace.questions despite authenticated table/column SELECT being revoked. PR22 reuses the existing get_attempt_questions(uuid), unchanged, with actual server attempt ID and strict whole-paper/order/public-field/frozen-option-set validation. Two proposal-only metadata RPCs supply bounded published topic IDs and self-tracked topic mappings without exposing answers or granting table reads. Expired active attempts skip question delivery and preserve saved-answer submit/retry. No production mutation, deployment, account/session change or paid browser action occurred.
+
+Tested runtime source406b6cb1ba2dc6dc7118be397c4d0351fe0814d5:94Node/typecheck/build PASS;109PGlite cases PASS; all7Verify jobs40942753474 PASS including115native PostgreSQL cases (109sequential+6contention). All258unfiltereddesktop/mobile browser tests PASS in40942753493/job123690807524 (6.3m); desktop/mobile expired-session retry screenshots inspected, no overflow or question content. Independent review's stale fixture and missing option-membership findings were corrected with RED→GREEN regressions; minor SQL formatting deferred. Exact proposal/body hashes and installation/disable order are in docs/FCB-03-STUDENT-DELIVERY-RELEASE-2026-10-29.md and compiled manifest. Production remains PR21 deployment5f8cac64/versionb9d792fa at100%; both new RPCs absent, questions/media0, existing attempt body MD5e45c9fbac60bdaf1a3c58a26173c53bd unchanged.
+
+FCB-03 remains IN PROGRESS: rich formulas/tables/images, private media/storage, reports/moderation and genuine approved intake still open.40drafts remain unpublished; genuinely different administrator review remains mandatory. Preserve student prof_71146dfad171406c and admin prof_7d8a04d909144650; student saved sign-in restoration is needed only for genuine live acceptance. FCB-01/02 must not reopen.
+
+**Exact next action:** obtain specific approval to install only the two metadata functions and merge/deploy PR22. AGENTS.md requires separate production approval; earlier PR21 approval does not cover this release.
+
