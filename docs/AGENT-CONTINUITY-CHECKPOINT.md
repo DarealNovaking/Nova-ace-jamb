@@ -1,5 +1,14 @@
 # ACE JAMB — Current Agent Checkpoint
 
+## Current: FCB-03 rich-content v1 source-only candidate — 29 October 2026
+
+Verified main includes merged PR22 (`6ba898bdb64161d2b289df5d2e18fe18a3224f6a`). Current work is on `feat/fcb03-rich-content-contract`: strict, bounded versioned document parser; accessible text-only React renderer for paragraphs, Unicode math, tables and inaccessible image placeholders; untrusted-data/refusal and static-render tests; Verify CI registration. See `docs/FCB-03-RICH-CONTENT-V1-IMPLEMENTATION-2026-10-29.md`. No tests are claimed passed before CI. No source mutation on main, no production SQL/Storage, deployment, role/session or question/content changes. Existing plain-text RPC and editor remain unchanged; rich payloads are intentionally not accepted by production. FCB-03 still OPEN, 40 drafts unpublished, separate administrator required. FCB-01/02 remain COMPLETE.
+
+**Exact next action:** inspect new PR GitHub Actions and correct any failing tests; then design/test the matching server-side and private media contract in isolated PostgreSQL. Production storage/database creation and deployment require specific additional approval.
+
+--- 
+
+
 > **Current-state rule:** this opening section is authoritative. Entries below the historical divider are evidence history and do not override this section.
 
 ## Current: FCB-03 student delivery prerequisite repaired in PR22 — 29 October 2026
