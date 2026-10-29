@@ -26,7 +26,7 @@ jobs:
           cache: npm
           cache-dependency-path: package-lock.json
       - run: npm ci
-      - run: node --test tests/catalog-parser.test.mjs tests/review-only-stage.test.mjs tests/catalog-import-contract.test.mjs tests/pwa-contract.test.mjs tests/pwa-runtime.test.mjs tests/syllabus-edit.test.mjs tests/reviewed-corrections.test.mjs tests/practice-baseline.test.mjs tests/student-syllabus.test.mjs
+      - run: node --test tests/catalog-parser.test.mjs tests/review-only-stage.test.mjs tests/catalog-import-contract.test.mjs tests/pwa-contract.test.mjs tests/pwa-runtime.test.mjs tests/syllabus-edit.test.mjs tests/reviewed-corrections.test.mjs tests/practice-baseline.test.mjs tests/student-syllabus.test.mjs tests/study-publication.test.mjs
       - uses: denoland/setup-deno@v2
       - run: deno check --no-check=remote supabase/functions/ibass-catalog-stage/index.ts
       - run: deno check --no-check=remote supabase/functions/catalog-import/index.ts
@@ -232,3 +232,37 @@ jobs:
         run: psql -X -v ON_ERROR_STOP=1 -f tests/sql/fcb_01_schema_baseline.test.sql
       - name: Test upgraded practice draft, isolation refusals and native contention
         run: python3 tests/sql/fcb02_2026_practice.py --installer supabase/migrations/20261029004531_fcb02_2026_practice_draft.sql --upgrade supabase/proposals/fcb02_2026_practice_read_committed.sql --races
+
+  study-index-publication:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: pgvector/pgvector:0.8.7-pg17
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: fcb02_review_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d fcb02_review_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      PGHOST: 127.0.0.1
+      PGUSER: postgres
+      PGDATABASE: fcb02_review_test
+      PGPASSWORD: postgres
+      ACE_FCB02_DISPOSABLE_TEST: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install PostgreSQL client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+      - name: Recover an empty isolated database
+        run: psql -X -v ON_ERROR_STOP=1 -f tests/sql/fcb_01_schema_baseline.test.sql
+      - name: Verify reproducible fixed publication package
+        run: |
+          python3 scripts/prepare-study-publication-package.py
+          git diff --exit-code -- src/data/fcb02StudyPublication.json supabase/proposals/fcb02_study_publication.sql
+      - name: Test native study publication, privacy, withdrawal and restoration
+        run: python3 tests/sql/fcb02_study_publication.py

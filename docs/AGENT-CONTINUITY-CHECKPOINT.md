@@ -2,6 +2,18 @@
 
 > **Current-state rule:** this opening section is authoritative. Entries below the historical divider are evidence history and do not override this section.
 
+## Current: original-index preparation merged; publication implementation under test — 29 October 2026
+
+PR16 merged3006635cdb73a079cc21eaf1def435d315557f50, tree1e4e338248f886ff9a1537fd57eb43ba235dbf6d equals tested7f723ddf21ffa32087e6b5088108d6a5c69d8a38. Full194desktop/mobile tests PASS (40806009533/job123225019661, log inspected), all5VerifyjobsPASS (40806009575). Original candidate25/108/1167,1170lineage and student-note filtering complete. Cloudflare auto deployment not yet inspected.
+
+Current branch feat/fcb02-study-publication adds UNAPPLIED fixed genuine-admin check/publish/withdraw RPC and dashboard panel. Package digest77045759503d5b89be336dad2942bebc9eb67540c1c63c81d75db5324370ba7f,458704UTF8bytes. Exact candidate +saved2026baseline+sourcefacts/originalarrangement assessment bound; no external JAMB licence claim. Publication validates source/config/content drift and atomically activates25newv3/108/1167 plus existing baseline/season, preserving privatev2. Withdrawal uses only fixed identifiers, no deletes, remains available after drift; restoration still requires exact validation. Independent withdrawal readback does not falsely require unchanged source text.
+
+SQL inert stub RED then19PGlite casesPASS, including rollback/privacy/withdrawal/restoration/source+content drift/real-admin/RC/trusted-owner refusals. Native23cases (19sequential+4contention) implemented but NOT YET RUN.6focusedNode,15Python/typecheck/buildPASS.4newbrowserflows added (expected202total), executionpending. Independent read-only security/UI review requested. Production installer NOT applied, no live content/rights/activation writes, no paid browser action.
+
+**Exact next action:** finish independent review, publish this branch for full native/browser CI; fix any findings before installing the exact reviewed RPC and deploying controls. Then owner uses real-admin Publish ACE study index and independent read-only postflight, followed by actual student/withdrawal acceptance. No user action required yet; never impersonate or replay original staging. FCB-02 remains IN PROGRESS.
+
+### Previous verified state
+
 ## Current: original ACE study-index candidate — 29 October 2026
 
 Owner chose **Our own organization**. On feat/fcb02-independent-index, generated a separate inactive/pending v3 candidate:25versions,108original study groups,1167concept entries covering all1170source IDs (214roots +956corrected children). Digest c2b54cf4c6c877cab38e5fbeae6057ff09544aa56093eb0fcd2d34611e19fb20. Original frozen payload/digest and live source records unchanged. Generator validates corrected live fingerprints and rejects duplicate/missing/cross-subject root mappings. Narrow proposed factual-concept/original-arrangement basis documented in docs/FCB-02-ORIGINAL-INDEX-BASIS-2026-10-29.md; no external JAMB licence claimed. No publication or live writes.

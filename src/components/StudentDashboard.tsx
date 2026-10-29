@@ -9,6 +9,7 @@ import LearningSupportStatus from './LearningSupportStatus'
 import StudentAccountSettings from './StudentAccountSettings'
 import { getStudentProfile, getStudentSubjects } from '../lib/studentService'
 import { ace } from '../lib/supabase'
+import { studyIndexReference } from '../lib/studentSyllabus'
 import { getActiveExamBlueprint, getSyllabusTree, listActiveSyllabusVersions, type SyllabusSubtopic, type SyllabusTopic } from '../lib/seasonService'
 
 type Subject = { id: string; name: string; code: string }
@@ -71,7 +72,7 @@ export default function StudentDashboard() {
       const trees = await Promise.all(relevantVersions.map(async (version) => {
         const tree = await getSyllabusTree(version.id)
         const subjectName = orderedSubjects.find((subject) => subject.id === version.subject_id)?.name ?? 'Subject'
-        return tree.topics.map((topic) => ({ ...topic, subjectName, subtopics: tree.subtopics.filter((subtopic) => subtopic.topic_id === topic.id) }))
+        return tree.topics.map((topic) => ({ ...topic, ...studyIndexReference(version), subjectName, subtopics: tree.subtopics.filter((subtopic) => subtopic.topic_id === topic.id) }))
       }))
       if (sequence !== loadSequence.current) return
       setTopics(trees.flat())
