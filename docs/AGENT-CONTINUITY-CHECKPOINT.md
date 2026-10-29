@@ -2,6 +2,20 @@
 
 > **Current-state rule:** this opening section is authoritative. Entries below the historical divider are evidence history and do not override this section.
 
+## Current: ACE study index published and independently verified — 29 October 2026
+
+The owner completed Publish ACE study index in the genuine administrator session. Fresh read-only Primary verification confirms 100 syllabus versions: 25 active/approved v3 and 75 older drafts. Totals are 322 topics/2123 subtopics, with exactly 108 groups/1167 concepts active. Every new version, topic, concept, practice configuration field and all 25 composition rows match the reviewed package exactly. Source topic/subtopic fingerprints and the private v2 version fingerprint are unchanged. One publication audit binds package 77045759503d5b89be336dad2942bebc9eb67540c1c63c81d75db5324370ba7f and candidate c2b54cf4c6c877cab38e5fbeae6057ff09544aa56093eb0fcd2d34611e19fb20 to a canonical administrator actor.
+
+Saved practice configuration 396d1910-d458-5d5f-8484-380bc8c71919 and the preparation season are active. Historical 2026 configuration remains inactive and its season closed; unconfirmed dates remain null. Practice is explicitly based on 2026 rules, not confirmed 2027 rules. No new content mutations were performed by this verification.
+
+Read-only SET LOCAL ROLE authenticated without a JWT identity returns exactly 25 versions/108 groups/1167 concepts, one configuration and the correct active blueprint; zero private versions are visible. This validates the non-admin database visibility path, not a signed-in student's browser. No claims or account identity were forged. Fresh focused tests: node --test tests/study-publication.test.mjs tests/student-syllabus.test.mjs — 7 PASS. Prior 202 browser/24 native database checks remain historical release evidence; not rerun in this documentation-only verification.
+
+**FCB-02 remains IN PROGRESS:** publication/activation and persisted content checks PASS; actual signed-in student browser acceptance and live withdrawal/restoration remain UNVERIFIED. Do not withdraw the newly published content just to satisfy a check without the genuine admin session and a controlled restoration path. TinyFish remains out of credit; no paid runs or provider switch authorized. Exact next action: open the regular site using a student account and verify Syllabus topics displays the selected subjects' study groups rather than the unpublished-content empty state. Record the result, then complete the controlled live withdrawal/restoration acceptance with the real admin session. Do not recreate the baseline or republish unnecessarily.
+
+Evidence: docs/evidence/fcb-02-study-publication-postflight-2026-10-29.json. Unrelated existing FRONTEND-PHASE-3-CURRENT-HANDOFF edit preserved.
+
+### Previous verified state
+
 ## Current: ACE study publication controls released — 29 October 2026
 
 PR17 merged d1e3cca60c3d9aefe05e8e1d03cf2f33d27f41dd; tree437846a00becc2f17abcb4cecc6cb2527ad82852 exactly equals tested source7d05f173c82db9605d4b32109d82c15515a48a39. All6VerifyjobsPASS (40835010709), including24native PostgreSQL cases with4real contention scenarios (job123317640073; logs inspected). Full unfiltered202desktop/mobile testsPASS (40835010609/job123317639436;202/4.5min log inspected).42selectedNode/15Python/typecheck/buildPASS. Independent security/UI review has no remaining blockers; count-drift withdrawal reporting finding was reproduced RED and fixed. Final frontend update hides inactive draft-creation controls after confirmed publication. No temporary browser filters.
