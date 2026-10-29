@@ -188,13 +188,70 @@
   },
   "remaining": {
     "actual_signed_in_student_browser": "PASS — owner-reported 2026-10-29: I can see topics and subtopics; no automated signed-in browser run claimed",
-    "live_withdrawal_and_restore": "UNVERIFIED; existing native test evidence retained; not executed against production in this turn"
+    "live_withdrawal_and_restore": "Withdrawal PASS; restoration pending genuine-administrator Publish action and independent postflight"
   },
-  "status": "Publication, activation and owner-reported student display verified; FCB-02 awaits controlled live withdrawal/restoration",
+  "status": "Temporarily withdrawn for acceptance; restore the same reviewed index to finish FCB-02",
   "student_acceptance": {
     "status": "PASS",
     "method": "owner_report",
     "date": "2026-10-29 Africa/Lagos",
     "statement": "I can see topics and subtopics"
+  },
+  "withdrawal_acceptance": {
+    "status": "PASS",
+    "date": "2026-10-29 Africa/Lagos",
+    "summary": {
+      "audits": [
+        {
+          "type": "ace_study_index_published",
+          "metadata": {
+            "use_basis": {
+              "kind": "factual_concepts_and_original_arrangement",
+              "scope": "Concept names and ACE arrangement only; excludes source prose, PDFs, books, questions, images and audio.",
+              "authority": "Nigerian Copyright Act 2022, sections 2(5) and 3(a)",
+              "authority_url": "https://www.copyright.gov.ng/wp-content/uploads/2023/04/CopyrightAct2023FinalPublication1.pdf",
+              "decision_date": "2026-10-29",
+              "external_jamb_licence": false
+            },
+            "package_digest": "77045759503d5b89be336dad2942bebc9eb67540c1c63c81d75db5324370ba7f",
+            "previous_state": "absent",
+            "candidate_sha256": "c2b54cf4c6c877cab38e5fbeae6057ff09544aa56093eb0fcd2d34611e19fb20"
+          },
+          "canonical_admin": true
+        },
+        {
+          "type": "ace_study_index_withdrawn",
+          "metadata": {
+            "scope": "Fixed index identifiers; restoration requires complete drift validation",
+            "package_digest": "77045759503d5b89be336dad2942bebc9eb67540c1c63c81d75db5324370ba7f",
+            "candidate_sha256": "c2b54cf4c6c877cab38e5fbeae6057ff09544aa56093eb0fcd2d34611e19fb20"
+          },
+          "canonical_admin": true
+        }
+      ],
+      "index_states": [
+        {
+          "count": 25,
+          "status": "draft",
+          "rights_status": "restricted"
+        }
+      ],
+      "topics_total": 322,
+      "active_topics": 0,
+      "season_status": "draft",
+      "versions_total": 100,
+      "baseline_active": false,
+      "subtopics_total": 2123,
+      "active_subtopics": 0,
+      "composition_rows": 25,
+      "index_activation_timestamps": 0
+    },
+    "visibility": {
+      "visible_topics": 0,
+      "visible_configs": 0,
+      "identity_present": false,
+      "visible_versions": 0,
+      "visible_subtopics": 0
+    }
   }
 }
