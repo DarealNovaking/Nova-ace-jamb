@@ -1,3 +1,5 @@
+import { ArrowUpRight, BookOpen, FileQuestion, ShieldCheck } from 'lucide-react'
+import DashboardShell from './DashboardShell'
 import { useEffect, useState } from 'react'
 import { ace, supabase } from '../lib/supabase'
 import { getCurrentUser } from '../lib/authService'
@@ -87,27 +89,22 @@ export default function AdminFoundationGate() {
   }
 
   return (
-    <main className="min-h-screen bg-[#07050d] px-5 py-10 text-white">
-      <div className="mx-auto max-w-5xl">
-        <header className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p className="text-xs uppercase tracking-[.2em] text-purple-300/70">ÑØVÃ ACE JAMB · Administration</p>
-            <h1 className="mt-2 text-4xl font-black">Admin Dashboard</h1>
-            <p className="mt-2 text-white/50">Review operational readiness and manage academic structure.</p>
-          </div>
-          <div className="flex flex-wrap gap-2"><a href="/admin-academic" className="w-fit rounded-xl border border-purple-300/25 bg-purple-500/10 px-4 py-2 text-sm font-semibold text-purple-100 hover:bg-purple-500/20">Academic Structure</a><button type="button" onClick={signOut} className="w-fit rounded-xl border border-white/10 px-4 py-2 text-sm font-semibold hover:bg-white/5">Sign out</button></div>
+    <DashboardShell area="admin" activeId="overview">
+
+      <main id="admin-content" tabIndex={-1} className="dashboard-content">
+        <header className="dashboard-heading">
+          <div><p className="dashboard-eyebrow">Your administration workspace</p><h1 className="dashboard-title">Admin Dashboard</h1><p className="dashboard-description">Manage learning content, review questions and keep an eye on your services.</p></div>
+          <button type="button" onClick={signOut} className="dashboard-button self-start">Sign out</button>
         </header>
-
-        <div className="mb-6 grid gap-4 sm:grid-cols-3">
-          <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-5"><p className="text-xs uppercase tracking-wider text-white/35">Role</p><p className="mt-2 text-xl font-black">Administrator</p></div>
-          <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-5"><p className="text-xs uppercase tracking-wider text-white/35">Current milestone</p><p className="mt-2 text-xl font-black">Batch 3 · Academic structure</p></div>
-          <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-5"><p className="text-xs uppercase tracking-wider text-white/35">Publication gate</p><p className="mt-2 text-xl font-black">Source + rights review</p></div>
-        </div>
-
-        <a href="/admin-questions" className="inline-flex min-h-11 items-center rounded-xl border border-purple-300/30 px-4 py-2 text-sm font-semibold text-purple-100">Question editor workspace</a>
-        <AdminOperationsOverview />
+        <div className="dashboard-section-heading"><div><h2>Where would you like to work?</h2><p>Your main content tools, in one place.</p></div></div>
+        <nav className="dashboard-shortcuts" aria-label="Content workspaces">
+          <a href="/admin-questions" className="dashboard-panel dashboard-shortcut"><span className="dashboard-stat-icon"><FileQuestion size={21} aria-hidden="true" /></span><div><h2>Question editor workspace</h2><p>Create or import private drafts, review sources and manage publication.</p></div><ArrowUpRight size={18} aria-hidden="true" /></a>
+          <a href="/admin-academic" className="dashboard-panel dashboard-shortcut"><span className="dashboard-stat-icon"><BookOpen size={21} aria-hidden="true" /></span><div><h2>Academic workspace</h2><p>Organize subjects, syllabus topics and subtopics for students.</p></div><ArrowUpRight size={18} aria-hidden="true" /></a>
+        </nav>
+        <div className="dashboard-process"><strong className="inline-flex items-center gap-2"><ShieldCheck size={17} aria-hidden="true" /> Publication workflow</strong><span>01 · Private draft</span><span>02 · Independent review</span><span>03 · Publish to students</span></div>
+        <div id="operations" tabIndex={-1} className="scroll-mt-6"><AdminOperationsOverview /></div>
         <AdminQuestionReviewQueue />
-      </div>
-    </main>
+      </main>
+    </DashboardShell>
   )
 }

@@ -3327,3 +3327,119 @@ test('original index explains its scope and links to official coverage', async (
   await page.getByRole('button', { name: /Verified comprehension fixture/ }).click()
   await expect(page.getByRole('link', { name: 'Official JAMB coverage reference (PDF)' })).toHaveAttribute('href', 'https://ibass.jamb.gov.ng/static/media/English.abc.pdf')
 })
+
+// Dashboard design: synthetic sessions only. Real saved profiles are never changed.
+test.describe('ACE JAMB organized dashboard interface', () => {
+  test('student navigation keeps account access and active study destinations discoverable', async ({ page }, testInfo) => {
+    await mockPreparedStudent(page)
+    await page.goto('/')
+    const nav = page.getByRole('navigation', { name: 'Preparation tools' })
+    await expect(nav.getByRole('button', { name: /Overview/ })).toHaveAttribute('aria-current', 'page')
+    await expect(page.getByRole('link', { name: 'Account & settings' })).toBeVisible()
+    await page.keyboard.press('Tab')
+    await expect(page.getByRole('link', { name: 'Skip to dashboard content' })).toBeFocused()
+    await page.getByRole('link', { name: 'Account & settings' }).click()
+    await expect(page.locator('#account')).toBeFocused()
+    await page.getByRole('button', { name: /Learn Approved syllabus topics/ }).click()
+    await expect(page.getByRole('heading', { name: 'Learn', exact: true })).toBeFocused()
+    await expect(nav.getByRole('button', { name: 'Learn', exact: true })).toHaveAttribute('aria-current','page')
+    await page.getByRole('link', { name: 'Account & settings' }).click()
+    await expect(page).toHaveURL(/\/#account$/)
+    await expect(page.locator('#account')).toBeFocused()
+    await page.getByRole('button', { name: /Learn Approved syllabus topics/ }).click()
+    await page.getByRole('button', { name: 'Dashboard', exact: true }).click()
+    await expect(page.getByRole('heading', { name: 'Welcome back, Test Futarian.' })).toBeFocused()
+    await page.evaluate(() => window.scrollTo(0,0))
+    await page.screenshot({ path: testInfo.outputPath('student-dashboard.png') })
+    await expect(page.getByRole('link', { name: 'Question bank', exact: true })).toHaveCount(0)
+  })
+
+  test('home previews six topics and the full learning workspace retains every approved topic', async ({ page }) => {
+    await mockSyllabusPublicationState(page,'approved')
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/topics'), async route => {
+      await route.fulfill({json:Array.from({length:12},(_,i)=>({id:`70000000-0000-4000-8000-${String(i+1).padStart(12,'0')}`,subject_id:subjects[0].id,syllabus_version_id:'60000000-0000-4000-8000-000000000001',name:`Approved topic ${i+1}`,description:'Reviewed test fixture.',sort_order:i,active:true}))})
+    })
+    await page.goto('/')
+    const preview=page.getByRole('region',{name:'Syllabus topics'})
+    await expect(preview.getByRole('listitem')).toHaveCount(6)
+    await expect(page.getByText('12 approved topics available')).toBeVisible()
+    await page.getByRole('button',{name:'View all topics'}).click()
+    await expect(page.getByRole('heading',{name:'Learn',exact:true})).toBeFocused()
+    await expect(page.getByText('Approved topic 12',{exact:true})).toBeVisible()
+    await page.goBack()
+    await expect(page.getByRole('heading',{name:'Welcome back, Test Futarian.'})).toBeFocused()
+  })
+
+  test('administrator navigation groups workspaces without the obsolete milestone', async ({page},testInfo) => {
+    await mockQuestionWorkspace(page)
+    await page.route((url)=>new URL(url).pathname.startsWith('/rest/v1/'),async route=>{
+      if(route.request().method()!=='HEAD')return route.fallback()
+      await route.fulfill({status:200,headers:{'content-range':'*/0','access-control-expose-headers':'content-range'},body:''})
+    })
+    await page.goto('/admin')
+    const nav=page.getByRole('navigation',{name:'Administration navigation'})
+    await expect(nav.getByRole('link',{name:'Overview'})).toHaveAttribute('aria-current','page')
+    await expect(nav.getByRole('link',{name:'Academic Structure'})).toHaveAttribute('href','/admin-academic')
+    await expect(nav.getByRole('link',{name:'Question bank'})).toHaveAttribute('href','/admin-questions')
+    await expect(page.getByText('Batch 3 · Academic structure')).toHaveCount(0)
+    await expect(page.getByRole('heading',{name:'Operations command center'})).toBeVisible()
+    await expect(page.getByRole('button',{name:'Refresh status'})).toBeEnabled()
+    await page.keyboard.press('Tab')
+    await expect(page.getByRole('link',{name:'Skip to admin content'})).toBeFocused()
+    await page.keyboard.press('Enter')
+    await expect(page.locator('#admin-content')).toBeFocused()
+    for(const width of [320,393,1440]){
+      await page.setViewportSize({width,height:900})
+      await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true)
+    }
+    await page.setViewportSize(testInfo.project.use.viewport ?? {width:1280,height:720})
+    await page.evaluate(()=>window.scrollTo(0,0))
+    await page.screenshot({path:testInfo.outputPath('admin-dashboard.png')})
+    await nav.getByRole('link',{name:'Question bank'}).click()
+    await expect(page.getByRole('heading',{name:'Question workspace',exact:true})).toBeVisible()
+    await expect(page.getByRole('navigation',{name:'Administration navigation'}).getByRole('link',{name:'Question bank'})).toHaveAttribute('aria-current','page')
+  })
+
+  test('editor sidebar never advertises the administrator overview',async({page})=>{
+    await mockQuestionWorkspace(page)
+    await page.route((url)=>new URL(url).pathname.endsWith('/rest/v1/rpc/is_admin'),route=>route.fulfill({json:false}))
+    await page.route((url)=>new URL(url).pathname.endsWith('/rest/v1/rpc/review_questions'),route=>route.fulfill({json:{questions:[],page:0,has_next:false,actor_role:'editor'}}))
+    await page.goto('/admin-questions')
+    const nav=page.getByRole('navigation',{name:'Administration navigation'})
+    await expect(page.getByRole('heading',{name:'Question workspace',exact:true})).toBeVisible()
+    await expect(nav.getByRole('link',{name:'Overview'})).toHaveCount(0)
+    await expect(nav.getByRole('link',{name:'Academic Structure'})).toBeVisible()
+  })
+
+  test('long identities and all navigation fit narrow and wide student layouts', async ({page})=>{
+    await mockPreparedStudent(page)
+    await page.route((url)=>new URL(url).pathname.endsWith('/rest/v1/profiles'),async route=>{
+      await route.fulfill({json:{id:userId,display_name:'A-very-long-student-name-without-spaces-that-must-wrap-in-every-dashboard-layout',target_score:300}})
+    })
+    await page.goto('/')
+    await expect(page.getByRole('heading',{level:1})).toContainText('A-very-long')
+    for(const width of [320,393,1440]){
+      await page.setViewportSize({width,height:900})
+      await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true)
+      const nav=page.getByRole('navigation',{name:'Preparation tools'})
+      for(const button of await nav.getByRole('button').all()){
+        const box=await button.boundingBox();expect(box?.height).toBeGreaterThanOrEqual(44)
+      }
+    }
+  })
+})
+
+test('dashboard anchor destinations restore after delayed loading from study pages',async({page})=>{
+  await mockPreparedStudent(page)
+  await page.route((url)=>new URL(url).pathname.endsWith('/rest/v1/rpc/get_active_exam_blueprint'),async route=>{
+    await new Promise(resolve=>setTimeout(resolve,200))
+    await route.fulfill({json:null})
+  })
+  for(const [label,target] of [['Account & settings','account'],['Learning support','learning-support']]){
+    await page.goto('/?view=learn')
+    await expect(page.getByRole('heading',{name:'Learn',exact:true})).toBeVisible()
+    await page.getByRole('link',{name:label,exact:true}).click()
+    await expect(page).toHaveURL(new RegExp('/#'+target+'$'))
+    await expect(page.locator('#'+target)).toBeFocused()
+  }
+})

@@ -1,0 +1,175 @@
+{
+  "date": "2026-10-29",
+  "approval": "Owner approved the exact two-function database installation and PR20 deployment; no content intake/publication approval",
+  "pr": 20,
+  "head": "03b64dd7a577ab76f7a096d72875b2210f3754f4",
+  "merge": "cb6ef545dd79bf9fe9281dd054076e6120f6c8a7",
+  "tree": "e7a1228d819960501b6a1ad52e722925258019e9",
+  "migration": "20261029160300_fcb03_question_history",
+  "proposal_sha256": "975e65e0cb544d8738a95e5d496e3919c6d6008b54e45122a6c60fc80c338b0d",
+  "installation_sha256": "a93441092140bae8990d97f6a0e90c37dc6dffa3c6f68a1a83368faa392b20e1",
+  "postflight": {
+    "media": 0,
+    "versions": 0,
+    "functions": [
+      {
+        "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+        "md5": "2f5be025339acd24133d52b6e87db540",
+        "name": "manage_question",
+        "owner": "postgres",
+        "config": [
+          "search_path=pg_catalog, pg_temp",
+          "lock_timeout=3s"
+        ],
+        "sha256": "05677c2b9ce3e8372bdf682618ee9f4560b2fda787f0862225d64871c1ae580a",
+        "definer": true,
+        "anon_execute": false,
+        "authenticated_execute": true
+      },
+      {
+        "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+        "md5": "e1cc257009c372781e103ff968187ecc",
+        "name": "question_history",
+        "owner": "postgres",
+        "config": [
+          "search_path=pg_catalog, pg_temp",
+          "lock_timeout=3s"
+        ],
+        "sha256": "aa43866274ab500abb5fef9066b6fcfe59713e5ffb28c9f58f5a4299d52db4e4",
+        "definer": true,
+        "anon_execute": false,
+        "authenticated_execute": true
+      },
+      {
+        "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+        "md5": "3bce625954af8a2960b4222f5ad4957f",
+        "name": "restore_question",
+        "owner": "postgres",
+        "config": [
+          "search_path=pg_catalog, pg_temp",
+          "lock_timeout=3s"
+        ],
+        "sha256": "b654db2a163e2bd3d9ed6a5acf6dd3aa2588794639109220e4b905b526574b6d",
+        "definer": true,
+        "anon_execute": false,
+        "authenticated_execute": true
+      },
+      {
+        "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+        "md5": "551c796c17a8752c79a8865195c2f6dc",
+        "name": "review_questions",
+        "owner": "postgres",
+        "config": [
+          "search_path=pg_catalog, pg_temp",
+          "lock_timeout=3s"
+        ],
+        "sha256": "981dd59334d2ffc617bd1868df6ac3e29fa6b962561f252815a0dba1dc803696",
+        "definer": true,
+        "anon_execute": false,
+        "authenticated_execute": true
+      }
+    ],
+    "questions": 0,
+    "roles_fingerprint": "8762776bf07b6efa1da40c81c38fa0c2"
+  },
+  "identity_free_guard": "PASS: both RPCs rejected identity-free calls before content access; no production identity impersonation",
+  "advisors": {
+    "new_expected_authenticated_definer_notices": 2,
+    "assessment": "Intentional reviewed guarded RPCs; anonymous EXECUTE denied, identity/role/trusted-owner/isolation/lock guards preserved",
+    "existing_findings": "RLS-no-policy INFO3, anonymous-definer WARN1, leaked-password-protection WARN1; authenticated-definer total35",
+    "remediation": "https://supabase.com/docs/guides/database/database-linter"
+  },
+  "cloudflare": {
+    "build": "17f47ac2-7977-4c40-ab7d-f897d3fff05e",
+    "outcome": "success",
+    "completed_utc": "2026-10-29T16:04:03.290Z",
+    "deployment": "96e4e28a-c719-48f5-b5b3-0ea6f1c70adb",
+    "version": "76d89d0c-9749-4cb5-981a-ea1a8b3eef9c",
+    "percentage": 100
+  },
+  "http": {
+    "status": "PASS",
+    "base": "https://nova-ace-jamb.novaking5002.workers.dev",
+    "checks": [
+      {
+        "path": "/",
+        "status": 200,
+        "sha256": "501de13c61311830d8fa3f8bced6c3000983c023b2d93f430e979db2b8ff2873"
+      },
+      {
+        "path": "/admin-import",
+        "status": 200,
+        "sha256": "501de13c61311830d8fa3f8bced6c3000983c023b2d93f430e979db2b8ff2873"
+      },
+      {
+        "path": "/admin-questions",
+        "status": 200,
+        "sha256": "501de13c61311830d8fa3f8bced6c3000983c023b2d93f430e979db2b8ff2873"
+      },
+      {
+        "path": "/admin",
+        "status": 200,
+        "sha256": "501de13c61311830d8fa3f8bced6c3000983c023b2d93f430e979db2b8ff2873"
+      },
+      {
+        "path": "/admin-academic",
+        "status": 200,
+        "sha256": "501de13c61311830d8fa3f8bced6c3000983c023b2d93f430e979db2b8ff2873"
+      },
+      {
+        "path": "/assets/index-htU5-avR.js",
+        "status": 200,
+        "sha256": "cf29009b48eddbe2c2061257291bf98778acb86d15e7171f05419146bedfbee3"
+      },
+      {
+        "path": "/assets/AcademicFoundationGate-DJky7HPs.js",
+        "status": 200,
+        "sha256": "c06a6bf994b65a6ff97871a17a59df4278b3c74abe88415054259207e96cd55b"
+      },
+      {
+        "path": "/assets/AdminQuestionReviewQueue-C7YeYMSV.js",
+        "status": 200,
+        "sha256": "0169bbf77585e1b132ddb9d39feb13c944abc8773d763fe7df85380c4fec12f1"
+      },
+      {
+        "path": "/assets/AdminQuestionImport-C3XoCLdf.js",
+        "status": 200,
+        "sha256": "43e8e0a7239bf944822ed218b5970b0acb45371241735948a70228b2527e1970"
+      },
+      {
+        "path": "/assets/AdminQuestionHistory-XGFU17Ar.js",
+        "status": 200,
+        "sha256": "a00c8b00555b8e8c8f600a7035fcc05a0b5bd0992c6cf37f4259bb78c4342bf2"
+      },
+      {
+        "path": "/sw.js",
+        "status": 200,
+        "sha256": "e45b9adf10236c941a35caba1695f46b92ec3d5f2f47b74ff4ab33100160bf5b"
+      }
+    ],
+    "route_and_question_rpc_assets_present": true,
+    "bulk_import_asset_verified": true,
+    "history_asset_verified": true,
+    "scope": "Unauthenticated HTTP GET only; actual signed-in production author/reviewer acceptance pending."
+  },
+  "verification": {
+    "tested_source": "49a25000b600ed53d20257d3dd2f4807fb46ca49",
+    "browser_passed": 234,
+    "native_database_passed": 91,
+    "node_passed": 77,
+    "latest_pr_head_checks": "All successful before merge",
+    "runtime_test_ci_changes_since_tested_source": 0,
+    "post_merge": {
+      "verify_run": 40907760216,
+      "verify_jobs": "all7PASS",
+      "browser_run": 40907760189,
+      "browser_job": 123567091680,
+      "browser_passed": 234,
+      "duration": "5.5m",
+      "logs_inspected": true
+    }
+  },
+  "content": "No question upload/save/publication; 40 prepared drafts remain unreviewed",
+  "sessions": "Neither real profile accessed/signed out/cleared during release",
+  "remaining": "FCB03 IN PROGRESS: genuine intake/independent review/live restoration acceptance, rich media/storage and reporting/moderation; focus polish and delayed-session coverage deferred"
+}
