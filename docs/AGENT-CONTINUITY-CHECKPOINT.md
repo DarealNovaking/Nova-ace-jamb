@@ -2,6 +2,52 @@
 
 > **Current-state rule:** this opening section is authoritative. Entries below the historical divider are evidence history and do not override this section.
 
+## Current: FCB-03 question workflow under implementation — 29 October 2026
+
+FCB-02 remains VERIFIED COMPLETE (the original index restored and active). FCB-03 live read-only inventory: 0 questions/versions/media/sources, no storage buckets, no question authoring RPCs and no client table grants. Existing queue is read-only. Prepared UNAPPLIED secure workflow proposal with private drafts, independent administrator approval, explicit publication/withdrawal, role locking, READ COMMITTED, expected revisions, validated taxonomy/content/source evidence, serialized duplicate checks, immutable snapshots and atomic audits. Local recovered-schema PGlite tests: 37 PASS after inert-stub RED; 7 frontend validation tests PASS after RED; typecheck/build PASS. No production changes.
+
+PR source is being published to feat/fcb03-question-workflow for native PostgreSQL and focused browser RED. Browser command is TEMPORARILY scoped to FCB-03 with no retries; restore the full command before final acceptance. New editor UI is not implemented yet. No production installation/deployment or bank publication is authorized by these checks. Exact next: observe native/browser results, implement existing-workspace editor and restore full browser suite. Later FCB-03 rich content/media/import/moderation/first lawful reviewed dataset gates remain; this slice does not close FCB-03.
+
+### Previous verified state
+
+## Current: FCB-02 verified complete — 29 October 2026
+
+FCB-02 VERIFIED COMPLETE — 29 October 2026, for the owner-approved original ACE concept index and clearly labelled 2026 practice baseline. The owner restored the same index through the genuine administrator Publish action after the independently verified withdrawal. Fresh read-only Primary postflight exactly matches all 25 active/approved v3 versions, 108 study groups, 1167 concepts, the existing 2026-format configuration and its 25 subject-composition rows. Source topic/concept and private v2 version fingerprints are unchanged. Totals remain 100 versions/322 topics/2123 subtopics: no duplicate records. The preparation season/config are active, dates null. Exactly two publication audits (initial absent→published and withdrawn→published) and one withdrawal audit have canonical administrator actors and the reviewed package/candidate digests.
+
+Restored non-admin authenticated-role reads without JWT identity expose 25 versions/108 groups/1167 concepts and the correct active blueprint, with zero private versions. The owner previously confirmed topics and subtopics in the student interface; that is owner-reported acceptance, not an automated real-account browser claim. Fresh focused publication/student-display tests: 7 PASS. Prior exact-source release evidence remains 202 browser cases and 24 native database scenarios; the full suite was not rerun for this documentation-only acceptance.
+
+Acceptance: approved versioned index/launch coverage PASS; active practice season and English60+three40 composition PASS; source preservation and private-draft visibility PASS; student display PASS (owner report); live takedown PASS; exact live restoration PASS. No more administrator clicks are needed. Scope excludes official 2027 confirmation, annual prescribed books, source prose/PDF reuse licensing and question/lesson/media approval; these are not claimed complete. The narrow factual-concept/original-arrangement use basis is recorded without claiming an external JAMB licence. Existing private source drafts remain private.
+
+Next exact action: begin FCB-03 by inspecting the existing question authoring/review/publication contracts, current question-bank state and approved-source inventory; prepare the smallest lawful reviewed launch dataset and finish gaps through existing architecture. Do not restart FCB-02 or assume the active index is a populated question bank. FCB-03..12 remain separate. No production writes, paid browser runs or new deployment occurred during this verification. Evidence: docs/evidence/fcb-02-study-publication-postflight-2026-10-29.json.
+
+### Previous verified state
+
+## Current: withdrawal verified; restore the index next — 29 October 2026
+
+Live withdrawal verified — 29 October 2026. The owner completed Withdraw ACE study index in the genuine administrator session. Independent read-only Primary checks: all 25 v3 versions are draft/restricted with null activation timestamps; 0 active topics/subtopics; practice baseline inactive; preparation season draft. All 100 versions, 322 topics, 2123 subtopics and 25 baseline composition rows remain stored. One canonical-admin withdrawal audit matches the reviewed package/candidate, alongside the original publication audit. Read-only authenticated-role checks without a JWT identity expose 0 versions/topics/subtopics/configurations. No connector production writes or deletion occurred. Withdrawal acceptance PASS; student display previously PASS by owner report. FCB-02 remains IN PROGRESS only until restoration and final saved-state verification. Exact next action: genuine administrator clicks Publish ACE study index on the regular Academic Structure page to restore the same index and baseline, then independently verify the exact candidate, active visibility and restoration audit. Do not leave the site withdrawn or create another package.
+
+### Previous verified state
+
+## Current: student display confirmed; final withdrawal/restoration pending — 29 October 2026
+
+Owner-reported student acceptance — 29 October 2026: the owner confirms “I can see topics and subtopics.” Mark the student display check PASS (owner-reported; not an automated signed-in browser run). Publication and activation remain independently verified. Only controlled live withdrawal/restoration acceptance remains open. Exact next action: in the regular Academic Structure page, use Withdraw ACE study index once; independently verify hidden content and inactive baseline before the genuine administrator republishes the same exact index. No new publication copy, deletion, claim spoofing or paid browser run.
+
+### Previous verified state
+
+## Current: ACE study index published and independently verified — 29 October 2026
+
+The owner completed Publish ACE study index in the genuine administrator session. Fresh read-only Primary verification confirms 100 syllabus versions: 25 active/approved v3 and 75 older drafts. Totals are 322 topics/2123 subtopics, with exactly 108 groups/1167 concepts active. Every new version, topic, concept, practice configuration field and all 25 composition rows match the reviewed package exactly. Source topic/subtopic fingerprints and the private v2 version fingerprint are unchanged. One publication audit binds package 77045759503d5b89be336dad2942bebc9eb67540c1c63c81d75db5324370ba7f and candidate c2b54cf4c6c877cab38e5fbeae6057ff09544aa56093eb0fcd2d34611e19fb20 to a canonical administrator actor.
+
+Saved practice configuration 396d1910-d458-5d5f-8484-380bc8c71919 and the preparation season are active. Historical 2026 configuration remains inactive and its season closed; unconfirmed dates remain null. Practice is explicitly based on 2026 rules, not confirmed 2027 rules. No new content mutations were performed by this verification.
+
+Read-only SET LOCAL ROLE authenticated without a JWT identity returns exactly 25 versions/108 groups/1167 concepts, one configuration and the correct active blueprint; zero private versions are visible. This validates the non-admin database visibility path, not a signed-in student's browser. No claims or account identity were forged. Fresh focused tests: node --test tests/study-publication.test.mjs tests/student-syllabus.test.mjs — 7 PASS. Prior 202 browser/24 native database checks remain historical release evidence; not rerun in this documentation-only verification.
+
+**FCB-02 remains IN PROGRESS:** publication/activation and persisted content checks PASS; actual signed-in student browser acceptance and live withdrawal/restoration remain UNVERIFIED. Do not withdraw the newly published content just to satisfy a check without the genuine admin session and a controlled restoration path. TinyFish remains out of credit; no paid runs or provider switch authorized. Exact next action: open the regular site using a student account and verify Syllabus topics displays the selected subjects' study groups rather than the unpublished-content empty state. Record the result, then complete the controlled live withdrawal/restoration acceptance with the real admin session. Do not recreate the baseline or republish unnecessarily.
+
+Evidence: docs/evidence/fcb-02-study-publication-postflight-2026-10-29.json. Unrelated existing FRONTEND-PHASE-3-CURRENT-HANDOFF edit preserved.
+
+### Previous verified state
+
 ## Current: ACE study publication controls released — 29 October 2026
 
 PR17 merged d1e3cca60c3d9aefe05e8e1d03cf2f33d27f41dd; tree437846a00becc2f17abcb4cecc6cb2527ad82852 exactly equals tested source7d05f173c82db9605d4b32109d82c15515a48a39. All6VerifyjobsPASS (40835010709), including24native PostgreSQL cases with4real contention scenarios (job123317640073; logs inspected). Full unfiltered202desktop/mobile testsPASS (40835010609/job123317639436;202/4.5min log inspected).42selectedNode/15Python/typecheck/buildPASS. Independent security/UI review has no remaining blockers; count-drift withdrawal reporting finding was reproduced RED and fixed. Final frontend update hides inactive draft-creation controls after confirmed publication. No temporary browser filters.

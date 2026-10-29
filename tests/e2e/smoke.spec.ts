@@ -196,6 +196,11 @@ async function mockPreparedStudent(page: import('@playwright/test').Page) {
       await route.fulfill({ json: null })
       return
     }
+    if (path.endsWith('/rest/v1/rpc/review_questions')) {
+      const payload = route.request().postDataJSON()
+      await route.fulfill({ json: { questions: [], page: payload.p_page, has_next: false, actor_role: 'admin' } })
+      return
+    }
     if (path.includes('/rest/v1/devices')) {
       await route.fulfill({ status: 201, json: { id: '20000000-0000-4000-8000-000000000001', user_id: userId, device_hash: 'test-device-hash', platform: 'Playwright', app_version: null, last_seen_at: '2026-01-01T00:00:00.000Z' } })
       return
@@ -1066,6 +1071,95 @@ test.describe('ACE JAMB admin question review pagination', () => {
     expect(requestedOffsets[0]).toBe(0)
     expect(requestedOffsets).toContain(30)
     expect(requestedOffsets.at(-1)).toBe(0)
+  })
+})
+
+const workflowTopic = '93000000-0000-4000-8000-000000000001'
+const workflowVersion = '93000000-0000-4000-8000-000000000002'
+const workflowSeason = '93000000-0000-4000-8000-000000000003'
+function workflowQuestion(overrides: Record<string, unknown> = {}) {
+  return {
+    id:'93000000-0000-4000-8000-000000000004',subject_id:subjects[1].id,topic_id:workflowTopic,subtopic_id:null,
+    stem:'What is 3 + 4?',options:[{key:'A',text:'5'},{key:'B',text:'6'},{key:'C',text:'7'},{key:'D',text:'8'}],correct_option_key:'C',
+    explanation:'Adding four to three gives seven.',difficulty:'easy',exam:'ACE practice',exam_year:null,
+    provenance:{source_kind:'original',source_title:'ACE original arithmetic',author_label:'ACE team',source_url:null,rights_evidence:'Original exercise.',last_content_editor:userId},
+    review_status:'draft',rights_status:'unknown',active:false,content_version:1,created_by:userId,reviewed_by:null,...overrides,
+  }
+}
+async function mockQuestionWorkspace(page: import('@playwright/test').Page, records: ReturnType<typeof workflowQuestion>[] = []) {
+  await mockPreparedStudent(page)
+  await page.route((url)=>new URL(url).pathname.endsWith('/rest/v1/rpc/is_admin'), route=>route.fulfill({json:true}))
+  await page.route((url)=>new URL(url).pathname.endsWith('/rest/v1/rpc/get_active_exam_blueprint'),route=>route.fulfill({json:{season:{id:workflowSeason},config:{rules:{source_year:2026}}}}))
+  await page.route((url)=>new URL(url).pathname.endsWith('/rest/v1/syllabus_versions'),route=>route.fulfill({json:[{id:workflowVersion,season_id:workflowSeason,subject_id:subjects[1].id,status:'active',rights_status:'approved',version:3}]}))
+  await page.route((url)=>new URL(url).pathname.endsWith('/rest/v1/topics'),route=>route.fulfill({json:[{id:workflowTopic,subject_id:subjects[1].id,syllabus_version_id:workflowVersion,name:'Numbers',active:true,sort_order:1,description:null}]}))
+  await page.route((url)=>new URL(url).pathname.endsWith('/rest/v1/subtopics'),route=>route.fulfill({json:[]}))
+  await page.route((url)=>new URL(url).pathname.endsWith('/rest/v1/rpc/review_questions'),async route=>{
+    const data=route.request().postDataJSON();await route.fulfill({json:{questions:records,page:data.p_page,has_next:false,actor_role:'admin'}})
+  })
+}
+test.describe('FCB-03 question authoring workflow',()=>{
+  test('creates a private original draft using approved taxonomy',async({page})=>{
+    const records: ReturnType<typeof workflowQuestion>[]=[]
+    await mockQuestionWorkspace(page,records)
+    let saved: Record<string,any> | null=null
+    await page.route((url)=>new URL(url).pathname.endsWith('/rest/v1/rpc/manage_question'),async route=>{
+      saved=route.request().postDataJSON();const row=workflowQuestion({...saved!.p_payload,id:saved!.p_id});records.push(row);await route.fulfill({json:row})
+    })
+    await page.goto('/admin')
+    await page.getByRole('button',{name:'New question',exact:true}).click()
+    const editor=page.getByRole('form',{name:'Question editor'})
+    await editor.getByLabel('Subject', {exact:true}).selectOption(subjects[1].id)
+    await editor.getByLabel('Syllabus topic',{exact:true}).selectOption(workflowTopic)
+    await editor.getByLabel('Question text',{exact:true}).fill('What is 3 + 4?')
+    for(const [key,value]of Object.entries({A:'5',B:'6',C:'7',D:'8'}))await editor.getByLabel(`Option ${key}`,{exact:true}).fill(value)
+    await editor.getByLabel('Correct option',{exact:true}).selectOption('C')
+    await editor.getByLabel('Explanation',{exact:true}).fill('Adding four to three gives seven.')
+    await editor.getByLabel('Source title',{exact:true}).fill('ACE original arithmetic')
+    await editor.getByLabel('Author or rights holder',{exact:true}).fill('ACE team')
+    await editor.getByLabel('Usage-rights evidence',{exact:true}).fill('Original exercise.')
+    await editor.getByRole('button',{name:'Save private draft'}).click()
+    await expect(page.getByText('Private draft saved. Submit it for independent review when ready.',{exact:true})).toBeVisible()
+    expect(saved?.p_action).toBe('save');expect(saved?.p_expected_version).toBe(0)
+    expect(saved?.p_payload.exam).toBe('ACE practice');expect(saved?.p_payload).not.toHaveProperty('active')
+    await expect(page.getByRole('button',{name:'Submit for review',exact:true})).toBeVisible()
+  })
+  test('never claims success after a denied or stale question save',async({page})=>{
+    await mockQuestionWorkspace(page,[workflowQuestion()])
+    await page.route((url)=>new URL(url).pathname.endsWith('/rest/v1/rpc/manage_question'),route=>route.fulfill({status:409,json:{code:'40001',message:'Question revision changed; internal details must not leak'}}))
+    await page.goto('/admin')
+    await page.getByRole('button',{name:'Submit for review',exact:true}).click()
+    const region=page.getByRole('region',{name:'Question publication review'})
+    await expect(region.getByRole('alert')).toContainText('Reload question records before retrying')
+    await expect(page.getByText('internal details must not leak')).toHaveCount(0)
+    await expect(region.getByRole('button',{name:'Submit for review',exact:true})).toBeDisabled()
+    await region.getByRole('button',{name:'Refresh questions',exact:true}).click()
+    await expect(region.getByRole('button',{name:'Submit for review',exact:true})).toBeEnabled()
+  })
+  test('requires a different reviewer and renders source evidence safely',async({page})=>{
+    await mockQuestionWorkspace(page,[workflowQuestion({review_status:'in_review',content_version:2,stem:'<img src=x onerror=alert(1)>'})])
+    await page.goto('/admin')
+    const region=page.getByRole('region',{name:'Question publication review'})
+    await expect(region.getByRole('button',{name:'Approve question',exact:true})).toHaveCount(0)
+    await region.getByText('Review answer, explanation and source').click()
+    await expect(region.getByText('Original exercise.',{exact:true})).toBeVisible()
+    await expect(region.locator('img')).toHaveCount(0)
+    expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true)
+  })
+  test('independent administrator approves then publishes the saved revision',async({page})=>{
+    const other='93000000-0000-4000-8000-000000000009'
+    const records=[workflowQuestion({created_by:other,provenance:{...workflowQuestion().provenance,last_content_editor:other},review_status:'in_review',content_version:2})]
+    await mockQuestionWorkspace(page,records)
+    const actions: string[]=[]
+    await page.route((url)=>new URL(url).pathname.endsWith('/rest/v1/rpc/manage_question'),async route=>{
+      const data=route.request().postDataJSON();actions.push(data.p_action)
+      records[0]={...records[0],content_version:data.p_expected_version+1,reviewed_by:userId,rights_status:'owned',review_status:data.p_action==='approve'?'approved':'published',active:data.p_action==='publish'}
+      await route.fulfill({json:records[0]})
+    })
+    await page.goto('/admin')
+    await page.getByRole('button',{name:'Approve question',exact:true}).click()
+    await page.getByRole('button',{name:'Publish question',exact:true}).click()
+    await expect(page.getByText('Question published.',{exact:true})).toBeVisible()
+    expect(actions).toEqual(['approve','publish'])
   })
 })
 
