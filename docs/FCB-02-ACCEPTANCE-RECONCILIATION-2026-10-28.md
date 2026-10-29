@@ -1,6 +1,6 @@
 # FCB-02 acceptance reconciliation — 28 October 2026
 
-Status: **IN PROGRESS — labelled2026 baseline selected; authenticated draft creation ready; publication acceptance open.** This is the acceptance checklist for the existing canonical FCB-02 scope, not a replacement plan.
+Status: **IN PROGRESS — labelled2026 baseline selected; inactive practice configuration created/verified; publication acceptance open.** This is the acceptance checklist for the existing canonical FCB-02 scope, not a replacement plan.
 
 | Acceptance item | Verified state | Remaining evidence/action |
 |---|---|---|
@@ -9,7 +9,7 @@ Status: **IN PROGRESS — labelled2026 baseline selected; authenticated draft cr
 | Rights/provenance | All25 v2 drafts pending; existing2026 Agriculture scaffold approved by user, still draft | Record source-use authority for chosen launch subjects. Generic official-source links alone do not resolve this. |
 | Academic/year review | Engineering locator/grouping review done; all25 source mappings documented | Independent review; English reading-text title unresolved/excluded, Arabic date conflict retained, PHE heading exceptions disclosed, subject-specific text cycles remain qualified. |
 | Launch coverage |25 draft subjects available | Owner must choose and approve launch coverage; English is compulsory. |
-| Preparation season/config | Owner chose verified2026-format practice baseline; fixed inactive draft creation action is released, candidate not yet created | Click Create2026practice draft in admin; verify readback. Activation remains gated by approved published trees. No wait for official2027 format confirmation for this baseline. |
+| Preparation season/config | Owner chose verified2026-format practice baseline; exact inactive draft configuration and25composition rows created through realadmin and verified | Creation/readback PASS. Activation remains gated by approved published trees. No wait for official2027 format confirmation for this baseline. |
 | Published approved topic trees | None active;0 active topics/subtopics | Rights/academic approval then separately authorized publication. |
 | Actual student selectors/visibility/season switch/rollback/takedown | Prior automated security evidence exists; real published-record journey UNVERIFIED | Run authenticated acceptance against legitimately approved published launch records. Do not fabricate approval to make a test pass. |
 
@@ -23,7 +23,7 @@ An indexed brochure copyright notice is not treated as syllabus-specific licensi
 
 ## Exact next action
 
-Use the released **Create 2026 practice draft** administrator action, then verify its saved inactive rows. Resolve the documented source-use basis and publication/activation acceptance through supported evidence and genuine administrator controls. The earlier blanket human-signature requirement was withdrawn. Do not replay staging, fabricate official2027 facts or request the owner's2026-format decision again.
+The2026 practice draft is saved and verified; no more creation action is needed. Resolve the documented source-use basis and publication/activation acceptance through supported evidence and genuine administrator controls, then verify actual student visibility, season switching and withdrawal/rollback. The earlier blanket human-signature requirement was withdrawn. Do not replay staging, fabricate official2027 facts or request the owner's2026-format decision again.
 
 Evidence: [machine-readable reconciliation](evidence/fcb-02-acceptance-reconciliation-2026-10-28.json). Subject-level expected counts below were compared with the read-only live grouped query; no complete live row equality is claimed.
 

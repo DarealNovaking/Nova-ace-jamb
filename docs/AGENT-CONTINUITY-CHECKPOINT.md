@@ -2,6 +2,18 @@
 
 > **Current-state rule:** this opening section is authoritative. Entries below the historical divider are evidence history and do not override this section.
 
+## Current: 2026 practice configuration saved and verified — 29 October 2026
+
+The owner completed the genuine administrator action. Independent read-only postflight exactly matched every reviewed configuration field (excluding generated created_at) and all25subject rows. Candidate396d1910-d458-5d5f-8484-380bc8c71919 now exists:7200seconds,180questions,4options, English60 plus3choices at40. Total2configurations/50composition rows. One practice_baseline_created audit event has a non-null actor whose canonical role is admin. No user identifiers were copied into this evidence.
+
+The candidate remains inactive; preparation season remains draft with null dates. No active configs/seasons/topics/subtopics. Historical source/config/season/25rows projection remains0dbb29b684d68024a96cad55dcf6dec0b378ad22ea56a50b5a89309e72975b7d. The214-topic projection2012de2bfc6beeebcc1e31a232037c54,956-subtopic projection86806e7337523a601427debd19e26888 and25v2 version projection5082c7d856c33bcfe7dd16edb30eb1ad all remain unchanged.25v2 versions remain draft/rights pending;50v1 scaffolds remain49pending/1approved drafts. No connector writes or identity impersonation occurred. Evidence: docs/evidence/fcb-02-2026-practice-created-2026-10-29.json.
+
+**The 2026 practice-configuration implementation plan is COMPLETE. No more Create/check/sign-in gesture is needed for this step.** Retain the existing full192browser/25native-contention/42import verification and production-release evidence; these documentation-only updates introduce no runtime change or new runtime test claim. FCB-02 remains IN PROGRESS because syllabus-use evidence, legitimate publication/activation and actual student/season/rollback/takedown acceptance remain open. The owner-selected labelled2026 baseline removes waiting for official2027 format confirmation; do not reopen that decision or require a human teacher signature.
+
+**Exact next action:** resolve/document the supported source-use basis for the current source-derived taxonomy (permission/licence or another appropriately supported basis; no claim that every short concept label needs licensing). Then use genuine administrator publication and existing activation contracts, and verify the actual student journey and withdrawal/rollback. Do not mark the whole batch done from an inactive configuration, invent source rights, toggle approval to satisfy tests, replay fixed staging or create another baseline copy.
+
+### Earlier release evidence
+
 ## Current: 2026 practice action released — 29 October 2026
 
 PR15 is merged as898cc577b68f43246d824186192b8606274599f1. Its tree4ebde726f05975b692d42375e54646a926ba0040 exactly matches tested source195f8461dee0927196ee544acca990b216f06a2d. All5Verify jobs passed (40797396665), including25new native practice cases with5real contention scenarios and42existing import cases. Full unfiltered192desktop/mobile tests passed (40797396676/job123197087279).47localNode/10Python/typecheck/build passed. Final independent review findings were reproduced RED and fixed: bounded test connections and explicit read-committed admission prevent the stale-repeatable-read case. Do not repeat this finished verification or request the2026-format choice again.
