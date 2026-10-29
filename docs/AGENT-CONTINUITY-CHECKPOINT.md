@@ -2,6 +2,30 @@
 
 > **Current-state rule:** this opening section is authoritative. Entries below the historical divider are evidence history and do not override this section.
 
+## Final review isolation fix — 2026-10-29
+
+UI source9feaebc90485b35efc4a4a1576f14d04d75cc94a fullbrowser40796603744/job123194479548 PASS (192cases; loginspection next), Verify40796603743PASS. Reviewer found staleRRsnapshot couldhidecompositiondrift becauseparentlockdoesnotinvalidatechild-onlyedits. Reproduced newRR-refusal regressionREDagainstoldhelper; addedexplicitREADCOMMITTEDrestriction, bothRR/serializablecasesGREEN.20localSQLcasesandguardedupgradepathPASS. Historicalappliedmigration20261029004531unchanged; guardedpatch installed20261029005504_fcb02_practice_read_committed, exactbodySHA4551d7f09a78c2d71fcfa08b52758d9aff3a2386f44e7c01293c64f0ad703c1e matchescanonicalnewinitialinstaller. Samepostgresowner/definer/ACL/path/3stimeout; ledger55/configcount1/candidateabsent. Evidence fcb-02-2026-practice-isolation-fix-2026-10-29.json. Dedicatedboundeddisposable nativeCIjob addsfivecontention cases (source/targetedits, concurrentcreate, demotion-first/operation-first) plus20sequentialcases; finalCIpending. NofurtherUIchange; fullunfilteredbrowserworkflowunchanged. Nextpublishpatchedsource, inspectfullVerify/native25+192browser, merge/deployverifiedfrontend, thenrealadminCreate2026practice draft andpostflight.
+
+### Previous UI implementation evidence
+
+## Practice administrator panel implemented — 2026-10-29
+
+Test-first focused browser run40796128322/job123193397417 reproduced6expected missing-panel failures (threeflows/twoprojects); firstfullrun40795696304 wascancelled, not PASS. Coreguardunitstub RED2/4 then4/4GREEN. Implemented AdminPracticeBaseline +typed parser/create-readback coordinator; noautoRPC onmount, admin-onlydisplay, explicitcreate/check, duplicateinflight guard, sanitizederrors/check-before-retry, createdstate independentlychecked. Addededitor-exclusionbrowserregression. FULL unfiltered npm rune2e restored; workflowdiffagainstab47823 EMPTY.47localNode tests (35+12),10Pythonunits,typecheck/buildPASS;18localSQLcasesPASS includinguntrustedowner/sourcecomposition/conflict/historicalpreservation. Native/full192browserCI andfinalboundedUIreview PENDING. Livehelperalreadyinstalled; configcandidate remainsabsent. Nextpublishfinalsource/fullCI/review, merge/deployverifiedfrontend, then userCreate2026practice draft throughrealadminsession andindependentpostflight. No repeatapprovalneeded; no TinyFishcredit/topup/runs.
+
+### Server installation evidence
+
+## 2026 draft helper installed — 2026-10-29
+
+Exact reviewed server source7e150ae1 nativeVerify40795696229/job123191525883 confirms14newSQL+42existingimport scenarios PASS. Source/body reviewed; no authorization/atomicity blocker. Testtransport isolation finding reproduced RED thenfixed by bounded local transport+preinstall emptyrecovery preflight;10PythonunitsPASS. Installed20261029004531_fcb02_2026_practice_draft; ownerpostgres/definer/pg_catalog,pg_temp/3s; bodySHA c98e06501cc60463043899afa76e6307396cfe6f0c76e7f536f2974aa2cda9ff matches local. ACL onlypostgres/authenticated; realadmin+lockedrole required. Liveidentityfreeowner/authenticated callsrefused, cache reloadnotified, ledger54/configcount1/candidateabsent. No appdata/activation/publication changed. Evidence docs/evidence/fcb-02-2026-practice-helper-install-2026-10-29.json. BrowserREDpending; focusedtest-only workflowtemporary, MUSTrestorefullnpmrune2e beforefinalCI/release. Sourceinstallerhistoricalformat/composition contract is exact forcheckedfields, not allhistoricalmetadata. NextfinishpanelRED/GREEN andfullCI, independentUIreview, release then genuineadminCreate2026practice draft action.
+
+### Earlier implementation state
+
+## 2026 practice draft implementation started — 2026-10-29
+
+Branch feat/fcb02-2026-practice-draft. Implementing fixed admin-only check/create RPC, no activation/publication. SQL behavior test first RED on inert stub (no complete draft), then14isolated PostgreSQL-compatible cases PASS pending nativeCI confirmation. NativeCI step added. Three new browser cases pending RED (panel absent), implementation follows after reproduced failure. Source installer supabase/proposals/fcb02_2026_practice_draft.sql not installed live. Target exact candidate396d1910-d458-5d5f-8484-380bc8c71919; all previous content/format decisions preserved. Next native/browser RED check, minimal admin panel, full verification/review, exact installer/front-end release and genuine admin creation. No live mutation yet.
+
+### Baseline decision
+
 ## Owner selected 2026 preparation baseline — 2026-10-29
 
 Use verified 2026 rules for preparation: 2hours/180questions/4options; English60 plus3subjects at40. Owner instruction supersedes waiting for official2027 settings as a baseline prerequisite. Label UTME practice — 2026 rules, source_year2026/official_2027_confirmedfalse; unconfirmed dates null. Preserve closed historical2026 record and annual reading-text qualifications. Exact prepared inactive config/25subject candidate: docs/content-review/fcb-02-2026-baseline-proposal-2026-10-29.json; decision/evidence docs/FCB-02-2026-BASELINE-DECISION-2026-10-29.md. Fresh live source snapshot matches; all2024 three-optional-subject combinations and25unique IDs checked. No live writes/activation or publication; no server validation claimed. Config root grants SELECT only and composition trigger requires genuine actor; no create-config RPC currently exists. Next independent implementation: reviewed genuine-admin draft configuration creation route using this fixed candidate, without broad grants/claims spoofing; source-use/publication/student acceptance gates remain. Do not repeat2027 research or ask for this same baseline choice again.
