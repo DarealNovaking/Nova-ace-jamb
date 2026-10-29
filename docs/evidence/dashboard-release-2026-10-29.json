@@ -1,0 +1,144 @@
+{
+  "status": "DEPLOYED_LIVE_DELIVERY_AND_ADMIN_ACCEPTED",
+  "date": "2026-10-29 Africa/Lagos",
+  "approval": "Owner approved PR21 merge and production deployment; no database migration/content publication included",
+  "pr": 21,
+  "head": "fa6de9124955bcbb2dd5dacb87f5de5358fe6761",
+  "merge": "8a107e3832b59f67c58ccdf1b649054e22cad66d",
+  "tree": "e42e2f307fa327b68b1652e353a3cadc7905c783",
+  "cloudflare": {
+    "build": "bd2cc573-668d-48fb-807c-d150674d6e9b",
+    "outcome": "success",
+    "completed_utc": "2026-10-29T18:58:10.738Z",
+    "deployment": "5f8cac64-9ee0-4cfc-ad9d-f67fed3d7417",
+    "version": "b9d792fa-1720-458e-9ec0-578bed437592",
+    "percentage": 100
+  },
+  "http": {
+    "status": "PASS",
+    "source": "8a107e3832b59f67c58ccdf1b649054e22cad66d",
+    "base": "https://nova-ace-jamb.novaking5002.workers.dev",
+    "checks": [
+      {
+        "path": "/",
+        "status": 200,
+        "sha256": "d892db2261cc22c95abb6cb9ada1f37ca5a22f6b64d9fbe3597b0ee637796157"
+      },
+      {
+        "path": "/admin-import",
+        "status": 200,
+        "sha256": "d892db2261cc22c95abb6cb9ada1f37ca5a22f6b64d9fbe3597b0ee637796157"
+      },
+      {
+        "path": "/admin-questions",
+        "status": 200,
+        "sha256": "d892db2261cc22c95abb6cb9ada1f37ca5a22f6b64d9fbe3597b0ee637796157"
+      },
+      {
+        "path": "/admin",
+        "status": 200,
+        "sha256": "d892db2261cc22c95abb6cb9ada1f37ca5a22f6b64d9fbe3597b0ee637796157"
+      },
+      {
+        "path": "/admin-academic",
+        "status": 200,
+        "sha256": "d892db2261cc22c95abb6cb9ada1f37ca5a22f6b64d9fbe3597b0ee637796157"
+      },
+      {
+        "path": "/assets/index-v0hxtkZo.js",
+        "status": 200,
+        "sha256": "74e9eb28dcaea650c27df920022ec607bcd0ed387d4f08771a546723101d36d0"
+      },
+      {
+        "path": "/assets/StudentDashboard-DkdDndom.js",
+        "status": 200,
+        "sha256": "ae612ac1ceede70b964c1cdf153617319ebacecb152dc2924bed44ce56e9b612"
+      },
+      {
+        "path": "/assets/AcademicFoundationGate-Cf3ve4qY.js",
+        "status": 200,
+        "sha256": "13b1e4e7088cbea64543cb1ab0f3d72ed1f89aecb2670c95285de207dace1ed1"
+      },
+      {
+        "path": "/assets/seasonService-BYIvsG1O.js",
+        "status": 200,
+        "sha256": "6c16c145948b55f5f548209572fc27c278bcfa5ef5d36961c12a5707e252266a"
+      },
+      {
+        "path": "/assets/AdminFoundationGate-BqaA0KN2.js",
+        "status": 200,
+        "sha256": "a11d01fae6d127a6c88b2aff986d648fac9f6c4d4ae0e8eec3aa4368c30356fd"
+      },
+      {
+        "path": "/assets/StudentStudyWorkspace-DXOj9N4z.js",
+        "status": 200,
+        "sha256": "06154cb08990c0603a5647e510584e15410b89018e4317898666e5286500b42a"
+      },
+      {
+        "path": "/assets/AdminQuestionReviewQueue-DMyKsZKX.js",
+        "status": 200,
+        "sha256": "ba5e182dd9ebc7ffc2f0c5682bc0865905f8baa79f03c2f132796959bb1b50c6"
+      },
+      {
+        "path": "/assets/index-CJFXdWMt.css",
+        "status": 200,
+        "sha256": "69f09bb16e82489c5a19e800b548771ef86f0e44cbc37fb5bf7da8c930c65804"
+      },
+      {
+        "path": "/sw.js",
+        "status": 200,
+        "sha256": "e45b9adf10236c941a35caba1695f46b92ec3d5f2f47b74ff4ab33100160bf5b"
+      }
+    ],
+    "dashboard_navigation_and_role_chunks": true,
+    "student_cta_and_bounded_topic_preview_controls": true,
+    "admin_shortcuts_and_review_controls": true,
+    "mobile_styles": true,
+    "service_worker_matches": true,
+    "scope": "Read-only HTTP delivery verification; signed-in acceptance is separate. No auth/session/data mutation."
+  },
+  "ci": {
+    "pr_head_checks": "All successful before merge",
+    "tested_browser_run": 40927091099,
+    "tested_browser_passed": 246,
+    "node": 82,
+    "verify_jobs": 7,
+    "native_question_history_cases": 91,
+    "post_merge_verify_run": 40935662384,
+    "post_merge_verify": "all7PASS",
+    "post_merge_browser_run": 40935662430,
+    "post_merge_browser": "PASS",
+    "post_merge_browser_job": 123665402575,
+    "post_merge_browser_passed": 246,
+    "post_merge_browser_duration": "5.9m"
+  },
+  "real_sessions": {
+    "student": {
+      "run": "8214f3db-1525-4470-ab1c-b66a61e547b6",
+      "profile": "prof_71146dfad171406c",
+      "status": "BLOCKED_SIGN_IN_WALL",
+      "steps": 3,
+      "duration_reported": 0,
+      "assessment": "Stopped immediately; no signout/clearing/credential access or login repair. Saved authentication was not available in this run; cause unverified."
+    },
+    "admin": {
+      "run": "ad118f57-84e8-4203-81bf-f90c05780b8f",
+      "profile": "prof_7d8a04d909144650",
+      "status": "PASS",
+      "steps": 6,
+      "duration_reported": 27,
+      "assessment": "Authenticated overview, three navigation destinations, workspace shortcuts/operations and Question bank review controls/empty state inspected read-only. Session remains signed in."
+    }
+  },
+  "budget": {
+    "authorized_total_usd": 2,
+    "new_agent_steps": 9,
+    "new_reported_browser_seconds": 27,
+    "new_listed_rate_estimate_usd": 0.1449,
+    "cumulative_listed_rate_estimate_usd": 0.473633,
+    "qualification": "Student duration reported0; excludes any unreported browser duration. Provider-posted charges not supplied; wallet delta not used for charge calculation.",
+    "further_metered_runs": false
+  },
+  "mutations": "Deployment only; no SQL/content/role/account changes; no real session signout/clearing",
+  "remaining": "FCB03 resumed; rich-content/media/storage/moderation and genuinely reviewed content intake remain. Only one administrator in last DB preflight; independent reviewer still required."
+}

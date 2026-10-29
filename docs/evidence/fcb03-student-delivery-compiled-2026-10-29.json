@@ -1,0 +1,51 @@
+{
+  "status": "PASS_ISOLATED_COMPILE_ONLY",
+  "proposal_sha256": "d0eef001a1287c8eee17293e26ee7ec8111173cf9f2fda39f8f85abbf692fcc7",
+  "installation_body_sha256": "6801452c96a5e293a6328369d5846826fd1432f987b42d423a126ce17e02dd8b",
+  "functions": [
+    {
+      "name": "get_attempt_questions",
+      "arguments": "p_attempt_id uuid",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=pg_catalog, ace"
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "body_sha256": "c612285b40788282528b00c9506fbc89a1666e44cbc768d81c450fbf2692f9a7",
+      "body_md5": "e45c9fbac60bdaf1a3c58a26173c53bd"
+    },
+    {
+      "name": "published_topic_questions",
+      "arguments": "p_subject_id uuid, p_topic_id uuid, p_subtopic_id uuid, p_limit integer",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "lock_timeout=3s"
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "body_sha256": "ef12ee189eb9637a2c2f1cd12b28736e1fd172082ca0b9f24e44ba6d0fb3e370",
+      "body_md5": "8e9925e813c91803f478a68da066169f"
+    },
+    {
+      "name": "student_question_topics",
+      "arguments": "p_question_ids uuid[]",
+      "owner": "postgres",
+      "security_definer": true,
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "lock_timeout=3s"
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "body_sha256": "8c9ff02c464efb5b3da6af98fdd5b46e503539f1d28148a204c90416220a9944",
+      "body_md5": "28b91e8a0db05d5ab52db5fba89f4565"
+    }
+  ],
+  "disable_test": {
+    "metadata_allowed": false,
+    "mapping_allowed": false,
+    "existing_attempt_allowed": true
+  },
+  "production_installed": false
+}

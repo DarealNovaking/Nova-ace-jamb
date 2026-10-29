@@ -1,4 +1,5 @@
 import { ace, supabase } from './supabase'
+import { parsePublishedQuestionIds, parseStudentQuestionTopics, validateQuestionIds } from './studentQuestionDelivery'
 import type { PastAttempt, StudentQuestionMistake } from './progressSummary'
 
 export type { PastAttempt, StudentQuestionMistake } from './progressSummary'
@@ -81,17 +82,13 @@ export async function listPublishedTopicQuestionIds(subjectId: string, topicId: 
   const { data: { user }, error: authError } = await supabase.auth.getUser()
   if (authError) throw authError
   if (!user) throw new Error('Sign in required')
-  let query = ace.from('questions').select('id')
-    .eq('subject_id', subjectId)
-    .eq('topic_id', topicId)
-    .eq('active', true)
-    .eq('review_status', 'published')
-    .order('id')
-    .limit(Math.max(1, Math.min(20, Math.floor(limit))))
-  if (subtopicId) query = query.eq('subtopic_id', subtopicId)
-  const { data, error } = await query
+  if (!Number.isFinite(limit)) throw new Error('Invalid question limit')
+  const boundedLimit = Math.max(1, Math.min(20, Math.floor(limit)))
+  const { data, error } = await ace.rpc('published_topic_questions', {
+    p_subject_id: subjectId, p_topic_id: topicId, p_subtopic_id: subtopicId ?? null, p_limit: boundedLimit,
+  })
   if (error) throw error
-  return [...new Set((data ?? []).map((row) => String(row.id)).filter(isUuid))]
+  return parsePublishedQuestionIds(data, boundedLimit)
 }
 
 // Read-only and self-scoped; only active published question metadata is joined.
@@ -109,8 +106,8 @@ export async function fetchStudentTopicEvidence(limit = 80): Promise<{ records: 
   const records = (data ?? []) as import('./progressSummary').QuestionReviewEvidence[]
   const ids = [...new Set(records.map((item) => item.question_id))].filter((id) => /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id))
   if (!ids.length) return { records, published: [] }
-  const { data: questions, error: questionError } = await ace.from('questions').select('id,subject_id,topic_id,subtopic_id')
-    .in('id', ids).eq('active', true).eq('review_status', 'published')
+  const requested = validateQuestionIds(ids, 80)
+  const { data: questions, error: questionError } = await ace.rpc('student_question_topics', { p_question_ids: requested })
   if (questionError) throw questionError
-  return { records, published: (questions ?? []) as import('./progressSummary').PublishedTopicMapping[] }
+  return { records, published: parseStudentQuestionTopics(questions, requested) }
 }

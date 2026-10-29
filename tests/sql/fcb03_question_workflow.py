@@ -36,7 +36,7 @@ def payload(**changes):
 def call(action, version, data=None, qid=Q):
     return "select ace.manage_question('" + action + "','" + qid + "'," + str(version) + ',' + literal(data or {}) + ');'
 
-def plan(include_history=False):
+def plan(include_history=False, include_delivery=False):
     fixture = """do $$begin if exists(select 1 from auth.users)or exists(select 1 from ace.subjects)then raise exception 'Empty disposable fixture required';end if;end$$;
 insert into auth.users(id,email,raw_user_meta_data)values('%s','author@example.invalid','{}'),('%s','reviewer@example.invalid','{}'),('%s','student@example.invalid','{}');
 update ace.roles set role='editor'where user_id='%s';update ace.roles set role='admin'where user_id='%s';
@@ -93,6 +93,9 @@ insert into ace.subtopics(id,topic_id,syllabus_version_id,name,active)values('%s
     if include_history:
         from fcb03_question_history import history_cases
         cases.extend(history_cases(fixture))
+    if include_delivery:
+        from fcb03_student_delivery import delivery_cases
+        cases.extend(delivery_cases(fixture))
     return dict(fixture=fixture,cases=cases)
 
 def races(command, env, run, include_history=False):
@@ -141,9 +144,9 @@ def races(command, env, run, include_history=False):
 
 
 if __name__ == '__main__':
-    parser=argparse.ArgumentParser();parser.add_argument('--emit',action='store_true');parser.add_argument('--races',action='store_true');parser.add_argument('--history',action='store_true');args=parser.parse_args()
+    parser=argparse.ArgumentParser();parser.add_argument('--emit',action='store_true');parser.add_argument('--races',action='store_true');parser.add_argument('--history',action='store_true');parser.add_argument('--delivery',action='store_true');args=parser.parse_args()
     if args.emit:
-        print(json.dumps(plan(args.history)));raise SystemExit
+        print(json.dumps(plan(args.history,args.delivery)));raise SystemExit
     # A full recovered schema may only be tested in the explicitly named disposable database.
     if os.environ.get('ACE_FCB03_DISPOSABLE_TEST')!='1' or os.environ.get('PGDATABASE')!='fcb03_question_test' or os.environ.get('PGHOST')!='127.0.0.1' or os.environ.get('PGUSER')!='postgres':
         raise SystemExit('Explicit local fcb03_question_test disposable database required')
@@ -161,7 +164,10 @@ if __name__ == '__main__':
     if args.history:
         extra=run((ROOT/'supabase/proposals/fcb03_question_history.sql').read_text())
         if extra.returncode:raise SystemExit(extra.stderr)
-    for case in plan(args.history)['cases']:
+    if args.delivery:
+        extra=run((ROOT/'supabase/proposals/fcb03_student_question_delivery.sql').read_text())
+        if extra.returncode:raise SystemExit(extra.stderr)
+    for case in plan(args.history,args.delivery)['cases']:
         result=run(case['sql']);error=case['error']
         if (error and (result.returncode==0 or error not in result.stderr))or(not error and result.returncode):raise SystemExit(case['name']+': '+result.stderr)
         print('PASS '+case['name'])
