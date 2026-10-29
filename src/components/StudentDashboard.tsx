@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react'
-import { BookOpen, Brain, ChevronRight, Clock3, GraduationCap, Loader2, RefreshCw, CalendarDays, Layers3, Trophy } from 'lucide-react'
+import { BookOpen, Brain, ChevronRight, Clock3, GraduationCap, Loader2, RefreshCw, ArrowUpRight, CheckCircle2 } from 'lucide-react'
+import DashboardShell from './DashboardShell'
 import type { StudentWorkspaceMode } from './StudentStudyWorkspace'
 
 const StudentStudyWorkspace = lazy(() => import('./StudentStudyWorkspace'))
@@ -147,64 +148,48 @@ export default function StudentDashboard() {
   if (activeView !== 'home') return <Suspense fallback={<main id="workspace-content" aria-busy="true" className="grid min-h-[50vh] place-items-center bg-[#07050d] px-5 text-white"><p role="status" aria-live="polite" aria-atomic="true">Loading your study workspace…</p></main>}><StudentStudyWorkspace mode={activeView} subjects={subjects} topics={topics} onBack={() => { const url = new URL(window.location.href); url.searchParams.delete('view'); window.history.pushState({}, '', url); setActiveView('home') }} onStartCbt={startCbt} /></Suspense>
 
   return (
-    <>
+    <DashboardShell area="student" activeId="home" displayName={name} onStudentNavigate={(mode) => { if (mode !== 'home') window.dispatchEvent(new CustomEvent('ace-workspace-navigate', { detail: mode })) }}>
       <a className="skip-link" href="#dashboard-content">Skip to dashboard content</a>
-      <main id="dashboard-content" tabIndex={-1} className="min-h-screen bg-[#07050d] px-5 py-8 text-white sm:py-12">
-      <div className="mx-auto max-w-6xl">
-        <header className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p className="text-xs uppercase tracking-[.22em] text-purple-300/70">ÑØVÃ · ACE JAMB</p>
-            <h1 ref={dashboardHeadingRef} tabIndex={-1} className="mt-3 text-3xl font-black sm:text-5xl">Welcome back, {name}.</h1>
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-white/55">Your preparation space. Learn from verified syllabus content when available, and practise through saved CBT sessions.</p>
-          </div>
-          <button type="button" onClick={() => void loadDashboard()} className="inline-flex w-fit items-center gap-2 rounded-xl border border-white/10 px-4 py-3 text-sm font-semibold hover:bg-white/5"><RefreshCw size={16}/> Refresh</button>
+      <main id="dashboard-content" tabIndex={-1} className="dashboard-content">
+        <header className="dashboard-heading">
+          <div><p className="dashboard-eyebrow">Let’s make progress</p><h1 ref={dashboardHeadingRef} tabIndex={-1} className="dashboard-title">Welcome back, {name}.</h1><p className="dashboard-description">Your subjects, your study space. Pick up where you want to begin.</p></div>
+          <button type="button" onClick={() => void loadDashboard()} className="dashboard-button self-start"><RefreshCw size={15} aria-hidden="true" /> Refresh</button>
         </header>
+        {error && <section role="alert" className="mb-6 rounded-xl border border-red-400/20 bg-red-500/10 p-4 text-sm text-red-100"><p>{error}</p><button type="button" onClick={() => void loadDashboard()} className="mt-3 min-h-11 underline">Try again</button></section>}
 
-
-        <nav aria-label="Preparation tools" className="mb-7 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-          {[
-            { id: 'learn' as const, label: 'Learn', detail: 'Approved syllabus topics', icon: BookOpen },
-            { id: 'practice' as const, label: 'Practice', detail: 'Verified question sets', icon: Brain },
-            { id: 'revision' as const, label: 'Quick revision', detail: 'Review approved topics', icon: Clock3 },
-            { id: 'flashcards' as const, label: 'Flashcards', detail: 'Recall and review', icon: Layers3 },
-            { id: 'progress' as const, label: 'My progress', detail: 'Saved attempt results', icon: Trophy },
-            { id: 'plan' as const, label: 'Study plan', detail: 'A repeatable routine', icon: CalendarDays },
-          ].map((item) => { const ItemIcon = item.icon; return <button key={item.id} type="button" onClick={() => window.dispatchEvent(new CustomEvent('ace-workspace-navigate', { detail: item.id }))} className="glass-card rounded-2xl p-4 text-left transition hover:border-purple-300/30"><ItemIcon size={19} className="text-purple-200"/><span className="mt-3 block text-sm font-bold">{item.label}</span><span className="mt-1 block text-xs leading-5 text-white/40">{item.detail}</span></button> })}
-        </nav>
-        {error && <section role="alert" className="mb-6 rounded-2xl border border-red-400/20 bg-red-500/10 p-4 text-sm text-red-100"><p>{error}</p><button type="button" onClick={() => void loadDashboard()} className="mt-3 underline">Try again</button></section>}
-
-        <section className="grid gap-4 md:grid-cols-2">
-          <button type="button" onClick={() => startCbt('cbt')} className="glass-card group rounded-3xl p-6 text-left transition hover:border-purple-300/30 hover:bg-white/[.06] sm:p-8">
-            <span className="grid h-12 w-12 place-items-center rounded-2xl bg-purple-500/15 text-purple-200"><Brain size={24}/></span>
-            <h2 className="mt-5 text-2xl font-black">CBT Practice</h2>
-            <p className="mt-2 text-sm leading-6 text-white/50">Start a secure, timed session. Your answers and progress are saved to your account.</p>
-            <span className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-purple-200">Start practice <ChevronRight size={16}/></span>
-          </button>
-          <section className="glass-card rounded-3xl p-6 sm:p-8">
-            <span className="grid h-12 w-12 place-items-center rounded-2xl bg-white/5 text-white/70"><BookOpen size={24}/></span>
-            <h2 className="mt-5 text-2xl font-black">Learning</h2>
-            <p className="mt-2 text-sm leading-6 text-white/50">Explore active, approved syllabus topics for your selected subjects.</p>
-            <p className="mt-5 text-sm font-semibold text-white/70">{topics.length} approved topic{topics.length === 1 ? '' : 's'} available</p>
+        <div className="dashboard-home-grid">
+          <section className="dashboard-study-hero" aria-labelledby="study-session-title">
+            <p className="dashboard-eyebrow">A little focus goes a long way</p>
+            <h2 id="study-session-title">Make your next study session count.</h2>
+            <p>Explore a topic or open a timed CBT session. Your saved work stays with your account.</p>
+            <div className="flex flex-wrap gap-3"><button type="button" aria-label="CBT Practice — Start practice" onClick={() => startCbt('cbt')} className="dashboard-button dashboard-button--primary"><Brain size={17} aria-hidden="true" /> Start practice <ArrowUpRight size={16} aria-hidden="true" /></button><button type="button" onClick={() => window.dispatchEvent(new CustomEvent('ace-workspace-navigate', { detail: 'learn' }))} className="dashboard-button">Explore learning <ChevronRight size={15} aria-hidden="true" /></button></div>
+            <div className="dashboard-hero-art" aria-hidden="true"><BookOpen size={55} strokeWidth={1.2} /></div>
           </section>
-        </section>
+          <section className="dashboard-panel" aria-labelledby="learning-overview-title">
+            <div className="dashboard-section-heading"><div><h2 id="learning-overview-title">Learning</h2><p>Your preparation at a glance</p></div><GraduationCap size={20} className="text-purple-300" aria-hidden="true" /></div>
+            <div className="dashboard-stat-list">
+              <div className="dashboard-stat"><div className="dashboard-stat-icon"><BookOpen size={19} aria-hidden="true" /></div><div><strong>{topics.length}</strong><span>{topics.length} approved topic{topics.length === 1 ? '' : 's'} available</span></div></div>
+              <div className="dashboard-stat"><div className="dashboard-stat-icon"><CheckCircle2 size={19} aria-hidden="true" /></div><div><strong>{subjects.length}</strong><span>Saved subjects</span></div></div>
+            </div>
+          </section>
+          <section className="dashboard-panel" aria-labelledby="syllabus-preview-title">
+            <div className="dashboard-section-heading"><div><h2 id="syllabus-preview-title">Syllabus topics</h2><p>A starting point for your next session</p></div><button type="button" className="dashboard-button shrink-0" onClick={() => window.dispatchEvent(new CustomEvent('ace-workspace-navigate', { detail: 'learn' }))}>View all topics <ArrowUpRight size={14} aria-hidden="true" /></button></div>
+            {topics.length ? <ol className="dashboard-topic-list">{topics.slice(0,6).map((topic,index) => <li key={topic.id} className="dashboard-topic-row"><span className="dashboard-topic-index" aria-hidden="true">{String(index+1).padStart(2,'0')}</span><div><h3>{topic.name}</h3><p>{topic.subjectName}</p></div></li>)}</ol> : <div className="rounded-xl border border-white/5 bg-white/[.02] p-5"><p className="font-semibold">Verified learning content is not published yet.</p><p className="mt-2 text-sm leading-6 text-white/60">Your saved subjects are ready. Approved topics will appear here when they are published.</p></div>}
+          </section>
+          <section className="dashboard-panel" aria-labelledby="my-subjects-title">
+            <div className="dashboard-section-heading"><div><h2 id="my-subjects-title">My subjects</h2><p>Your saved preparation choices</p></div><GraduationCap size={19} className="text-purple-300" aria-hidden="true" /></div>
+            {subjects.length ? <ul className="dashboard-subject-list">{subjects.map(subject => <li key={subject.id} className="dashboard-subject"><span className="dashboard-subject-code" aria-hidden="true">{subject.code}</span><div><strong>{subject.name}</strong><small>Selected subject</small></div></li>)}</ul> : <p className="text-sm leading-6 text-white/60">No saved subjects were found. Refresh or revisit your preparation profile.</p>}
+          </section>
+        </div>
 
-        <section className="mt-8 grid gap-6 lg:grid-cols-[.8fr_1.2fr]">
-          <div className="glass-card rounded-3xl p-6">
-            <div className="flex items-center gap-3"><GraduationCap className="text-purple-200"/><h2 className="text-xl font-black">My subjects</h2></div>
-            {subjects.length ? <ul className="mt-5 space-y-3">{subjects.map((subject) => <li key={subject.id} className="flex items-center justify-between rounded-xl border border-white/5 bg-white/[.03] p-3"><span className="text-sm font-semibold">{subject.name}</span><span className="text-xs text-white/35">{subject.code}</span></li>)}</ul> : <p className="mt-4 text-sm leading-6 text-white/50">No saved subjects were found. Refresh or revisit your preparation profile.</p>}
-          </div>
-          <div className="glass-card rounded-3xl p-6">
-            <div className="flex items-center gap-3"><Clock3 className="text-purple-200"/><h2 className="text-xl font-black">Syllabus topics</h2></div>
-            {topics.length ? <ul className="mt-5 grid gap-3 sm:grid-cols-2">{topics.map((topic) => <li key={topic.id} className="rounded-xl border border-white/5 bg-white/[.03] p-4"><p className="text-xs text-purple-200/70">{topic.subjectName}</p><p className="mt-2 font-semibold">{topic.name}</p>{topic.description && <p className="mt-2 text-sm leading-5 text-white/45">{topic.description}</p>}</li>)}</ul> : <div className="mt-4 rounded-2xl border border-white/5 bg-white/[.025] p-5"><p className="font-semibold">Verified learning content is not published yet.</p><p className="mt-2 text-sm leading-6 text-white/45">Your account and preparation profile remain available. Topics will appear here when an active season and approved syllabus content are published. No syllabus topics are invented for this screen.</p></div>}
-          </div>
-        </section>
-
-        <StudentNotifications />
-        <StudentAccountAccess />
-        <LearningSupportStatus />
-        <StudentAccountSettings />
-      </div>
+        <div id="account" tabIndex={-1} className="dashboard-account-area">
+          <div className="dashboard-section-heading"><div><h2>Updates &amp; account</h2><p>Manage your preferences, access and preparation profile.</p></div></div>
+          <StudentNotifications />
+          <StudentAccountSettings />
+          <StudentAccountAccess />
+        </div>
+        <div id="learning-support" tabIndex={-1} className="dashboard-support-area"><LearningSupportStatus /></div>
       </main>
-    </>
+    </DashboardShell>
   )
 }

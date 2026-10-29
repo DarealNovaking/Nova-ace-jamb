@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import DashboardShell from './DashboardShell'
 import StudentStudyPlan from './StudentStudyPlan'
 import StudentProgressSummary from './StudentProgressSummary'
 import StudentFlashcards from './StudentFlashcards'
@@ -59,25 +60,21 @@ export default function StudentStudyWorkspace({ mode, subjects, topics, onBack, 
   }, [mode])
 
   return (
-    <main className="min-h-screen bg-[#07050d] px-4 py-6 text-white sm:px-6 sm:py-10">
+    <DashboardShell area="student" activeId={mode} onStudentNavigate={(next) => { if (next === 'home') onBack(); else window.dispatchEvent(new CustomEvent('ace-workspace-navigate', { detail: next })) }}>
+    <main className="dashboard-content">
       <a className="skip-link" href="#workspace-content">Skip to workspace content</a>
-      <div className="mx-auto max-w-6xl">
-        <header className="mb-7 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="min-w-0">
+        <header className="dashboard-heading">
           <div>
             <button type="button" onClick={onBack} className="mb-4 inline-flex items-center gap-2 text-sm text-white/55 hover:text-white"><ArrowLeft size={16}/> Dashboard</button>
-            <p className="text-xs uppercase tracking-[.22em] text-purple-300/70">ÑØVÃ · ACE JAMB</p>
-            <h1 ref={headingRef} tabIndex={-1} className="mt-2 flex items-center gap-3 text-3xl font-black outline-none sm:text-4xl"><Icon aria-hidden="true" className="text-purple-200" size={30}/>{activeMode.label}</h1>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-white/50">Your preparation workspace uses your saved subjects and verified published content. Unpublished material is never presented as official syllabus content.</p>
+            <p className="dashboard-eyebrow">Your study workspace</p>
+            <h1 ref={headingRef} tabIndex={-1} className="dashboard-title flex items-center gap-3"><Icon aria-hidden="true" className="text-purple-200" size={30}/>{activeMode.label}</h1>
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-white/50">Everything you need for a focused session, built around your saved subjects.</p>
           </div>
           <button type="button" onClick={() => onStartCbt('cbt')} className="inline-flex items-center justify-center gap-2 rounded-xl bg-purple-300 px-4 py-3 text-sm font-bold text-[#120b1c] hover:bg-purple-200"><Brain size={16}/> Open CBT</button>
         </header>
 
-        <nav aria-label="Preparation tools" className="mb-7 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
-          {modes.map((item) => {
-            const ItemIcon = item.icon
-            return <button key={item.id} type="button" aria-current={item.id === mode ? 'page' : undefined} onClick={() => { if (item.id !== mode) window.dispatchEvent(new CustomEvent('ace-workspace-navigate', { detail: item.id })) }} className={`flex min-h-12 items-center gap-2 rounded-xl border px-3 py-3 text-left text-xs font-semibold transition sm:text-sm ${item.id === mode ? 'border-purple-300/40 bg-purple-500/15 text-purple-100' : 'border-white/10 bg-white/[.025] text-white/60 hover:bg-white/[.06]'}`}><ItemIcon size={16}/>{item.label}</button>
-          })}
-        </nav>
+
 
         {topics.some(topic => topic.independentStudyIndex) && <p className="mb-5 rounded-2xl border border-purple-300/20 bg-purple-300/5 p-4 text-sm leading-6 text-white/70">ACE’s original study index references JAMB topic coverage. It is not an official JAMB publication or a complete lesson. Practice uses the verified 2026 format; 2027 dates and prescribed texts remain unconfirmed.</p>}
         <div id="workspace-content" tabIndex={-1} className="outline-none">
@@ -184,5 +181,6 @@ export default function StudentStudyWorkspace({ mode, subjects, topics, onBack, 
 
       </div>
     </main>
+    </DashboardShell>
   )
 }
