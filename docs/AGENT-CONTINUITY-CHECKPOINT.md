@@ -1,5 +1,15 @@
 # ACE JAMB — Current Agent Checkpoint
 
+## Current: FCB-03 private PostgreSQL rich-content validation — 29 October 2026
+
+- PR23 branch `feat/fcb03-rich-content-contract` now also contains `supabase/proposals/fcb03_rich_content_validation.sql`, a **source-only, non-deployed** PostgreSQL validator with strict version, exact fallback, allowed shapes/bounds/control characters, private image UUID and explicit denial of public/anonymous/authenticated EXECUTE. It is deliberately not wired into question save/history/CBT; existing rich/media inputs remain rejected. Full private image lifecycle and storage authorization are specified in `docs/FCB-03-PRIVATE-MEDIA-LIFECYCLE-2026-10-29.md`; no Storage bucket/object or real upload endpoint was created.
+- Fresh isolated PostgreSQL 17 CI tests `tests/sql/fcb03_rich_content.test.sql` PASS: one full rich-question payload, 23 hostile/refusal cases, 4 ACL-denial checks. All seven Verify jobs PASS on code SHA `7e48853c07a0920ac31b5c89e1024374a445a72d` in run `40959377728`, including existing question-workflow regression suites. Earlier full 258-browser E2E completed PASS for first corrected frontend-only candidate (run `40958014342`); browser E2E on new SQL/test source (`40959377355`) was still in progress at this checkpoint. New documentation-only commits do not change tested runtime code.
+- FCB-03 remains OPEN. No merge, live migration, database/question/media/content mutation, storage resources, account/session changes or deployment performed. 40 draft questions remain unreviewed/unpublished; a genuinely distinct administrator remains a review prerequisite. FCB-01/02 remain complete.
+- **Next:** confirm newest PR23 browser tests; then implement private upload intents and question/revision ownership/rights binding against disposable PostgreSQL plus mocked object storage. Production SQL, Storage creation and any deployment still require specific owner approval.
+
+---
+
+
 ## Current: FCB-03 rich-content v1 source-only candidate — 29 October 2026
 
 Verified main includes merged PR22 (`6ba898bdb64161d2b289df5d2e18fe18a3224f6a`). Current work is on `feat/fcb03-rich-content-contract`: strict, bounded versioned document parser; accessible text-only React renderer for paragraphs, Unicode math, tables and inaccessible image placeholders; untrusted-data/refusal and static-render tests; Verify CI registration. See `docs/FCB-03-RICH-CONTENT-V1-IMPLEMENTATION-2026-10-29.md`. No tests are claimed passed before CI. No source mutation on main, no production SQL/Storage, deployment, role/session or question/content changes. Existing plain-text RPC and editor remain unchanged; rich payloads are intentionally not accepted by production. FCB-03 still OPEN, 40 drafts unpublished, separate administrator required. FCB-01/02 remain COMPLETE.
