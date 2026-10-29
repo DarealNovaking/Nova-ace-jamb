@@ -13,6 +13,8 @@ export type QuestionRow = Omit<QuestionDraft, 'provenance'> & {
   provenance: QuestionDraft['provenance'] & { last_content_editor: string }
 }
 export type QuestionQueue = { questions: QuestionRow[]; page: number; has_next: boolean; actor_role: QuestionRole }
+export type QuestionHistoryEntry = { version: number; snapshot: QuestionRow; created_by: string; created_at: string }
+export type QuestionHistory = { question_id: string; current_version: number; versions: QuestionHistoryEntry[]; has_next: boolean; next_before: number | null }
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 const statuses: QuestionStatus[] = ['draft','in_review','approved','published','rejected']
 const object = (v: unknown): v is Record<string, unknown> => !!v && typeof v === 'object' && !Array.isArray(v)
@@ -81,4 +83,26 @@ export function questionActions(row: QuestionRow, userId: string, role: Question
   if(row.review_status==='in_review'&&role==='admin'&&row.created_by!==userId&&row.provenance.last_content_editor!==userId) return ['approve','reject']
   if(row.review_status==='approved'&&role==='admin') return ['publish']
   return []
+}
+
+export function parseQuestionHistory(value: unknown, expectedId: string, before: number | null): QuestionHistory {
+  const invalid=()=>Error('Question history could not be confirmed. Reload before restoring.')
+  if(!object(value)||value.question_id!==expectedId||!Number.isInteger(value.current_version)||Number(value.current_version)<1||Number(value.current_version)>2147483647||!Array.isArray(value.versions)||value.versions.length>10||typeof value.has_next!=='boolean')throw invalid()
+  id(value.question_id)
+  let previous=before??Number(value.current_version)+1
+  const versions=value.versions.map(item=>{
+    if(!object(item)||!Number.isInteger(item.version)||Number(item.version)<1||Number(item.version)>=previous||Number(item.version)>Number(value.current_version)||typeof item.created_at!=='string'||!Number.isFinite(Date.parse(item.created_at)))throw invalid()
+    id(item.created_by)
+    const snapshot=parseQuestion(item.snapshot)
+    if(snapshot.id!==expectedId||snapshot.content_version!==item.version)throw invalid()
+    previous=Number(item.version)
+    return {version:Number(item.version),snapshot,created_by:String(item.created_by),created_at:item.created_at}
+  })
+  if(before===null&&(!versions.length||versions[0].version!==value.current_version))throw invalid()
+  if(value.has_next?(versions.length!==10||value.next_before!==versions[9].version):value.next_before!==null)throw invalid()
+  return {question_id:expectedId,current_version:Number(value.current_version),versions,has_next:value.has_next,next_before:value.next_before as number|null}
+}
+export function validateQuestionRestore(currentVersion: number, sourceVersion: number, reason: string) {
+  if(!Number.isInteger(currentVersion)||currentVersion<2||currentVersion>=2147483647||!Number.isInteger(sourceVersion)||sourceVersion<1||sourceVersion>=currentVersion)throw Error('Choose an older saved revision and reload current question records.')
+  return {expected_version:currentVersion,source_version:sourceVersion,reason:text(reason,2000)}
 }

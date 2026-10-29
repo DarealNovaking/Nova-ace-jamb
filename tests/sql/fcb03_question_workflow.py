@@ -36,7 +36,7 @@ def payload(**changes):
 def call(action, version, data=None, qid=Q):
     return "select ace.manage_question('" + action + "','" + qid + "'," + str(version) + ',' + literal(data or {}) + ');'
 
-def plan():
+def plan(include_history=False):
     fixture = """do $$begin if exists(select 1 from auth.users)or exists(select 1 from ace.subjects)then raise exception 'Empty disposable fixture required';end if;end$$;
 insert into auth.users(id,email,raw_user_meta_data)values('%s','author@example.invalid','{}'),('%s','reviewer@example.invalid','{}'),('%s','student@example.invalid','{}');
 update ace.roles set role='editor'where user_id='%s';update ace.roles set role='admin'where user_id='%s';
@@ -90,9 +90,12 @@ insert into ace.subtopics(id,topic_id,syllabus_version_id,name,active)values('%s
     add('listing-paginates-and-filters',create+"do $$declare r jsonb;begin r:=ace.review_questions('draft',0);if jsonb_array_length(r->'questions')<>1 or(r->>'has_next')::boolean then raise exception 'Incorrect queue';end if;end$$;")
     add('bad-page-refused',context(AUTHOR)+"select ace.review_questions(null,-1);",'Invalid question page')
     add('snapshot-owner-denial-does-not-enable-history-edit',create+"delete from ace.question_versions;",'permission denied')
+    if include_history:
+        from fcb03_question_history import history_cases
+        cases.extend(history_cases(fixture))
     return dict(fixture=fixture,cases=cases)
 
-def races(command, env, run):
+def races(command, env, run, include_history=False):
     spec=importlib.util.spec_from_file_location('question_sessions',ROOT/'tests/sql/fcb_01_role_concurrency.py')
     sessions=importlib.util.module_from_spec(spec);spec.loader.exec_module(sessions)
     def must(sql):
@@ -129,10 +132,18 @@ def races(command, env, run):
     contend('demotion-before-authoring',demote,'begin;'+context(AUTHOR)+call('save',3,payload(stem='Refused after demotion')),'Question authoring permission required')
     must("do $$begin if(select content_version from ace.questions where id='"+Q+"')<>3 or(select count(*)from ace.question_versions)<>3 then raise exception 'Concurrent revisions were lost or duplicated';end if;end$$;")
 
+    if include_history:
+        from fcb03_question_history import restore
+        must("update ace.roles set role='editor'where user_id='"+AUTHOR+"';")
+        contend('history-reader-before-restore','begin;'+context(AUTHOR)+"select ace.question_history('"+Q+"',null);",'begin;'+context(AUTHOR)+restore(3,1))
+        contend('stale-restores','begin;'+context(AUTHOR)+restore(4,1),'begin;'+context(AUTHOR)+restore(4,2),'Question revision changed')
+        must("do $$begin if(select content_version from ace.questions where id='"+Q+"')<>5 or(select count(*)from ace.question_versions)<>5 or(select count(*)from ace.audit_events where event_type='question_restored')<>2 then raise exception 'History contention lost a revision or audit';end if;end$$;")
+
+
 if __name__ == '__main__':
-    parser=argparse.ArgumentParser();parser.add_argument('--emit',action='store_true');parser.add_argument('--races',action='store_true');args=parser.parse_args()
+    parser=argparse.ArgumentParser();parser.add_argument('--emit',action='store_true');parser.add_argument('--races',action='store_true');parser.add_argument('--history',action='store_true');args=parser.parse_args()
     if args.emit:
-        print(json.dumps(plan()));raise SystemExit
+        print(json.dumps(plan(args.history)));raise SystemExit
     # A full recovered schema may only be tested in the explicitly named disposable database.
     if os.environ.get('ACE_FCB03_DISPOSABLE_TEST')!='1' or os.environ.get('PGDATABASE')!='fcb03_question_test' or os.environ.get('PGHOST')!='127.0.0.1' or os.environ.get('PGUSER')!='postgres':
         raise SystemExit('Explicit local fcb03_question_test disposable database required')
@@ -147,8 +158,11 @@ if __name__ == '__main__':
     if preflight.returncode:raise SystemExit(preflight.stderr)
     installed=run((ROOT/'supabase/proposals/fcb03_question_workflow.sql').read_text())
     if installed.returncode:raise SystemExit(installed.stderr)
-    for case in plan()['cases']:
+    if args.history:
+        extra=run((ROOT/'supabase/proposals/fcb03_question_history.sql').read_text())
+        if extra.returncode:raise SystemExit(extra.stderr)
+    for case in plan(args.history)['cases']:
         result=run(case['sql']);error=case['error']
         if (error and (result.returncode==0 or error not in result.stderr))or(not error and result.returncode):raise SystemExit(case['name']+': '+result.stderr)
         print('PASS '+case['name'])
-    if args.races:races(command,env,run)
+    if args.races:races(command,env,run,args.history)

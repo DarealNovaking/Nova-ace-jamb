@@ -8,13 +8,14 @@ const runtime = process.env.ACE_PGLITE_RUNTIME
 if (!runtime) throw Error('Set ACE_PGLITE_RUNTIME to the existing test runtime directory')
 const { PGlite } = await import(pathToFileURL(resolve(runtime,'node_modules/@electric-sql/pglite/dist/index.js')))
 const { vector } = await import(pathToFileURL(resolve(runtime,'node_modules/@electric-sql/pglite-pgvector/dist/index.js')))
-const plan = JSON.parse(execFileSync('python3',['tests/sql/fcb03_question_workflow.py','--emit'],{encoding:'utf8',maxBuffer:4e6}))
+const plan = JSON.parse(execFileSync('python3',['tests/sql/fcb03_question_workflow.py','--emit',...(process.argv[3]?['--history']:[])],{encoding:'utf8',maxBuffer:4e6}))
 const db = new PGlite({extensions:{vector}})
 const expand = path => readFileSync(path,'utf8').replace(/^\\i\s+(.+)$/gm,(_,file)=>expand(file.trim()))
 try {
   await db.exec(expand('tests/sql/fcb_01_schema_baseline.test.sql'))
   const installer = process.argv[2]
   await db.exec(installer ? readFileSync(installer,'utf8') : "create function ace.manage_question(text,uuid,integer,jsonb)returns jsonb language sql as $$select '{}'::jsonb$$;create function ace.review_questions(text,integer)returns jsonb language sql as $$select '{}'::jsonb$$;")
+  if(process.argv[3])await db.exec(readFileSync(process.argv[3],'utf8'))
   for (const c of plan.cases) {
     let failure
     try { await db.exec(c.sql) } catch (e) { failure=e; await db.exec('rollback;reset role;') }
