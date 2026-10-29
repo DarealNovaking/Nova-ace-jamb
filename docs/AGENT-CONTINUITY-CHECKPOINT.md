@@ -10,6 +10,8 @@ PR20 merged exact approved head03b64dd7 as cb6ef545dd79bf9fe9281dd054076e6120f6c
 
 Neither real saved profile was signed out or cleared; no further paid browser run, question upload/publication, role/bucket change or content mutation occurred. Forty original AI-assisted drafts remain unreviewed. FCB-03 remains IN PROGRESS; FCB-02 remains VERIFIED COMPLETE. Genuine approved intake and independently authorized administrator review, live save/review/publish/withdraw/restore acceptance, rich content/media/storage and dedicated reporting/moderation remain. Deferred history keyboard-focus polish and delayed synthetic-session regressions remain as previously recorded.
 
+Fresh post-merge CI also passed: all seven Verify jobs in40907760216 and all234unfiltereddesktop/mobile browser tests in40907760189/job123567091680 (5.5m), verified from the completed job logs.
+
 Evidence: docs/evidence/fcb03-question-history-release-2026-10-29.json. Release documentation is on docs/fcb03-history-release, preserving production source without a redundant docs-only deployment.
 
 **Exact next action:** continue independent rich-media/storage/moderation implementation under the existing final-batch scope; arrange a genuinely different administrator and obtain specific content-intake authorization before uploading the prepared drafts. Do not simulate reviewer independence, re-request this completed PR20 release approval, or reopen finished FCB-02 work.

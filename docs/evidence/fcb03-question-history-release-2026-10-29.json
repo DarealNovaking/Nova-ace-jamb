@@ -158,7 +158,16 @@
     "native_database_passed": 91,
     "node_passed": 77,
     "latest_pr_head_checks": "All successful before merge",
-    "runtime_test_ci_changes_since_tested_source": 0
+    "runtime_test_ci_changes_since_tested_source": 0,
+    "post_merge": {
+      "verify_run": 40907760216,
+      "verify_jobs": "all7PASS",
+      "browser_run": 40907760189,
+      "browser_job": 123567091680,
+      "browser_passed": 234,
+      "duration": "5.5m",
+      "logs_inspected": true
+    }
   },
   "content": "No question upload/save/publication; 40 prepared drafts remain unreviewed",
   "sessions": "Neither real profile accessed/signed out/cleared during release",
