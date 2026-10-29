@@ -298,3 +298,5 @@ jobs:
         run: python3 tests/sql/fcb03_question_workflow.py --races --history --delivery
       - name: Verify private rich-content PostgreSQL validator in isolated database
         run: psql -X -v ON_ERROR_STOP=1 -f tests/sql/fcb03_rich_content.test.sql
+      - name: Verify isolated private question image-intent guards and revision binding
+        run: psql -X -v ON_ERROR_STOP=1 -f tests/sql/fcb03_media_intents.test.sql
