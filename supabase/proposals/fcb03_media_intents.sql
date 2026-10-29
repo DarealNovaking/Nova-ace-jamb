@@ -22,7 +22,7 @@ create table ace.question_media_intents (
  expires_at timestamptz not null default (now() + interval '15 minutes'),
  created_at timestamptz not null default now(),
  constraint question_media_intents_one_request unique (requested_by,request_id),
- constraint question_media_intents_status_check check (
+ constraint question_media_intents_state_consistency check (
   (status='pending' and verified_at is null) or
   (status='verified' and verified_at is not null)
  )
