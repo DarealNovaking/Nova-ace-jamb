@@ -138,7 +138,7 @@ test('refuses unknown fields, duplicates, missing fields, bad UUID and stale/inv
   const { seen, handler } = fixture()
   const bad = [
     form({}, [['question_id', questionId]]), form({}, [['storage_path', 'public/escape']]),
-    form({ request_id: 'incorrect' }), form({ question_id: actorId.toUpperCase() }),
+    form({ request_id: 'incorrect' }), form({ question_id: 'AAAAAAAA-AAAA-4AAA-8AAA-AAAAAAAAAAAA' }),
     form({ question_version: '0' }), form({ question_version: '1.0' }),
     form({ question_version: '9999999999' }), form({ alt_text: 'short' }),
     form({ rights_evidence: ' ' }), form({ file: new Blob([], { type: 'image/png' }) }),
