@@ -2,6 +2,16 @@
 
 > **Current-state rule:** this opening section is authoritative. Entries below the historical divider are evidence history and do not override this section.
 
+## Current: original ACE study-index candidate — 29 October 2026
+
+Owner chose **Our own organization**. On feat/fcb02-independent-index, generated a separate inactive/pending v3 candidate:25versions,108original study groups,1167concept entries covering all1170source IDs (214roots +956corrected children). Digest c2b54cf4c6c877cab38e5fbeae6057ff09544aa56093eb0fcd2d34611e19fb20. Original frozen payload/digest and live source records unchanged. Generator validates corrected live fingerprints and rejects duplicate/missing/cross-subject root mappings. Narrow proposed factual-concept/original-arrangement basis documented in docs/FCB-02-ORIGINAL-INDEX-BASIS-2026-10-29.md; no external JAMB licence claimed. No publication or live writes.
+
+Reserved editorial descriptions are now omitted at the student getSyllabusTree boundary without altering admin/source records. Helper regression reproduced RED then2/2GREEN; generator stub RED then4/4GREEN. Full content Python14tests, selected Node37tests, typecheck and build PASS. New desktop/mobile browser regression added but NOT YET RUN. Independent reviewer initial attempt failed due model capacity; one retry requested. Full CI/review/publication/actual student and withdrawal acceptance pending. TinyFish remains out of credit; no paid runs or impersonation.
+
+**Exact next action:** publish this implementation branch for full CI and independent review, fix findings, then implement the narrowly scoped genuine-admin publication contract against the exact reviewed candidate. The already verified2026configuration does not need recreation or another click. No user action required now. FCB-02 remains IN PROGRESS.
+
+### Previous verified state
+
 ## Current: 2026 practice configuration saved and verified — 29 October 2026
 
 The owner completed the genuine administrator action. Independent read-only postflight exactly matched every reviewed configuration field (excluding generated created_at) and all25subject rows. Candidate396d1910-d458-5d5f-8484-380bc8c71919 now exists:7200seconds,180questions,4options, English60 plus3choices at40. Total2configurations/50composition rows. One practice_baseline_created audit event has a non-null actor whose canonical role is admin. No user identifiers were copied into this evidence.
@@ -2775,3 +2785,5 @@ Sourcecore7unitRED(5validcasesfailedstub)then43localNode/typecheck/buildPASS. Br
 FullE2E40757215500 passed182cases but newselectioncasefailedon a testlocator(getByLabel exacttext included optionlabels), nottheproductrace. Correctedlocator to existingknownnon-exactlabelpattern; temporarilyfocused onlythatregression onreviewbranch. Focusedrun40758738052/job123064573751 thenreproducedactualproductRED onbothplatforms: expectedreloadPHEversiona09f896e,receivedoldHistoryversion54a533a3. Verify40758737938PASS. Fixedchildcompletioncallback withuseLayoutEffect-syncedlatestonChangedref. RestoredoriginalFULLnpmrune2ecommand; finalworkflowdiffversus2490040isEMPTY. No narrowedfinalcoverage or skippedtests.
 
 43localNode/typecheck/buildPASS afterfix; sourceexecution/race/latestcallbackreviewnext. Exactfinal184browser/fullVerifyCIpendingpublication. Allremaining3patchesstillunapplied, live956inactivechildren/fullprojectionpartialfingerprinte5380bea7564102134b8720bece5a771. No moreTinyFishrun,credentialrequestorpaidtopup. Ownerbroadapprovalpersiststhroughneededverifiedfrontendcompletion; source-use/final2027factsremainunestablished. Nextpublishfinalhead,fullCI/review/preview,thenprovideoneApplyreviewedcorrections actioninrealadminsession(noautomaticwrites,nomorepaidbrowsersteps).
+
+Independent original-index review completed: no blocking issue in current candidate. One malformed-input gap (blank/padded group names accepted) reproduced RED then fixed;5generator tests nowPASS. Full content suite15testsPASS. Reviewer independently confirmed complete1170lineage, exact generated artifact and student/admin separation; browser execution stillpending.

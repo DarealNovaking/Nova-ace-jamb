@@ -1,4 +1,5 @@
 import { ace } from './supabase'
+import { studentSyllabusRows } from './studentSyllabus'
 
 export type ExamSeason = {
   id: string
@@ -144,8 +145,8 @@ export async function getSyllabusTree(syllabusVersionId: string) {
   if (topicsError) throw topicsError
   if (subtopicsError) throw subtopicsError
   return {
-    topics: (topics ?? []) as SyllabusTopic[],
-    subtopics: (subtopics ?? []) as SyllabusSubtopic[],
+    topics: studentSyllabusRows((topics ?? []) as SyllabusTopic[]),
+    subtopics: studentSyllabusRows((subtopics ?? []) as SyllabusSubtopic[]),
   }
 }
 
