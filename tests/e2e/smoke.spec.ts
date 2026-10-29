@@ -2995,9 +2995,11 @@ test.describe('ACE original study-index publication', () => {
     await panel.getByRole('button', { name: 'Publish ACE study index' }).click()
     await expect(panel.getByRole('status')).toContainText('published and checked')
     expect(actions).toEqual(['publish', 'check'])
+    await expect(page.getByRole('region', { name: '2026 practice baseline' })).toHaveCount(0)
     await panel.getByRole('button', { name: 'Withdraw ACE study index' }).click()
     await expect(panel.getByRole('status')).toContainText('withdrawn and checked')
     expect(actions).toEqual(['publish', 'check', 'withdraw', 'check'])
+    await expect(page.getByRole('region', { name: '2026 practice baseline' })).toBeVisible()
   })
 
   test('uncertain publication blocks retry, preserves withdrawal and hides server details', async ({ page }) => {

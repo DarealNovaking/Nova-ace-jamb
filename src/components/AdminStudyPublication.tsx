@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { ace } from '../lib/supabase'
-import { changeStudyIndex, parseStudyResult, studyDigest, type StudyAction, type StudyResult } from '../lib/studyPublication'
+import { changeStudyIndex, parseStudyResult, studyDigest, type StudyAction, type StudyResult, type StudyState } from '../lib/studyPublication'
 
 async function requestStudy(action: StudyAction): Promise<unknown> {
   const { default: packageData } = await import('../data/fcb02StudyPublication.json')
@@ -10,7 +10,7 @@ async function requestStudy(action: StudyAction): Promise<unknown> {
   return data
 }
 
-export default function AdminStudyPublication() {
+export default function AdminStudyPublication({ onConfirmed }: { onConfirmed?: (state: StudyState) => void }) {
   const [state, setState] = useState<StudyResult | null>(null)
   const [busy, setBusy] = useState(false)
   const [mustCheck, setMustCheck] = useState(false)
@@ -25,7 +25,7 @@ export default function AdminStudyPublication() {
     setBusy(true); setError('')
     try {
       const result = action === 'check' ? parseStudyResult(await requestStudy('check')) : await changeStudyIndex(action, requestStudy)
-      if (mounted.current) { setState(result); setMustCheck(false) }
+      if (mounted.current) { setState(result); setMustCheck(false); onConfirmed?.(result.state) }
     } catch {
       if (mounted.current) {
         setState(null); setMustCheck(true)
