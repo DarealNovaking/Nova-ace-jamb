@@ -2,6 +2,12 @@
 
 > **Current-state rule:** this opening section is authoritative. Entries below the historical divider are evidence history and do not override this section.
 
+## Owner selected 2026 preparation baseline — 2026-10-29
+
+Use verified 2026 rules for preparation: 2hours/180questions/4options; English60 plus3subjects at40. Owner instruction supersedes waiting for official2027 settings as a baseline prerequisite. Label UTME practice — 2026 rules, source_year2026/official_2027_confirmedfalse; unconfirmed dates null. Preserve closed historical2026 record and annual reading-text qualifications. Exact prepared inactive config/25subject candidate: docs/content-review/fcb-02-2026-baseline-proposal-2026-10-29.json; decision/evidence docs/FCB-02-2026-BASELINE-DECISION-2026-10-29.md. Fresh live source snapshot matches; all2024 three-optional-subject combinations and25unique IDs checked. No live writes/activation or publication; no server validation claimed. Config root grants SELECT only and composition trigger requires genuine actor; no create-config RPC currently exists. Next independent implementation: reviewed genuine-admin draft configuration creation route using this fixed candidate, without broad grants/claims spoofing; source-use/publication/student acceptance gates remain. Do not repeat2027 research or ask for this same baseline choice again.
+
+### Previous external-evidence findings (format-policy wait superseded)
+
 ## FCB-02 external-evidence investigation — 2026-10-29
 
 All8corrections verified complete; do not repeat that work. Fresh official-source investigation and live read-only season/config/rights check are recorded in docs/FCB-02-EXTERNAL-EVIDENCE-2026-10-29.md.2027 remains draft/null dates/no config; closed2026 historical config inactive.25v2draft/pending,zeroactive taxonomy. Officialcalendar/third-party pages maintenance; indexedIBASS registration announcement pending. Final2027 facts and applicable source-use basis not established. Statutory concepts/data exclusions and context-dependent fair dealing were checked; do not assert that all short labels require a licence or that government material is automatically reusable. Existing compilation not cleared by this research.

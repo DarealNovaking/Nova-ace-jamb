@@ -1,0 +1,381 @@
+{
+  "status": "PREPARED_NOT_APPLIED",
+  "owner_decision_date": "2026-10-29",
+  "purpose": "Preparation using verified2026 rules, not an official2027 specification",
+  "source_config_id": "e98b1ac1-beaa-433a-a904-54d6da2c4861",
+  "config": {
+    "id": "396d1910-d458-5d5f-8484-380bc8c71919",
+    "season_id": "23fc8eb7-2d2e-474f-b4db-c0a69f22cd62",
+    "name": "UTME practice — 2026 rules",
+    "duration_seconds": 7200,
+    "total_questions": 180,
+    "option_count": 4,
+    "composition": {
+      "optional_subjects": {
+        "count": 3,
+        "selection": "candidate_choice",
+        "question_count_each": 40
+      },
+      "required_subjects": [
+        {
+          "subject_code": "ENG",
+          "question_count": 60
+        }
+      ]
+    },
+    "rules": {
+      "option_labels": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "duration_source": "2026 JAMB Training Manual",
+      "all_questions_required": true,
+      "source_year": 2026,
+      "source_url": "https://jamb.gov.ng/PDFs/2026/2026%20TRAINING%20MANUAL%20%20final.pdf",
+      "configuration_basis": "owner_selected_historical_baseline",
+      "official_2027_confirmed": false,
+      "practice_notice": "Practice follows the verified 2026 UTME format. 2027 dates and year-specific texts are unconfirmed."
+    },
+    "version": 1,
+    "active": false
+  },
+  "subjects": [
+    {
+      "required": true,
+      "sort_order": 1,
+      "subject_id": "f4a4638d-5931-49fd-8d2a-57c9dc8a37a9",
+      "subject_code": "ENG",
+      "question_count": 60,
+      "exam_config_id": "396d1910-d458-5d5f-8484-380bc8c71919",
+      "metadata": {
+        "source_year": 2026,
+        "basis": "2026 UTME baseline",
+        "official_2027_confirmed": false
+      }
+    },
+    {
+      "required": false,
+      "sort_order": 101,
+      "subject_id": "e0153c56-be67-4681-8286-4d948f651323",
+      "subject_code": "AGR",
+      "question_count": 40,
+      "exam_config_id": "396d1910-d458-5d5f-8484-380bc8c71919",
+      "metadata": {
+        "source_year": 2026,
+        "basis": "2026 UTME baseline",
+        "official_2027_confirmed": false
+      }
+    },
+    {
+      "required": false,
+      "sort_order": 102,
+      "subject_id": "c9477ef6-c2c5-4f62-b2e3-5c2b60a45a2b",
+      "subject_code": "ARA",
+      "question_count": 40,
+      "exam_config_id": "396d1910-d458-5d5f-8484-380bc8c71919",
+      "metadata": {
+        "source_year": 2026,
+        "basis": "2026 UTME baseline",
+        "official_2027_confirmed": false
+      }
+    },
+    {
+      "required": false,
+      "sort_order": 103,
+      "subject_id": "24bf2dc5-77f5-405a-b723-050ee9069eee",
+      "subject_code": "ART",
+      "question_count": 40,
+      "exam_config_id": "396d1910-d458-5d5f-8484-380bc8c71919",
+      "metadata": {
+        "source_year": 2026,
+        "basis": "2026 UTME baseline",
+        "official_2027_confirmed": false
+      }
+    },
+    {
+      "required": false,
+      "sort_order": 104,
+      "subject_id": "e367a0d1-8e76-4289-bc44-bde0f01c88ae",
+      "subject_code": "BIO",
+      "question_count": 40,
+      "exam_config_id": "396d1910-d458-5d5f-8484-380bc8c71919",
+      "metadata": {
+        "source_year": 2026,
+        "basis": "2026 UTME baseline",
+        "official_2027_confirmed": false
+      }
+    },
+    {
+      "required": false,
+      "sort_order": 105,
+      "subject_id": "6675c55e-5f41-457c-9039-705aa089ff80",
+      "subject_code": "CHE",
+      "question_count": 40,
+      "exam_config_id": "396d1910-d458-5d5f-8484-380bc8c71919",
+      "metadata": {
+        "source_year": 2026,
+        "basis": "2026 UTME baseline",
+        "official_2027_confirmed": false
+      }
+    },
+    {
+      "required": false,
+      "sort_order": 106,
+      "subject_id": "1f93adfc-9967-4356-9be6-8bce6860d425",
+      "subject_code": "CRS",
+      "question_count": 40,
+      "exam_config_id": "396d1910-d458-5d5f-8484-380bc8c71919",
+      "metadata": {
+        "source_year": 2026,
+        "basis": "2026 UTME baseline",
+        "official_2027_confirmed": false
+      }
+    },
+    {
+      "required": false,
+      "sort_order": 107,
+      "subject_id": "c6fa4b3f-731b-4c53-ac08-290fbda8c122",
+      "subject_code": "COM",
+      "question_count": 40,
+      "exam_config_id": "396d1910-d458-5d5f-8484-380bc8c71919",
+      "metadata": {
+        "source_year": 2026,
+        "basis": "2026 UTME baseline",
+        "official_2027_confirmed": false
+      }
+    },
+    {
+      "required": false,
+      "sort_order": 108,
+      "subject_id": "def40364-0c49-44e8-9ec3-a6a918e56913",
+      "subject_code": "CST",
+      "question_count": 40,
+      "exam_config_id": "396d1910-d458-5d5f-8484-380bc8c71919",
+      "metadata": {
+        "source_year": 2026,
+        "basis": "2026 UTME baseline",
+        "official_2027_confirmed": false
+      }
+    },
+    {
+      "required": false,
+      "sort_order": 109,
+      "subject_id": "7787e442-6482-498b-a9c5-ce335676f612",
+      "subject_code": "ECO",
+      "question_count": 40,
+      "exam_config_id": "396d1910-d458-5d5f-8484-380bc8c71919",
+      "metadata": {
+        "source_year": 2026,
+        "basis": "2026 UTME baseline",
+        "official_2027_confirmed": false
+      }
+    },
+    {
+      "required": false,
+      "sort_order": 110,
+      "subject_id": "58c6db9d-8d29-449c-b635-f3833de4736b",
+      "subject_code": "FRE",
+      "question_count": 40,
+      "exam_config_id": "396d1910-d458-5d5f-8484-380bc8c71919",
+      "metadata": {
+        "source_year": 2026,
+        "basis": "2026 UTME baseline",
+        "official_2027_confirmed": false
+      }
+    },
+    {
+      "required": false,
+      "sort_order": 111,
+      "subject_id": "de829c17-0ff2-4524-9bf5-4fc23459d46e",
+      "subject_code": "GEO",
+      "question_count": 40,
+      "exam_config_id": "396d1910-d458-5d5f-8484-380bc8c71919",
+      "metadata": {
+        "source_year": 2026,
+        "basis": "2026 UTME baseline",
+        "official_2027_confirmed": false
+      }
+    },
+    {
+      "required": false,
+      "sort_order": 112,
+      "subject_id": "07783b3d-b58c-4c7f-bcbe-b3d57bfec874",
+      "subject_code": "GOV",
+      "question_count": 40,
+      "exam_config_id": "396d1910-d458-5d5f-8484-380bc8c71919",
+      "metadata": {
+        "source_year": 2026,
+        "basis": "2026 UTME baseline",
+        "official_2027_confirmed": false
+      }
+    },
+    {
+      "required": false,
+      "sort_order": 113,
+      "subject_id": "ce974ac5-c12f-479c-99f6-c05f16cb98a3",
+      "subject_code": "HAU",
+      "question_count": 40,
+      "exam_config_id": "396d1910-d458-5d5f-8484-380bc8c71919",
+      "metadata": {
+        "source_year": 2026,
+        "basis": "2026 UTME baseline",
+        "official_2027_confirmed": false
+      }
+    },
+    {
+      "required": false,
+      "sort_order": 114,
+      "subject_id": "1a2616cf-2d4a-435c-a256-ef1f39dae36b",
+      "subject_code": "HIS",
+      "question_count": 40,
+      "exam_config_id": "396d1910-d458-5d5f-8484-380bc8c71919",
+      "metadata": {
+        "source_year": 2026,
+        "basis": "2026 UTME baseline",
+        "official_2027_confirmed": false
+      }
+    },
+    {
+      "required": false,
+      "sort_order": 115,
+      "subject_id": "a368fb2e-8238-437d-93fc-bc1dbe4e6fd5",
+      "subject_code": "HEC",
+      "question_count": 40,
+      "exam_config_id": "396d1910-d458-5d5f-8484-380bc8c71919",
+      "metadata": {
+        "source_year": 2026,
+        "basis": "2026 UTME baseline",
+        "official_2027_confirmed": false
+      }
+    },
+    {
+      "required": false,
+      "sort_order": 116,
+      "subject_id": "730b1365-14ff-42f7-a12a-e19e1e4fe84b",
+      "subject_code": "IGB",
+      "question_count": 40,
+      "exam_config_id": "396d1910-d458-5d5f-8484-380bc8c71919",
+      "metadata": {
+        "source_year": 2026,
+        "basis": "2026 UTME baseline",
+        "official_2027_confirmed": false
+      }
+    },
+    {
+      "required": false,
+      "sort_order": 117,
+      "subject_id": "b51338b6-bd03-4fd8-814b-3d1eb53d5cc9",
+      "subject_code": "ISS",
+      "question_count": 40,
+      "exam_config_id": "396d1910-d458-5d5f-8484-380bc8c71919",
+      "metadata": {
+        "source_year": 2026,
+        "basis": "2026 UTME baseline",
+        "official_2027_confirmed": false
+      }
+    },
+    {
+      "required": false,
+      "sort_order": 118,
+      "subject_id": "57a5c31f-2847-43c6-82c1-7918aa1c98cc",
+      "subject_code": "LIT",
+      "question_count": 40,
+      "exam_config_id": "396d1910-d458-5d5f-8484-380bc8c71919",
+      "metadata": {
+        "source_year": 2026,
+        "basis": "2026 UTME baseline",
+        "official_2027_confirmed": false
+      }
+    },
+    {
+      "required": false,
+      "sort_order": 119,
+      "subject_id": "40247f5b-cbe4-4e30-835b-f71c811de685",
+      "subject_code": "MAT",
+      "question_count": 40,
+      "exam_config_id": "396d1910-d458-5d5f-8484-380bc8c71919",
+      "metadata": {
+        "source_year": 2026,
+        "basis": "2026 UTME baseline",
+        "official_2027_confirmed": false
+      }
+    },
+    {
+      "required": false,
+      "sort_order": 120,
+      "subject_id": "fd107ed1-a784-4443-bc46-e1f4f113c0de",
+      "subject_code": "MUS",
+      "question_count": 40,
+      "exam_config_id": "396d1910-d458-5d5f-8484-380bc8c71919",
+      "metadata": {
+        "source_year": 2026,
+        "basis": "2026 UTME baseline",
+        "official_2027_confirmed": false
+      }
+    },
+    {
+      "required": false,
+      "sort_order": 121,
+      "subject_id": "9be3e180-84f2-412a-bcaa-b3e002e757cc",
+      "subject_code": "PHY",
+      "question_count": 40,
+      "exam_config_id": "396d1910-d458-5d5f-8484-380bc8c71919",
+      "metadata": {
+        "source_year": 2026,
+        "basis": "2026 UTME baseline",
+        "official_2027_confirmed": false
+      }
+    },
+    {
+      "required": false,
+      "sort_order": 122,
+      "subject_id": "85a9ed03-731b-48bf-b0be-c6fb9903426a",
+      "subject_code": "POA",
+      "question_count": 40,
+      "exam_config_id": "396d1910-d458-5d5f-8484-380bc8c71919",
+      "metadata": {
+        "source_year": 2026,
+        "basis": "2026 UTME baseline",
+        "official_2027_confirmed": false
+      }
+    },
+    {
+      "required": false,
+      "sort_order": 124,
+      "subject_id": "961e3534-3b5c-4bb1-a8f8-5291c0aa5b97",
+      "subject_code": "YOR",
+      "question_count": 40,
+      "exam_config_id": "396d1910-d458-5d5f-8484-380bc8c71919",
+      "metadata": {
+        "source_year": 2026,
+        "basis": "2026 UTME baseline",
+        "official_2027_confirmed": false
+      }
+    },
+    {
+      "required": false,
+      "sort_order": 125,
+      "subject_id": "a5a5cabd-74b5-4bdd-aaf1-85b5a603f91c",
+      "subject_code": "PHE",
+      "question_count": 40,
+      "exam_config_id": "396d1910-d458-5d5f-8484-380bc8c71919",
+      "metadata": {
+        "source_year": 2026,
+        "basis": "2026 UTME baseline",
+        "official_2027_confirmed": false
+      }
+    }
+  ],
+  "season_dates": {
+    "starts_at": null,
+    "ends_at": null
+  },
+  "limits": [
+    "No permission to reuse protected syllabus compilation is inferred.",
+    "No prescribed reading-text/cycle substitution.",
+    "Historical2026 season/config remain unchanged.",
+    "No activation or publication by this proposal."
+  ]
+}
