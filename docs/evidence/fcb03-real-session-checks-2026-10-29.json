@@ -35,10 +35,9 @@
     "listed_agent_usd_per_step": 0.016,
     "listed_browser_usd_per_minute": 0.002,
     "estimated_metered_usd": 0.328733,
-    "wallet_before": 10,
-    "wallet_after_observed": 10.68,
     "posted_total_charge": "Not reported by provider; wallet delta cannot determine charge because balance increased",
     "further_metered_runs": false,
-    "limiter_note": "Account ignored max_steps/strict settings; do not rely on these as a hard cost cap. Both bounded-scope runs completed. No further paid run started."
+    "limiter_note": "Account ignored max_steps/strict settings; do not rely on these as a hard cost cap. Both bounded-scope runs completed. No further paid run started.",
+    "wallet_note": "Balance included credit adjustments; posted charges were not reported. Budget estimate uses only the actual run steps/durations and shown rates."
   }
 }

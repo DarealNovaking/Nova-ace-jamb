@@ -13,18 +13,18 @@ Ten snapshots/page. Required reason ≤2000 characters. No publication/role chan
 
 ### Task 1 — guarded SQL history/restore
 
-- [ ] Add failing disposable SQL history cases and observe RED.
-- [ ] Implement proposal-only functions and pass PGlite cases.
-- [ ] Include original cases plus two new native contention tests in the existing guarded disposable CI job.
+- [x] Add failing disposable SQL history cases and observe RED.
+- [x] Implement proposal-only functions and pass PGlite cases.
+- [x] Include original cases plus two new native contention tests in the existing guarded disposable CI job.
 
 ### Task 2 — typed history UI
 
-- [ ] Add failing strict parser and browser regressions.
-- [ ] Implement typed service/parser and accessible bounded history panel; integrate queue mutual exclusion.
-- [ ] Verify Node/typecheck/build and full desktop/mobile suite; inspect screenshots.
+- [x] Add failing strict parser and browser regressions.
+- [x] Implement typed service/parser and accessible bounded history panel; integrate queue mutual exclusion.
+- [x] Verify Node/typecheck/build and full desktop/mobile suite; inspect screenshots.
 
 ### Task 3 — evidence and content intake
 
-- [ ] Record both genuine read-only session checks, budget evidence and preserve-signin instruction.
-- [ ] Verify exact reference edition/rights evidence where retrievable; prepare a small clearly attributed practice intake without production publication.
-- [ ] Independent final review, fix material defects, update checkpoint/master handoff, push reviewable source and exact approval boundary.
+- [x] Record both genuine read-only session checks, budget evidence and preserve-signin instruction.
+- [x] Prepare 40 original AI-assisted practice drafts, CSVs/checksums and human worksheet without production publication; exact external EPUB remained unverified after two retrieval paths and was not used.
+- [x] Independent final review, fix material defects, update checkpoint/master handoff, push reviewable source and exact approval boundary.

@@ -1,0 +1,43 @@
+{
+  "checked_at_utc": "2026-10-29T15:34:15.083Z",
+  "mode": "READ ONLY; no identity impersonation or production mutation",
+  "media": 0,
+  "functions": [
+    {
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "name": "manage_question",
+      "owner": "postgres",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "lock_timeout=3s"
+      ],
+      "body_md5": "2f5be025339acd24133d52b6e87db540",
+      "arguments": "p_action text, p_id uuid, p_expected_version integer, p_payload jsonb",
+      "security_definer": true
+    },
+    {
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "name": "review_questions",
+      "owner": "postgres",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "lock_timeout=3s"
+      ],
+      "body_md5": "551c796c17a8752c79a8865195c2f6dc",
+      "arguments": "p_status text, p_page integer",
+      "security_definer": true
+    }
+  ],
+  "questions": 0,
+  "report_tables": [],
+  "administrators": 1,
+  "question_buckets": [],
+  "question_versions": 0,
+  "assessment": {
+    "new_history_rpcs_installed": false,
+    "existing_manage_and_review_body_md5_match_compiled_manifest": true,
+    "publication_reviewer_gap": "Only one administrator currently exists; a genuinely independent administrator is required before approval/publication",
+    "question_bucket_scope": "No bucket with question in its ID; this alone is not a complete Storage policy audit",
+    "report_table_scope": "No ace table with report in its name; dedicated moderation workflow remains unfinished"
+  }
+}

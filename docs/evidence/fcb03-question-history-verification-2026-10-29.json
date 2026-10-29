@@ -1,0 +1,78 @@
+{
+  "date": "2026-10-29 Africa/Lagos",
+  "pr": 20,
+  "tested_source": "49a25000b600ed53d20257d3dd2f4807fb46ca49",
+  "application_source": "30104c9f37294c52bb4f3c3083364efe39eebed8",
+  "tested_tree": "4bd812c4117232ac58caceec54379db1de9a99f0",
+  "scope": "Bounded question history and guarded restoration to new private drafts; forty unreviewed original practice drafts; genuine read-only session acceptance",
+  "local": {
+    "node": 77,
+    "typecheck": "PASS",
+    "build": "PASS",
+    "pglite_sequential": 85
+  },
+  "ci": {
+    "browser_run": 40902536563,
+    "browser_job": 123548418170,
+    "browser_passed": 234,
+    "browser_unfiltered": true,
+    "duration": "5.5m",
+    "verify_run": 40902536692,
+    "verify_jobs": 7,
+    "native_question_job": 123548419131,
+    "native_scenarios": 91,
+    "native_sequential": 85,
+    "native_contention": 6,
+    "artifact": 12908899449,
+    "artifact_sha256": "d6db8b809a71b8e3653ef14aec1b44c82c0724bee0660a18a1a9c385df7b6146"
+  },
+  "red_green": {
+    "sql": "History readback failed against inert stub; 85 cases green after implementation",
+    "parser": "Four strict history/restore tests failed stub and passed implementation",
+    "render": "Missing real React history heading failed, then passed",
+    "browser_missing_ui": "40899509171/job123537618236 timed out waiting for Version history before UI existed",
+    "browser_selector": "40901031064/job123543928705: 232 passed/2 failed because ten hidden and visible answer labels matched; fixed by scoping to the one open details element; final234passed"
+  },
+  "review": {
+    "independent": "No blocking correctness/security findings; all40keys/explanations and broad topic mappings checked; five history Node tests independently passed",
+    "layout": "Final desktop/mobile history screenshots inspected; no horizontal overflow; bounded page controls and readable answer/source disclosures",
+    "deferred_minors": [
+      "Move keyboard focus into the history panel and restore focus to its trigger on close",
+      "Add history-specific delayed read/restore completion regressions after synthetic session unmount"
+    ],
+    "intake_status": "Technical assistance only; all40remain unreviewed for genuine administrator approval"
+  },
+  "proposal": {
+    "installed": false,
+    "sha256": "975e65e0cb544d8738a95e5d496e3919c6d6008b54e45122a6c60fc80c338b0d",
+    "installation_body_sha256": "a93441092140bae8990d97f6a0e90c37dc6dffa3c6f68a1a83368faa392b20e1",
+    "compiled_manifest": "docs/evidence/fcb03-question-history-compiled-functions-2026-10-29.json",
+    "metadata_disable": "Compiled and verified in isolated engine; new RPC access revoked and existing save access preserved"
+  },
+  "intake": {
+    "questions": 40,
+    "subjects": [
+      "MAT",
+      "PHY",
+      "CHE",
+      "BIO",
+      "ENG"
+    ],
+    "csv_files": 5,
+    "format": "UTF-8 LF; exact CSV checksums regenerated after transport normalization",
+    "validation": "Actual import parser matched all40manifest drafts without errors or duplicate stems",
+    "status": "Not uploaded, reviewed by genuine admin or published",
+    "external_epub": "Shell retrieval invalid; alternate TinyFish fetch timeout; no external content extracted or rights approved"
+  },
+  "production": {
+    "source_unchanged": "ba347f808c34d637bc72692a44f8fcabe6049f3f",
+    "questions": 0,
+    "history": 0,
+    "media": 0,
+    "administrators": 1,
+    "roles_changed": false,
+    "profiles_signed_out": false,
+    "publication": "None"
+  },
+  "next": "Obtain specific approval for the exact two-function installation and PR20 merge/deployment, then arrange genuine independent reviewer and approved intake. Rich media/storage and moderation remain open; FCB03 is IN PROGRESS."
+}

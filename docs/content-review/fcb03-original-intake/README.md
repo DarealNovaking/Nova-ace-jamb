@@ -10,13 +10,13 @@ Forty newly composed, AI-assisted practice drafts: eight each for MAT, PHY, CHE,
 | BIO.csv | Biology | Organisms and their working systems | 8 |
 | ENG.csv | Use of English | Choosing words and building sentences | 8 |
 
-Each CSV uses the deployed 15-column template. Import one file at a time, choosing the named subject and topic and Whole topic for subtopic. The `manifest.json` retains review IDs and complete draft payloads for checking; `checksums.json` identifies exact CSV bytes. Revalidate active taxonomy and source/answer evidence before saving. A different authorized administrator must genuinely review the questions before publication.
+Each CSV uses UTF-8 with LF line endings and the deployed 15-column template. The checksums refer to the exact repository/download bytes. Import one file at a time, choosing the named subject and topic and Whole topic for subtopic. The `manifest.json` retains review IDs and complete draft payloads for checking; `checksums.json` identifies exact CSV bytes. Revalidate active taxonomy and source/answer evidence before saving. A different authorized administrator must genuinely review the questions before publication.
 
 ## Source and editorial basis
 
 The wording, options and explanations were composed for this intake from standard subject concepts. No external textbook/past-paper question wording, images or diagrams was copied; the author field explicitly discloses AI assistance. Original authorship is an editorial claim to be checked, not an automatic legal conclusion or permission to label these as JAMB past questions. The question source kind is `original`, attribution is `ACE practice`, and examination year is blank.
 
-The publisher catalogue was rechecked at https://www.siyavula.com/read and still distinguishes unbranded CC BY EPUB editions from branded ND editions. An attempt to retrieve the exact Grade 10 Mathematics unbranded EPUB did **not** return valid EPUB bytes in this environment. Its embedded/component licences remain unverified. No exercise in this intake is attributed to or extracted from that file, and the file is not approved as an ingested source.
+The publisher catalogue was rechecked at https://www.siyavula.com/read and still distinguishes unbranded CC BY EPUB editions from branded ND editions. An attempt to retrieve the exact Grade 10 Mathematics unbranded EPUB did **not** return valid EPUB bytes in this environment. A materially different TinyFish content-fetch attempt also timed out. Its embedded/component licences remain unverified. No exercise in this intake is attributed to or extracted from that file, and the file is not approved as an ingested source.
 
 ## Required genuine editorial review
 

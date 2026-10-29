@@ -55,5 +55,12 @@
       "body_sha256": "981dd59334d2ffc617bd1868df6ac3e29fa6b962561f252815a0dba1dc803696",
       "body_md5": "551c796c17a8752c79a8865195c2f6dc"
     }
-  ]
+  ],
+  "metadata_disable_test": {
+    "status": "PASS",
+    "history_allowed": false,
+    "restore_allowed": false,
+    "existing_save_allowed": true,
+    "scope": "Isolated engine only; original proposal grants recorded above; no production recovery performed"
+  }
 }
