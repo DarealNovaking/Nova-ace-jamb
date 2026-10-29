@@ -9,7 +9,7 @@
 
 ## Global constraints
 - No new client table privileges or student answer-key exposure.
-- No production mutations, deployment, paid browser calls or source-rights fabrication.
+- Production installation/release follows the owner’s standing approval after verified source; no content mutation, paid browser call or source-rights fabrication is implied.
 - Preserve unrelated edits and FCB-01/02 acceptance.
 - No new dependencies; reuse the existing schema and components.
 
@@ -33,9 +33,9 @@ Files: src/components/AdminQuestionReviewQueue.tsx; src/lib/questionWorkflow.ts;
 Interfaces: call the exact RPCs from Task 1; typed validation/readback adapters; reuse subject/taxonomy services.
 - [x] Add failing unit/browser cases for draft creation, validation, review transitions, stale/denied saves and recovery.
 - [x] Implement accessible bounded editor, status filters and transition controls with loading/error/empty/success states.
-- [ ] Run Node tests, typecheck, build and desktop/mobile browser checks.
+- [x] Run Node tests, typecheck, build and desktop/mobile browser checks.
 
 ## Task 3: Review and continuity
-- [ ] Review the complete diff and fix reproduced blocking findings.
-- [ ] Save inventory, tests, remaining FCB-03 source/media/dataset requirements and exact next action in the handoff/checkpoint.
-- [ ] Publish a review branch/PR for native CI; do not claim installation, full FCB-03 completion or a populated question bank.
+- [x] Review the complete diff and fix reproduced blocking findings.
+- [x] Save inventory, tests, remaining FCB-03 source/media/dataset requirements and exact next action in the handoff/checkpoint.
+- [x] Publish PR18 for native CI; full FCB-03 completion and a populated question bank are not claimed. The tested guarded installer was subsequently applied under standing authorization and independently verified; editor release is next.

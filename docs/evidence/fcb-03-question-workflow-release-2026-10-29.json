@@ -1,0 +1,174 @@
+{
+  "date": "2026-10-29 Africa/Lagos",
+  "pr": 18,
+  "verified_source": "cc51a39b6414986f619138aa69d123f4b07fbc52",
+  "proposal_sha256": "a98ab1cdd7f8f2daed62f9c4c461ef722dce88517c997308eab48b62097e869d",
+  "ci": {
+    "verify_run": 40851850815,
+    "verify_jobs": 7,
+    "question_native_job": 123373019009,
+    "native_sequential": 57,
+    "native_contention": 4,
+    "browser_run": 40851850866,
+    "browser_job": 123373018607,
+    "browser_passed": 214,
+    "unfiltered": true
+  },
+  "local": {
+    "node_passed": 61,
+    "python_content_passed": 15,
+    "typecheck": "PASS",
+    "build": "PASS",
+    "pglite_cases": 57
+  },
+  "review": {
+    "independent_review": "Completed; whitespace mismatch and old browser fixtures fixed after reproduction",
+    "session_cache": "Cross-tab logout regression reproduced and fixed in both administrative gates",
+    "locator": "Captured snapshot proved enabled dropdown; exact label test changed to accessible combobox names",
+    "layout": "Desktop and mobile passing editor screenshots inspected; no horizontal overflow"
+  },
+  "database_installation": {
+    "migration": [
+      {
+        "name": "fcb03_question_workflow",
+        "version": "20261029095101"
+      }
+    ],
+    "exact_function_manifest_match": true,
+    "functions": [
+      {
+        "owner": "postgres",
+        "proacl": "{postgres=X/postgres}",
+        "proname": "guard_question_history",
+        "arguments": "",
+        "proconfig": [
+          "search_path=pg_catalog, pg_temp"
+        ],
+        "prosecdef": false,
+        "body_sha256": "78cbfbfa0de8a9f1594ed8d99043ed0d62ce33d22e041b1b4de699c9ed869a19"
+      },
+      {
+        "owner": "postgres",
+        "proacl": "{postgres=X/postgres}",
+        "proname": "guard_question_workflow",
+        "arguments": "",
+        "proconfig": [
+          "search_path=pg_catalog, pg_temp"
+        ],
+        "prosecdef": false,
+        "body_sha256": "c23feea7ea112063fb8ccdebe12e7e671306a14945ba1ab542f91d7062ac2f0e"
+      },
+      {
+        "owner": "postgres",
+        "proacl": "{postgres=X/postgres,authenticated=X/postgres}",
+        "proname": "manage_question",
+        "arguments": "text, uuid, integer, jsonb",
+        "proconfig": [
+          "search_path=pg_catalog, pg_temp",
+          "lock_timeout=3s"
+        ],
+        "prosecdef": true,
+        "body_sha256": "05677c2b9ce3e8372bdf682618ee9f4560b2fda787f0862225d64871c1ae580a"
+      },
+      {
+        "owner": "postgres",
+        "proacl": "{postgres=X/postgres}",
+        "proname": "question_normalize",
+        "arguments": "text",
+        "proconfig": [
+          "search_path=pg_catalog, pg_temp"
+        ],
+        "prosecdef": false,
+        "body_sha256": "d7256bb286276500bfc0eaeeccf6ff7fbf23e6d14cf141268399a02cf2746646"
+      },
+      {
+        "owner": "postgres",
+        "proacl": "{postgres=X/postgres}",
+        "proname": "question_trim",
+        "arguments": "text",
+        "proconfig": [
+          "search_path=pg_catalog, pg_temp"
+        ],
+        "prosecdef": false,
+        "body_sha256": "9b7e98dd6eab2b4e7d1581ade769857d19337482aac7e80e5c27f71fb48cf5ac"
+      },
+      {
+        "owner": "postgres",
+        "proacl": "{postgres=X/postgres,authenticated=X/postgres}",
+        "proname": "review_questions",
+        "arguments": "text, integer",
+        "proconfig": [
+          "search_path=pg_catalog, pg_temp",
+          "lock_timeout=3s"
+        ],
+        "prosecdef": true,
+        "body_sha256": "981dd59334d2ffc617bd1868df6ac3e29fa6b962561f252815a0dba1dc803696"
+      },
+      {
+        "owner": "postgres",
+        "proacl": "{postgres=X/postgres}",
+        "proname": "validate_question_draft",
+        "arguments": "jsonb",
+        "proconfig": [
+          "search_path=pg_catalog, pg_temp"
+        ],
+        "prosecdef": false,
+        "body_sha256": "0f6c96c500614811e520e27310cc2d4040e1e98520d5dd288ff44469238fa8f4"
+      }
+    ],
+    "triggers": [
+      {
+        "name": "question_workflow_guard",
+        "enabled": "O",
+        "definition": "CREATE TRIGGER question_workflow_guard BEFORE INSERT OR DELETE OR UPDATE ON ace.questions FOR EACH ROW EXECUTE FUNCTION ace.guard_question_workflow()"
+      },
+      {
+        "name": "question_history_immutable",
+        "enabled": "O",
+        "definition": "CREATE TRIGGER question_history_immutable BEFORE DELETE OR UPDATE ON ace.question_versions FOR EACH ROW EXECUTE FUNCTION ace.guard_question_history()"
+      }
+    ],
+    "questions": 0,
+    "history": 0,
+    "media": 0,
+    "roles_preserved": true,
+    "active_syllabus_versions": 25,
+    "active_practice_baseline": true,
+    "anonymous_rpc_allowed": false,
+    "identity_free_read_and_write": "denied",
+    "student_answer_and_history_table_access": false,
+    "advisor_delta": [
+      {
+        "name": "authenticated_security_definer_function_executable",
+        "level": "WARN",
+        "detail": "Function `ace.manage_question(p_action text, p_id uuid, p_expected_version integer, p_payload jsonb)` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/manage_question`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+        "metadata": {
+          "name": "manage_question",
+          "schema": "ace",
+          "language": "plpgsql",
+          "arguments": "p_action text, p_id uuid, p_expected_version integer, p_payload jsonb",
+          "security_definer": true
+        }
+      },
+      {
+        "name": "authenticated_security_definer_function_executable",
+        "level": "WARN",
+        "detail": "Function `ace.review_questions(p_status text, p_page integer)` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/review_questions`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+        "metadata": {
+          "name": "review_questions",
+          "schema": "ace",
+          "language": "plpgsql",
+          "arguments": "p_status text, p_page integer",
+          "security_definer": true
+        }
+      }
+    ],
+    "advisor_assessment": "Only the two expected authenticated SECURITY DEFINER RPC notices were added; prior findings unchanged."
+  },
+  "release": {
+    "main_merge": "pending",
+    "production_deployment": "pending",
+    "previous_production_version": "5e377d6f-7845-4b5b-835b-108743f6ba53"
+  },
+  "scope": "Text-question authoring/review/publication slice only. FCB-03 remains IN PROGRESS; media/rich-content, import/moderation/version restoration, first lawful reviewed dataset and actual signed-in production acceptance remain."
+}
