@@ -1,0 +1,1102 @@
+{
+  "format_version": 1,
+  "prepared_on": "2026-10-29",
+  "scope": "ACE original editorial study organization; factual concept coverage only",
+  "subjects": [
+    {
+      "subject_code": "AGR",
+      "study_groups": [
+        {
+          "key": "farm-decisions-and-rural-livelihoods",
+          "name": "Farm decisions and rural livelihoods",
+          "source_topic_ids": [
+            "da796f9e-38b6-54f1-bbed-3cd877ff6f97",
+            "23acb380-341e-5b31-b400-2e53eb5a12ba"
+          ],
+          "rationale": "Connect the purposes of farming with costs, markets and support for farmers."
+        },
+        {
+          "key": "growing-crops-and-caring-for-land",
+          "name": "Growing crops and caring for land",
+          "source_topic_ids": [
+            "4aa09f59-0ec5-500b-b847-ff4382b42f63"
+          ],
+          "rationale": "Keep crop and soil concepts together for plant-production practice."
+        },
+        {
+          "key": "keeping-productive-animals",
+          "name": "Keeping productive animals",
+          "source_topic_ids": [
+            "cc677e7b-a0ba-5bd5-bb08-e09c7cc36318"
+          ],
+          "rationale": "Provide a dedicated route into livestock care and production."
+        },
+        {
+          "key": "tools-and-systems-on-the-farm",
+          "name": "Tools and systems on the farm",
+          "source_topic_ids": [
+            "a147aac2-6d94-5573-9130-c9341d90fd88"
+          ],
+          "rationale": "Separate farm equipment and technology from biological production."
+        }
+      ]
+    },
+    {
+      "subject_code": "ARA",
+      "study_groups": [
+        {
+          "key": "building-accurate-arabic-sentences",
+          "name": "Building accurate Arabic sentences",
+          "source_topic_ids": [
+            "b2340820-6a5c-5da7-8439-3bb72a16d6fa",
+            "d3c4a312-c7c0-5434-95d2-364bdfc633c5"
+          ],
+          "rationale": "Connect grammatical choices with their use in original writing."
+        },
+        {
+          "key": "exploring-arabic-literary-expression",
+          "name": "Exploring Arabic literary expression",
+          "source_topic_ids": [
+            "b9dc45e1-b911-54d6-8023-3c64cb57b4d6"
+          ],
+          "rationale": "Keep literary forms and traditions available as a focused study route."
+        },
+        {
+          "key": "reading-meaning-and-moving-between-languages",
+          "name": "Reading meaning and moving between languages",
+          "source_topic_ids": [
+            "a835e081-09e9-5fdc-b6b1-578917e63a33",
+            "342932a0-494c-5bbe-8808-f2da2d5ed551"
+          ],
+          "rationale": "Pair interpretation of Arabic passages with the expression of meaning in translation."
+        }
+      ]
+    },
+    {
+      "subject_code": "ART",
+      "study_groups": [
+        {
+          "key": "art-in-society-and-working-life",
+          "name": "Art in society and working life",
+          "source_topic_ids": [
+            "22513560-f4ac-50e3-9b68-c7615abede2e",
+            "c640ecd4-a713-5950-8ec4-51c12c8cb08e"
+          ],
+          "rationale": "Relate artistic traditions to interpretation, value and professional practice."
+        },
+        {
+          "key": "developing-visual-ideas",
+          "name": "Developing visual ideas",
+          "source_topic_ids": [
+            "82edac8f-6b12-5486-afde-02de2e492f20"
+          ],
+          "rationale": "Introduce the concepts used to understand and construct visual work."
+        },
+        {
+          "key": "materials-and-making",
+          "name": "Materials and making",
+          "source_topic_ids": [
+            "545ece55-eed9-5b42-89a4-b98a54b09fc2"
+          ],
+          "rationale": "Bring practical methods and equipment into one studio-focused route."
+        }
+      ]
+    },
+    {
+      "subject_code": "BIO",
+      "study_groups": [
+        {
+          "key": "inheritance-and-biological-change",
+          "name": "Inheritance and biological change",
+          "source_topic_ids": [
+            "5a79d8c1-7e6b-532c-b433-462d8cb70244",
+            "a13fc35b-0f2e-5b0e-94d9-4f1e64564c1a"
+          ],
+          "rationale": "Link variation and heredity to explanations of evolutionary change."
+        },
+        {
+          "key": "living-things-and-their-surroundings",
+          "name": "Living things and their surroundings",
+          "source_topic_ids": [
+            "1bbee89e-201f-5bf9-9a50-82a95a538d37"
+          ],
+          "rationale": "Keep ecological relationships and environmental interactions together."
+        },
+        {
+          "key": "organisms-and-their-working-systems",
+          "name": "Organisms and their working systems",
+          "source_topic_ids": [
+            "013c20a4-2069-5651-abd4-32c71731ddb6",
+            "7957bf7b-1823-5e21-ab12-49ce136f1b9c"
+          ],
+          "rationale": "Connect the diversity of living things with how their structures function."
+        }
+      ]
+    },
+    {
+      "subject_code": "CHE",
+      "study_groups": [
+        {
+          "key": "acid-reactions-and-salts",
+          "name": "Acid reactions and salts",
+          "source_topic_ids": [
+            "231ce9f1-1b46-527d-bce5-2509327c187b"
+          ],
+          "rationale": "Keep acid-base behaviour and salt formation together."
+        },
+        {
+          "key": "atoms-bonds-and-nuclear-change",
+          "name": "Atoms, bonds and nuclear change",
+          "source_topic_ids": [
+            "9ae95e3b-caf7-5e36-bf50-bead890f70a3",
+            "1c911da3-a759-54c1-99b3-2b7d33256847"
+          ],
+          "rationale": "Link particle structure with bonding and changes within atomic nuclei."
+        },
+        {
+          "key": "carbon-compounds-and-chemical-production",
+          "name": "Carbon compounds and chemical production",
+          "source_topic_ids": [
+            "962dde82-a57f-5fd1-9740-56091979f13a",
+            "b8ca9dc1-5ddf-5b53-ba1f-1e8ae9a9b3a5"
+          ],
+          "rationale": "Connect organic substances with the uses and processes of chemical industry."
+        },
+        {
+          "key": "chemical-amounts-and-reaction-balance",
+          "name": "Chemical amounts and reaction balance",
+          "source_topic_ids": [
+            "9a58356d-d113-5803-920d-b42f6225bfaf",
+            "cef8fb56-4fa5-5ee8-9957-58de82d7f535"
+          ],
+          "rationale": "Bring quantitative combination and reversible reaction balance into one practice route."
+        },
+        {
+          "key": "chemistry-of-environments-and-space",
+          "name": "Chemistry of environments and space",
+          "source_topic_ids": [
+            "1985c89f-dfbe-5c31-861a-c79677232457",
+            "72f8dcd7-f5b0-5b5a-83ac-905b32c2f8fa"
+          ],
+          "rationale": "Offer a route for chemical substances and processes beyond the laboratory, on Earth and in space."
+        },
+        {
+          "key": "electrons-in-chemical-change",
+          "name": "Electrons in chemical change",
+          "source_topic_ids": [
+            "2b15b714-9ccc-5999-9d82-6fa282dcd489",
+            "c90e1dcc-693f-5a17-bf9d-1997939ee72a"
+          ],
+          "rationale": "Connect electron transfer with reactions driven by electric current."
+        },
+        {
+          "key": "element-families-and-their-compounds",
+          "name": "Element families and their compounds",
+          "source_topic_ids": [
+            "749a10dc-32f3-5feb-a86f-63c2a1a5bc8b",
+            "bdc09104-5b6d-5aab-92df-7ae3a89ede69"
+          ],
+          "rationale": "Study metallic and non-metallic chemistry through related properties and reactions."
+        },
+        {
+          "key": "mixtures-separation-and-dissolving",
+          "name": "Mixtures, separation and dissolving",
+          "source_topic_ids": [
+            "667bed29-6272-59a4-afd4-ba010af1ed84",
+            "885c2638-602b-52dd-b0da-d33a382bfed7"
+          ],
+          "rationale": "Connect practical purification with the behaviour of substances in solution."
+        },
+        {
+          "key": "particle-motion-and-gases",
+          "name": "Particle motion and gases",
+          "source_topic_ids": [
+            "20f8488d-67e1-5724-9ef9-b5036ca441ef"
+          ],
+          "rationale": "Give molecular motion and gas relationships a focused revision route."
+        },
+        {
+          "key": "reaction-energy-and-speed",
+          "name": "Reaction energy and speed",
+          "source_topic_ids": [
+            "c547d6cf-09dd-5040-bc41-ef8495cee80a",
+            "e76b2085-f2b9-5576-a9d8-92487d1f46ab"
+          ],
+          "rationale": "Pair the energy involved in reactions with factors affecting their rate."
+        }
+      ]
+    },
+    {
+      "subject_code": "COM",
+      "study_groups": [
+        {
+          "key": "business-organization-and-decisions",
+          "name": "Business organization and decisions",
+          "source_topic_ids": [
+            "f85d7d5e-5e0f-58d6-9edf-53cd112ae80d",
+            "fbfefc1a-1d7c-5259-925b-cfd1f10ac5fe",
+            "2624980b-f426-5bb3-8ee8-7d610eaa95bb"
+          ],
+          "rationale": "Relate business forms and management to the rules governing business activity."
+        },
+        {
+          "key": "buying-selling-and-reaching-customers",
+          "name": "Buying, selling and reaching customers",
+          "source_topic_ids": [
+            "883cd8b0-db9a-524f-8b7b-9fb545abeb24",
+            "13bfcc4f-b0bc-5ab0-8270-b9e96420dc16",
+            "b8b027d5-a86c-5f1c-9231-9af9788d090b"
+          ],
+          "rationale": "Bring trade transactions and marketing into a customer-focused practice route."
+        },
+        {
+          "key": "money-and-business-funding",
+          "name": "Money and business funding",
+          "source_topic_ids": [
+            "99cc54de-98ec-5235-be74-332674906ed8",
+            "2107ddf6-6b07-5faf-858d-c987eb87c291",
+            "130a2e52-cab5-5121-8e8e-c5e91bec1ba2"
+          ],
+          "rationale": "Link money, finance and securities markets as ways businesses obtain and use funds."
+        },
+        {
+          "key": "moving-goods-and-coordinating-trade",
+          "name": "Moving goods and coordinating trade",
+          "source_topic_ids": [
+            "38efea1b-50a8-5976-88c9-1a0df7f7d230",
+            "3d70b93e-b83f-5459-93f5-bc38fa200b06",
+            "e858f56a-f70d-5319-8462-9f953f4c05ca"
+          ],
+          "rationale": "Connect supporting services and trade coordination, including commodity markets."
+        },
+        {
+          "key": "work-production-and-the-business-setting",
+          "name": "Work, production and the business setting",
+          "source_topic_ids": [
+            "585e0823-c5b3-5536-9bc1-a18ea0ca617a",
+            "5e6cefef-8d47-5082-9237-474df0449f8d",
+            "831c9150-c459-57b6-aad1-da90a2fa027f",
+            "5f1295c6-0557-57ba-82e3-f81673ad3779"
+          ],
+          "rationale": "Connect commercial activity and occupations with production and business responsibilities."
+        }
+      ]
+    },
+    {
+      "subject_code": "CRS",
+      "study_groups": [
+        {
+          "key": "jesus-the-early-church-and-christian-teaching",
+          "name": "Jesus, the early church and Christian teaching",
+          "source_topic_ids": [
+            "ca58ef05-fca0-515a-89ea-10d1ccb33f27",
+            "7a9640fa-2a3f-5e33-af50-24ea61417327"
+          ],
+          "rationale": "Connect the Gospel and Acts narratives with teaching addressed to early Christian communities."
+        },
+        {
+          "key": "leadership-and-covenant-in-ancient-israel",
+          "name": "Leadership and covenant in ancient Israel",
+          "source_topic_ids": [
+            "b91c596e-848c-5bd6-93ea-e548960eeeb1"
+          ],
+          "rationale": "Keep the early biblical narratives available for focused study of leadership and covenant."
+        },
+        {
+          "key": "prophetic-voices-and-national-crisis",
+          "name": "Prophetic voices and national crisis",
+          "source_topic_ids": [
+            "861432d2-ac5d-5865-af59-6cb2a0b6a696"
+          ],
+          "rationale": "Gather the later kingdom, exile and prophetic themes in one historical setting."
+        }
+      ]
+    },
+    {
+      "subject_code": "CST",
+      "study_groups": [
+        {
+          "key": "computing-ideas-and-changing-technology",
+          "name": "Computing ideas and changing technology",
+          "source_topic_ids": [
+            "f532a3c6-54dd-5225-8452-92d1fdb23a94",
+            "d42a32a5-9083-5e4e-8985-c7df406ac75a"
+          ],
+          "rationale": "Pair the development of computers with the basic concepts needed to understand them."
+        },
+        {
+          "key": "connected-computing-and-responsible-use",
+          "name": "Connected computing and responsible use",
+          "source_topic_ids": [
+            "fb1bb3de-03f9-55f8-a2d7-516aa82474f0",
+            "6b295f7c-90d4-55e7-9bab-c9d2b4696795",
+            "04f5f4d6-6fe8-571b-8793-e877c1b1f0aa"
+          ],
+          "rationale": "Bring communication technology together with safe maintenance and responsible use."
+        },
+        {
+          "key": "everyday-software-and-digital-files",
+          "name": "Everyday software and digital files",
+          "source_topic_ids": [
+            "cb4ab198-2fc8-53cc-a3a0-3310bb40c3f0",
+            "11092d12-032f-50df-a1ff-13501eb4d40a"
+          ],
+          "rationale": "Connect common application tasks with organizing and managing their files."
+        },
+        {
+          "key": "solving-problems-and-building-intelligent-systems",
+          "name": "Solving problems and building intelligent systems",
+          "source_topic_ids": [
+            "d6ba5c48-3abb-5dbb-87b8-4210004c0531",
+            "64d41980-d30d-5920-99cc-7181e2b57921"
+          ],
+          "rationale": "Connect computational problem solving with artificial intelligence and robotics."
+        }
+      ]
+    },
+    {
+      "subject_code": "ECO",
+      "study_groups": [
+        {
+          "key": "consumers-markets-and-prices",
+          "name": "Consumers, markets and prices",
+          "source_topic_ids": [
+            "d5f8c6dc-2017-59f5-a5c8-417cdfdd0016",
+            "49f85e2f-b21b-54d1-b522-753c52d3ff3b",
+            "0f7a6806-307c-5456-917a-81aebda77f9d",
+            "4f8d8979-dbab-5b94-94cb-70348f3aaa1e",
+            "ae5d987e-9555-51f5-b4e4-37903fcd1b67"
+          ],
+          "rationale": "Connect choices, supply and demand with price formation under different market structures."
+        },
+        {
+          "key": "firms-resources-and-production-choices",
+          "name": "Firms, resources and production choices",
+          "source_topic_ids": [
+            "6e00c19a-0a28-5bd3-9a01-a0b8346fb11d",
+            "14e76e4b-3f50-5f86-955e-c6ef4593062b",
+            "41b53720-06e0-5233-8b18-8c816fe06080",
+            "48b610da-241f-56f6-af6c-70a7fba78f6b"
+          ],
+          "rationale": "Relate business organization and productive inputs to output, cost and revenue."
+        },
+        {
+          "key": "income-finance-and-public-decisions",
+          "name": "Income, finance and public decisions",
+          "source_topic_ids": [
+            "0f8f1bcd-5c9a-5566-939c-5eab73a5a5c2",
+            "859ace51-a633-51ef-871c-d1d15bcb9c37",
+            "3f19ad8b-9198-5612-9d61-58cecb37dbc5",
+            "7c024a2f-b322-5d38-b819-7e54cc41a5bd"
+          ],
+          "rationale": "Connect economy-wide income and money with finance and government revenue and spending."
+        },
+        {
+          "key": "people-sectors-and-development",
+          "name": "People, sectors and development",
+          "source_topic_ids": [
+            "a51ebea4-955c-583a-b737-f0658a88b4f1",
+            "918064a9-88fd-50e0-a340-24fa977e5961",
+            "5029b38d-f430-59c3-9525-ecfb9cb954b6",
+            "decac5b3-b450-5594-ac37-813629f0d317",
+            "225445be-c131-5eff-a725-a22cf3b4410c"
+          ],
+          "rationale": "Bring population and development into context through agriculture, industry and natural resources."
+        },
+        {
+          "key": "thinking-and-measuring-like-an-economist",
+          "name": "Thinking and measuring like an economist",
+          "source_topic_ids": [
+            "e1e5a117-9dcd-56b4-9f9a-a0dfc9a9847f",
+            "7d0fa4c5-a191-51a4-ba5a-8ea92f6528a8",
+            "d3463090-12d3-5ef6-9239-d48b031d6d99"
+          ],
+          "rationale": "Link economic reasoning and analytical tools with the ways economies are organized."
+        },
+        {
+          "key": "trade-and-economic-cooperation",
+          "name": "Trade and economic cooperation",
+          "source_topic_ids": [
+            "755851dd-342c-5f38-8e69-7cf14b8ac1a4",
+            "29c82d1d-13c9-5db8-9063-ee6f5ae2348d"
+          ],
+          "rationale": "Pair cross-border trade with the institutions supporting international economic relations."
+        }
+      ]
+    },
+    {
+      "subject_code": "ENG",
+      "study_groups": [
+        {
+          "key": "choosing-words-and-building-sentences",
+          "name": "Choosing words and building sentences",
+          "source_topic_ids": [
+            "6ba6f46f-977a-5433-93e8-84113069eeef"
+          ],
+          "rationale": "Provide a focused route for vocabulary and grammatical choices."
+        },
+        {
+          "key": "listening-to-sounds-and-speech-patterns",
+          "name": "Listening to sounds and speech patterns",
+          "source_topic_ids": [
+            "d4dfdb92-4450-5162-86c7-32cd366a4c8a"
+          ],
+          "rationale": "Keep spoken-language concepts distinct from written usage."
+        },
+        {
+          "key": "reading-for-meaning-and-concise-expression",
+          "name": "Reading for meaning and concise expression",
+          "source_topic_ids": [
+            "06ac7278-627a-5d0f-99d9-76d7304a98b5"
+          ],
+          "rationale": "Keep passage interpretation and summary skills together."
+        }
+      ]
+    },
+    {
+      "subject_code": "FRE",
+      "study_groups": [
+        {
+          "key": "french-in-its-cultural-settings",
+          "name": "French in its cultural settings",
+          "source_topic_ids": [
+            "84d8d5ae-5571-56e4-8da5-ae371052e8cb"
+          ],
+          "rationale": "Keep cultural knowledge and civilization topics available in their own context."
+        },
+        {
+          "key": "hearing-and-producing-french-sounds",
+          "name": "Hearing and producing French sounds",
+          "source_topic_ids": [
+            "3e7d8c5b-2fab-50b1-8736-4df0d287d7be"
+          ],
+          "rationale": "Provide focused practice in the sound system of French."
+        },
+        {
+          "key": "understanding-and-using-written-french",
+          "name": "Understanding and using written French",
+          "source_topic_ids": [
+            "62dafd93-181c-5e9b-8821-6ed5d3698469",
+            "b1a09585-6435-5cbf-a124-6ab31f538b9b"
+          ],
+          "rationale": "Connect passage interpretation with the forms used in written expression."
+        }
+      ]
+    },
+    {
+      "subject_code": "GEO",
+      "study_groups": [
+        {
+          "key": "land-climate-and-natural-processes",
+          "name": "Land, climate and natural processes",
+          "source_topic_ids": [
+            "0ab22d3f-2323-5bcf-a7b1-88e596ad6821"
+          ],
+          "rationale": "Keep the physical systems of the Earth together."
+        },
+        {
+          "key": "maps-evidence-and-geographic-skills",
+          "name": "Maps, evidence and geographic skills",
+          "source_topic_ids": [
+            "e00c6a4a-682f-51a5-ae22-b4819fcfa896"
+          ],
+          "rationale": "Provide a practical route for geographic representation and investigation."
+        },
+        {
+          "key": "people-places-and-regional-connections",
+          "name": "People, places and regional connections",
+          "source_topic_ids": [
+            "bc7ce563-ac64-5304-9687-f7134ca1f024",
+            "007ef301-62fd-5e3b-bb10-6e4aa0e31889"
+          ],
+          "rationale": "Connect population and economic activity with their regional settings."
+        }
+      ]
+    },
+    {
+      "subject_code": "GOV",
+      "study_groups": [
+        {
+          "key": "diplomacy-and-international-cooperation",
+          "name": "Diplomacy and international cooperation",
+          "source_topic_ids": [
+            "beecafa5-7e58-5531-921b-2f5a9f2df231",
+            "4b726d39-7139-52b0-88aa-16cfa55fd141"
+          ],
+          "rationale": "Connect foreign-policy choices with international relationships and organizations."
+        },
+        {
+          "key": "nigeria-and-political-change",
+          "name": "Nigeria and political change",
+          "source_topic_ids": [
+            "4e4c62aa-face-5e79-8ba0-92086903b8f6"
+          ],
+          "rationale": "Keep Nigerian political developments in a focused national context."
+        },
+        {
+          "key": "power-institutions-and-political-ideas",
+          "name": "Power, institutions and political ideas",
+          "source_topic_ids": [
+            "87b1074b-1945-56d4-9e5a-5c1110d8acf5"
+          ],
+          "rationale": "Gather the conceptual tools used to study government."
+        }
+      ]
+    },
+    {
+      "subject_code": "HAU",
+      "study_groups": [
+        {
+          "key": "communicating-accurately-in-hausa",
+          "name": "Communicating accurately in Hausa",
+          "source_topic_ids": [
+            "6a282096-bccf-5887-acb4-f19c68878958"
+          ],
+          "rationale": "Keep language structure and use available for focused practice."
+        },
+        {
+          "key": "hausa-creative-texts-and-oral-expression",
+          "name": "Hausa creative texts and oral expression",
+          "source_topic_ids": [
+            "ef3fb2f3-42da-501e-91f2-3c95ad0ec3c0"
+          ],
+          "rationale": "Provide a dedicated route for literary forms and expression."
+        },
+        {
+          "key": "hausa-ways-of-life",
+          "name": "Hausa ways of life",
+          "source_topic_ids": [
+            "84034695-f345-50df-8e32-0c6840ada107"
+          ],
+          "rationale": "Keep cultural practices in their social context."
+        }
+      ]
+    },
+    {
+      "subject_code": "HEC",
+      "study_groups": [
+        {
+          "key": "choosing-and-caring-for-clothing",
+          "name": "Choosing and caring for clothing",
+          "source_topic_ids": [
+            "c4b8e7b4-c2b4-5592-996f-b383c9b35798"
+          ],
+          "rationale": "Provide a focused route for textiles and clothing decisions."
+        },
+        {
+          "key": "making-decisions-at-home",
+          "name": "Making decisions at home",
+          "source_topic_ids": [
+            "7663c0fd-3ac4-5693-9a35-9b31fb753a00",
+            "7964260b-4438-522f-a18d-c7bc78779bed"
+          ],
+          "rationale": "Connect the scope of home economics with the management of household resources."
+        },
+        {
+          "key": "planning-food-and-healthy-meals",
+          "name": "Planning food and healthy meals",
+          "source_topic_ids": [
+            "ba611bb5-659f-5358-afc5-4c8b506b0e67"
+          ],
+          "rationale": "Keep food and nutrition concepts together for practical study."
+        }
+      ]
+    },
+    {
+      "subject_code": "HIS",
+      "study_groups": [
+        {
+          "key": "african-regions-in-historical-perspective",
+          "name": "African regions in historical perspective",
+          "source_topic_ids": [
+            "2d920512-f5e0-5deb-aa0d-043ccb3e6f8a",
+            "fbabf2e9-d01b-50fb-b9cb-128d94e6153a"
+          ],
+          "rationale": "Bring distinct African regional histories into a comparative study route."
+        },
+        {
+          "key": "empire-resistance-and-state-formation",
+          "name": "Empire, resistance and state formation",
+          "source_topic_ids": [
+            "d2639ecf-e3ea-5a34-816a-6bb70e820dc2"
+          ],
+          "rationale": "Keep imperialism and nation-building themes together across historical settings."
+        },
+        {
+          "key": "nigeria-under-colonial-rule-and-after-independence",
+          "name": "Nigeria under colonial rule and after independence",
+          "source_topic_ids": [
+            "958003d8-af03-5b50-abbc-a2354f6dc9d1",
+            "5a8df6bb-425b-5369-b5e8-5d3e7b60619d"
+          ],
+          "rationale": "Trace the relationship between colonial administration, independence and later national developments."
+        },
+        {
+          "key": "nigerian-societies-and-nineteenth-century-change",
+          "name": "Nigerian societies and nineteenth-century change",
+          "source_topic_ids": [
+            "66eecb22-6758-5117-8f79-02b0965b2ad7",
+            "0e16e310-9fe5-595b-a3b9-ffc326312175"
+          ],
+          "rationale": "Connect earlier Nigerian societies with the transformations of the nineteenth century."
+        }
+      ]
+    },
+    {
+      "subject_code": "IGB",
+      "study_groups": [
+        {
+          "key": "igbo-communities-and-contemporary-life",
+          "name": "Igbo communities and contemporary life",
+          "source_topic_ids": [
+            "d26ec4bc-3741-55a9-ae6a-8c32e809fc3d",
+            "8423edd1-f491-51ca-a52d-123496880cfa"
+          ],
+          "rationale": "Connect institutions and customs with social issues and current affairs."
+        },
+        {
+          "key": "igbo-stories-poetry-and-performance",
+          "name": "Igbo stories, poetry and performance",
+          "source_topic_ids": [
+            "2d9a30a2-241b-5841-84c3-eb4cb4f3fe21"
+          ],
+          "rationale": "Provide a dedicated route for literary expression."
+        },
+        {
+          "key": "using-igbo-in-speech-and-writing",
+          "name": "Using Igbo in speech and writing",
+          "source_topic_ids": [
+            "7e4ce0bf-a382-54c2-b3bf-617b92d777ac"
+          ],
+          "rationale": "Keep language skills available for targeted practice."
+        }
+      ]
+    },
+    {
+      "subject_code": "ISS",
+      "study_groups": [
+        {
+          "key": "belief-and-religious-practice",
+          "name": "Belief and religious practice",
+          "source_topic_ids": [
+            "f50d2319-52cf-5d7d-bbfb-8ac147b9c8da"
+          ],
+          "rationale": "Connect Islamic beliefs with the principles governing worship and conduct."
+        },
+        {
+          "key": "muslim-societies-through-time",
+          "name": "Muslim societies through time",
+          "source_topic_ids": [
+            "2bfaebfb-5295-5a38-a1de-39bfd5728e75"
+          ],
+          "rationale": "Provide a distinct route into Islamic history and civilization."
+        },
+        {
+          "key": "reading-islamic-sources",
+          "name": "Reading Islamic sources",
+          "source_topic_ids": [
+            "a64e6b83-dd0b-53cc-b0c3-b38e87ba61a6"
+          ],
+          "rationale": "Keep Qur’an and Hadith study together as a source-focused route."
+        }
+      ]
+    },
+    {
+      "subject_code": "LIT",
+      "study_groups": [
+        {
+          "key": "poetic-language-and-form",
+          "name": "Poetic language and form",
+          "source_topic_ids": [
+            "c9bf01cd-5257-529d-a6ee-5eaa7e92b3cf"
+          ],
+          "rationale": "Provide focused study of poetry and its modes of expression."
+        },
+        {
+          "key": "stories-on-stage-and-in-prose",
+          "name": "Stories on stage and in prose",
+          "source_topic_ids": [
+            "3910965a-e00f-564e-968a-3ead76f25099",
+            "740c590d-c6be-5668-8183-ca01d938f301"
+          ],
+          "rationale": "Pair narrative and dramatic forms while retaining their distinct concept entries."
+        },
+        {
+          "key": "tools-for-reading-and-interpreting-literature",
+          "name": "Tools for reading and interpreting literature",
+          "source_topic_ids": [
+            "06503427-1c03-5fbd-9a35-c66fb18107d7",
+            "6d688eb8-377f-5555-b7b7-0b068805dabd"
+          ],
+          "rationale": "Connect critical vocabulary with its use in literary appreciation."
+        }
+      ]
+    },
+    {
+      "subject_code": "MAT",
+      "study_groups": [
+        {
+          "key": "numbers-and-symbolic-relationships",
+          "name": "Numbers and symbolic relationships",
+          "source_topic_ids": [
+            "7ea9952d-77fb-598f-80db-f3bb9031ad07",
+            "96af81c4-8a7d-50af-8a3a-2ee2f6a5891d"
+          ],
+          "rationale": "Connect number concepts with algebraic representation and manipulation."
+        },
+        {
+          "key": "rates-and-accumulated-change",
+          "name": "Rates and accumulated change",
+          "source_topic_ids": [
+            "7d3eb0ce-986d-50f8-8329-6aa45f61e54a"
+          ],
+          "rationale": "Provide a focused route into calculus concepts."
+        },
+        {
+          "key": "space-shape-and-angle-relationships",
+          "name": "Space, shape and angle relationships",
+          "source_topic_ids": [
+            "24560b77-adca-5b0d-a202-522eb785c116"
+          ],
+          "rationale": "Keep geometric and trigonometric methods together."
+        },
+        {
+          "key": "working-with-data",
+          "name": "Working with data",
+          "source_topic_ids": [
+            "121bd5b2-296d-51c1-80da-b4f4aaed7195"
+          ],
+          "rationale": "Keep statistical concepts available for targeted practice."
+        }
+      ]
+    },
+    {
+      "subject_code": "MUS",
+      "study_groups": [
+        {
+          "key": "musical-traditions-and-comparison",
+          "name": "Musical traditions and comparison",
+          "source_topic_ids": [
+            "db5dd3bd-413f-5902-a638-42ef5ea8df1e",
+            "fa34542a-aaf8-5f30-883a-ad1d50264207",
+            "7a767edd-36d4-5121-a361-3780e08ded3c"
+          ],
+          "rationale": "Bring African and Western traditions into dialogue through comparative study."
+        },
+        {
+          "key": "reading-and-shaping-musical-sound",
+          "name": "Reading and shaping musical sound",
+          "source_topic_ids": [
+            "9d797d8f-de5b-5e6f-9852-87e18e33bc45",
+            "de7b1829-a204-5d9e-93c5-e5f105d322ae"
+          ],
+          "rationale": "Connect musical notation and basic structures with elementary harmony."
+        }
+      ]
+    },
+    {
+      "subject_code": "PHE",
+      "study_groups": [
+        {
+          "key": "body-function-fitness-and-adaptation",
+          "name": "Body function, fitness and adaptation",
+          "source_topic_ids": [
+            "9d8b5a9b-067e-53c8-a77e-ad9511bda8f8",
+            "b8e2b4b5-f807-510e-b42b-6dbc372cd214",
+            "0ead3401-7c39-5ada-b234-3bea3279d1c0"
+          ],
+          "rationale": "Connect the working body with conditioning and adaptations for participation."
+        },
+        {
+          "key": "movement-recreation-and-physical-education",
+          "name": "Movement, recreation and physical education",
+          "source_topic_ids": [
+            "530cccb4-61b0-5e2d-8e27-d92d4b2207f2",
+            "83d89aad-4e64-567d-8939-47be0923f924"
+          ],
+          "rationale": "Connect the purposes of physical education with participation in leisure and dance."
+        },
+        {
+          "key": "nutrition-substances-and-disease",
+          "name": "Nutrition, substances and disease",
+          "source_topic_ids": [
+            "b5aa8ce1-9a91-5cde-b857-abb192846f7c",
+            "ab1d5668-e34a-57c6-a763-ace7daae2ff5"
+          ],
+          "rationale": "Bring food and drug concepts alongside the study of disease and prevention."
+        },
+        {
+          "key": "relationships-family-life-and-sexuality",
+          "name": "Relationships, family life and sexuality",
+          "source_topic_ids": [
+            "0d04ed70-b793-5d09-bb00-8364363e11ad"
+          ],
+          "rationale": "Keep family and sexual-health topics in a coherent dedicated route."
+        },
+        {
+          "key": "safety-and-healthy-surroundings",
+          "name": "Safety and healthy surroundings",
+          "source_topic_ids": [
+            "c5ed2ca1-4ef0-5e7e-8876-e0b94e5510d0",
+            "8594e0eb-a7fb-50b3-9ef9-03c329d36762"
+          ],
+          "rationale": "Connect immediate first aid and safety with personal and community health."
+        },
+        {
+          "key": "sport-skills-and-organized-competition",
+          "name": "Sport skills and organized competition",
+          "source_topic_ids": [
+            "9eb42ee7-8368-58af-8ff6-c50e6fd23e56",
+            "0db22951-ef0b-54c0-bfd8-0c0fe6ef1234"
+          ],
+          "rationale": "Relate games and sports practice to their competitive settings."
+        }
+      ]
+    },
+    {
+      "subject_code": "PHY",
+      "study_groups": [
+        {
+          "key": "alternating-current-and-electronic-materials",
+          "name": "Alternating current and electronic materials",
+          "source_topic_ids": [
+            "e1a9464e-f0cf-599c-8355-61419cb24411",
+            "2793348c-ecb7-5230-922c-d15b1355180c",
+            "73c37afd-cd3c-5a00-80fb-e57bcfa982fc"
+          ],
+          "rationale": "Bring alternating-current circuits, conduction and introductory electronics into one electrical study route."
+        },
+        {
+          "key": "atoms-and-modern-physical-ideas",
+          "name": "Atoms and modern physical ideas",
+          "source_topic_ids": [
+            "4904aea6-85ad-58f9-b1c6-99a314b5e5ba"
+          ],
+          "rationale": "Keep elementary modern-physics concepts available for focused revision."
+        },
+        {
+          "key": "colour-and-guided-light",
+          "name": "Colour and guided light",
+          "source_topic_ids": [
+            "ce9c9212-88eb-5fea-9835-aa1a731a6892",
+            "1edec21b-d02a-5fbb-beac-3f4ba37aeeb5"
+          ],
+          "rationale": "Pair colour and dispersion with fibre optics and laser applications."
+        },
+        {
+          "key": "describing-motion-and-gravity",
+          "name": "Describing motion and gravity",
+          "source_topic_ids": [
+            "a0a03d91-fda2-5d11-9546-10864b6c6d29",
+            "35c3399a-99da-52bd-a0c2-1fde16ba04ae",
+            "1ef0cf92-eaea-5e07-bcd0-8846db790d82"
+          ],
+          "rationale": "Link position and motion with gravitational effects."
+        },
+        {
+          "key": "electric-charge-and-stored-energy",
+          "name": "Electric charge and stored energy",
+          "source_topic_ids": [
+            "e153b085-c41d-5b51-8a32-504bc12ebc99",
+            "de0cf8bc-a5e1-5565-9715-d7dc1acf4b9e"
+          ],
+          "rationale": "Connect electrostatic effects with capacitors."
+        },
+        {
+          "key": "energy-power-and-useful-machines",
+          "name": "Energy, power and useful machines",
+          "source_topic_ids": [
+            "627e466f-a001-5120-b76a-0cfbdf0bf944",
+            "e2443922-c68b-5d8f-83c4-4d2780661406"
+          ],
+          "rationale": "Pair energy transfer and work with the operation of simple machines."
+        },
+        {
+          "key": "forces-balance-and-deformation",
+          "name": "Forces, balance and deformation",
+          "source_topic_ids": [
+            "717fc764-aac3-526c-861a-1628227350f9",
+            "1c589fe6-735c-598c-b115-9d597dc1ea98",
+            "bead0dd4-47e3-5caa-899f-785b1ad99fb4"
+          ],
+          "rationale": "Connect equilibrium, friction and elastic response."
+        },
+        {
+          "key": "gases-vapours-and-heat-flow",
+          "name": "Gases, vapours and heat flow",
+          "source_topic_ids": [
+            "c1db8977-5b26-5bac-8209-13e5de1d2bea",
+            "df0ab0a1-101c-509c-b9a4-4faec913ebf6",
+            "bbf3315f-31eb-53df-ba7a-0e6ce8ac55cb"
+          ],
+          "rationale": "Connect gas and vapour behaviour with the transfer of heat."
+        },
+        {
+          "key": "light-paths-and-optical-instruments",
+          "name": "Light paths and optical instruments",
+          "source_topic_ids": [
+            "d66b7501-36d9-5401-b551-416872958d84",
+            "3098e028-334f-593e-9639-90c731b5af14",
+            "72479fe9-7ee6-5697-8cb1-3a30f2cfa074",
+            "1d6b9f15-eabf-57c4-850a-86e5c9996d05"
+          ],
+          "rationale": "Connect light, reflection and refraction with image-forming instruments."
+        },
+        {
+          "key": "magnetic-fields-and-induction",
+          "name": "Magnetic fields and induction",
+          "source_topic_ids": [
+            "6201e034-9a1c-51d5-93d4-1c739de36d04",
+            "202b2f1a-2e40-5308-8617-4b09898f83ab",
+            "20c6ce65-9aa4-5c3a-afb1-4b411ad3294e"
+          ],
+          "rationale": "Connect magnetic fields and forces with induced electrical effects."
+        },
+        {
+          "key": "matter-pressure-and-static-fluids",
+          "name": "Matter, pressure and static fluids",
+          "source_topic_ids": [
+            "3d58405f-9b17-5345-b9d9-18f2a598ae23",
+            "adf4de92-53f7-500f-ad6d-1e6c0589493f",
+            "880b0da8-b4ae-5f54-b842-3417a41a4a4c"
+          ],
+          "rationale": "Connect particle models of matter with pressure and fluids at rest."
+        },
+        {
+          "key": "measuring-and-representing-quantities",
+          "name": "Measuring and representing quantities",
+          "source_topic_ids": [
+            "038758bc-5d12-5a36-95e5-fc354ea9283b",
+            "71593cb3-948f-52d4-ad3b-3484e147a82d"
+          ],
+          "rationale": "Connect measurement and units with scalar and vector representation."
+        },
+        {
+          "key": "sources-circuits-and-electrical-power",
+          "name": "Sources, circuits and electrical power",
+          "source_topic_ids": [
+            "20afce71-41f1-5885-bff1-28093c4f061c",
+            "f93fae52-f43e-5bfb-9d82-6f28c64b09e0",
+            "35e836b8-b610-5b61-94e1-4d34525cbdf4"
+          ],
+          "rationale": "Relate electric cells and current to energy transfer in circuits."
+        },
+        {
+          "key": "temperature-and-thermal-change",
+          "name": "Temperature and thermal change",
+          "source_topic_ids": [
+            "67f5e7b6-3974-5c50-8a6b-60dd8d5868b0",
+            "790db389-c96a-5dcb-b007-a94aeaccfe01",
+            "7f3ed26d-3091-552d-98e4-7b00ef4e82d8",
+            "dd4b27af-7c1e-58c3-9c7f-9e4149267779"
+          ],
+          "rationale": "Gather temperature, heat quantities, phase change and thermal expansion."
+        },
+        {
+          "key": "wave-behaviour-and-sound",
+          "name": "Wave behaviour and sound",
+          "source_topic_ids": [
+            "b9c40db3-bbae-5a20-b5c0-a6855145ae05",
+            "6ede51f8-8348-5892-9891-2a68229038cd",
+            "f2776050-891b-54e1-a0e8-8dc2045d335d"
+          ],
+          "rationale": "Link general wave concepts with sound propagation and its properties."
+        }
+      ]
+    },
+    {
+      "subject_code": "POA",
+      "study_groups": [
+        {
+          "key": "accounting-for-public-and-nonprofit-activity",
+          "name": "Accounting for public and nonprofit activity",
+          "source_topic_ids": [
+            "3b6999c9-9a4c-51d7-86fa-304d593ac31e",
+            "14c71b9d-1ca4-51db-9d57-c2441d74f780"
+          ],
+          "rationale": "Connect accounts serving public and nonprofit organizations while retaining their distinct contexts."
+        },
+        {
+          "key": "measuring-results-and-reconstructing-records",
+          "name": "Measuring results and reconstructing records",
+          "source_topic_ids": [
+            "94dc80f8-ef1e-521c-a1e3-8ccd1c174815",
+            "77d373e5-651a-5f87-8e9e-f21a69157cb3",
+            "455e4c93-0e62-5674-97cc-cee91adccb44"
+          ],
+          "rationale": "Relate final accounts and inventory valuation to accounts built from incomplete records."
+        },
+        {
+          "key": "production-departments-and-branches",
+          "name": "Production, departments and branches",
+          "source_topic_ids": [
+            "e5056a90-79ef-50fe-aa75-ef0736dab0ae",
+            "c7020f11-d7d5-53ef-a8e8-39bf2f940375",
+            "6dc266d5-c3e3-51ad-877c-60a39d8fc016"
+          ],
+          "rationale": "Group accounting for operational units and manufacturing activities."
+        },
+        {
+          "key": "professional-practice-and-accounting-systems",
+          "name": "Professional practice and accounting systems",
+          "source_topic_ids": [
+            "dc5e0da2-f14f-5958-b21a-92cb7d7f4cad",
+            "fb15af50-b991-546f-ab40-682734923572"
+          ],
+          "rationale": "Pair professional responsibilities with the use of information technology in accounting."
+        },
+        {
+          "key": "recording-transactions-and-checking-balances",
+          "name": "Recording transactions and checking balances",
+          "source_topic_ids": [
+            "d4cdc0d3-99e8-5ec8-b7d6-777009608bf2",
+            "a8b29bfd-b1e7-54fc-9e81-abe837f5accc",
+            "cfab1e9d-01c0-5c7b-a702-ac4c5e1fb0ec",
+            "c49704e7-b352-5511-a365-72036056b0df",
+            "d6e12642-714f-5662-a56b-31b2e4ba6fb0"
+          ],
+          "rationale": "Connect bookkeeping entries and cash records with reconciliation and account controls."
+        },
+        {
+          "key": "ventures-partnerships-and-companies",
+          "name": "Ventures, partnerships and companies",
+          "source_topic_ids": [
+            "377efc4e-288d-5000-9433-0c20af3fa16c",
+            "daeae09c-2184-52ea-a066-d3183dbfd515",
+            "d73405d4-5015-54a0-8757-f2e313d8e084"
+          ],
+          "rationale": "Compare accounting across collaborative and incorporated business forms."
+        }
+      ]
+    },
+    {
+      "subject_code": "YOR",
+      "study_groups": [
+        {
+          "key": "using-yoruba-in-speech-and-writing",
+          "name": "Using Yoruba in speech and writing",
+          "source_topic_ids": [
+            "e9485348-a1c4-5123-a1b7-0a2bf6330997"
+          ],
+          "rationale": "Keep language structure and communication skills together."
+        },
+        {
+          "key": "yoruba-communities-and-ways-of-life",
+          "name": "Yoruba communities and ways of life",
+          "source_topic_ids": [
+            "7b7ffe85-b936-5787-85c3-6a20d5d2184b"
+          ],
+          "rationale": "Keep culture and social practices in their own study context."
+        },
+        {
+          "key": "yoruba-creative-texts-and-performance",
+          "name": "Yoruba creative texts and performance",
+          "source_topic_ids": [
+            "daace0f7-1199-512f-804b-10460f1371e6"
+          ],
+          "rationale": "Provide a focused route for literary expression."
+        }
+      ]
+    }
+  ]
+}

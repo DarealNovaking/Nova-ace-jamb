@@ -2947,3 +2947,28 @@ test.describe('2026 practice draft creation', () => {
     await expect(panel.getByRole('status')).toHaveCount(0)
   })
 })
+
+
+test('student outline excludes reserved editorial notes from display and search', async ({ page }) => {
+  await mockSyllabusPublicationState(page, 'approved')
+  const note = 'EDITORIAL REVIEW DRAFT PRIVATE-REVIEW-MARKER Source SHA-256: internal.'
+  await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/topics'), route => route.fulfill({ json: [{
+    id: '70000000-0000-4000-8000-000000000001', subject_id: subjects[0].id,
+    name: 'Verified comprehension fixture', description: note, sort_order: 1, active: true,
+  }] }))
+  await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/subtopics'), route => route.fulfill({ json: [{
+    id: '80000000-0000-4000-8000-000000000019', topic_id: '70000000-0000-4000-8000-000000000001',
+    name: 'Inference', description: note, sort_order: 1, active: true,
+  }] }))
+  await page.goto('/')
+  await page.getByRole('button', { name: /Learn Approved syllabus topics/ }).click()
+  const search = page.getByRole('searchbox', { name: 'Search approved topics or subtopics' })
+  await search.fill('PRIVATE-REVIEW-MARKER')
+  await expect(page.getByText('No topics match your search')).toBeVisible()
+  await search.fill('Inference')
+  await page.getByRole('button', { name: /Verified comprehension fixture/ }).click()
+  await expect(page.getByText('No approved topic description is published yet.')).toBeVisible()
+  await page.getByRole('button', { name: 'Inference', exact: true }).click()
+  await expect(page.getByText('No approved subtopic description is published yet.')).toBeVisible()
+  await expect(page.getByText(note, { exact: true })).toHaveCount(0)
+})
