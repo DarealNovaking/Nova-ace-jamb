@@ -99,7 +99,7 @@ if __name__=='__main__':
   def run(sql):return subprocess.run(command,input=sql,text=True,capture_output=True,cwd=ROOT,env=env,timeout=40)
   preflight=run("do $$begin if (select array_agg(column_name::text order by ordinal_position)from information_schema.columns where table_schema='auth'and table_name='users')is distinct from array['id','email','raw_user_meta_data']::text[] or exists(select 1 from auth.users)or exists(select 1 from ace.subjects)or exists(select 1 from ace.exam_configs)then raise exception 'Empty recovered disposable database required';end if;end$$;")
   if preflight.returncode:raise SystemExit(preflight.stderr)
-  install=run((ROOT/'supabase/proposals/fcb02_2026_practice_draft.sql').read_text()+(ROOT/'supabase/proposals/fcb02_study_publication.sql').read_text())
+  install=run('\n'.join((ROOT/path).read_text()for path in ['supabase/migrations/20261028002329_fcb_01_syllabus_version_identity.sql','supabase/migrations/20261028032933_fcb_01_exam_config_security.sql','supabase/proposals/fcb02_2026_practice_draft.sql','supabase/proposals/fcb02_study_publication.sql']))
   if install.returncode:raise SystemExit(install.stderr)
   for case in p['cases']:
    r=run(case['sql']);ok=(r.returncode!=0 and case['error']in r.stderr)if case['error']else r.returncode==0
