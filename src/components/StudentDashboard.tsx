@@ -159,7 +159,7 @@ export default function StudentDashboard() {
 
   return (
     <DashboardShell area="student" activeId="home" displayName={name} onStudentNavigate={(mode) => { if (mode !== 'home') window.dispatchEvent(new CustomEvent('ace-workspace-navigate', { detail: mode })) }}>
-      
+
       <main id="dashboard-content" tabIndex={-1} className="dashboard-content">
         <header className="dashboard-heading">
           <div><p className="dashboard-eyebrow">Let’s make progress</p><h1 ref={dashboardHeadingRef} tabIndex={-1} className="dashboard-title">Welcome back, {name}.</h1><p className="dashboard-description">Your subjects, your study space. Pick up where you want to begin.</p></div>

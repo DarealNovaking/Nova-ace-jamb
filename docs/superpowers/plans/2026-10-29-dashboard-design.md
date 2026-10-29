@@ -20,13 +20,13 @@ No new dependencies, SQL, real-profile signouts or role/content changes. Separat
 ### Task1: Shared shell and role dashboards
 **Files:** Create src/components/DashboardShell.tsx, tests/dashboard-shell-render.test.mjs; modify StudentDashboard.tsx, StudentStudyWorkspace.tsx, AdminFoundationGate.tsx, AcademicFoundationGate.tsx, AdminOperationsOverview.tsx, src/index.css.
 **Interfaces:** DashboardShell consumes area, activeId, displayName?, onStudentNavigate?, children; renders navigation with existing URLs/events and no data requests.
-- [ ] Add shell render regressions for named navigation, active links, editor isolation and escaped long identity. Observe missing-navigation RED against inert shell.
-- [ ] Implement shell, dashboard structure and shared styling; preserve existing accessible action names/controls.
-- [ ] Run shell tests and all Node/typecheck/build checks.
+- [x] Add shell render regressions for named navigation, active links, editor isolation and escaped long identity. Observe missing-navigation RED against inert shell.
+- [x] Implement shell, dashboard structure and shared styling; preserve existing accessible action names/controls.
+- [x] Run shell tests and all Node/typecheck/build checks.
 
 ### Task2: Browser verification and handoff
 **Files:** tests/e2e/smoke.spec.ts; .github/workflows/verify.yml; both canonical handoffs and UI evidence.
 **Interfaces:** Uses Task1 shell; existing synthetic auth/mockPreparedStudent fixture only.
-- [ ] Add student/admin navigation, mobile overflow, bounded home topic preview, keyboard/back, screenshots and editor isolation tests.
-- [ ] Run complete desktop/mobile Playwright in CI; diagnose/fix actual failures and inspect screenshots.
-- [ ] Independent whole-branch review, fix material findings, update handoff/checkpoint; open reviewable PR and request exact deployment approval only when ready.
+- [x] Add student/admin navigation, mobile overflow, bounded home topic preview, keyboard/back, screenshots and editor isolation tests.
+- [x] Run complete desktop/mobile Playwright in CI; diagnose/fix actual failures and inspect screenshots.
+- [x] Independent whole-branch review, fix material findings, update handoff/checkpoint; open reviewable PR and request exact deployment approval only when ready.

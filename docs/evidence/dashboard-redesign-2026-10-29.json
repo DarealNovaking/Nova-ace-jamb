@@ -1,0 +1,45 @@
+{
+  "status": "PASS_READY_FOR_PRODUCTION_APPROVAL",
+  "pr": 21,
+  "source": "aaf5501d94c9893d5eb7557673e683e473ac716a",
+  "local": {
+    "node": 82,
+    "typecheck": "PASS",
+    "build": "PASS",
+    "warning": "Existing legacy payload chunk exceeds500kB"
+  },
+  "first_browser": {
+    "run": 40911362922,
+    "job": 123579887459,
+    "passed": 244,
+    "duration": "5.8m",
+    "artifact": 12913878795,
+    "sha256": "4700d83cc11b0ee8c2573faaaf6894aa69f31900e954305998d9ae2b1f470215",
+    "screenshots": "Four dashboard desktop/mobile images inspected; mobile chrome subsequently refined"
+  },
+  "final_browser": {
+    "run": 40927091099,
+    "job": 123635561946,
+    "status": "PASS",
+    "passed": 246,
+    "duration": "5.8m",
+    "artifact": 12920264264,
+    "sha256": "9e9738bc271475562fe26acf59ed794cc69664e25f1c68abe57a2b1dc48a0e75",
+    "screenshots": "All four final desktop/mobile student/admin images inspected; no layout clipping; mobile chrome reduced and all admin destinations visible. Gold main focus outline appears in admin captures after skip-link test."
+  },
+  "verify_run": 40927091089,
+  "verify_jobs": "all7PASS",
+  "independent_review": {
+    "material": "Two issues fixed: skip-link order and async account/support anchors",
+    "deferred_minors": [
+      "Generic student identity copy inside study modes",
+      "Dense JSX and duplicated study-mode labels"
+    ]
+  },
+  "production": "Unchanged cb6ef545; separate PR21 deployment approval required",
+  "sessions": "No real profile accessed or signed out",
+  "scope": "No SQL/dependencies/content/role changes. FCB03 paused for UI, remains in progress; FCB02 complete.",
+  "native_question_history_cases": 91,
+  "responsive": "320/393/1440px; long identity wrapping; no document overflow; all navigation targets>=44px; role isolation and complete existing flows passed",
+  "post_test_source_cleanup": "Three whitespace-only blank-line trims; all49compiledasset filenames and SHA256 hashes matched before/after. No runtime/test behavior change."
+}
