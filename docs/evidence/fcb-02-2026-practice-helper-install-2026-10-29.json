@@ -1,0 +1,29 @@
+{
+  "migration": "20261029004531_fcb02_2026_practice_draft",
+  "source": "supabase/proposals/fcb02_2026_practice_draft.sql",
+  "body_sha256": "c98e06501cc60463043899afa76e6307396cfe6f0c76e7f536f2974aa2cda9ff",
+  "owner": "postgres",
+  "security_definer": true,
+  "search_path": [
+    "pg_catalog",
+    "pg_temp"
+  ],
+  "lock_timeout": "3s",
+  "execute": {
+    "anon": false,
+    "PUBLIC": false,
+    "authenticated": true
+  },
+  "source_test": "7e150ae1be86ca09573da01779344e68a0ea1b5e",
+  "native_cases": 14,
+  "native_job": 123191525883,
+  "native_run": 40795696229,
+  "existing_native_import_cases": 42,
+  "config_count_after_install": 1,
+  "candidate_exists_after_install": false,
+  "ledger_count": 54,
+  "advisory_summary": "4 notices before/after; no new names/levels/metadata",
+  "live_identity_free_calls": "refused in owner and authenticated-role contexts; no claims supplied",
+  "schema_cache_reload": "notified",
+  "scope": "Installs fixed genuine-admin check/create helper only; no configuration rows, activation, rights or publication changed."
+}

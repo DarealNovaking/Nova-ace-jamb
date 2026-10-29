@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { BookOpen, CheckCircle2, CircleAlert, FilePlus2, Loader2, Plus, RefreshCw, ShieldCheck } from 'lucide-react'
 import AdminSyllabusReviewPackage from './AdminSyllabusReviewPackage'
 import ReviewedDraftCorrections from './ReviewedDraftCorrections'
+import AdminPracticeBaseline from './AdminPracticeBaseline'
 import { ace } from '../lib/supabase'
 import { normalizeSubtopicEdit } from '../lib/syllabusEdit'
 import { listSeasons, type ExamSeason, type SyllabusVersion, type SyllabusTopic, type SyllabusSubtopic } from '../lib/seasonService'
@@ -289,6 +290,7 @@ export default function AdminAcademicWorkspace({ canApprove = false }: { canAppr
 
   return (
     <div className="space-y-6">
+      {canApprove && <AdminPracticeBaseline/>}
       {canApprove && <ReviewedDraftCorrections onChanged={() => { if (selectedVersionId) void loadTree(selectedVersionId).catch(() => setError('Corrections were saved, but the topic list could not be refreshed. Refresh the workspace.')) }}/>}
       {canApprove && <AdminSyllabusReviewPackage onChanged={() => { void loadWorkspace() }}/>}
       {error && <div role="alert" className="flex gap-3 rounded-2xl border border-red-400/20 bg-red-500/10 p-4 text-sm text-red-100"><CircleAlert className="shrink-0" size={18}/><p>{error}</p></div>}

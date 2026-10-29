@@ -195,7 +195,9 @@ jobs:
       - name: Prepare empty isolated recovered PostgreSQL schema
         run: psql -X -v ON_ERROR_STOP=1 -f tests/sql/fcb_01_schema_baseline.test.sql
       - name: Test fixed 2026 practice draft creation and refusal paths
-        run: python3 tests/sql/fcb02_2026_practice.py
+        run: |
+          diff -u supabase/proposals/fcb02_2026_practice_draft.sql supabase/migrations/20261029004531_fcb02_2026_practice_draft.sql
+          python3 tests/sql/fcb02_2026_practice.py
       - name: Test staging, refusal, privacy, guarded rollback and concurrent references
         run: python3 tests/sql/fcb_02_draft_import.py --output-dir /tmp/fcb02-import-proposal
       - name: Retain the unexecuted production review scripts and test evidence

@@ -2929,6 +2929,13 @@ test.describe('2026 practice draft creation', () => {
     await expect(panel.getByRole('status')).toContainText('Practice draft saved')
     expect(creates).toBe(1)
   })
+  test('editors cannot see the administrator draft action', async ({ page }) => {
+    await mockReviewedCorrectionBatch(page)
+    await page.route(`${projectUrl}/rest/v1/rpc/is_admin`, (route) => route.fulfill({ json: false }))
+    await page.goto('/admin-academic')
+    await expect(page.getByRole('heading', { name: 'Create a draft syllabus version' })).toBeVisible()
+    await expect(page.getByRole('region', { name: '2026 practice baseline' })).toHaveCount(0)
+  })
   test('refuses a response that claims activation', async ({ page }) => {
     await mockReviewedCorrectionBatch(page)
     await page.route(`${projectUrl}/rest/v1/rpc/prepare_2026_practice_config`, (route) => route.fulfill({ json: { state: 'created', config_id: '396d1910-d458-5d5f-8484-380bc8c71919', source_year: 2026, subject_count: 25, active: true } }))

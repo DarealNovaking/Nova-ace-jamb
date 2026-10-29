@@ -2,6 +2,18 @@
 
 > **Current-state rule:** this opening section is authoritative. Entries below the historical divider are evidence history and do not override this section.
 
+## Practice administrator panel implemented — 2026-10-29
+
+Test-first focused browser run40796128322/job123193397417 reproduced6expected missing-panel failures (threeflows/twoprojects); firstfullrun40795696304 wascancelled, not PASS. Coreguardunitstub RED2/4 then4/4GREEN. Implemented AdminPracticeBaseline +typed parser/create-readback coordinator; noautoRPC onmount, admin-onlydisplay, explicitcreate/check, duplicateinflight guard, sanitizederrors/check-before-retry, createdstate independentlychecked. Addededitor-exclusionbrowserregression. FULL unfiltered npm rune2e restored; workflowdiffagainstab47823 EMPTY.47localNode tests (35+12),10Pythonunits,typecheck/buildPASS;18localSQLcasesPASS includinguntrustedowner/sourcecomposition/conflict/historicalpreservation. Native/full192browserCI andfinalboundedUIreview PENDING. Livehelperalreadyinstalled; configcandidate remainsabsent. Nextpublishfinalsource/fullCI/review, merge/deployverifiedfrontend, then userCreate2026practice draft throughrealadminsession andindependentpostflight. No repeatapprovalneeded; no TinyFishcredit/topup/runs.
+
+### Server installation evidence
+
+## 2026 draft helper installed — 2026-10-29
+
+Exact reviewed server source7e150ae1 nativeVerify40795696229/job123191525883 confirms14newSQL+42existingimport scenarios PASS. Source/body reviewed; no authorization/atomicity blocker. Testtransport isolation finding reproduced RED thenfixed by bounded local transport+preinstall emptyrecovery preflight;10PythonunitsPASS. Installed20261029004531_fcb02_2026_practice_draft; ownerpostgres/definer/pg_catalog,pg_temp/3s; bodySHA c98e06501cc60463043899afa76e6307396cfe6f0c76e7f536f2974aa2cda9ff matches local. ACL onlypostgres/authenticated; realadmin+lockedrole required. Liveidentityfreeowner/authenticated callsrefused, cache reloadnotified, ledger54/configcount1/candidateabsent. No appdata/activation/publication changed. Evidence docs/evidence/fcb-02-2026-practice-helper-install-2026-10-29.json. BrowserREDpending; focusedtest-only workflowtemporary, MUSTrestorefullnpmrune2e beforefinalCI/release. Sourceinstallerhistoricalformat/composition contract is exact forcheckedfields, not allhistoricalmetadata. NextfinishpanelRED/GREEN andfullCI, independentUIreview, release then genuineadminCreate2026practice draft action.
+
+### Earlier implementation state
+
 ## 2026 practice draft implementation started — 2026-10-29
 
 Branch feat/fcb02-2026-practice-draft. Implementing fixed admin-only check/create RPC, no activation/publication. SQL behavior test first RED on inert stub (no complete draft), then14isolated PostgreSQL-compatible cases PASS pending nativeCI confirmation. NativeCI step added. Three new browser cases pending RED (panel absent), implementation follows after reproduced failure. Source installer supabase/proposals/fcb02_2026_practice_draft.sql not installed live. Target exact candidate396d1910-d458-5d5f-8484-380bc8c71919; all previous content/format decisions preserved. Next native/browser RED check, minimal admin panel, full verification/review, exact installer/front-end release and genuine admin creation. No live mutation yet.
