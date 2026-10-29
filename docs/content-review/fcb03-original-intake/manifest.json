@@ -1,0 +1,1726 @@
+{
+  "status": "UNREVIEWED; NOT UPLOADED OR PUBLISHED",
+  "taxonomy_basis": "Read-only active approved Supabase index, 29 October 2026",
+  "questions": [
+    {
+      "intake_id": "ACE-ORIGINAL-MAT-001",
+      "subject_code": "MAT",
+      "topic_name": "Numbers and symbolic relationships",
+      "file": "MAT.csv",
+      "editorial_status": "unreviewed",
+      "draft": {
+        "subject_id": "40247f5b-cbe4-4e30-835b-f71c811de685",
+        "topic_id": "3816f646-7fe6-5631-ad0e-70db65ed0fd8",
+        "subtopic_id": null,
+        "stem": "Simplify 3(2x − 1) + 4.",
+        "options": [
+          {
+            "key": "A",
+            "text": "6x + 1"
+          },
+          {
+            "key": "B",
+            "text": "6x − 7"
+          },
+          {
+            "key": "C",
+            "text": "6x + 7"
+          },
+          {
+            "key": "D",
+            "text": "5x + 1"
+          }
+        ],
+        "correct_option_key": "A",
+        "explanation": "Expand the bracket: 6x − 3 + 4 = 6x + 1.",
+        "difficulty": "easy",
+        "exam": "ACE practice",
+        "exam_year": null,
+        "provenance": {
+          "source_kind": "original",
+          "source_title": "ACE original practice intake — 29 October 2026",
+          "author_label": "ACE editorial draft (AI-assisted)",
+          "source_url": null,
+          "rights_evidence": "New question wording, options and explanations composed for ACE; no textbook or past-paper wording copied. AI-assisted draft: independent answer, syllabus and rights review required before publication."
+        }
+      }
+    },
+    {
+      "intake_id": "ACE-ORIGINAL-MAT-002",
+      "subject_code": "MAT",
+      "topic_name": "Numbers and symbolic relationships",
+      "file": "MAT.csv",
+      "editorial_status": "unreviewed",
+      "draft": {
+        "subject_id": "40247f5b-cbe4-4e30-835b-f71c811de685",
+        "topic_id": "3816f646-7fe6-5631-ad0e-70db65ed0fd8",
+        "subtopic_id": null,
+        "stem": "Solve 2x + 5 = 17.",
+        "options": [
+          {
+            "key": "A",
+            "text": "4"
+          },
+          {
+            "key": "B",
+            "text": "5"
+          },
+          {
+            "key": "C",
+            "text": "6"
+          },
+          {
+            "key": "D",
+            "text": "11"
+          }
+        ],
+        "correct_option_key": "C",
+        "explanation": "Subtract 5 to obtain 2x = 12, then divide by 2 to obtain x = 6.",
+        "difficulty": "easy",
+        "exam": "ACE practice",
+        "exam_year": null,
+        "provenance": {
+          "source_kind": "original",
+          "source_title": "ACE original practice intake — 29 October 2026",
+          "author_label": "ACE editorial draft (AI-assisted)",
+          "source_url": null,
+          "rights_evidence": "New question wording, options and explanations composed for ACE; no textbook or past-paper wording copied. AI-assisted draft: independent answer, syllabus and rights review required before publication."
+        }
+      }
+    },
+    {
+      "intake_id": "ACE-ORIGINAL-MAT-003",
+      "subject_code": "MAT",
+      "topic_name": "Numbers and symbolic relationships",
+      "file": "MAT.csv",
+      "editorial_status": "unreviewed",
+      "draft": {
+        "subject_id": "40247f5b-cbe4-4e30-835b-f71c811de685",
+        "topic_id": "3816f646-7fe6-5631-ad0e-70db65ed0fd8",
+        "subtopic_id": null,
+        "stem": "What is 15% of 240?",
+        "options": [
+          {
+            "key": "A",
+            "text": "24"
+          },
+          {
+            "key": "B",
+            "text": "30"
+          },
+          {
+            "key": "C",
+            "text": "32"
+          },
+          {
+            "key": "D",
+            "text": "36"
+          }
+        ],
+        "correct_option_key": "D",
+        "explanation": "15% of 240 = (15/100) × 240 = 36.",
+        "difficulty": "easy",
+        "exam": "ACE practice",
+        "exam_year": null,
+        "provenance": {
+          "source_kind": "original",
+          "source_title": "ACE original practice intake — 29 October 2026",
+          "author_label": "ACE editorial draft (AI-assisted)",
+          "source_url": null,
+          "rights_evidence": "New question wording, options and explanations composed for ACE; no textbook or past-paper wording copied. AI-assisted draft: independent answer, syllabus and rights review required before publication."
+        }
+      }
+    },
+    {
+      "intake_id": "ACE-ORIGINAL-MAT-004",
+      "subject_code": "MAT",
+      "topic_name": "Numbers and symbolic relationships",
+      "file": "MAT.csv",
+      "editorial_status": "unreviewed",
+      "draft": {
+        "subject_id": "40247f5b-cbe4-4e30-835b-f71c811de685",
+        "topic_id": "3816f646-7fe6-5631-ad0e-70db65ed0fd8",
+        "subtopic_id": null,
+        "stem": "Express the binary number 1011₂ in base ten.",
+        "options": [
+          {
+            "key": "A",
+            "text": "9"
+          },
+          {
+            "key": "B",
+            "text": "11"
+          },
+          {
+            "key": "C",
+            "text": "12"
+          },
+          {
+            "key": "D",
+            "text": "13"
+          }
+        ],
+        "correct_option_key": "B",
+        "explanation": "The place values give 1 × 8 + 0 × 4 + 1 × 2 + 1 × 1 = 11.",
+        "difficulty": "easy",
+        "exam": "ACE practice",
+        "exam_year": null,
+        "provenance": {
+          "source_kind": "original",
+          "source_title": "ACE original practice intake — 29 October 2026",
+          "author_label": "ACE editorial draft (AI-assisted)",
+          "source_url": null,
+          "rights_evidence": "New question wording, options and explanations composed for ACE; no textbook or past-paper wording copied. AI-assisted draft: independent answer, syllabus and rights review required before publication."
+        }
+      }
+    },
+    {
+      "intake_id": "ACE-ORIGINAL-MAT-005",
+      "subject_code": "MAT",
+      "topic_name": "Numbers and symbolic relationships",
+      "file": "MAT.csv",
+      "editorial_status": "unreviewed",
+      "draft": {
+        "subject_id": "40247f5b-cbe4-4e30-835b-f71c811de685",
+        "topic_id": "3816f646-7fe6-5631-ad0e-70db65ed0fd8",
+        "subtopic_id": null,
+        "stem": "Find the least common multiple of 12 and 18.",
+        "options": [
+          {
+            "key": "A",
+            "text": "6"
+          },
+          {
+            "key": "B",
+            "text": "24"
+          },
+          {
+            "key": "C",
+            "text": "36"
+          },
+          {
+            "key": "D",
+            "text": "72"
+          }
+        ],
+        "correct_option_key": "C",
+        "explanation": "12 = 2² × 3 and 18 = 2 × 3². The least common multiple is 2² × 3² = 36.",
+        "difficulty": "easy",
+        "exam": "ACE practice",
+        "exam_year": null,
+        "provenance": {
+          "source_kind": "original",
+          "source_title": "ACE original practice intake — 29 October 2026",
+          "author_label": "ACE editorial draft (AI-assisted)",
+          "source_url": null,
+          "rights_evidence": "New question wording, options and explanations composed for ACE; no textbook or past-paper wording copied. AI-assisted draft: independent answer, syllabus and rights review required before publication."
+        }
+      }
+    },
+    {
+      "intake_id": "ACE-ORIGINAL-MAT-006",
+      "subject_code": "MAT",
+      "topic_name": "Numbers and symbolic relationships",
+      "file": "MAT.csv",
+      "editorial_status": "unreviewed",
+      "draft": {
+        "subject_id": "40247f5b-cbe4-4e30-835b-f71c811de685",
+        "topic_id": "3816f646-7fe6-5631-ad0e-70db65ed0fd8",
+        "subtopic_id": null,
+        "stem": "Find the positive solution of x² = 49.",
+        "options": [
+          {
+            "key": "A",
+            "text": "7"
+          },
+          {
+            "key": "B",
+            "text": "−7"
+          },
+          {
+            "key": "C",
+            "text": "14"
+          },
+          {
+            "key": "D",
+            "text": "24.5"
+          }
+        ],
+        "correct_option_key": "A",
+        "explanation": "The solutions are ±7. The question asks for the positive solution, which is 7.",
+        "difficulty": "easy",
+        "exam": "ACE practice",
+        "exam_year": null,
+        "provenance": {
+          "source_kind": "original",
+          "source_title": "ACE original practice intake — 29 October 2026",
+          "author_label": "ACE editorial draft (AI-assisted)",
+          "source_url": null,
+          "rights_evidence": "New question wording, options and explanations composed for ACE; no textbook or past-paper wording copied. AI-assisted draft: independent answer, syllabus and rights review required before publication."
+        }
+      }
+    },
+    {
+      "intake_id": "ACE-ORIGINAL-MAT-007",
+      "subject_code": "MAT",
+      "topic_name": "Numbers and symbolic relationships",
+      "file": "MAT.csv",
+      "editorial_status": "unreviewed",
+      "draft": {
+        "subject_id": "40247f5b-cbe4-4e30-835b-f71c811de685",
+        "topic_id": "3816f646-7fe6-5631-ad0e-70db65ed0fd8",
+        "subtopic_id": null,
+        "stem": "An arithmetic sequence begins 4, 7, 10, 13. What is its tenth term?",
+        "options": [
+          {
+            "key": "A",
+            "text": "28"
+          },
+          {
+            "key": "B",
+            "text": "30"
+          },
+          {
+            "key": "C",
+            "text": "34"
+          },
+          {
+            "key": "D",
+            "text": "31"
+          }
+        ],
+        "correct_option_key": "D",
+        "explanation": "The first term is 4 and the common difference is 3. The tenth term is 4 + 9 × 3 = 31.",
+        "difficulty": "easy",
+        "exam": "ACE practice",
+        "exam_year": null,
+        "provenance": {
+          "source_kind": "original",
+          "source_title": "ACE original practice intake — 29 October 2026",
+          "author_label": "ACE editorial draft (AI-assisted)",
+          "source_url": null,
+          "rights_evidence": "New question wording, options and explanations composed for ACE; no textbook or past-paper wording copied. AI-assisted draft: independent answer, syllabus and rights review required before publication."
+        }
+      }
+    },
+    {
+      "intake_id": "ACE-ORIGINAL-MAT-008",
+      "subject_code": "MAT",
+      "topic_name": "Numbers and symbolic relationships",
+      "file": "MAT.csv",
+      "editorial_status": "unreviewed",
+      "draft": {
+        "subject_id": "40247f5b-cbe4-4e30-835b-f71c811de685",
+        "topic_id": "3816f646-7fe6-5631-ad0e-70db65ed0fd8",
+        "subtopic_id": null,
+        "stem": "Evaluate log₁₀(1000).",
+        "options": [
+          {
+            "key": "A",
+            "text": "2"
+          },
+          {
+            "key": "B",
+            "text": "3"
+          },
+          {
+            "key": "C",
+            "text": "10"
+          },
+          {
+            "key": "D",
+            "text": "100"
+          }
+        ],
+        "correct_option_key": "B",
+        "explanation": "Since 10³ = 1000, log₁₀(1000) = 3.",
+        "difficulty": "easy",
+        "exam": "ACE practice",
+        "exam_year": null,
+        "provenance": {
+          "source_kind": "original",
+          "source_title": "ACE original practice intake — 29 October 2026",
+          "author_label": "ACE editorial draft (AI-assisted)",
+          "source_url": null,
+          "rights_evidence": "New question wording, options and explanations composed for ACE; no textbook or past-paper wording copied. AI-assisted draft: independent answer, syllabus and rights review required before publication."
+        }
+      }
+    },
+    {
+      "intake_id": "ACE-ORIGINAL-PHY-001",
+      "subject_code": "PHY",
+      "topic_name": "Describing motion and gravity",
+      "file": "PHY.csv",
+      "editorial_status": "unreviewed",
+      "draft": {
+        "subject_id": "9be3e180-84f2-412a-bcaa-b3e002e757cc",
+        "topic_id": "49c055c8-53cf-51d5-adbc-0ab83d779930",
+        "subtopic_id": null,
+        "stem": "A runner covers a total distance of 150 m in 30 s. What is the average speed?",
+        "options": [
+          {
+            "key": "A",
+            "text": "3 m/s"
+          },
+          {
+            "key": "B",
+            "text": "4 m/s"
+          },
+          {
+            "key": "C",
+            "text": "5 m/s"
+          },
+          {
+            "key": "D",
+            "text": "6 m/s"
+          }
+        ],
+        "correct_option_key": "C",
+        "explanation": "Average speed = total distance / elapsed time = 150/30 = 5 m/s.",
+        "difficulty": "easy",
+        "exam": "ACE practice",
+        "exam_year": null,
+        "provenance": {
+          "source_kind": "original",
+          "source_title": "ACE original practice intake — 29 October 2026",
+          "author_label": "ACE editorial draft (AI-assisted)",
+          "source_url": null,
+          "rights_evidence": "New question wording, options and explanations composed for ACE; no textbook or past-paper wording copied. AI-assisted draft: independent answer, syllabus and rights review required before publication."
+        }
+      }
+    },
+    {
+      "intake_id": "ACE-ORIGINAL-PHY-002",
+      "subject_code": "PHY",
+      "topic_name": "Describing motion and gravity",
+      "file": "PHY.csv",
+      "editorial_status": "unreviewed",
+      "draft": {
+        "subject_id": "9be3e180-84f2-412a-bcaa-b3e002e757cc",
+        "topic_id": "49c055c8-53cf-51d5-adbc-0ab83d779930",
+        "subtopic_id": null,
+        "stem": "Taking one direction as positive, a body changes velocity uniformly from −4 m/s to +8 m/s in 3 s. Find its acceleration.",
+        "options": [
+          {
+            "key": "A",
+            "text": "4 m/s²"
+          },
+          {
+            "key": "B",
+            "text": "−4 m/s²"
+          },
+          {
+            "key": "C",
+            "text": "12 m/s²"
+          },
+          {
+            "key": "D",
+            "text": "1.33 m/s²"
+          }
+        ],
+        "correct_option_key": "A",
+        "explanation": "Acceleration = (final velocity − initial velocity)/time = [8 − (−4)]/3 = 4 m/s².",
+        "difficulty": "easy",
+        "exam": "ACE practice",
+        "exam_year": null,
+        "provenance": {
+          "source_kind": "original",
+          "source_title": "ACE original practice intake — 29 October 2026",
+          "author_label": "ACE editorial draft (AI-assisted)",
+          "source_url": null,
+          "rights_evidence": "New question wording, options and explanations composed for ACE; no textbook or past-paper wording copied. AI-assisted draft: independent answer, syllabus and rights review required before publication."
+        }
+      }
+    },
+    {
+      "intake_id": "ACE-ORIGINAL-PHY-003",
+      "subject_code": "PHY",
+      "topic_name": "Describing motion and gravity",
+      "file": "PHY.csv",
+      "editorial_status": "unreviewed",
+      "draft": {
+        "subject_id": "9be3e180-84f2-412a-bcaa-b3e002e757cc",
+        "topic_id": "49c055c8-53cf-51d5-adbc-0ab83d779930",
+        "subtopic_id": null,
+        "stem": "A body starts from rest and accelerates uniformly at 2 m/s² for 5 s. How far does it travel?",
+        "options": [
+          {
+            "key": "A",
+            "text": "10 m"
+          },
+          {
+            "key": "B",
+            "text": "20 m"
+          },
+          {
+            "key": "C",
+            "text": "50 m"
+          },
+          {
+            "key": "D",
+            "text": "25 m"
+          }
+        ],
+        "correct_option_key": "D",
+        "explanation": "Use s = ut + ½at². With u = 0, s = ½ × 2 × 5² = 25 m.",
+        "difficulty": "easy",
+        "exam": "ACE practice",
+        "exam_year": null,
+        "provenance": {
+          "source_kind": "original",
+          "source_title": "ACE original practice intake — 29 October 2026",
+          "author_label": "ACE editorial draft (AI-assisted)",
+          "source_url": null,
+          "rights_evidence": "New question wording, options and explanations composed for ACE; no textbook or past-paper wording copied. AI-assisted draft: independent answer, syllabus and rights review required before publication."
+        }
+      }
+    },
+    {
+      "intake_id": "ACE-ORIGINAL-PHY-004",
+      "subject_code": "PHY",
+      "topic_name": "Describing motion and gravity",
+      "file": "PHY.csv",
+      "editorial_status": "unreviewed",
+      "draft": {
+        "subject_id": "9be3e180-84f2-412a-bcaa-b3e002e757cc",
+        "topic_id": "49c055c8-53cf-51d5-adbc-0ab83d779930",
+        "subtopic_id": null,
+        "stem": "A stone is released from rest at a height of 45 m. Ignore air resistance and take g = 10 m/s². How long does it take to reach the ground?",
+        "options": [
+          {
+            "key": "A",
+            "text": "2 s"
+          },
+          {
+            "key": "B",
+            "text": "3 s"
+          },
+          {
+            "key": "C",
+            "text": "4.5 s"
+          },
+          {
+            "key": "D",
+            "text": "9 s"
+          }
+        ],
+        "correct_option_key": "B",
+        "explanation": "Using h = ½gt² gives 45 = 5t², so t² = 9 and the positive time is 3 s.",
+        "difficulty": "easy",
+        "exam": "ACE practice",
+        "exam_year": null,
+        "provenance": {
+          "source_kind": "original",
+          "source_title": "ACE original practice intake — 29 October 2026",
+          "author_label": "ACE editorial draft (AI-assisted)",
+          "source_url": null,
+          "rights_evidence": "New question wording, options and explanations composed for ACE; no textbook or past-paper wording copied. AI-assisted draft: independent answer, syllabus and rights review required before publication."
+        }
+      }
+    },
+    {
+      "intake_id": "ACE-ORIGINAL-PHY-005",
+      "subject_code": "PHY",
+      "topic_name": "Describing motion and gravity",
+      "file": "PHY.csv",
+      "editorial_status": "unreviewed",
+      "draft": {
+        "subject_id": "9be3e180-84f2-412a-bcaa-b3e002e757cc",
+        "topic_id": "49c055c8-53cf-51d5-adbc-0ab83d779930",
+        "subtopic_id": null,
+        "stem": "A car moving at 20 m/s brakes with a constant acceleration of −5 m/s² until it stops. What distance does it cover while braking?",
+        "options": [
+          {
+            "key": "A",
+            "text": "20 m"
+          },
+          {
+            "key": "B",
+            "text": "30 m"
+          },
+          {
+            "key": "C",
+            "text": "40 m"
+          },
+          {
+            "key": "D",
+            "text": "80 m"
+          }
+        ],
+        "correct_option_key": "C",
+        "explanation": "Use v² = u² + 2as: 0 = 400 − 10s, giving s = 40 m.",
+        "difficulty": "easy",
+        "exam": "ACE practice",
+        "exam_year": null,
+        "provenance": {
+          "source_kind": "original",
+          "source_title": "ACE original practice intake — 29 October 2026",
+          "author_label": "ACE editorial draft (AI-assisted)",
+          "source_url": null,
+          "rights_evidence": "New question wording, options and explanations composed for ACE; no textbook or past-paper wording copied. AI-assisted draft: independent answer, syllabus and rights review required before publication."
+        }
+      }
+    },
+    {
+      "intake_id": "ACE-ORIGINAL-PHY-006",
+      "subject_code": "PHY",
+      "topic_name": "Describing motion and gravity",
+      "file": "PHY.csv",
+      "editorial_status": "unreviewed",
+      "draft": {
+        "subject_id": "9be3e180-84f2-412a-bcaa-b3e002e757cc",
+        "topic_id": "49c055c8-53cf-51d5-adbc-0ab83d779930",
+        "subtopic_id": null,
+        "stem": "A ball is projected vertically upwards at 30 m/s. Ignore air resistance and take g = 10 m/s². Find the time to reach its highest point.",
+        "options": [
+          {
+            "key": "A",
+            "text": "3 s"
+          },
+          {
+            "key": "B",
+            "text": "6 s"
+          },
+          {
+            "key": "C",
+            "text": "10 s"
+          },
+          {
+            "key": "D",
+            "text": "15 s"
+          }
+        ],
+        "correct_option_key": "A",
+        "explanation": "At the highest point the vertical velocity is zero. From 0 = 30 − 10t, t = 3 s.",
+        "difficulty": "easy",
+        "exam": "ACE practice",
+        "exam_year": null,
+        "provenance": {
+          "source_kind": "original",
+          "source_title": "ACE original practice intake — 29 October 2026",
+          "author_label": "ACE editorial draft (AI-assisted)",
+          "source_url": null,
+          "rights_evidence": "New question wording, options and explanations composed for ACE; no textbook or past-paper wording copied. AI-assisted draft: independent answer, syllabus and rights review required before publication."
+        }
+      }
+    },
+    {
+      "intake_id": "ACE-ORIGINAL-PHY-007",
+      "subject_code": "PHY",
+      "topic_name": "Describing motion and gravity",
+      "file": "PHY.csv",
+      "editorial_status": "unreviewed",
+      "draft": {
+        "subject_id": "9be3e180-84f2-412a-bcaa-b3e002e757cc",
+        "topic_id": "49c055c8-53cf-51d5-adbc-0ab83d779930",
+        "subtopic_id": null,
+        "stem": "A position–time graph is a straight line with a constant positive gradient. Which quantity is constant and positive?",
+        "options": [
+          {
+            "key": "A",
+            "text": "Acceleration"
+          },
+          {
+            "key": "B",
+            "text": "Position"
+          },
+          {
+            "key": "C",
+            "text": "Elapsed time"
+          },
+          {
+            "key": "D",
+            "text": "Velocity"
+          }
+        ],
+        "correct_option_key": "D",
+        "explanation": "The gradient of a position–time graph is velocity. A constant positive gradient means constant positive velocity.",
+        "difficulty": "easy",
+        "exam": "ACE practice",
+        "exam_year": null,
+        "provenance": {
+          "source_kind": "original",
+          "source_title": "ACE original practice intake — 29 October 2026",
+          "author_label": "ACE editorial draft (AI-assisted)",
+          "source_url": null,
+          "rights_evidence": "New question wording, options and explanations composed for ACE; no textbook or past-paper wording copied. AI-assisted draft: independent answer, syllabus and rights review required before publication."
+        }
+      }
+    },
+    {
+      "intake_id": "ACE-ORIGINAL-PHY-008",
+      "subject_code": "PHY",
+      "topic_name": "Describing motion and gravity",
+      "file": "PHY.csv",
+      "editorial_status": "unreviewed",
+      "draft": {
+        "subject_id": "9be3e180-84f2-412a-bcaa-b3e002e757cc",
+        "topic_id": "49c055c8-53cf-51d5-adbc-0ab83d779930",
+        "subtopic_id": null,
+        "stem": "A person walks 12 m east and then 5 m west in a total time of 7 s. What is the average velocity?",
+        "options": [
+          {
+            "key": "A",
+            "text": "17/7 m/s east"
+          },
+          {
+            "key": "B",
+            "text": "1 m/s east"
+          },
+          {
+            "key": "C",
+            "text": "1 m/s west"
+          },
+          {
+            "key": "D",
+            "text": "17/7 m/s west"
+          }
+        ],
+        "correct_option_key": "B",
+        "explanation": "The displacement is 12 − 5 = 7 m east. Average velocity = displacement/time = 7/7 = 1 m/s east.",
+        "difficulty": "easy",
+        "exam": "ACE practice",
+        "exam_year": null,
+        "provenance": {
+          "source_kind": "original",
+          "source_title": "ACE original practice intake — 29 October 2026",
+          "author_label": "ACE editorial draft (AI-assisted)",
+          "source_url": null,
+          "rights_evidence": "New question wording, options and explanations composed for ACE; no textbook or past-paper wording copied. AI-assisted draft: independent answer, syllabus and rights review required before publication."
+        }
+      }
+    },
+    {
+      "intake_id": "ACE-ORIGINAL-CHE-001",
+      "subject_code": "CHE",
+      "topic_name": "Atoms, bonds and nuclear change",
+      "file": "CHE.csv",
+      "editorial_status": "unreviewed",
+      "draft": {
+        "subject_id": "6675c55e-5f41-457c-9039-705aa089ff80",
+        "topic_id": "381042c5-8c6a-5ff3-9729-f3b7512ef1dc",
+        "subtopic_id": null,
+        "stem": "An atom has atomic number 12 and mass number 24. How many neutrons does it contain?",
+        "options": [
+          {
+            "key": "A",
+            "text": "12"
+          },
+          {
+            "key": "B",
+            "text": "24"
+          },
+          {
+            "key": "C",
+            "text": "36"
+          },
+          {
+            "key": "D",
+            "text": "6"
+          }
+        ],
+        "correct_option_key": "A",
+        "explanation": "Neutron number = mass number − atomic number = 24 − 12 = 12.",
+        "difficulty": "easy",
+        "exam": "ACE practice",
+        "exam_year": null,
+        "provenance": {
+          "source_kind": "original",
+          "source_title": "ACE original practice intake — 29 October 2026",
+          "author_label": "ACE editorial draft (AI-assisted)",
+          "source_url": null,
+          "rights_evidence": "New question wording, options and explanations composed for ACE; no textbook or past-paper wording copied. AI-assisted draft: independent answer, syllabus and rights review required before publication."
+        }
+      }
+    },
+    {
+      "intake_id": "ACE-ORIGINAL-CHE-002",
+      "subject_code": "CHE",
+      "topic_name": "Atoms, bonds and nuclear change",
+      "file": "CHE.csv",
+      "editorial_status": "unreviewed",
+      "draft": {
+        "subject_id": "6675c55e-5f41-457c-9039-705aa089ff80",
+        "topic_id": "381042c5-8c6a-5ff3-9729-f3b7512ef1dc",
+        "subtopic_id": null,
+        "stem": "A neutral atom has 17 protons. How many electrons does it contain?",
+        "options": [
+          {
+            "key": "A",
+            "text": "16"
+          },
+          {
+            "key": "B",
+            "text": "18"
+          },
+          {
+            "key": "C",
+            "text": "34"
+          },
+          {
+            "key": "D",
+            "text": "17"
+          }
+        ],
+        "correct_option_key": "D",
+        "explanation": "A neutral atom has equal numbers of protons and electrons, so it contains 17 electrons.",
+        "difficulty": "easy",
+        "exam": "ACE practice",
+        "exam_year": null,
+        "provenance": {
+          "source_kind": "original",
+          "source_title": "ACE original practice intake — 29 October 2026",
+          "author_label": "ACE editorial draft (AI-assisted)",
+          "source_url": null,
+          "rights_evidence": "New question wording, options and explanations composed for ACE; no textbook or past-paper wording copied. AI-assisted draft: independent answer, syllabus and rights review required before publication."
+        }
+      }
+    },
+    {
+      "intake_id": "ACE-ORIGINAL-CHE-003",
+      "subject_code": "CHE",
+      "topic_name": "Atoms, bonds and nuclear change",
+      "file": "CHE.csv",
+      "editorial_status": "unreviewed",
+      "draft": {
+        "subject_id": "6675c55e-5f41-457c-9039-705aa089ff80",
+        "topic_id": "381042c5-8c6a-5ff3-9729-f3b7512ef1dc",
+        "subtopic_id": null,
+        "stem": "Sodium has atomic number 11. How many electrons are present in a Na⁺ ion?",
+        "options": [
+          {
+            "key": "A",
+            "text": "11"
+          },
+          {
+            "key": "B",
+            "text": "12"
+          },
+          {
+            "key": "C",
+            "text": "10"
+          },
+          {
+            "key": "D",
+            "text": "22"
+          }
+        ],
+        "correct_option_key": "C",
+        "explanation": "A neutral sodium atom has 11 electrons. Forming Na⁺ removes one electron, leaving 10.",
+        "difficulty": "easy",
+        "exam": "ACE practice",
+        "exam_year": null,
+        "provenance": {
+          "source_kind": "original",
+          "source_title": "ACE original practice intake — 29 October 2026",
+          "author_label": "ACE editorial draft (AI-assisted)",
+          "source_url": null,
+          "rights_evidence": "New question wording, options and explanations composed for ACE; no textbook or past-paper wording copied. AI-assisted draft: independent answer, syllabus and rights review required before publication."
+        }
+      }
+    },
+    {
+      "intake_id": "ACE-ORIGINAL-CHE-004",
+      "subject_code": "CHE",
+      "topic_name": "Atoms, bonds and nuclear change",
+      "file": "CHE.csv",
+      "editorial_status": "unreviewed",
+      "draft": {
+        "subject_id": "6675c55e-5f41-457c-9039-705aa089ff80",
+        "topic_id": "381042c5-8c6a-5ff3-9729-f3b7512ef1dc",
+        "subtopic_id": null,
+        "stem": "Which description best explains the bonding in solid sodium chloride?",
+        "options": [
+          {
+            "key": "A",
+            "text": "Atoms share one electron pair in separate NaCl molecules"
+          },
+          {
+            "key": "B",
+            "text": "Oppositely charged ions attract in an ionic lattice"
+          },
+          {
+            "key": "C",
+            "text": "Positive atoms are held together by gravity"
+          },
+          {
+            "key": "D",
+            "text": "Neutral atoms exchange protons"
+          }
+        ],
+        "correct_option_key": "B",
+        "explanation": "Sodium chloride contains Na⁺ and Cl⁻ ions arranged in a lattice and held by electrostatic attraction.",
+        "difficulty": "easy",
+        "exam": "ACE practice",
+        "exam_year": null,
+        "provenance": {
+          "source_kind": "original",
+          "source_title": "ACE original practice intake — 29 October 2026",
+          "author_label": "ACE editorial draft (AI-assisted)",
+          "source_url": null,
+          "rights_evidence": "New question wording, options and explanations composed for ACE; no textbook or past-paper wording copied. AI-assisted draft: independent answer, syllabus and rights review required before publication."
+        }
+      }
+    },
+    {
+      "intake_id": "ACE-ORIGINAL-CHE-005",
+      "subject_code": "CHE",
+      "topic_name": "Atoms, bonds and nuclear change",
+      "file": "CHE.csv",
+      "editorial_status": "unreviewed",
+      "draft": {
+        "subject_id": "6675c55e-5f41-457c-9039-705aa089ff80",
+        "topic_id": "381042c5-8c6a-5ff3-9729-f3b7512ef1dc",
+        "subtopic_id": null,
+        "stem": "What holds the two atoms together in an H₂ molecule?",
+        "options": [
+          {
+            "key": "A",
+            "text": "A shared pair of electrons"
+          },
+          {
+            "key": "B",
+            "text": "A transferred proton"
+          },
+          {
+            "key": "C",
+            "text": "A shared pair of neutrons"
+          },
+          {
+            "key": "D",
+            "text": "Attraction between two positive hydrogen ions"
+          }
+        ],
+        "correct_option_key": "A",
+        "explanation": "Each hydrogen atom contributes one electron, forming a shared electron pair in a covalent bond.",
+        "difficulty": "easy",
+        "exam": "ACE practice",
+        "exam_year": null,
+        "provenance": {
+          "source_kind": "original",
+          "source_title": "ACE original practice intake — 29 October 2026",
+          "author_label": "ACE editorial draft (AI-assisted)",
+          "source_url": null,
+          "rights_evidence": "New question wording, options and explanations composed for ACE; no textbook or past-paper wording copied. AI-assisted draft: independent answer, syllabus and rights review required before publication."
+        }
+      }
+    },
+    {
+      "intake_id": "ACE-ORIGINAL-CHE-006",
+      "subject_code": "CHE",
+      "topic_name": "Atoms, bonds and nuclear change",
+      "file": "CHE.csv",
+      "editorial_status": "unreviewed",
+      "draft": {
+        "subject_id": "6675c55e-5f41-457c-9039-705aa089ff80",
+        "topic_id": "381042c5-8c6a-5ff3-9729-f3b7512ef1dc",
+        "subtopic_id": null,
+        "stem": "Two atoms are isotopes of the same element when they have the same number of which particles, but different numbers of neutrons?",
+        "options": [
+          {
+            "key": "A",
+            "text": "Electrons only"
+          },
+          {
+            "key": "B",
+            "text": "Nucleons"
+          },
+          {
+            "key": "C",
+            "text": "Electron shells"
+          },
+          {
+            "key": "D",
+            "text": "Protons"
+          }
+        ],
+        "correct_option_key": "D",
+        "explanation": "Isotopes have the same atomic number (proton number), but different neutron numbers and therefore different mass numbers.",
+        "difficulty": "easy",
+        "exam": "ACE practice",
+        "exam_year": null,
+        "provenance": {
+          "source_kind": "original",
+          "source_title": "ACE original practice intake — 29 October 2026",
+          "author_label": "ACE editorial draft (AI-assisted)",
+          "source_url": null,
+          "rights_evidence": "New question wording, options and explanations composed for ACE; no textbook or past-paper wording copied. AI-assisted draft: independent answer, syllabus and rights review required before publication."
+        }
+      }
+    },
+    {
+      "intake_id": "ACE-ORIGINAL-CHE-007",
+      "subject_code": "CHE",
+      "topic_name": "Atoms, bonds and nuclear change",
+      "file": "CHE.csv",
+      "editorial_status": "unreviewed",
+      "draft": {
+        "subject_id": "6675c55e-5f41-457c-9039-705aa089ff80",
+        "topic_id": "381042c5-8c6a-5ff3-9729-f3b7512ef1dc",
+        "subtopic_id": null,
+        "stem": "What is the shell electron arrangement of a neutral sodium atom with atomic number 11?",
+        "options": [
+          {
+            "key": "A",
+            "text": "2, 9"
+          },
+          {
+            "key": "B",
+            "text": "2, 8, 1"
+          },
+          {
+            "key": "C",
+            "text": "2, 7, 2"
+          },
+          {
+            "key": "D",
+            "text": "2, 8, 2"
+          }
+        ],
+        "correct_option_key": "B",
+        "explanation": "The 11 electrons occupy the first shells as 2, 8 and 1.",
+        "difficulty": "easy",
+        "exam": "ACE practice",
+        "exam_year": null,
+        "provenance": {
+          "source_kind": "original",
+          "source_title": "ACE original practice intake — 29 October 2026",
+          "author_label": "ACE editorial draft (AI-assisted)",
+          "source_url": null,
+          "rights_evidence": "New question wording, options and explanations composed for ACE; no textbook or past-paper wording copied. AI-assisted draft: independent answer, syllabus and rights review required before publication."
+        }
+      }
+    },
+    {
+      "intake_id": "ACE-ORIGINAL-CHE-008",
+      "subject_code": "CHE",
+      "topic_name": "Atoms, bonds and nuclear change",
+      "file": "CHE.csv",
+      "editorial_status": "unreviewed",
+      "draft": {
+        "subject_id": "6675c55e-5f41-457c-9039-705aa089ff80",
+        "topic_id": "381042c5-8c6a-5ff3-9729-f3b7512ef1dc",
+        "subtopic_id": null,
+        "stem": "What is the relative electric charge of a neutron?",
+        "options": [
+          {
+            "key": "A",
+            "text": "+1"
+          },
+          {
+            "key": "B",
+            "text": "−1"
+          },
+          {
+            "key": "C",
+            "text": "0"
+          },
+          {
+            "key": "D",
+            "text": "+2"
+          }
+        ],
+        "correct_option_key": "C",
+        "explanation": "A neutron is electrically neutral, so its relative electric charge is zero.",
+        "difficulty": "easy",
+        "exam": "ACE practice",
+        "exam_year": null,
+        "provenance": {
+          "source_kind": "original",
+          "source_title": "ACE original practice intake — 29 October 2026",
+          "author_label": "ACE editorial draft (AI-assisted)",
+          "source_url": null,
+          "rights_evidence": "New question wording, options and explanations composed for ACE; no textbook or past-paper wording copied. AI-assisted draft: independent answer, syllabus and rights review required before publication."
+        }
+      }
+    },
+    {
+      "intake_id": "ACE-ORIGINAL-BIO-001",
+      "subject_code": "BIO",
+      "topic_name": "Organisms and their working systems",
+      "file": "BIO.csv",
+      "editorial_status": "unreviewed",
+      "draft": {
+        "subject_id": "e367a0d1-8e76-4289-bc44-bde0f01c88ae",
+        "topic_id": "2dc9ec09-cc94-5311-ae56-4e19cd467b42",
+        "subtopic_id": null,
+        "stem": "In a typical aerobic eukaryotic cell, which organelle produces most ATP through oxidative phosphorylation?",
+        "options": [
+          {
+            "key": "A",
+            "text": "Ribosome"
+          },
+          {
+            "key": "B",
+            "text": "Mitochondrion"
+          },
+          {
+            "key": "C",
+            "text": "Golgi apparatus"
+          },
+          {
+            "key": "D",
+            "text": "Lysosome"
+          }
+        ],
+        "correct_option_key": "B",
+        "explanation": "Mitochondria contain the electron transport chain and ATP synthase responsible for most ATP production during aerobic respiration.",
+        "difficulty": "easy",
+        "exam": "ACE practice",
+        "exam_year": null,
+        "provenance": {
+          "source_kind": "original",
+          "source_title": "ACE original practice intake — 29 October 2026",
+          "author_label": "ACE editorial draft (AI-assisted)",
+          "source_url": null,
+          "rights_evidence": "New question wording, options and explanations composed for ACE; no textbook or past-paper wording copied. AI-assisted draft: independent answer, syllabus and rights review required before publication."
+        }
+      }
+    },
+    {
+      "intake_id": "ACE-ORIGINAL-BIO-002",
+      "subject_code": "BIO",
+      "topic_name": "Organisms and their working systems",
+      "file": "BIO.csv",
+      "editorial_status": "unreviewed",
+      "draft": {
+        "subject_id": "e367a0d1-8e76-4289-bc44-bde0f01c88ae",
+        "topic_id": "2dc9ec09-cc94-5311-ae56-4e19cd467b42",
+        "subtopic_id": null,
+        "stem": "Which cell structure directly joins amino acids during protein synthesis?",
+        "options": [
+          {
+            "key": "A",
+            "text": "Vacuole"
+          },
+          {
+            "key": "B",
+            "text": "Nucleus membrane"
+          },
+          {
+            "key": "C",
+            "text": "Centriole"
+          },
+          {
+            "key": "D",
+            "text": "Ribosome"
+          }
+        ],
+        "correct_option_key": "D",
+        "explanation": "Ribosomes translate messenger RNA and join amino acids to build polypeptides.",
+        "difficulty": "easy",
+        "exam": "ACE practice",
+        "exam_year": null,
+        "provenance": {
+          "source_kind": "original",
+          "source_title": "ACE original practice intake — 29 October 2026",
+          "author_label": "ACE editorial draft (AI-assisted)",
+          "source_url": null,
+          "rights_evidence": "New question wording, options and explanations composed for ACE; no textbook or past-paper wording copied. AI-assisted draft: independent answer, syllabus and rights review required before publication."
+        }
+      }
+    },
+    {
+      "intake_id": "ACE-ORIGINAL-BIO-003",
+      "subject_code": "BIO",
+      "topic_name": "Organisms and their working systems",
+      "file": "BIO.csv",
+      "editorial_status": "unreviewed",
+      "draft": {
+        "subject_id": "e367a0d1-8e76-4289-bc44-bde0f01c88ae",
+        "topic_id": "2dc9ec09-cc94-5311-ae56-4e19cd467b42",
+        "subtopic_id": null,
+        "stem": "Which plant tissue mainly transports water and dissolved mineral ions from the roots?",
+        "options": [
+          {
+            "key": "A",
+            "text": "Phloem"
+          },
+          {
+            "key": "B",
+            "text": "Epidermis"
+          },
+          {
+            "key": "C",
+            "text": "Xylem"
+          },
+          {
+            "key": "D",
+            "text": "Cork"
+          }
+        ],
+        "correct_option_key": "C",
+        "explanation": "Xylem conducts water and dissolved mineral ions from the roots through the plant.",
+        "difficulty": "easy",
+        "exam": "ACE practice",
+        "exam_year": null,
+        "provenance": {
+          "source_kind": "original",
+          "source_title": "ACE original practice intake — 29 October 2026",
+          "author_label": "ACE editorial draft (AI-assisted)",
+          "source_url": null,
+          "rights_evidence": "New question wording, options and explanations composed for ACE; no textbook or past-paper wording copied. AI-assisted draft: independent answer, syllabus and rights review required before publication."
+        }
+      }
+    },
+    {
+      "intake_id": "ACE-ORIGINAL-BIO-004",
+      "subject_code": "BIO",
+      "topic_name": "Organisms and their working systems",
+      "file": "BIO.csv",
+      "editorial_status": "unreviewed",
+      "draft": {
+        "subject_id": "e367a0d1-8e76-4289-bc44-bde0f01c88ae",
+        "topic_id": "2dc9ec09-cc94-5311-ae56-4e19cd467b42",
+        "subtopic_id": null,
+        "stem": "Which substance is the main structural carbohydrate in most plant cell walls?",
+        "options": [
+          {
+            "key": "A",
+            "text": "Cellulose"
+          },
+          {
+            "key": "B",
+            "text": "Glycogen"
+          },
+          {
+            "key": "C",
+            "text": "Starch"
+          },
+          {
+            "key": "D",
+            "text": "Glucose"
+          }
+        ],
+        "correct_option_key": "A",
+        "explanation": "Cellulose forms strong microfibrils that provide structural support in plant cell walls.",
+        "difficulty": "easy",
+        "exam": "ACE practice",
+        "exam_year": null,
+        "provenance": {
+          "source_kind": "original",
+          "source_title": "ACE original practice intake — 29 October 2026",
+          "author_label": "ACE editorial draft (AI-assisted)",
+          "source_url": null,
+          "rights_evidence": "New question wording, options and explanations composed for ACE; no textbook or past-paper wording copied. AI-assisted draft: independent answer, syllabus and rights review required before publication."
+        }
+      }
+    },
+    {
+      "intake_id": "ACE-ORIGINAL-BIO-005",
+      "subject_code": "BIO",
+      "topic_name": "Organisms and their working systems",
+      "file": "BIO.csv",
+      "editorial_status": "unreviewed",
+      "draft": {
+        "subject_id": "e367a0d1-8e76-4289-bc44-bde0f01c88ae",
+        "topic_id": "2dc9ec09-cc94-5311-ae56-4e19cd467b42",
+        "subtopic_id": null,
+        "stem": "Which molecule in a mature human red blood cell binds and transports most of its oxygen?",
+        "options": [
+          {
+            "key": "A",
+            "text": "Insulin"
+          },
+          {
+            "key": "B",
+            "text": "Haemoglobin"
+          },
+          {
+            "key": "C",
+            "text": "Cellulose"
+          },
+          {
+            "key": "D",
+            "text": "Amylase"
+          }
+        ],
+        "correct_option_key": "B",
+        "explanation": "Haemoglobin reversibly binds oxygen and enables red blood cells to carry it around the body.",
+        "difficulty": "easy",
+        "exam": "ACE practice",
+        "exam_year": null,
+        "provenance": {
+          "source_kind": "original",
+          "source_title": "ACE original practice intake — 29 October 2026",
+          "author_label": "ACE editorial draft (AI-assisted)",
+          "source_url": null,
+          "rights_evidence": "New question wording, options and explanations composed for ACE; no textbook or past-paper wording copied. AI-assisted draft: independent answer, syllabus and rights review required before publication."
+        }
+      }
+    },
+    {
+      "intake_id": "ACE-ORIGINAL-BIO-006",
+      "subject_code": "BIO",
+      "topic_name": "Organisms and their working systems",
+      "file": "BIO.csv",
+      "editorial_status": "unreviewed",
+      "draft": {
+        "subject_id": "e367a0d1-8e76-4289-bc44-bde0f01c88ae",
+        "topic_id": "2dc9ec09-cc94-5311-ae56-4e19cd467b42",
+        "subtopic_id": null,
+        "stem": "Where does most gas exchange occur in healthy human lungs?",
+        "options": [
+          {
+            "key": "A",
+            "text": "Trachea"
+          },
+          {
+            "key": "B",
+            "text": "Bronchi"
+          },
+          {
+            "key": "C",
+            "text": "Diaphragm"
+          },
+          {
+            "key": "D",
+            "text": "Alveoli"
+          }
+        ],
+        "correct_option_key": "D",
+        "explanation": "The alveoli provide a large, thin and moist surface closely associated with capillaries for gas exchange.",
+        "difficulty": "easy",
+        "exam": "ACE practice",
+        "exam_year": null,
+        "provenance": {
+          "source_kind": "original",
+          "source_title": "ACE original practice intake — 29 October 2026",
+          "author_label": "ACE editorial draft (AI-assisted)",
+          "source_url": null,
+          "rights_evidence": "New question wording, options and explanations composed for ACE; no textbook or past-paper wording copied. AI-assisted draft: independent answer, syllabus and rights review required before publication."
+        }
+      }
+    },
+    {
+      "intake_id": "ACE-ORIGINAL-BIO-007",
+      "subject_code": "BIO",
+      "topic_name": "Organisms and their working systems",
+      "file": "BIO.csv",
+      "editorial_status": "unreviewed",
+      "draft": {
+        "subject_id": "e367a0d1-8e76-4289-bc44-bde0f01c88ae",
+        "topic_id": "2dc9ec09-cc94-5311-ae56-4e19cd467b42",
+        "subtopic_id": null,
+        "stem": "What is the functional unit of the human kidney?",
+        "options": [
+          {
+            "key": "A",
+            "text": "Neuron"
+          },
+          {
+            "key": "B",
+            "text": "Alveolus"
+          },
+          {
+            "key": "C",
+            "text": "Nephron"
+          },
+          {
+            "key": "D",
+            "text": "Villus"
+          }
+        ],
+        "correct_option_key": "C",
+        "explanation": "A nephron filters blood and modifies the filtrate by reabsorption and secretion to form urine.",
+        "difficulty": "easy",
+        "exam": "ACE practice",
+        "exam_year": null,
+        "provenance": {
+          "source_kind": "original",
+          "source_title": "ACE original practice intake — 29 October 2026",
+          "author_label": "ACE editorial draft (AI-assisted)",
+          "source_url": null,
+          "rights_evidence": "New question wording, options and explanations composed for ACE; no textbook or past-paper wording copied. AI-assisted draft: independent answer, syllabus and rights review required before publication."
+        }
+      }
+    },
+    {
+      "intake_id": "ACE-ORIGINAL-BIO-008",
+      "subject_code": "BIO",
+      "topic_name": "Organisms and their working systems",
+      "file": "BIO.csv",
+      "editorial_status": "unreviewed",
+      "draft": {
+        "subject_id": "e367a0d1-8e76-4289-bc44-bde0f01c88ae",
+        "topic_id": "2dc9ec09-cc94-5311-ae56-4e19cd467b42",
+        "subtopic_id": null,
+        "stem": "During diffusion, the net movement of particles is generally from a region of what concentration to a region of what concentration?",
+        "options": [
+          {
+            "key": "A",
+            "text": "Higher to lower"
+          },
+          {
+            "key": "B",
+            "text": "Lower to higher without energy"
+          },
+          {
+            "key": "C",
+            "text": "Equal to higher"
+          },
+          {
+            "key": "D",
+            "text": "Lower to equal only"
+          }
+        ],
+        "correct_option_key": "A",
+        "explanation": "Random particle motion produces net movement down a concentration gradient, from higher to lower concentration.",
+        "difficulty": "easy",
+        "exam": "ACE practice",
+        "exam_year": null,
+        "provenance": {
+          "source_kind": "original",
+          "source_title": "ACE original practice intake — 29 October 2026",
+          "author_label": "ACE editorial draft (AI-assisted)",
+          "source_url": null,
+          "rights_evidence": "New question wording, options and explanations composed for ACE; no textbook or past-paper wording copied. AI-assisted draft: independent answer, syllabus and rights review required before publication."
+        }
+      }
+    },
+    {
+      "intake_id": "ACE-ORIGINAL-ENG-001",
+      "subject_code": "ENG",
+      "topic_name": "Choosing words and building sentences",
+      "file": "ENG.csv",
+      "editorial_status": "unreviewed",
+      "draft": {
+        "subject_id": "f4a4638d-5931-49fd-8d2a-57c9dc8a37a9",
+        "topic_id": "211ee044-320d-58f8-997b-ad8231be072e",
+        "subtopic_id": null,
+        "stem": "Choose the correct completion in standard written English: Each of the players ___ a jersey.",
+        "options": [
+          {
+            "key": "A",
+            "text": "have"
+          },
+          {
+            "key": "B",
+            "text": "has"
+          },
+          {
+            "key": "C",
+            "text": "are"
+          },
+          {
+            "key": "D",
+            "text": "were"
+          }
+        ],
+        "correct_option_key": "B",
+        "explanation": "The subject each is singular, so the singular present-tense verb has agrees with it.",
+        "difficulty": "easy",
+        "exam": "ACE practice",
+        "exam_year": null,
+        "provenance": {
+          "source_kind": "original",
+          "source_title": "ACE original practice intake — 29 October 2026",
+          "author_label": "ACE editorial draft (AI-assisted)",
+          "source_url": null,
+          "rights_evidence": "New question wording, options and explanations composed for ACE; no textbook or past-paper wording copied. AI-assisted draft: independent answer, syllabus and rights review required before publication."
+        }
+      }
+    },
+    {
+      "intake_id": "ACE-ORIGINAL-ENG-002",
+      "subject_code": "ENG",
+      "topic_name": "Choosing words and building sentences",
+      "file": "ENG.csv",
+      "editorial_status": "unreviewed",
+      "draft": {
+        "subject_id": "f4a4638d-5931-49fd-8d2a-57c9dc8a37a9",
+        "topic_id": "211ee044-320d-58f8-997b-ad8231be072e",
+        "subtopic_id": null,
+        "stem": "Choose the correct completion: She has lived here ___ 2020.",
+        "options": [
+          {
+            "key": "A",
+            "text": "for"
+          },
+          {
+            "key": "B",
+            "text": "during"
+          },
+          {
+            "key": "C",
+            "text": "since"
+          },
+          {
+            "key": "D",
+            "text": "by"
+          }
+        ],
+        "correct_option_key": "C",
+        "explanation": "Since introduces the starting point of a situation continuing to the present; for normally introduces a duration.",
+        "difficulty": "easy",
+        "exam": "ACE practice",
+        "exam_year": null,
+        "provenance": {
+          "source_kind": "original",
+          "source_title": "ACE original practice intake — 29 October 2026",
+          "author_label": "ACE editorial draft (AI-assisted)",
+          "source_url": null,
+          "rights_evidence": "New question wording, options and explanations composed for ACE; no textbook or past-paper wording copied. AI-assisted draft: independent answer, syllabus and rights review required before publication."
+        }
+      }
+    },
+    {
+      "intake_id": "ACE-ORIGINAL-ENG-003",
+      "subject_code": "ENG",
+      "topic_name": "Choosing words and building sentences",
+      "file": "ENG.csv",
+      "editorial_status": "unreviewed",
+      "draft": {
+        "subject_id": "f4a4638d-5931-49fd-8d2a-57c9dc8a37a9",
+        "topic_id": "211ee044-320d-58f8-997b-ad8231be072e",
+        "subtopic_id": null,
+        "stem": "Choose the correct completion: The students are interested ___ chemistry.",
+        "options": [
+          {
+            "key": "A",
+            "text": "in"
+          },
+          {
+            "key": "B",
+            "text": "on"
+          },
+          {
+            "key": "C",
+            "text": "at"
+          },
+          {
+            "key": "D",
+            "text": "for"
+          }
+        ],
+        "correct_option_key": "A",
+        "explanation": "The standard construction is interested in a subject or activity.",
+        "difficulty": "easy",
+        "exam": "ACE practice",
+        "exam_year": null,
+        "provenance": {
+          "source_kind": "original",
+          "source_title": "ACE original practice intake — 29 October 2026",
+          "author_label": "ACE editorial draft (AI-assisted)",
+          "source_url": null,
+          "rights_evidence": "New question wording, options and explanations composed for ACE; no textbook or past-paper wording copied. AI-assisted draft: independent answer, syllabus and rights review required before publication."
+        }
+      }
+    },
+    {
+      "intake_id": "ACE-ORIGINAL-ENG-004",
+      "subject_code": "ENG",
+      "topic_name": "Choosing words and building sentences",
+      "file": "ENG.csv",
+      "editorial_status": "unreviewed",
+      "draft": {
+        "subject_id": "f4a4638d-5931-49fd-8d2a-57c9dc8a37a9",
+        "topic_id": "211ee044-320d-58f8-997b-ad8231be072e",
+        "subtopic_id": null,
+        "stem": "Which word is closest in meaning to concise?",
+        "options": [
+          {
+            "key": "A",
+            "text": "Lengthy"
+          },
+          {
+            "key": "B",
+            "text": "Unclear"
+          },
+          {
+            "key": "C",
+            "text": "Detailed"
+          },
+          {
+            "key": "D",
+            "text": "Brief"
+          }
+        ],
+        "correct_option_key": "D",
+        "explanation": "Concise means expressing the necessary meaning in few words, so brief is the closest option.",
+        "difficulty": "easy",
+        "exam": "ACE practice",
+        "exam_year": null,
+        "provenance": {
+          "source_kind": "original",
+          "source_title": "ACE original practice intake — 29 October 2026",
+          "author_label": "ACE editorial draft (AI-assisted)",
+          "source_url": null,
+          "rights_evidence": "New question wording, options and explanations composed for ACE; no textbook or past-paper wording copied. AI-assisted draft: independent answer, syllabus and rights review required before publication."
+        }
+      }
+    },
+    {
+      "intake_id": "ACE-ORIGINAL-ENG-005",
+      "subject_code": "ENG",
+      "topic_name": "Choosing words and building sentences",
+      "file": "ENG.csv",
+      "editorial_status": "unreviewed",
+      "draft": {
+        "subject_id": "f4a4638d-5931-49fd-8d2a-57c9dc8a37a9",
+        "topic_id": "211ee044-320d-58f8-997b-ad8231be072e",
+        "subtopic_id": null,
+        "stem": "Which word is opposite in meaning to scarce?",
+        "options": [
+          {
+            "key": "A",
+            "text": "Rare"
+          },
+          {
+            "key": "B",
+            "text": "Plentiful"
+          },
+          {
+            "key": "C",
+            "text": "Limited"
+          },
+          {
+            "key": "D",
+            "text": "Insufficient"
+          }
+        ],
+        "correct_option_key": "B",
+        "explanation": "Scarce means in short supply. Plentiful means available in abundance.",
+        "difficulty": "easy",
+        "exam": "ACE practice",
+        "exam_year": null,
+        "provenance": {
+          "source_kind": "original",
+          "source_title": "ACE original practice intake — 29 October 2026",
+          "author_label": "ACE editorial draft (AI-assisted)",
+          "source_url": null,
+          "rights_evidence": "New question wording, options and explanations composed for ACE; no textbook or past-paper wording copied. AI-assisted draft: independent answer, syllabus and rights review required before publication."
+        }
+      }
+    },
+    {
+      "intake_id": "ACE-ORIGINAL-ENG-006",
+      "subject_code": "ENG",
+      "topic_name": "Choosing words and building sentences",
+      "file": "ENG.csv",
+      "editorial_status": "unreviewed",
+      "draft": {
+        "subject_id": "f4a4638d-5931-49fd-8d2a-57c9dc8a37a9",
+        "topic_id": "211ee044-320d-58f8-997b-ad8231be072e",
+        "subtopic_id": null,
+        "stem": "Which option is the past perfect form of begin?",
+        "options": [
+          {
+            "key": "A",
+            "text": "Begins"
+          },
+          {
+            "key": "B",
+            "text": "Beginning"
+          },
+          {
+            "key": "C",
+            "text": "Had begun"
+          },
+          {
+            "key": "D",
+            "text": "Has begin"
+          }
+        ],
+        "correct_option_key": "C",
+        "explanation": "The past perfect is formed with had followed by the past participle; the past participle of begin is begun.",
+        "difficulty": "easy",
+        "exam": "ACE practice",
+        "exam_year": null,
+        "provenance": {
+          "source_kind": "original",
+          "source_title": "ACE original practice intake — 29 October 2026",
+          "author_label": "ACE editorial draft (AI-assisted)",
+          "source_url": null,
+          "rights_evidence": "New question wording, options and explanations composed for ACE; no textbook or past-paper wording copied. AI-assisted draft: independent answer, syllabus and rights review required before publication."
+        }
+      }
+    },
+    {
+      "intake_id": "ACE-ORIGINAL-ENG-007",
+      "subject_code": "ENG",
+      "topic_name": "Choosing words and building sentences",
+      "file": "ENG.csv",
+      "editorial_status": "unreviewed",
+      "draft": {
+        "subject_id": "f4a4638d-5931-49fd-8d2a-57c9dc8a37a9",
+        "topic_id": "211ee044-320d-58f8-997b-ad8231be072e",
+        "subtopic_id": null,
+        "stem": "Choose the correct possessive form for a bicycle belonging to one girl: the ___ bicycle.",
+        "options": [
+          {
+            "key": "A",
+            "text": "girl’s"
+          },
+          {
+            "key": "B",
+            "text": "girls’"
+          },
+          {
+            "key": "C",
+            "text": "girls"
+          },
+          {
+            "key": "D",
+            "text": "girl"
+          }
+        ],
+        "correct_option_key": "A",
+        "explanation": "For one girl, add apostrophe + s to form the singular possessive girl’s.",
+        "difficulty": "easy",
+        "exam": "ACE practice",
+        "exam_year": null,
+        "provenance": {
+          "source_kind": "original",
+          "source_title": "ACE original practice intake — 29 October 2026",
+          "author_label": "ACE editorial draft (AI-assisted)",
+          "source_url": null,
+          "rights_evidence": "New question wording, options and explanations composed for ACE; no textbook or past-paper wording copied. AI-assisted draft: independent answer, syllabus and rights review required before publication."
+        }
+      }
+    },
+    {
+      "intake_id": "ACE-ORIGINAL-ENG-008",
+      "subject_code": "ENG",
+      "topic_name": "Choosing words and building sentences",
+      "file": "ENG.csv",
+      "editorial_status": "unreviewed",
+      "draft": {
+        "subject_id": "f4a4638d-5931-49fd-8d2a-57c9dc8a37a9",
+        "topic_id": "211ee044-320d-58f8-997b-ad8231be072e",
+        "subtopic_id": null,
+        "stem": "Choose the correct completion: If I had known about the meeting, I ___ attended.",
+        "options": [
+          {
+            "key": "A",
+            "text": "will have"
+          },
+          {
+            "key": "B",
+            "text": "would"
+          },
+          {
+            "key": "C",
+            "text": "had"
+          },
+          {
+            "key": "D",
+            "text": "would have"
+          }
+        ],
+        "correct_option_key": "D",
+        "explanation": "This unreal past condition takes would have plus the past participle: I would have attended.",
+        "difficulty": "easy",
+        "exam": "ACE practice",
+        "exam_year": null,
+        "provenance": {
+          "source_kind": "original",
+          "source_title": "ACE original practice intake — 29 October 2026",
+          "author_label": "ACE editorial draft (AI-assisted)",
+          "source_url": null,
+          "rights_evidence": "New question wording, options and explanations composed for ACE; no textbook or past-paper wording copied. AI-assisted draft: independent answer, syllabus and rights review required before publication."
+        }
+      }
+    }
+  ]
+}

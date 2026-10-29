@@ -1178,6 +1178,96 @@ test.describe('FCB-03 question authoring workflow',()=>{
   })
 })
 
+function historyResponse(current:ReturnType<typeof workflowQuestion>,before:number|null) {
+  const top=before?before-1:current.content_version
+  const all=Array.from({length:top},(_,index)=>{
+    const version=top-index
+    return {version,created_by:userId,created_at:'2026-10-29T15:00:00+00:00',snapshot:workflowQuestion({...current,content_version:version,stem:version===current.content_version?current.stem:`Revision ${version}`})}
+  })
+  return {question_id:current.id,current_version:current.content_version,versions:all.slice(0,10),has_next:all.length>10,next_before:all.length>10?all[9].version:null}
+}
+async function mockQuestionHistory(page:import('@playwright/test').Page,records:ReturnType<typeof workflowQuestion>[]) {
+  await mockQuestionWorkspace(page,records)
+  await page.route(url=>new URL(url).pathname.endsWith('/rest/v1/rpc/question_history'),async route=>{
+    const data=route.request().postDataJSON();await route.fulfill({json:historyResponse(records[0],data.p_before)})
+  })
+}
+test.describe('FCB-03 immutable question history',()=>{
+  test('reads bounded historical pages and renders content safely',async({page},testInfo)=>{
+    await mockQuestionHistory(page,[workflowQuestion({content_version:12,stem:'<img src=x onerror=alert(1)> π'})])
+    await page.goto('/admin-questions');await page.getByRole('button',{name:'Version history',exact:true}).click()
+    const panel=page.getByRole('region',{name:'Question version history',exact:true})
+    await expect(panel.getByRole('heading',{name:'Revision 12',exact:true})).toBeVisible()
+    await expect(panel.locator('img')).toHaveCount(0)
+    await panel.getByText('Inspect revision 12').click()
+    const expanded=panel.locator('details[open]')
+    await expect(expanded).toHaveCount(1)
+    await expect(expanded.getByText('Correct answer: C',{exact:true})).toBeVisible()
+    await expect(expanded.getByText('Original exercise.',{exact:true})).toBeVisible()
+    expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true)
+    await panel.screenshot({path:testInfo.outputPath('question-history.png')})
+    await panel.getByRole('button',{name:'Older revisions',exact:true}).click()
+    await expect(panel.getByRole('heading',{name:'Revision 2',exact:true})).toBeVisible()
+    await expect(panel.getByRole('heading',{name:'Revision 12',exact:true})).toHaveCount(0)
+    await expect(panel.getByRole('button',{name:'Older revisions',exact:true})).toBeDisabled()
+    await panel.getByRole('button',{name:'Newer revisions',exact:true}).click()
+    await expect(panel.getByRole('heading',{name:'Revision 12',exact:true})).toBeVisible()
+  })
+  test('restores older content as a new draft with a reason and no publication',async({page})=>{
+    const records=[workflowQuestion({content_version:3,stem:'Current text'})];await mockQuestionHistory(page,records)
+    let request:Record<string,any>|null=null
+    await page.route(url=>new URL(url).pathname.endsWith('/rest/v1/rpc/restore_question'),async route=>{
+      request=route.request().postDataJSON();records[0]=workflowQuestion({content_version:4,stem:'Revision 1'});await route.fulfill({json:records[0]})
+    })
+    await page.goto('/admin-questions');await page.getByRole('button',{name:'Version history',exact:true}).click()
+    const panel=page.getByRole('region',{name:'Question version history',exact:true})
+    await expect(panel.getByRole('button',{name:'Restore revision 1',exact:true})).toBeDisabled()
+    await panel.getByLabel('Reason for restoring',{exact:true}).fill('Recover the verified explanation')
+    await panel.getByRole('button',{name:'Restore revision 1',exact:true}).click()
+    await expect(page.getByText('Historical content restored as a new private draft. Independent review is required.',{exact:true})).toBeVisible()
+    expect(request?.p_expected_version).toBe(3);expect(request?.p_source_version).toBe(1);expect(request?.p_reason).toBe('Recover the verified explanation')
+    await expect(page.getByRole('button',{name:'Submit for review',exact:true})).toBeVisible()
+    await expect(page.getByRole('button',{name:'Publish question',exact:true})).toHaveCount(0)
+  })
+  test('freezes an uncertain restore and retains the history for reconciliation',async({page})=>{
+    await mockQuestionHistory(page,[workflowQuestion({content_version:3})])
+    await page.route(url=>new URL(url).pathname.endsWith('/rest/v1/rpc/restore_question'),route=>route.fulfill({status:409,json:{message:'Sensitive internal exception',code:'40001'}}))
+    await page.goto('/admin-questions');await page.getByRole('button',{name:'Version history',exact:true}).click()
+    const panel=page.getByRole('region',{name:'Question version history',exact:true})
+    await panel.getByLabel('Reason for restoring',{exact:true}).fill('Recover content')
+    await panel.getByRole('button',{name:'Restore revision 1',exact:true}).click()
+    await expect(panel.getByRole('alert')).toContainText('restoration could not be confirmed')
+    await expect(panel.getByRole('button',{name:'Restore revision 1',exact:true})).toBeDisabled()
+    await expect(panel.getByText('Sensitive internal exception')).toHaveCount(0)
+    await panel.getByRole('button',{name:'Close history and refresh questions'}).click()
+    await expect(page.getByRole('button',{name:'Submit for review',exact:true})).toBeEnabled()
+  })
+  test('blocks restoration of stale and published question versions',async({page})=>{
+    const records=[workflowQuestion({content_version:3})];await mockQuestionHistory(page,records)
+    await page.route(url=>new URL(url).pathname.endsWith('/rest/v1/rpc/question_history'),route=>route.fulfill({json:historyResponse(workflowQuestion({content_version:4}),null)}))
+    await page.goto('/admin-questions');await page.getByRole('button',{name:'Version history',exact:true}).click()
+    const panel=page.getByRole('region',{name:'Question version history',exact:true})
+    await expect(panel.getByText('Question changed since the list was loaded. Close history and refresh before restoring.',{exact:true})).toBeVisible()
+    await panel.getByLabel('Reason for restoring',{exact:true}).fill('Reason')
+    await expect(panel.getByRole('button',{name:'Restore revision 1',exact:true})).toBeDisabled()
+    await panel.getByRole('button',{name:'Close history and refresh questions'}).click()
+    records[0]=workflowQuestion({content_version:4,review_status:'published',rights_status:'owned',active:true,reviewed_by:'93000000-0000-4000-8000-000000000009'})
+    await page.reload();await page.getByRole('button',{name:'Version history',exact:true}).click()
+    await expect(panel.getByText('Withdraw this published question before restoring older content.',{exact:true})).toBeVisible()
+    await expect(panel.getByRole('button',{name:'Restore revision 1',exact:true})).toBeDisabled()
+  })
+  test('history read failures expose no snapshot and offer retry',async({page})=>{
+    await mockQuestionHistory(page,[workflowQuestion({content_version:3})])
+    await page.route(url=>new URL(url).pathname.endsWith('/rest/v1/rpc/question_history'),route=>route.fulfill({status:403,json:{message:'Private database detail'}}))
+    await page.goto('/admin-questions');await page.getByRole('button',{name:'Version history',exact:true}).click()
+    const panel=page.getByRole('region',{name:'Question version history',exact:true})
+    await expect(panel.getByRole('alert')).toContainText('Version history could not be loaded')
+    await expect(panel.getByRole('button',{name:'Retry version history'})).toBeVisible()
+    await expect(panel.getByText('Private database detail')).toHaveCount(0)
+    await expect(panel.getByRole('button',{name:/Restore revision/})).toHaveCount(0)
+  })
+})
+
 const importColumns=['question','option_a','option_b','option_c','option_d','correct_option','explanation','difficulty','attribution','exam_year','source_kind','source_title','author','source_url','rights_evidence']
 function questionCsv(stems=['What is 3 + 4?']) {
   return [importColumns,...stems.map(stem=>[stem,'5','6','7','8','C','Adding four to three gives seven.','easy','ACE practice','','original','ACE arithmetic','ACE team','','Original exercise.'])].map(row=>row.map(value=>'"'+value.replaceAll('"','""')+'"').join(',')).join('\r\n')

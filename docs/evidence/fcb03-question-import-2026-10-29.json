@@ -7,7 +7,7 @@
   "owner_acceptance": {
     "existing_deployed_question_workspace_opens": "Confirmed by owner in chat",
     "production_save_and_independent_review": "Not manually verified",
-    "bulk_import": "Not deployed"
+    "bulk_import": "Deployed; signed-in production upload not yet manually verified"
   },
   "local": {
     "node_tests": 72,
@@ -54,10 +54,80 @@
     "layout": "Passing desktop and mobile import screenshots inspected; readable controls, wrapping and no horizontal overflow"
   },
   "release": {
-    "status": "Not merged or deployed; explicit production approval required by AGENTS.md",
+    "status": "DEPLOYED; live delivery verified",
     "no_database_migration": true,
     "no_production_content_mutation": true,
-    "no_questions_published": true
+    "no_questions_published": true,
+    "owner_approval": "Explicit proceed after request to merge PR19 and deploy bulk upload",
+    "merge": "ba347f808c34d637bc72692a44f8fcabe6049f3f",
+    "merged_tree": "f5b51b6d2c936093611bca7a28bbae170a5437e2",
+    "merged_tree_matches_verified_pr": true,
+    "cloudflare_build": "e9a42ec7-3cdc-4ad1-9d74-e84dd13d1506",
+    "build_outcome": "success",
+    "completed_utc": "2026-10-29T13:42:51.375Z",
+    "completed_wat": "2026-10-29 14:42:51 WAT",
+    "deployment": "7fcdcc31-f79b-4c54-89f4-0557014385b0",
+    "worker_version": "0ff49afc-eff5-4048-87c8-3c8928d92a61",
+    "percentage": 100,
+    "http_verification": {
+      "status": "PASS",
+      "base": "https://nova-ace-jamb.novaking5002.workers.dev",
+      "checks": [
+        {
+          "path": "/",
+          "status": 200,
+          "sha256": "02ab3ad803d179fdcc7f66b47201d7b8d441d62043997a3e48ed7070a42c3ea5"
+        },
+        {
+          "path": "/admin-questions",
+          "status": 200,
+          "sha256": "02ab3ad803d179fdcc7f66b47201d7b8d441d62043997a3e48ed7070a42c3ea5"
+        },
+        {
+          "path": "/admin-academic",
+          "status": 200,
+          "sha256": "02ab3ad803d179fdcc7f66b47201d7b8d441d62043997a3e48ed7070a42c3ea5"
+        },
+        {
+          "path": "/admin-import",
+          "status": 200,
+          "sha256": "02ab3ad803d179fdcc7f66b47201d7b8d441d62043997a3e48ed7070a42c3ea5"
+        },
+        {
+          "path": "/admin",
+          "status": 200,
+          "sha256": "02ab3ad803d179fdcc7f66b47201d7b8d441d62043997a3e48ed7070a42c3ea5"
+        },
+        {
+          "path": "/assets/index-CZVNaQsA.js",
+          "status": 200,
+          "sha256": "fef14b6a5b3e786764ba0acf7f7198f761536805949d5d051a4441c4b1b82a99"
+        },
+        {
+          "path": "/assets/AcademicFoundationGate-BxfrdjRQ.js",
+          "status": 200,
+          "sha256": "44494e19dd790742bad1bc942053e0dc6529b829e214c0b6f6b2ce9667f71cbb"
+        },
+        {
+          "path": "/assets/AdminQuestionReviewQueue-PZ5gDa8o.js",
+          "status": 200,
+          "sha256": "eec0b768bbe1e1fb6f2aa1eecbacbece24d98d9f28e113dbb9436fff37d7eeb7"
+        },
+        {
+          "path": "/assets/AdminQuestionImport-D-YYNR2X.js",
+          "status": 200,
+          "sha256": "3989f28770950674b3e00cb540534cfce7c7302a51c571571929a868fbd11925"
+        },
+        {
+          "path": "/sw.js",
+          "status": 200,
+          "sha256": "e45b9adf10236c941a35caba1695f46b92ec3d5f2f47b74ff4ab33100160bf5b"
+        }
+      ],
+      "route_and_question_rpc_assets_present": true,
+      "bulk_import_asset_verified": true,
+      "scope": "Unauthenticated HTTP GET only; actual signed-in production author/reviewer acceptance pending."
+    }
   },
   "source_identity": "All seven application/test/CI blob hashes match the local verified worktree"
 }
