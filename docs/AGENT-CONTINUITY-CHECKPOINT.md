@@ -2,7 +2,19 @@
 
 > **Current-state rule:** this opening section is authoritative. Entries below the historical divider are evidence history and do not override this section.
 
-## Current: real sessions verified; history/restore and 40 original drafts prepared in PR20 — 29 October 2026
+## Current: question history and restoration deployed — 29 October 2026
+
+The owner specifically approved the prepared two-function installation and PR20 deployment. Supabase migration20261029160300_fcb03_question_history installed the exact reviewed proposal (SHA256975e65e0cb544d8738a95e5d496e3919c6d6008b54e45122a6c60fc80c338b0d; stripped bodya93441092140bae8990d97f6a0e90c37dc6dffa3c6f68a1a83368faa392b20e1). Both compiled bodies, postgres owner, guarded SECURITY DEFINER configs and ACLs match; anonymous EXECUTE is denied and both identity-free calls were actually rejected. Existing manage/review bodies remain unchanged. Questions/history/media remain0/0/0. Two expected authenticated-definer advisor notices were assessed against the reviewed guards; existing notices remain, not a zero-advisory claim.
+
+PR20 merged exact approved head03b64dd7 as cb6ef545dd79bf9fe9281dd054076e6120f6c8a7 (tree e7a1228d819960501b6a1ad52e722925258019e9). Cloudflare build17f47ac2-7977-4c40-ab7d-f897d3fff05e succeeded at17:04:03WAT; deployment96e4e28a-c719-48f5-b5b3-0ea6f1c70adb serves version76d89d0c-9749-4cb5-981a-ea1a8b3eef9c at100%. Eleven fresh live HTTP checks PASS: home/four admin routes, correct entry/project, academic gate, question queue, CSV importer, AdminQuestionHistory-XGFU17Ar.js with restore controls/RPCs, and source-matching service worker. This verifies delivery, not a production restoration transaction. All PR-head checks passed before merge; tested runtime/test/CI blobs are unchanged from the verified234browser/91nativeDB/77Node source.
+
+Neither real saved profile was signed out or cleared; no further paid browser run, question upload/publication, role/bucket change or content mutation occurred. Forty original AI-assisted drafts remain unreviewed. FCB-03 remains IN PROGRESS; FCB-02 remains VERIFIED COMPLETE. Genuine approved intake and independently authorized administrator review, live save/review/publish/withdraw/restore acceptance, rich content/media/storage and dedicated reporting/moderation remain. Deferred history keyboard-focus polish and delayed synthetic-session regressions remain as previously recorded.
+
+Evidence: docs/evidence/fcb03-question-history-release-2026-10-29.json. Release documentation is on docs/fcb03-history-release, preserving production source without a redundant docs-only deployment.
+
+**Exact next action:** continue independent rich-media/storage/moderation implementation under the existing final-batch scope; arrange a genuinely different administrator and obtain specific content-intake authorization before uploading the prepared drafts. Do not simulate reviewer independence, re-request this completed PR20 release approval, or reopen finished FCB-02 work.
+
+## Previous: real sessions verified; history/restore and 40 original drafts prepared in PR20 — 29 October 2026
 
 The owner authorized substantial FCB-03 work while away, approved a total $2 TinyFish browser budget, saved separate student/admin profiles and explicitly required no signouts/session clearing. Preserve both profiles and switch between them only: student prof_71146dfad171406c, administrator prof_7d8a04d909144650. Two genuine ten-step read-only runs completed: student07b99cf3-7354-48fb-a4d7-ad4712bab40b saw authenticated published syllabus32topics and was denied /admin-questions without editorial/answer controls; admin243422c1-ad60-4502-ba6c-0e84754de138 opened the deployed importer/template/25subject choices and editor, then closed without saving. Specific populated topic selection was not verified by that admin run. Neither profile was signed out. Approximate listed-rate usage$0.33 (20steps/262seconds); actual posted charges were not provided. Account ignored max_steps/strict settings, so do not assume a hard tool-call cap; no further metered runs started. Source fetches were listed as free.
 
