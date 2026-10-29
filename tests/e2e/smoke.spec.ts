@@ -3372,6 +3372,10 @@ test.describe('ACE JAMB organized dashboard interface', () => {
 
   test('administrator navigation groups workspaces without the obsolete milestone', async ({page},testInfo) => {
     await mockQuestionWorkspace(page)
+    await page.route((url)=>new URL(url).pathname.startsWith('/rest/v1/'),async route=>{
+      if(route.request().method()!=='HEAD')return route.fallback()
+      await route.fulfill({status:200,headers:{'content-range':'*/0','access-control-expose-headers':'content-range'},body:''})
+    })
     await page.goto('/admin')
     const nav=page.getByRole('navigation',{name:'Administration navigation'})
     await expect(nav.getByRole('link',{name:'Overview'})).toHaveAttribute('aria-current','page')
@@ -3380,6 +3384,16 @@ test.describe('ACE JAMB organized dashboard interface', () => {
     await expect(page.getByText('Batch 3 · Academic structure')).toHaveCount(0)
     await expect(page.getByRole('heading',{name:'Operations command center'})).toBeVisible()
     await expect(page.getByRole('button',{name:'Refresh status'})).toBeEnabled()
+    await page.keyboard.press('Tab')
+    await expect(page.getByRole('link',{name:'Skip to admin content'})).toBeFocused()
+    await page.keyboard.press('Enter')
+    await expect(page.locator('#admin-content')).toBeFocused()
+    for(const width of [320,393,1440]){
+      await page.setViewportSize({width,height:900})
+      await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true)
+    }
+    await page.setViewportSize(testInfo.project.use.viewport ?? {width:1280,height:720})
+    await page.evaluate(()=>window.scrollTo(0,0))
     await page.screenshot({path:testInfo.outputPath('admin-dashboard.png')})
     await nav.getByRole('link',{name:'Question bank'}).click()
     await expect(page.getByRole('heading',{name:'Question workspace',exact:true})).toBeVisible()

@@ -217,3 +217,17 @@ a { color: inherit; }
   .dashboard-hero-art::before { content: ''; position: absolute; inset: 13px; border: 1px solid #d0b5fa22; border-radius: 50%; }
 }
 @media (prefers-reduced-motion: reduce) { .dashboard-shell * { transition: none; } }
+@media (max-width: 639px) {
+  .dashboard-sidebar { padding: 14px 12px 9px; }
+  .dashboard-brand { padding-bottom: 11px; }
+  .dashboard-navigation { padding: 5px 5px 8px; }
+  .dashboard-secondary-nav { gap: 0; }
+  .dashboard-secondary-nav .dashboard-nav-item { font-size: 11px; gap: 7px; padding: 8px; min-height: 44px; }
+  .dashboard-secondary-nav svg { width: 16px; height: 16px; }
+  .dashboard-topbar { display: none; }
+  .dashboard-content { padding: 24px 18px 30px; }
+  .dashboard-heading { margin-bottom: 22px; gap: 12px; }
+  .dashboard-study-hero { padding: 22px; }
+  .dashboard-shell--admin .dashboard-navigation { display: grid; grid-template-columns: repeat(auto-fit,minmax(86px,1fr)); overflow: visible; }
+  .dashboard-shell--admin .dashboard-nav-item { flex-direction: column; justify-content: center; gap: 6px; padding: 10px 4px; font-size: 11px; white-space: normal; text-align: center; }
+}
