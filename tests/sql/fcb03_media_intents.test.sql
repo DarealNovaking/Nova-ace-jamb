@@ -17,12 +17,14 @@ insert into ace.subjects(id,code,name,active)values
  ('04000000-0000-4000-8000-000000000005','MDR','Media Diagram Reasoning',true);
 -- Reuse the isolated question-workflow test season: only one active season
 -- is allowed by the real production schema. These changes roll back below.
-do $begin
+do $fixture$
+begin
  if not exists(select 1 from ace.exam_seasons
    where id='03000000-0000-4000-8000-000000000009' and status='active')then
   raise exception 'Expected disposable workflow fixture not present';
  end if;
-end$;
+end
+$fixture$;
 insert into ace.syllabus_versions(id,season_id,subject_id,version,title,rights_status,status,activated_at)values
  ('04000000-0000-4000-8000-000000000008',
   '03000000-0000-4000-8000-000000000009',
