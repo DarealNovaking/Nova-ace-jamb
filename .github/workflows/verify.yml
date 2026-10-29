@@ -33,8 +33,8 @@ jobs:
       - run: deno check supabase/functions/_shared/questionMedia.ts supabase/functions/_shared/questionMediaUpload.ts
       - name: Type-check real WASM sanitizer and execute actual decoding tests
         run: |
-          deno check supabase/functions/_shared/magickQuestionSanitizer.ts
-          deno test --allow-read tests/deno/fcb03-magick-sanitizer.test.ts
+          deno check --node-modules-dir=auto supabase/functions/_shared/magickQuestionSanitizer.ts
+          deno test --node-modules-dir=auto --allow-read tests/deno/fcb03-magick-sanitizer.test.ts
       - run: npm run typecheck
       - name: Build and report bundle module attribution
         env:
