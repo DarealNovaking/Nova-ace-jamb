@@ -2,6 +2,12 @@
 
 > **Current-state rule:** this opening section is authoritative. Entries below the historical divider are evidence history and do not override this section.
 
+## Current: student display confirmed; final withdrawal/restoration pending — 29 October 2026
+
+Owner-reported student acceptance — 29 October 2026: the owner confirms “I can see topics and subtopics.” Mark the student display check PASS (owner-reported; not an automated signed-in browser run). Publication and activation remain independently verified. Only controlled live withdrawal/restoration acceptance remains open. Exact next action: in the regular Academic Structure page, use Withdraw ACE study index once; independently verify hidden content and inactive baseline before the genuine administrator republishes the same exact index. No new publication copy, deletion, claim spoofing or paid browser run.
+
+### Previous verified state
+
 ## Current: ACE study index published and independently verified — 29 October 2026
 
 The owner completed Publish ACE study index in the genuine administrator session. Fresh read-only Primary verification confirms 100 syllabus versions: 25 active/approved v3 and 75 older drafts. Totals are 322 topics/2123 subtopics, with exactly 108 groups/1167 concepts active. Every new version, topic, concept, practice configuration field and all 25 composition rows match the reviewed package exactly. Source topic/subtopic fingerprints and the private v2 version fingerprint are unchanged. One publication audit binds package 77045759503d5b89be336dad2942bebc9eb67540c1c63c81d75db5324370ba7f and candidate c2b54cf4c6c877cab38e5fbeae6057ff09544aa56093eb0fcd2d34611e19fb20 to a canonical administrator actor.
