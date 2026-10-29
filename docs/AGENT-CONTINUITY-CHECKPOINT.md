@@ -2,6 +2,14 @@
 
 > **Current-state rule:** this opening section is authoritative. Entries below the historical divider are evidence history and do not override this section.
 
+## Current: FCB-03 text-question editor deployed — 29 October 2026
+
+The owner explicitly approved the pending production retry. One build of exact merge `91f610f83df92edf0b03fda735848571fc3a0bd1` succeeded: build `5b390bf3-40ea-4a7b-893d-f4bee10284b5`, completed 13:22 WAT. Cloudflare uploaded the assets and deployed version `074a87c2-dfae-4e39-9a72-e74d404cf64a` at 100%, deployment `931f2f95-efc8-4c71-8c16-f3ecf6f80254`. The previous API 10013 failure and retry approval blocker are resolved; no configuration/source changes or additional retries were needed.
+
+Nine live HTTP checks PASS: home, /admin, /admin-academic, /admin-import and /admin-questions share the expected app shell; the entry bundle contains the question route and correct Supabase project; the academic gate and question queue chunks contain the editor and guarded manage_question/review_questions RPC references; service worker bytes match source. This is HTTP delivery verification, not signed-in browser acceptance. Full prior 214 browser tests and 61 native database scenarios remain valid; no application code changed during this release.
+
+The text-question authoring/review/publication slice is deployed. Backend installation remains verified as recorded below; no questions were published. FCB-03 remains IN PROGRESS: actual signed-in author/reviewer acceptance, rich content/media/storage, imports/moderation/version restoration and the first lawful independently reviewed dataset remain. FCB-02 is VERIFIED COMPLETE and must not be repeated. Next: verify the genuine administrator can open /admin-questions, then continue the remaining content workflow against the recorded design. Release evidence is in docs/evidence/fcb-03-question-workflow-release-2026-10-29.json. Latest continuity is recorded on docs/fcb03-release-retry to avoid an unnecessary second deployment for documentation only.
+
 ## Current: FCB-03 editor merged; production retry requires approval — 29 October 2026
 
 FCB-02 is VERIFIED COMPLETE and active. PR18 merged as91f610f83df92edf0b03fda735848571fc3a0bd1. Text-question workspace/application source cc51a39 passed214unfiltereddesktop/mobilecases(E2E40851850866/job123373018607), all7Verifyjobs(40851850815),61nativePostgreSQLscenarios(57sequential+4actualcontention,job123373019009),61localNode/15Python/typecheck/build. Desktop/mobile editor screenshots inspected; no overflow. Independent review's SQL whitespace mismatch and stale REST fixtures were reproduced/fixed; cross-tab logout/account-change cache clearing was reproduced/fixed in both administrative gates. Final exact-label test issue was confirmed against the enabled dropdown snapshot, then fixed using accessible combobox names; final214PASS, no skipped suite/filter.

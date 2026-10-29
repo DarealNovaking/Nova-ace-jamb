@@ -4803,3 +4803,12 @@ Cloudflare build4ac3635e-6662-4997-a3e5-b155e0db93a4 for merge91f610f built the 
 
 FCB-03 remains IN PROGRESS: finish the editor release and actual signed-in author/reviewer acceptance, then rich media/storage, import/moderation/version restoration and the first lawful independently reviewed dataset. The first-source note reuses the prior materials report and verifies Siyavula's unbranded-edition notices; exact EPUB bytes/component licences and questions are not yet approved. The completed FCB-02 package must not be repeated.
 
+
+## Current: FCB-03 text-question editor deployed — 29 October 2026
+
+The owner explicitly approved the pending production retry. One build of exact merge `91f610f83df92edf0b03fda735848571fc3a0bd1` succeeded: build `5b390bf3-40ea-4a7b-893d-f4bee10284b5`, completed 13:22 WAT. Cloudflare uploaded the assets and deployed version `074a87c2-dfae-4e39-9a72-e74d404cf64a` at 100%, deployment `931f2f95-efc8-4c71-8c16-f3ecf6f80254`. The previous API 10013 failure and retry approval blocker are resolved; no configuration/source changes or additional retries were needed.
+
+Nine live HTTP checks PASS: home, /admin, /admin-academic, /admin-import and /admin-questions share the expected app shell; the entry bundle contains the question route and correct Supabase project; the academic gate and question queue chunks contain the editor and guarded manage_question/review_questions RPC references; service worker bytes match source. This is HTTP delivery verification, not signed-in browser acceptance. Full prior 214 browser tests and 61 native database scenarios remain valid; no application code changed during this release.
+
+The text-question authoring/review/publication slice is deployed. Backend installation remains verified as recorded below; no questions were published. FCB-03 remains IN PROGRESS: actual signed-in author/reviewer acceptance, rich content/media/storage, imports/moderation/version restoration and the first lawful independently reviewed dataset remain. FCB-02 is VERIFIED COMPLETE and must not be repeated. Next: verify the genuine administrator can open /admin-questions, then continue the remaining content workflow against the recorded design. Release evidence is in docs/evidence/fcb-03-question-workflow-release-2026-10-29.json. Latest continuity is recorded on docs/fcb03-release-retry to avoid an unnecessary second deployment for documentation only.
+
