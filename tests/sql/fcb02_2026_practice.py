@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Fixed baseline behavior on an empty isolated recovered database only."""
-import argparse,json,os,subprocess
+import argparse,importlib.util,json,os,subprocess
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[2]
 ADMIN='02000000-0000-4000-8000-000000000001'
@@ -46,7 +46,12 @@ def main():
  a=argparse.ArgumentParser();a.add_argument('--emit',type=Path);a.add_argument('--installer',type=Path,default=ROOT/'supabase/proposals/fcb02_2026_practice_draft.sql');v=a.parse_args();p=plan()
  if v.emit:v.emit.write_text(json.dumps(p));return
  if os.environ.get('ACE_FCB02_DISPOSABLE_TEST')!='1' or not os.environ.get('PGDATABASE','').endswith('_test'):raise SystemExit('Explicit disposable *_test database required')
- def run(sql):return subprocess.run(['psql','-X','-v','ON_ERROR_STOP=1'],input=sql,text=True,capture_output=True)
+ spec=importlib.util.spec_from_file_location('bounded_fcb02_transport',ROOT/'tests/sql/fcb_02_draft_import.py')
+ transport=importlib.util.module_from_spec(spec);spec.loader.exec_module(transport)
+ args,env=transport.connection() # Reject destination/environment before any SQL.
+ def run(sql):return subprocess.run(args,input=sql,text=True,capture_output=True,cwd=ROOT,env=env,timeout=40)
+ preflight=run("do $$begin if (select array_agg(column_name::text order by ordinal_position)from information_schema.columns where table_schema='auth'and table_name='users')is distinct from array['id','email','raw_user_meta_data']::text[] or exists(select 1 from auth.users)or exists(select 1 from ace.subjects)or exists(select 1 from ace.exam_configs)then raise exception 'Empty recovered disposable database required';end if;end$$;")
+ if preflight.returncode:raise SystemExit(preflight.stderr)
  r=run(v.installer.read_text())
  if r.returncode:raise SystemExit(r.stderr)
  for c in p['cases']:
