@@ -58,10 +58,10 @@ function block(value: unknown): RichBlock {
       if (!Array.isArray(value.headers) || value.headers.length < 2 || value.headers.length > 6 ||
           !Array.isArray(value.rows) || value.rows.length < 1 || value.rows.length > 20 ||
           value.rows.length * value.headers.length > 120) fail()
-      const headers = value.headers.map(header => plain(header, 160))
-      const rows: string[][] = value.rows.map(row => {
+      const headers = Array.from(value.headers, header => plain(header, 160))
+      const rows: string[][] = Array.from(value.rows, row => {
         if (!Array.isArray(row) || row.length !== headers.length) fail()
-        return row.map(cell => plain(cell, 240, 0))
+        return Array.from(row, cell => plain(cell, 240, 0))
       })
       return { type: 'table', caption: plain(value.caption, 240), headers, rows }
     }
@@ -98,7 +98,7 @@ export function parseRichContent(value: unknown): RichDocument {
   fields(value, ['version', 'blocks', 'fallback_text'], ['version', 'blocks', 'fallback_text'])
   if (value.version !== 1 || !Array.isArray(value.blocks) ||
       value.blocks.length < 1 || value.blocks.length > MAX_BLOCKS) fail()
-  const blocks = value.blocks.map(block)
+  const blocks = Array.from(value.blocks, block)
   if (blocks.filter(item => item.type === 'image').length > MAX_IMAGES ||
       blocks.filter(item => item.type === 'table').length > MAX_TABLES) fail()
   const document: RichDocument = { version: 1, blocks, fallback_text: '' }
@@ -111,7 +111,8 @@ export function parseRichContent(value: unknown): RichDocument {
 
 /** Helper for constructing a preview while still checking the exact same limits. */
 export function createRichContent(blocks: RichBlock[]): RichDocument {
-  const document: RichDocument = { version: 1, blocks, fallback_text: '' }
+  const normalizedBlocks = Array.from(blocks, block)
+  const document: RichDocument = { version: 1, blocks: normalizedBlocks, fallback_text: '' }
   document.fallback_text = richContentFallback(document)
   return parseRichContent(document)
 }
