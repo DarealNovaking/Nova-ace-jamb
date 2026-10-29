@@ -32,6 +32,14 @@ Verified main includes merged PR22 (`6ba898bdb64161d2b289df5d2e18fe18a3224f6a`).
 
 > **Current-state rule:** this opening section is authoritative. Entries below the historical divider are evidence history and do not override this section.
 
+
+## Current: FCB-03 real image sanitization and upload HTTP boundary verified on source branch — 30 October 2026
+
+PR23 branch `feat/fcb03-rich-content-contract` has a strictly bounded server-only upload HTTP handler, private question/revision image-intent SQL proposal, immutable storage digest attestation, and a real pinned WASM ImageMagick still-image sanitizer. It is **not** a live upload API. Latest implementation SHA `36e76d73b0937f7e1c17c37d63dc85bd3ca3b4fb`: all seven Verify jobs PASS in `40976524664`, with 109 Node tests, 2 real Deno/WASM tests, current typecheck/build and native disposable SQL guards passing. The latest full browser E2E was pending at this checkpoint; do not infer browser PASS. Code is PR23 OPEN/unmerged, production unchanged. No Supabase SQL, Storage, Edge Function, content, user role/session or Cloudflare deployment mutation.
+
+Remaining FCB-03: connect server JWT verification with least-privilege trusted DB transaction and immutable private Storage; media rights/reviewer publication and withdrawal; student-owned-attempt binary proxy, history/retention, moderation, and genuinely independent 40-draft review. Never silently re-enable the catalogue or reopen FCB-01/02. **Exact next action:** implement secure server adapters and gated entrypoint in source with mock/negative tests, then student media delivery. Request specific production authorization only at release boundary.
+
+
 ## Current: FCB-03 student delivery prerequisite repaired in PR22 — 29 October 2026
 
 Read-only live contract inspection found student CBT/topic/evidence services directly queried ace.questions despite authenticated table/column SELECT being revoked. PR22 reuses the existing get_attempt_questions(uuid), unchanged, with actual server attempt ID and strict whole-paper/order/public-field/frozen-option-set validation. Two proposal-only metadata RPCs supply bounded published topic IDs and self-tracked topic mappings without exposing answers or granting table reads. Expired active attempts skip question delivery and preserve saved-answer submit/retry. No production mutation, deployment, account/session change or paid browser action occurred.
