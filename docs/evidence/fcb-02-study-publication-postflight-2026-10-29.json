@@ -1,0 +1,340 @@
+{
+  "date": "2026-10-29 Africa/Lagos",
+  "read_only": true,
+  "summary": {
+    "audits": [
+      {
+        "metadata": {
+          "use_basis": {
+            "kind": "factual_concepts_and_original_arrangement",
+            "scope": "Concept names and ACE arrangement only; excludes source prose, PDFs, books, questions, images and audio.",
+            "authority": "Nigerian Copyright Act 2022, sections 2(5) and 3(a)",
+            "authority_url": "https://www.copyright.gov.ng/wp-content/uploads/2023/04/CopyrightAct2023FinalPublication1.pdf",
+            "decision_date": "2026-10-29",
+            "external_jamb_licence": false
+          },
+          "package_digest": "77045759503d5b89be336dad2942bebc9eb67540c1c63c81d75db5324370ba7f",
+          "previous_state": "absent",
+          "candidate_sha256": "c2b54cf4c6c877cab38e5fbeae6057ff09544aa56093eb0fcd2d34611e19fb20"
+        },
+        "entity_id": "23fc8eb7-2d2e-474f-b4db-c0a69f22cd62",
+        "event_type": "ace_study_index_published",
+        "actor_is_canonical_admin": true
+      }
+    ],
+    "topics": 322,
+    "configs": [
+      {
+        "id": "e98b1ac1-beaa-433a-a904-54d6da2c4861",
+        "name": "2026 UTME official structure",
+        "rules": {
+          "option_labels": [
+            "A",
+            "B",
+            "C",
+            "D"
+          ],
+          "duration_source": "2026 JAMB Training Manual",
+          "all_questions_required": true
+        },
+        "active": false,
+        "version": 1,
+        "season_id": "a3e9c810-bd81-48bd-84e0-9a987e061cc7",
+        "created_at": "2026-09-14T19:10:47.109875+00:00",
+        "composition": {
+          "optional_subjects": {
+            "count": 3,
+            "selection": "candidate_choice",
+            "question_count_each": 40
+          },
+          "required_subjects": [
+            {
+              "subject_code": "ENG",
+              "question_count": 60
+            }
+          ]
+        },
+        "option_count": 4,
+        "total_questions": 180,
+        "duration_seconds": 7200
+      },
+      {
+        "id": "396d1910-d458-5d5f-8484-380bc8c71919",
+        "name": "UTME practice — 2026 rules",
+        "rules": {
+          "source_url": "https://jamb.gov.ng/PDFs/2026/2026%20TRAINING%20MANUAL%20%20final.pdf",
+          "source_year": 2026,
+          "option_labels": [
+            "A",
+            "B",
+            "C",
+            "D"
+          ],
+          "duration_source": "2026 JAMB Training Manual",
+          "practice_notice": "Practice follows the verified 2026 UTME format. 2027 dates and year-specific texts are unconfirmed.",
+          "configuration_basis": "owner_selected_historical_baseline",
+          "all_questions_required": true,
+          "official_2027_confirmed": false
+        },
+        "active": true,
+        "version": 1,
+        "season_id": "23fc8eb7-2d2e-474f-b4db-c0a69f22cd62",
+        "created_at": "2026-10-29T01:19:58.172125+00:00",
+        "composition": {
+          "optional_subjects": {
+            "count": 3,
+            "selection": "candidate_choice",
+            "question_count_each": 40
+          },
+          "required_subjects": [
+            {
+              "subject_code": "ENG",
+              "question_count": 60
+            }
+          ]
+        },
+        "option_count": 4,
+        "total_questions": 180,
+        "duration_seconds": 7200
+      }
+    ],
+    "seasons": [
+      {
+        "id": "a3e9c810-bd81-48bd-84e0-9a987e061cc7",
+        "code": "jamb-2026",
+        "name": "JAMB UTME 2026",
+        "status": "closed",
+        "ends_at": null,
+        "metadata": {
+          "note": "Historical official configuration retained for reproducibility.",
+          "verified_on": "2026-09-14",
+          "official_source": "https://www.jamb.gov.ng/PDFs/2026/2026%20TRAINING%20MANUAL%20%20final.pdf"
+        },
+        "exam_year": 2026,
+        "starts_at": null,
+        "created_at": "2026-09-14T19:10:47.109875+00:00",
+        "updated_at": "2026-09-14T19:10:47.109875+00:00"
+      },
+      {
+        "id": "23fc8eb7-2d2e-474f-b4db-c0a69f22cd62",
+        "code": "jamb-2027",
+        "name": "JAMB UTME 2027",
+        "status": "active",
+        "ends_at": null,
+        "metadata": {
+          "note": "Future season scaffold. Do not invent dates, composition or programme requirements until JAMB publishes/updates authoritative information.",
+          "official_source": "https://jamb.gov.ng/"
+        },
+        "exam_year": 2027,
+        "starts_at": null,
+        "created_at": "2026-09-14T19:10:47.109875+00:00",
+        "updated_at": "2026-10-29T07:46:40.786229+00:00"
+      }
+    ],
+    "versions": 100,
+    "subtopics": 2123,
+    "active_topics": 108,
+    "version_states": [
+      {
+        "count": 1,
+        "status": "draft",
+        "version": 1,
+        "rights_status": "approved"
+      },
+      {
+        "count": 49,
+        "status": "draft",
+        "version": 1,
+        "rights_status": "pending"
+      },
+      {
+        "count": 25,
+        "status": "draft",
+        "version": 2,
+        "rights_status": "pending"
+      },
+      {
+        "count": 25,
+        "status": "active",
+        "version": 3,
+        "rights_status": "approved"
+      }
+    ],
+    "active_subtopics": 1167,
+    "composition_rows": 25
+  },
+  "exact_comparison": {
+    "versions": true,
+    "topics": true,
+    "subtopics": true,
+    "config": true,
+    "composition": true,
+    "source_topics_preserved": true,
+    "source_subtopics_preserved": true,
+    "source_versions_preserved": true
+  },
+  "visibility": {
+    "method": "Read-only transaction; SET LOCAL ROLE authenticated without JWT identity; no account impersonation",
+    "versions": 25,
+    "topics": 108,
+    "subtopics": 1167,
+    "private_versions_visible": 0,
+    "configs": 1,
+    "blueprint": "Correct active 2026 practice baseline"
+  },
+  "focused_tests": {
+    "command": "node --test tests/study-publication.test.mjs tests/student-syllabus.test.mjs",
+    "passed": 7
+  },
+  "remaining": {},
+  "status": "FCB-02 VERIFIED COMPLETE for original ACE concept index and labelled 2026 practice baseline",
+  "student_acceptance": {
+    "status": "PASS",
+    "method": "owner_report",
+    "date": "2026-10-29 Africa/Lagos",
+    "statement": "I can see topics and subtopics"
+  },
+  "withdrawal_acceptance": {
+    "status": "PASS",
+    "date": "2026-10-29 Africa/Lagos",
+    "summary": {
+      "audits": [
+        {
+          "type": "ace_study_index_published",
+          "metadata": {
+            "use_basis": {
+              "kind": "factual_concepts_and_original_arrangement",
+              "scope": "Concept names and ACE arrangement only; excludes source prose, PDFs, books, questions, images and audio.",
+              "authority": "Nigerian Copyright Act 2022, sections 2(5) and 3(a)",
+              "authority_url": "https://www.copyright.gov.ng/wp-content/uploads/2023/04/CopyrightAct2023FinalPublication1.pdf",
+              "decision_date": "2026-10-29",
+              "external_jamb_licence": false
+            },
+            "package_digest": "77045759503d5b89be336dad2942bebc9eb67540c1c63c81d75db5324370ba7f",
+            "previous_state": "absent",
+            "candidate_sha256": "c2b54cf4c6c877cab38e5fbeae6057ff09544aa56093eb0fcd2d34611e19fb20"
+          },
+          "canonical_admin": true
+        },
+        {
+          "type": "ace_study_index_withdrawn",
+          "metadata": {
+            "scope": "Fixed index identifiers; restoration requires complete drift validation",
+            "package_digest": "77045759503d5b89be336dad2942bebc9eb67540c1c63c81d75db5324370ba7f",
+            "candidate_sha256": "c2b54cf4c6c877cab38e5fbeae6057ff09544aa56093eb0fcd2d34611e19fb20"
+          },
+          "canonical_admin": true
+        }
+      ],
+      "index_states": [
+        {
+          "count": 25,
+          "status": "draft",
+          "rights_status": "restricted"
+        }
+      ],
+      "topics_total": 322,
+      "active_topics": 0,
+      "season_status": "draft",
+      "versions_total": 100,
+      "baseline_active": false,
+      "subtopics_total": 2123,
+      "active_subtopics": 0,
+      "composition_rows": 25,
+      "index_activation_timestamps": 0
+    },
+    "visibility": {
+      "visible_topics": 0,
+      "visible_configs": 0,
+      "identity_present": false,
+      "visible_versions": 0,
+      "visible_subtopics": 0
+    }
+  },
+  "restoration_acceptance": {
+    "status": "PASS",
+    "date": "2026-10-29 Africa/Lagos",
+    "exact_comparison": {
+      "versions": true,
+      "topics": true,
+      "subtopics": true,
+      "config": true,
+      "composition": true,
+      "source_topics_preserved": true,
+      "source_subtopics_preserved": true,
+      "source_versions_preserved": true,
+      "no_duplicate_records": true
+    },
+    "totals": {
+      "versions": 100,
+      "topics": 322,
+      "subtopics": 2123
+    },
+    "active": {
+      "versions": 25,
+      "topics": 108,
+      "subtopics": 1167,
+      "config": "396d1910-d458-5d5f-8484-380bc8c71919"
+    },
+    "season": {
+      "status": "active",
+      "ends_at": null,
+      "starts_at": null
+    },
+    "audits": [
+      {
+        "metadata": {
+          "use_basis": {
+            "kind": "factual_concepts_and_original_arrangement",
+            "scope": "Concept names and ACE arrangement only; excludes source prose, PDFs, books, questions, images and audio.",
+            "authority": "Nigerian Copyright Act 2022, sections 2(5) and 3(a)",
+            "authority_url": "https://www.copyright.gov.ng/wp-content/uploads/2023/04/CopyrightAct2023FinalPublication1.pdf",
+            "decision_date": "2026-10-29",
+            "external_jamb_licence": false
+          },
+          "package_digest": "77045759503d5b89be336dad2942bebc9eb67540c1c63c81d75db5324370ba7f",
+          "previous_state": "absent",
+          "candidate_sha256": "c2b54cf4c6c877cab38e5fbeae6057ff09544aa56093eb0fcd2d34611e19fb20"
+        },
+        "event_type": "ace_study_index_published",
+        "canonical_admin": true
+      },
+      {
+        "metadata": {
+          "scope": "Fixed index identifiers; restoration requires complete drift validation",
+          "package_digest": "77045759503d5b89be336dad2942bebc9eb67540c1c63c81d75db5324370ba7f",
+          "candidate_sha256": "c2b54cf4c6c877cab38e5fbeae6057ff09544aa56093eb0fcd2d34611e19fb20"
+        },
+        "event_type": "ace_study_index_withdrawn",
+        "canonical_admin": true
+      },
+      {
+        "metadata": {
+          "use_basis": {
+            "kind": "factual_concepts_and_original_arrangement",
+            "scope": "Concept names and ACE arrangement only; excludes source prose, PDFs, books, questions, images and audio.",
+            "authority": "Nigerian Copyright Act 2022, sections 2(5) and 3(a)",
+            "authority_url": "https://www.copyright.gov.ng/wp-content/uploads/2023/04/CopyrightAct2023FinalPublication1.pdf",
+            "decision_date": "2026-10-29",
+            "external_jamb_licence": false
+          },
+          "package_digest": "77045759503d5b89be336dad2942bebc9eb67540c1c63c81d75db5324370ba7f",
+          "previous_state": "withdrawn",
+          "candidate_sha256": "c2b54cf4c6c877cab38e5fbeae6057ff09544aa56093eb0fcd2d34611e19fb20"
+        },
+        "event_type": "ace_study_index_published",
+        "canonical_admin": true
+      }
+    ],
+    "visibility": {
+      "visible_topics": 108,
+      "visible_configs": 1,
+      "identity_present": false,
+      "visible_versions": 25,
+      "visible_subtopics": 1167,
+      "blueprint_config_id": "396d1910-d458-5d5f-8484-380bc8c71919",
+      "private_versions_visible": 0
+    }
+  },
+  "next": "FCB-03 question/content engine and approved first question dataset"
+}

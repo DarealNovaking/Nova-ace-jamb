@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react'
 import { getCurrentUser } from '../lib/authService'
 import { ace, supabase } from '../lib/supabase'
 import AdminAcademicWorkspace from './AdminAcademicWorkspace'
+import AdminQuestionReviewQueue from './AdminQuestionReviewQueue'
 
-export default function AcademicFoundationGate() {
+export default function AcademicFoundationGate({ workspace = 'academic' }: { workspace?: 'academic' | 'questions' }) {
   const [checking, setChecking] = useState(true)
   const [signedIn, setSignedIn] = useState(false)
   const [allowed, setAllowed] = useState(false)
@@ -13,6 +14,16 @@ export default function AcademicFoundationGate() {
 
   useEffect(() => {
     let active = true
+    let checkedUserId: string | null = null
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_OUT' || (event === 'SIGNED_IN' && checkedUserId && session?.user.id !== checkedUserId)) {
+        active = false
+        setSignedIn(false)
+        setAllowed(false)
+        setCanApprove(false)
+        setChecking(false)
+      }
+    })
     setChecking(true)
     setSignedIn(false)
     setAllowed(false)
@@ -21,6 +32,7 @@ export default function AcademicFoundationGate() {
     async function check() {
       try {
         const user = await getCurrentUser()
+        checkedUserId = user?.id ?? null
         if (!user) return
         if (active) setSignedIn(true)
         const { data, error: roleError } = await ace.rpc('is_admin_or_editor')
@@ -42,7 +54,7 @@ export default function AcademicFoundationGate() {
       }
     }
     void check()
-    return () => { active = false }
+    return () => { active = false; authListener.subscription.unsubscribe() }
   }, [retryCount])
 
   async function signOut() {
@@ -53,5 +65,5 @@ export default function AcademicFoundationGate() {
   if (checking) return <main className="grid min-h-screen place-items-center bg-[#07050d] text-white"><p role="status" aria-live="polite" aria-atomic="true">Verifying academic editor access…</p></main>
   if (!signedIn || !allowed) return <main className="grid min-h-screen place-items-center bg-[#07050d] px-5 text-white"><section className="w-full max-w-lg rounded-3xl border border-white/10 bg-white/[.04] p-7"><h1 className="text-2xl font-black">Academic editor access required</h1><p className="mt-3 text-sm text-white/55">{!signedIn ? 'Sign in with an authorized administrator or content-editor account to continue.' : error || 'Your account does not have academic editing permission.'}</p><div className="mt-6 flex gap-3"><button type="button" onClick={() => window.location.assign('/')} className="rounded-xl bg-white px-5 py-3 text-sm font-bold text-black">Back to ACE JAMB</button>{signedIn && error === 'Unable to verify academic editor access. Please try again.' && <button type="button" onClick={() => setRetryCount((value) => value + 1)} className="rounded-xl border border-purple-300/30 px-5 py-3 text-sm font-semibold text-purple-100">Retry academic editor verification</button>}{signedIn && <button type="button" onClick={() => void signOut()} className="rounded-xl border border-white/10 px-5 py-3 text-sm">Sign out</button>}</div></section></main>
 
-  return <main className="min-h-screen bg-[#07050d] px-4 py-8 text-white sm:px-6"><div className="mx-auto max-w-6xl"><header className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"><div><p className="text-xs uppercase tracking-[.2em] text-purple-300/70">ÑØVÃ ACE JAMB · Editorial tools</p><h1 className="mt-2 text-3xl font-black sm:text-4xl">Academic Structure</h1><p className="mt-2 text-sm text-white/50">Source-backed syllabus drafts, rights review, topics and subtopics.</p></div><div className="flex gap-2"><a href="/admin" className="rounded-xl border border-white/10 px-4 py-3 text-sm">Admin dashboard</a><button type="button" onClick={() => void signOut()} className="rounded-xl border border-white/10 px-4 py-3 text-sm">Sign out</button></div></header><AdminAcademicWorkspace canApprove={canApprove}/></div></main>
+  return <main className="min-h-screen bg-[#07050d] px-4 py-8 text-white sm:px-6"><div className="mx-auto max-w-6xl"><header className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"><div><p className="text-xs uppercase tracking-[.2em] text-purple-300/70">ÑØVÃ ACE JAMB · Editorial tools</p><h1 className="mt-2 text-3xl font-black sm:text-4xl">{workspace === 'questions' ? 'Question workspace' : 'Academic Structure'}</h1><p className="mt-2 text-sm text-white/50">{workspace === 'questions' ? 'Private drafts, independent review and audited publication.' : 'Source-backed syllabus drafts, rights review, topics and subtopics.'}</p></div><div className="flex gap-2"><a href="/admin" className="rounded-xl border border-white/10 px-4 py-3 text-sm">Admin dashboard</a><button type="button" onClick={() => void signOut()} className="rounded-xl border border-white/10 px-4 py-3 text-sm">Sign out</button></div></header>{workspace === 'questions' ? <AdminQuestionReviewQueue/> : <AdminAcademicWorkspace canApprove={canApprove}/>}</div></main>
 }

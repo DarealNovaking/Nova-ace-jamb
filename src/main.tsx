@@ -24,6 +24,10 @@ function AppShell() {
     return () => window.removeEventListener('popstate', onPopState);
   }, []);
 
+  if (window.location.pathname === '/admin-questions') {
+    return <Suspense fallback={<WorkspaceLoading label="Loading question workspace…" />}><AcademicFoundationGate workspace="questions" /></Suspense>;
+  }
+
   if (window.location.pathname === '/admin-academic') {
     return <Suspense fallback={<WorkspaceLoading label="Loading academic workspace…" />}><AcademicFoundationGate /></Suspense>;
   }
