@@ -163,11 +163,11 @@ begin
  if ace.authorize_attempt_question_media(attempt,question,asset) is not null then
   raise exception 'Question author was accepted as independent media reviewer';
  end if;
- update ace.question_media set reviewed_by='05000000-0000-4000-8000-000000000002',reviewed_at=null where id=asset;
+ update ace.question_media set reviewed_by=null,reviewed_at=null where id=asset;
  if ace.authorize_attempt_question_media(attempt,question,asset) is not null then
   raise exception 'Unreviewed media was delivered';
  end if;
- update ace.question_media set reviewed_at=clock_timestamp() where id=asset;
+ update ace.question_media set reviewed_by='05000000-0000-4000-8000-000000000002',reviewed_at=clock_timestamp() where id=asset;
 
  update ace.question_media set storage_path='staging/v1/'||question::text||'/'||asset::text where id=asset;
  if ace.authorize_attempt_question_media(attempt,question,asset) is not null then
