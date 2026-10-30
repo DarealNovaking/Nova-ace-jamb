@@ -42,6 +42,7 @@ select (ace.reserve_question_media_intent(
  '06000000-0000-4000-8000-00000000000b',
  'A rectangle with labelled length and width','Original diagram created for ACE.',
  'image/png',12,repeat('a',64))->>'id' as asset_id \gset
+select set_config('fcb03.test.asset_id', :'asset_id', true);
 select ace.confirm_question_media_intent(:'asset_id'::uuid,'image/png',12,repeat('a',64));
 
 do $bad_asset$
@@ -95,7 +96,7 @@ do $checks$
 declare q jsonb;
 begin
  select to_jsonb(x) into q from ace.questions x where id='06000000-0000-4000-8000-000000000004';
- if q->>'content_version'<>'2' or q->'rich_content'->'blocks'->1->>'asset_id'<>current_setting('fcb03.test.asset_id',true) then
+ if q->>'content_version'<>'2' or q->'rich_content'->'blocks'->1->>'asset_id'<>current_setting('fcb03.test.asset_id') then
   -- The psql variable is not automatically a GUC; compare against the intent table instead.
   if not exists(select 1 from ace.question_media_intents i where i.id=(q->'rich_content'->'blocks'->1->>'asset_id')::uuid
    and i.question_id=q->>'id' and i.status='verified') then
@@ -164,11 +165,11 @@ do $published$
 begin
  if not exists(select 1 from ace.questions where id='06000000-0000-4000-8000-000000000004'
   and active and review_status='published' and content_version=5
-  and rich_content->'blocks'->1->>'asset_id'=:'asset_id') then
+  and rich_content->'blocks'->1->>'asset_id'=current_setting('fcb03.test.asset_id')) then
   raise exception 'Rich question publication did not preserve the reviewed document';
  end if;
  if not exists(select 1 from ace.question_versions where question_id='06000000-0000-4000-8000-000000000004'
-  and version=5 and snapshot->'rich_content'->'blocks'->1->>'asset_id'=:'asset_id') then
+  and version=5 and snapshot->'rich_content'->'blocks'->1->>'asset_id'=current_setting('fcb03.test.asset_id')) then
   raise exception 'Published immutable version lost rich content';
  end if;
 end

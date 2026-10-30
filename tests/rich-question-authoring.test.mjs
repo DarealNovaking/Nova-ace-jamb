@@ -1,13 +1,24 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
+import { createRequire } from 'node:module'
 import ts from 'typescript'
 
 const workflowSource = readFileSync(new URL('../src/lib/questionWorkflow.ts', import.meta.url), 'utf8')
-const compile = ts.transpileModule(workflowSource, {
-  compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 },
+const compile = code => ts.transpileModule(code, {
+  compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
 }).outputText
-const workflow = await import('data:text/javascript;base64,' + Buffer.from(compile).toString('base64'))
+const requireNative = createRequire(import.meta.url)
+const load = (code, dependencies = {}) => {
+  const module = { exports: {} }
+  new Function('require', 'module', 'exports', code)(
+    name => dependencies[name] ?? requireNative(name), module, module.exports,
+  )
+  return module.exports
+}
+const richSource = readFileSync(new URL('../src/lib/richContent.ts', import.meta.url), 'utf8')
+const richContent = load(compile(richSource))
+const workflow = load(compile(workflowSource), { './richContent': richContent })
 const questionId = '03000000-0000-4000-8000-000000000001'
 const draft = () => ({
   subject_id: questionId, topic_id: questionId, subtopic_id: null,
@@ -47,7 +58,9 @@ test('authoring UI exposes bounded block types and requires saved draft for uplo
   assert.match(composer, /Table/)
   assert.match(composer, /Diagram/)
   assert.match(composer, /Save this as a private draft first/)
-  assert.match(composer, /question-media-upload/)
+  assert.match(composer, /uploadQuestionMedia/)
+  const client = readFileSync(new URL('../src/lib/questionMediaClient.ts', import.meta.url), 'utf8')
+  assert.match(client, /question-media-upload/)
   assert.doesNotMatch(composer, /dangerouslySetInnerHTML/)
 })
 test('rich media publication remains blocked until a promoted private object exists', () => {
