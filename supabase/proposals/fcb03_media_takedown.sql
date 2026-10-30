@@ -3,7 +3,7 @@ begin;
 create function ace.takedown_question_media(p_question uuid,p_asset uuid,p_reason text)
 returns jsonb language plpgsql security definer
 set search_path=pg_catalog,pg_temp set lock_timeout='3s' as $$
-declare actor uuid:=auth.uid(); q ace.questions%rowtype; m ace.question_media%rowtype;
+declare actor uuid:=auth.uid(); actor_role text; q ace.questions%rowtype; m ace.question_media%rowtype;
  latest ace.question_media_reviews%rowtype; saved ace.question_media_reviews%rowtype;
  reason text:=ace.question_trim(p_reason);
 begin
