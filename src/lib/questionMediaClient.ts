@@ -135,3 +135,35 @@ export async function fetchQuestionMediaPreviewObjectUrl(
       (length !== null && blob.size !== length)) throw new Error('Private image unavailable')
   return URL.createObjectURL(blob)
 }
+
+/** Promote and publish an approved image question through the trusted server workflow. */
+export async function publishRichQuestion(
+  questionId: string,
+  approvedVersion: number,
+): Promise<{id:string;status:'published';version:number}> {
+  if (!UUID.test(questionId) || !Number.isSafeInteger(approvedVersion) ||
+      approvedVersion < 1 || approvedVersion >= 2147483647) {
+    throw new Error('Private image publication is not ready.')
+  }
+  const { data, error } = await supabase.auth.getSession()
+  const token = data.session?.access_token
+  if (error || !token) throw new Error('Sign in again before publishing this question.')
+  const response = await fetch(new URL('/functions/v1/question-media-publish', supabaseUrl).toString(), {
+    method: 'POST',
+    headers: { authorization: 'Bearer ' + token, apikey: supabasePublishableKey, 'content-type': 'application/json' },
+    body: JSON.stringify({ question_id: questionId, question_version: approvedVersion }),
+    cache: 'no-store',
+    credentials: 'omit',
+    referrerPolicy: 'no-referrer',
+  })
+  if (!response.ok) throw new Error('Private image publication is not ready. Confirm every rights review and try again.')
+  let result: unknown
+  try { result = await response.json() } catch { throw new Error('Question publication could not be confirmed. Refresh before retrying.') }
+  if (!result || typeof result !== 'object' || Array.isArray(result) ||
+      Object.keys(result).some(key => !['id','status','version'].includes(key)) ||
+      !('id' in result) || !('status' in result) || !('version' in result) ||
+      result.id !== questionId || result.status !== 'published' || result.version !== approvedVersion + 1) {
+    throw new Error('Question publication could not be confirmed. Refresh before retrying.')
+  }
+  return result as {id:string;status:'published';version:number}
+}

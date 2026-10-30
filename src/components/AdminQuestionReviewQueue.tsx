@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { FileQuestion, Loader2, RefreshCw } from 'lucide-react'
 import { getCurrentUser } from '../lib/authService'
 import { listQuestionReview, mutateQuestion, reviewQuestionMediaIntent } from '../lib/questionWorkflowService'
+import { publishRichQuestion } from '../lib/questionMediaClient'
 import { questionActions, type QuestionAction, type QuestionQueue, type QuestionRow, type QuestionStatus } from '../lib/questionWorkflow'
 import AdminQuestionEditor from './AdminQuestionEditor'
 import AdminRichContentPreview from './AdminRichContentPreview'
@@ -27,6 +28,7 @@ export default function AdminQuestionReviewQueue() {
   const [notes,setNotes]=useState<Record<string,string>>({})
   const [mediaNotes,setMediaNotes]=useState<Record<string,string>>({})
   const [mediaRights,setMediaRights]=useState<Record<string,'owned'|'licensed'|'permitted'>>({})
+  const [mediaApproved,setMediaApproved]=useState<Record<string,boolean>>({})
   const [mediaBusy,setMediaBusy]=useState<string|null>(null)
   const sequence=useRef(0)
   async function refresh() {
@@ -42,20 +44,22 @@ export default function AdminQuestionReviewQueue() {
   async function transition(row:QuestionRow,action:Exclude<QuestionAction,'save'>) {
     setBusy(true);setError('');setNotice('')
     try {
-      await mutateQuestion(action,row.id,row.content_version,['reject','withdraw'].includes(action)?{reason:notes[row.id]?.trim()??''}:{})
+      if(action==='publish'&&row.rich_content?.blocks.some(block=>block.type==='image')) await publishRichQuestion(row.id,row.content_version)
+      else await mutateQuestion(action,row.id,row.content_version,['reject','withdraw'].includes(action)?{reason:notes[row.id]?.trim()??''}:{})
       setNotice(messages[action]);await refresh()
     }catch{setMustReload(true);setError('The change could not be confirmed. Reload question records before retrying. No publication is assumed.')}
     finally{setBusy(false)}
   }
   async function reviewMedia(row:QuestionRow,assetId:string,decision:'approved'|'rejected') {
-    const key=row.id+':'+assetId
+    const key=row.id+':'+row.content_version+':'+assetId
     const evidence=(mediaNotes[key]??'').trim()
     if(evidence.length<8){setError('Add specific rights evidence before recording a media decision.');return}
     setMediaBusy(key);setError('');setNotice('')
     try {
       await reviewQuestionMediaIntent(row.id,row.content_version,assetId,decision,
         decision==='approved'?(mediaRights[key]??'owned'):'restricted',evidence)
-      setNotice(decision==='approved'?'Independent media-rights approval recorded. Publishing remains blocked until private promotion is complete.':'Media rights rejected; this image cannot be published.')
+      setMediaApproved(prev=>({...prev,[key]:decision==='approved'}))
+      setNotice(decision==='approved'?'Independent media-rights approval recorded. Publishing is now available after all diagrams are approved.':'Media rights rejected; this image cannot be published.')
       await refresh()
     } catch {
       setError('The media-rights decision could not be confirmed. Check the exact revision and reviewer independence, then refresh before retrying.')
@@ -85,8 +89,9 @@ export default function AdminQuestionReviewQueue() {
         {row.review_status==='approved'&&queue.actor_role==='admin'&&row.reviewed_by===userId&&row.rich_content?.blocks.some(block=>block.type==='image')&&<section className="mt-3 rounded-xl border border-purple-300/20 bg-purple-300/5 p-3">
           <h4 className="text-sm font-bold">Independent diagram-rights review</h4>
           <p className="mt-1 text-xs leading-5 text-white/55">Inspect each private diagram above. This decision is separate from question approval and is tied to this exact approved revision.</p>
+          <p className="mt-1 text-xs leading-5 text-amber-100/75">After reloading this page, re-confirm the recorded decision with the same evidence before the publish action is enabled again.</p>
           {row.rich_content.blocks.filter(block=>block.type==='image').map(block=>{
-            const key=row.id+':'+block.asset_id
+            const key=row.id+':'+row.content_version+':'+block.asset_id
             return <div key={block.asset_id} className="mt-3 rounded-lg border border-white/10 p-3">
               <p className="break-words text-sm font-semibold">{block.alt}</p>
               {block.caption&&<p className="mt-1 text-xs text-white/55">{block.caption}</p>}
@@ -111,7 +116,7 @@ export default function AdminQuestionReviewQueue() {
         <div className="mt-4 flex flex-wrap gap-2">
           <button type="button" disabled={disabled} className={button} onClick={()=>{setNotice('');setHistory(row)}}>Version history</button>
           {!row.active&&(row.created_by===userId||queue.actor_role==='admin')&&<button type="button" disabled={disabled} className={button} onClick={()=>{setNotice('');setEditor(row)}}>Edit private question</button>}
-          {questionActions(row,userId,queue.actor_role).map(action=><button key={action} type="button" disabled={disabled||(['reject','withdraw'].includes(action)&&!notes[row.id]?.trim())||(action==='publish'&&!!row.rich_content?.blocks.some(block=>block.type==='image'))} className={button} onClick={()=>void transition(row,action)}>{labels[action]}</button>)}
+          {questionActions(row,userId,queue.actor_role).map(action=><button key={action} type="button" disabled={disabled||(['reject','withdraw'].includes(action)&&!notes[row.id]?.trim())||(action==='publish'&&!!row.rich_content?.blocks.some(block=>block.type==='image')&&!row.rich_content.blocks.filter(block=>block.type==='image').every(block=>mediaApproved[row.id+':'+row.content_version+':'+block.asset_id]===true))} className={button} onClick={()=>void transition(row,action)}>{labels[action]}</button>)}
         </div>
         {questionActions(row,userId,queue.actor_role).some(a=>a==='reject'||a==='withdraw')&&<label className="mt-3 block text-sm font-semibold text-white/70">Review note for question {row.id}<textarea rows={2} disabled={disabled} maxLength={2000} className="field mt-2" value={notes[row.id]??''} onChange={e=>setNotes(n=>({...n,[row.id]:e.target.value}))}/></label>}
       </li>)}</ul>
