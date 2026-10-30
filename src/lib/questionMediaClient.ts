@@ -94,3 +94,44 @@ export async function fetchQuestionMediaObjectUrl(
   }
   return URL.createObjectURL(blob)
 }
+
+
+/** Fetch a staged diagram through the role/revision-scoped reviewer proxy. */
+export async function fetchQuestionMediaPreviewObjectUrl(
+  questionId: string,
+  questionVersion: number,
+  assetId: string,
+  signal?: AbortSignal,
+): Promise<string> {
+  if (![questionId, assetId].every(id => UUID.test(id)) ||
+      !Number.isSafeInteger(questionVersion) || questionVersion < 1) {
+    throw new Error('Private image unavailable')
+  }
+  const { data, error } = await supabase.auth.getSession()
+  const token = data.session?.access_token
+  if (error || !token) throw new Error('Private image unavailable')
+  const endpoint = new URL('/functions/v1/question-media-preview', supabaseUrl)
+  endpoint.searchParams.set('question_id', questionId)
+  endpoint.searchParams.set('question_version', String(questionVersion))
+  endpoint.searchParams.set('asset_id', assetId)
+  const response = await fetch(endpoint.toString(), {
+    method: 'GET',
+    headers: { authorization: 'Bearer ' + token, apikey: supabasePublishableKey },
+    cache: 'no-store',
+    credentials: 'omit',
+    referrerPolicy: 'no-referrer',
+    signal,
+  })
+  if (!response.ok) throw new Error('Private image unavailable')
+  const mime = (response.headers.get('content-type') || '').split(';', 1)[0].trim().toLowerCase()
+  if (!MIME.has(mime)) throw new Error('Private image unavailable')
+  const claimedLength = response.headers.get('content-length')
+  const length = claimedLength === null ? null : Number(claimedLength)
+  if (length !== null && (!Number.isSafeInteger(length) || length < 1 || length > MAX_BYTES)) {
+    throw new Error('Private image unavailable')
+  }
+  const blob = await response.blob()
+  if (blob.size < 1 || blob.size > MAX_BYTES || blob.type.toLowerCase() !== mime ||
+      (length !== null && blob.size !== length)) throw new Error('Private image unavailable')
+  return URL.createObjectURL(blob)
+}

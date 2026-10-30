@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { createRichContent, type RichBlock, type RichDocument } from '../lib/richContent'
 import { uploadQuestionMedia } from '../lib/questionMediaClient'
-import RichContentView from './RichContentView'
+import AdminRichContentPreview from './AdminRichContentPreview'
 
 type Props = {
   value: RichDocument | null
@@ -181,7 +181,7 @@ export default function AdminRichContentComposer({
     </div>
     {value && <div className="mt-5 rounded-xl border border-white/10 p-3">
       <h5 className="text-sm font-bold">Safe content preview</h5>
-      <div className="mt-2"><RichContentView value={value} imageSources={localSources}/></div>
+      <div className="mt-2"><AdminRichContentPreview questionId={questionId} questionVersion={questionVersion} value={value} localImageSources={localSources}/></div>
     </div>}
   </section>
 }
