@@ -1,0 +1,26 @@
+\set ON_ERROR_STOP on
+-- Runs only after the isolated FCB-03 media-intents fixture installed the functions.
+-- Never uses production credentials or enables any media upload service.
+create role ace_media_executor nologin;
+\ir ../../supabase/proposals/fcb03_media_executor_grants.sql
+do $checks$
+begin
+ if not has_schema_privilege('ace_media_executor','ace','usage')
+ or not has_function_privilege('ace_media_executor',
+  'ace.reserve_question_media_intent(uuid,integer,uuid,text,text,text,integer,text)','execute')
+ or not has_function_privilege('ace_media_executor',
+  'ace.confirm_question_media_intent(uuid,text,integer,text)','execute') then
+  raise exception 'Dedicated media executor is missing required narrow function grants';
+ end if;
+ if has_table_privilege('ace_media_executor','ace.questions','select')
+ or has_table_privilege('ace_media_executor','ace.question_media_intents','select')
+ or has_table_privilege('ace_media_executor','ace.question_media_intents','insert')
+ or has_table_privilege('ace_media_executor','ace.question_media','insert')
+ or has_function_privilege('anon','ace.confirm_question_media_intent(uuid,text,integer,text)','execute')
+ or has_function_privilege('authenticated','ace.reserve_question_media_intent(uuid,integer,uuid,text,text,text,integer,text)','execute') then
+  raise exception 'Private media executor or public function privileges leaked';
+ end if;
+ raise notice 'FCB03 executor PASS: grants only two private functions, no direct table CRUD';
+end
+$checks$;
+-- Disposable PostgreSQL fixture only.
