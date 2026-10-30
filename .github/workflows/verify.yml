@@ -35,6 +35,8 @@ jobs:
         run: |
           deno check --node-modules-dir=auto supabase/functions/_shared/magickQuestionSanitizer.ts
           deno test --node-modules-dir=auto --allow-read tests/deno/fcb03-magick-sanitizer.test.ts
+      - name: Type-check source-only authenticated Supabase media Edge integration
+        run: deno check --node-modules-dir=auto supabase/functions/question-media-upload/index.ts
       - run: npm run typecheck
       - name: Build and report bundle module attribution
         env:
@@ -305,3 +307,5 @@ jobs:
         run: psql -X -v ON_ERROR_STOP=1 -f tests/sql/fcb03_rich_content.test.sql
       - name: Verify isolated private question image-intent guards and revision binding
         run: psql -X -v ON_ERROR_STOP=1 -f tests/sql/fcb03_media_intents.test.sql
+      - name: Reject table exposure from least-privilege media executor proposal
+        run: psql -X -v ON_ERROR_STOP=1 -f tests/sql/fcb03_media_executor.test.sql
