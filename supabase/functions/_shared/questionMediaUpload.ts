@@ -157,7 +157,19 @@ export function createQuestionMediaUploadHandler(deps: UploadDependencies): (req
         // Verified idempotent replay is valid only because SQL independently
         // compared the exact digest, metadata, question and editor identity.
         if (!UUID.test(intent.id) || intent.question_id !== question ||
-            intent.question_version !== Number(version)) throw Error('Invalid replay')
+            intent.question_version !== Number(version) ||
+            intent.storage_path !== 'staging/v1/' + question + '/' + intent.id) {
+          throw Error('Invalid replay')
+        }
+        // A verified DB row is not proof that an immutable object is still
+        // present and intact. Check bytes on replay; never rewrite it.
+        const replay = await deps.storage.read(intent.storage_path)
+        if (!replay || replay.mime !== prepared.mime ||
+            !(replay.bytes instanceof Uint8Array) ||
+            replay.bytes.length !== prepared.bytes.length) throw Error('Missing image')
+        const digest = new Uint8Array(await crypto.subtle.digest('SHA-256', replay.bytes))
+        const sha256 = Array.from(digest, b => b.toString(16).padStart(2, '0')).join('')
+        if (sha256 !== prepared.sha256) throw Error('Damaged image')
         return success(200, intent.id)
       }
       await persistQuestionImage(intent, prepared, deps.storage,
