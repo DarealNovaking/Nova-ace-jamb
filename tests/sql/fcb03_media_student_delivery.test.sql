@@ -300,7 +300,16 @@ begin
   raise exception 'Unauthenticated media authorization unexpectedly succeeded';
  exception when sqlstate '28000' then null;
  end;
- raise notice 'FCB-03 student media delivery PASS: exact revision/reference, owner/attempt, publication/rights, verified immutable metadata, private grants';
+ -- A later immutable rejection must revoke delivery even if an older approval remains.
+ perform set_config('request.jwt.claim.sub',student::text,true);
+ insert into ace.question_media_reviews(intent_id,question_version,reviewed_by,decision,rights_status,rights_evidence,reviewed_at)
+ select intent_id,2,'05000000-0000-4000-8000-000000000002','rejected','restricted',
+  'Rights permission withdrawn by reviewer.',clock_timestamp()
+ from ace.question_media where id=asset;
+ if ace.authorize_attempt_question_media(attempt,question,asset) is not null then
+  raise exception 'Later rights rejection failed to revoke previously approved media delivery';
+ end if;
+  raise notice 'FCB-03 student media delivery PASS: exact revision/reference, owner/attempt, publication/rights, verified immutable metadata, private grants';
 end
 $tests$;
 rollback;
