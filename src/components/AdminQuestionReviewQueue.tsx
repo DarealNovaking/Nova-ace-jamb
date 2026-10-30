@@ -4,6 +4,7 @@ import { getCurrentUser } from '../lib/authService'
 import { listQuestionReview, mutateQuestion } from '../lib/questionWorkflowService'
 import { questionActions, type QuestionAction, type QuestionQueue, type QuestionRow, type QuestionStatus } from '../lib/questionWorkflow'
 import AdminQuestionEditor from './AdminQuestionEditor'
+import RichContentView from './RichContentView'
 const AdminQuestionImport = lazy(() => import('./AdminQuestionImport'))
 const AdminQuestionHistory = lazy(() => import('./AdminQuestionHistory'))
 
@@ -63,13 +64,14 @@ export default function AdminQuestionReviewQueue() {
         <div className="flex flex-wrap gap-2 text-xs font-semibold text-white/60"><span className="rounded-lg border border-white/15 px-2 py-1">{row.review_status.replaceAll('_',' ')}</span><span>Revision {row.content_version} · {row.active?'Published':'Private'}</span></div>
         <p className="mt-3 whitespace-pre-wrap break-words text-sm leading-6 text-white/80">{row.stem.slice(0,360)}{row.stem.length>360?'…':''}</p>
         {row.stem.length>360&&<details className="mt-3"><summary className="cursor-pointer text-sm font-semibold text-purple-200">Read full question text</summary><p className="mt-3 whitespace-pre-wrap break-words text-sm leading-6">{row.stem}</p></details>}
+        {row.rich_content&&<details className="mt-3 rounded-lg border border-white/10 p-3"><summary className="cursor-pointer text-sm font-semibold text-purple-200">Preview supplementary learning content</summary><div className="mt-3"><RichContentView value={row.rich_content}/></div><p className="mt-3 text-xs leading-5 text-amber-100/80">Image previews remain unavailable in this review queue until the authenticated private reviewer-preview endpoint is connected. Diagram descriptions remain visible; image questions cannot be published without verified promotion.</p></details>}
         <details className="mt-3 rounded-lg border border-white/10 p-3"><summary className="cursor-pointer text-sm font-semibold text-purple-200">Review answer, explanation and source</summary><ul className="mt-3 space-y-2 text-sm">{row.options.map(option=><li key={option.key} className="whitespace-pre-wrap break-words">{option.key}. {option.text}</li>)}</ul><p className="mt-3 text-sm font-bold">Correct answer: {row.correct_option_key}</p><p className="mt-2 whitespace-pre-wrap break-words text-sm text-white/70">{row.explanation}</p><p className="mt-3 break-words text-sm">{row.exam}{row.exam_year?` · ${row.exam_year}`:''} · {row.provenance.source_title} · {row.provenance.author_label}</p><p className="mt-2 whitespace-pre-wrap break-words text-sm text-white/70">{row.provenance.rights_evidence}</p>{row.provenance.source_url&&<p className="mt-2 break-all text-sm text-white/60">{row.provenance.source_url}</p>}</details>
         <p className="mt-2 break-all text-xs text-white/45">Question ID: {row.id}</p>
         {row.review_status==='in_review'&&(row.created_by===userId||row.provenance.last_content_editor===userId)&&<p className="mt-3 text-sm text-amber-100">A different administrator must review this question.</p>}
         <div className="mt-4 flex flex-wrap gap-2">
           <button type="button" disabled={disabled} className={button} onClick={()=>{setNotice('');setHistory(row)}}>Version history</button>
           {!row.active&&(row.created_by===userId||queue.actor_role==='admin')&&<button type="button" disabled={disabled} className={button} onClick={()=>{setNotice('');setEditor(row)}}>Edit private question</button>}
-          {questionActions(row,userId,queue.actor_role).map(action=><button key={action} type="button" disabled={disabled||(['reject','withdraw'].includes(action)&&!notes[row.id]?.trim())} className={button} onClick={()=>void transition(row,action)}>{labels[action]}</button>)}
+          {questionActions(row,userId,queue.actor_role).map(action=><button key={action} type="button" disabled={disabled||(['reject','withdraw'].includes(action)&&!notes[row.id]?.trim())||(action==='publish'&&!!row.rich_content?.blocks.some(block=>block.type==='image'))} className={button} onClick={()=>void transition(row,action)}>{labels[action]}</button>)}
         </div>
         {questionActions(row,userId,queue.actor_role).some(a=>a==='reject'||a==='withdraw')&&<label className="mt-3 block text-sm font-semibold text-white/70">Review note for question {row.id}<textarea rows={2} disabled={disabled} maxLength={2000} className="field mt-2" value={notes[row.id]??''} onChange={e=>setNotes(n=>({...n,[row.id]:e.target.value}))}/></label>}
       </li>)}</ul>

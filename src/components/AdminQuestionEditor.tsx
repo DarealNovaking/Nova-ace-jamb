@@ -3,6 +3,8 @@ import { ace } from '../lib/supabase'
 import { getActiveExamBlueprint, getSyllabusTree, listActiveSyllabusVersions, type SyllabusVersion, type SyllabusTopic, type SyllabusSubtopic } from '../lib/seasonService'
 import { questionDraftFromRow, validateQuestionDraft, type QuestionDraft, type QuestionRow } from '../lib/questionWorkflow'
 import { mutateQuestion } from '../lib/questionWorkflowService'
+import type { RichDocument } from '../lib/richContent'
+import AdminRichContentComposer from './AdminRichContentComposer'
 
 type Props = { initial: QuestionRow | null; onSaved: (row: QuestionRow) => void; onCancel: () => void; onUncertain: () => void }
 const emptyDraft = (): QuestionDraft => ({subject_id:'',topic_id:'',subtopic_id:null,stem:'',options:['A','B','C','D'].map(key=>({key,text:''})),correct_option_key:'A',explanation:'',difficulty:'medium',exam:'ACE practice',exam_year:null,provenance:{source_kind:'original',source_title:'',author_label:'',source_url:null,rights_evidence:''}})
@@ -10,6 +12,7 @@ const button='min-h-11 rounded-xl border border-white/15 px-4 py-2 text-sm font-
 
 export default function AdminQuestionEditor({initial,onSaved,onCancel,onUncertain}: Props) {
   const [draft,setDraft]=useState<QuestionDraft>(()=>initial?questionDraftFromRow(initial):emptyDraft())
+  const [richContent,setRichContent]=useState<RichDocument|null>(()=>initial?.rich_content??null)
   const [questionId]=useState(()=>initial?.id??crypto.randomUUID())
   const [subjects,setSubjects]=useState<{id:string;name:string}[]>([])
   const [versions,setVersions]=useState<SyllabusVersion[]>([])
@@ -54,7 +57,11 @@ export default function AdminQuestionEditor({initial,onSaved,onCancel,onUncertai
       if(data.subtopic_id&&!subtopics.some(s=>s.id===data.subtopic_id&&s.topic_id===data.topic_id))throw Error('Select a subtopic belonging to this topic.')
     }catch(e){setError(e instanceof Error?e.message:'Complete the question fields.');return}
     setSaving(true)
-    try {onSaved(await mutateQuestion('save',questionId,initial?.content_version??0,data))}
+    try {
+      const payload: QuestionDraft = initial?.rich_content !== undefined || richContent !== null
+        ? { ...data, rich_content: richContent } : data
+      onSaved(await mutateQuestion('save',questionId,initial?.content_version??0,payload))
+    }
     catch {setUncertain(true);onUncertain();setError('The save could not be confirmed. Close the editor and reload question records before retrying. Your text is retained here.')}
     finally{setSaving(false)}
   }
@@ -84,6 +91,14 @@ export default function AdminQuestionEditor({initial,onSaved,onCancel,onUncertai
       <label className="text-sm font-semibold sm:col-span-2">Source URL {draft.provenance.source_kind==='original'?'(optional)':''}<input type="url" required={draft.provenance.source_kind!=='original'} maxLength={2000} className="field mt-2" value={draft.provenance.source_url??''} onChange={e=>change('provenance',{...draft.provenance,source_url:e.target.value||null})}/></label>
       <label className="text-sm font-semibold sm:col-span-2">Usage-rights evidence<textarea required maxLength={4000} rows={3} className="field mt-2" value={draft.provenance.rights_evidence} onChange={e=>change('provenance',{...draft.provenance,rights_evidence:e.target.value})}/></label>
     </fieldset>
+    <AdminRichContentComposer
+      value={richContent}
+      onChange={setRichContent}
+      questionId={questionId}
+      questionVersion={initial?.content_version??0}
+      canUpload={!!initial && !initial.active && ['draft','rejected'].includes(initial.review_status)}
+      disabled={loading||saving||uncertain}
+    />
     <p className="mt-4 break-all text-xs text-white/45">Question ID: {questionId}</p>
     <div className="mt-5 flex flex-wrap gap-3"><button disabled={unavailable||!versions.length} type="submit" className={`${button} bg-purple-300 text-[#120b1c]`}>{saving?'Saving private draft…':'Save private draft'}</button><button type="button" disabled={saving} className={button} onClick={onCancel}>Close editor</button></div>
   </form>
