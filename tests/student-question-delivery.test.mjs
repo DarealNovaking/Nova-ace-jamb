@@ -20,7 +20,7 @@ test('strictly parses complete frozen paper in server-owned attempt order',()=>{
  const result=parseAttemptQuestions([row(second),row(first)],[second,first]);assert.deepEqual(result.map(x=>x.id),[second,first]);assert.equal(result[0].text,'A reviewed frozen question');assert.equal(result[0].options[1].key,'B')
 })
 const richImage='03000000-0000-4000-8000-000000000003'
-const richDocument={version:1,blocks:[{type:'paragraph',text:'Length: 3 units; width: 2 units.'},{type:'image',asset_id:richImage,alt:'A labelled geometry diagram',caption:'Diagram 1'}],fallback_text:'A reviewed frozen question\n\nDiagram: A labelled geometry diagram\nDiagram 1'}
+const richDocument={version:1,blocks:[{type:'paragraph',text:'Length: 3 units; width: 2 units.'},{type:'image',asset_id:richImage,alt:'A labelled geometry diagram',caption:'Diagram 1'}],fallback_text:'Length: 3 units; width: 2 units.\n\nDiagram: A labelled geometry diagram\nDiagram 1'}
 test('parses the validated rich document without accepting storage paths or answer data',()=>{
  const result=parseAttemptQuestions([{...row(first),rich_content:richDocument}],[first])
  assert.equal(result[0].rich_content?.blocks[1].type,'image')
