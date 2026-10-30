@@ -106,11 +106,11 @@ begin
  if q->>'content_version'<>'2' or q->'rich_content'->'blocks'->1->>'asset_id'<>current_setting('fcb03.test.asset_id') then
   -- The psql variable is not automatically a GUC; compare against the intent table instead.
   if not exists(select 1 from ace.question_media_intents i where i.id=(q->'rich_content'->'blocks'->1->>'asset_id')::uuid
-   and i.question_id=q->>'id' and i.status='verified') then
+   and i.question_id=(q->>'id')::uuid and i.status='verified') then
    raise exception 'Rich document was not saved with verified asset binding';
   end if;
  end if;
- if not exists(select 1 from ace.question_versions where question_id=q->>'id' and version=2
+ if not exists(select 1 from ace.question_versions where question_id=(q->>'id')::uuid and version=2
   and snapshot->'rich_content'=q->'rich_content') then
   raise exception 'Immutable history omitted rich content';
  end if;
