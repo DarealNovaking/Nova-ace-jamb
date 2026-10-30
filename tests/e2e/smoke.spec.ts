@@ -3475,4 +3475,99 @@ test.describe('FCB03 sealed student question delivery',()=>{
       expect(await page.evaluate(uid=>localStorage.getItem('ace-cbt-active-attempt:'+uid),userId)).toBe(attemptId)
     })
   }
+
+  test('renders the frozen rich document through the authenticated private image proxy', async ({ page }) => {
+    const counts = await setup(page)
+    const alt = 'A labelled geometry diagram'
+    const assetId = '30000000-0000-4000-8000-000000000082'
+    const richDocument = {
+      version: 1,
+      blocks: [
+        { type: 'paragraph', text: frozen.question_text },
+        { type: 'image', asset_id: assetId, alt, caption: 'Diagram 1' },
+      ],
+      fallback_text: frozen.question_text + '\\n\\nDiagram: ' + alt + '\\nDiagram 1',
+    }
+    const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/S2cAAAAASUVORK5CYII=', 'base64')
+    const cors = {
+      'access-control-allow-origin': 'http://127.0.0.1:4173',
+      'access-control-allow-methods': 'GET, OPTIONS',
+      'access-control-allow-headers': 'authorization, apikey, x-client-info',
+      'access-control-max-age': '600',
+    }
+    let mediaRequest: Record<string, string | undefined> | null = null
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/get_attempt_questions'), async route => {
+      counts.deliveries++
+      await route.fulfill({ json: [{ ...frozen, rich_content: richDocument }] })
+    })
+    await page.route((url) => new URL(url).pathname.endsWith('/functions/v1/question-media-delivery'), async route => {
+      if (route.request().method() === 'OPTIONS') {
+        await route.fulfill({ status: 204, headers: cors })
+        return
+      }
+      const url = new URL(route.request().url())
+      const headers = route.request().headers()
+      mediaRequest = {
+        authorization: headers.authorization,
+        apikey: headers.apikey,
+        attempt_id: url.searchParams.get('attempt_id') ?? undefined,
+        question_id: url.searchParams.get('question_id') ?? undefined,
+        asset_id: url.searchParams.get('asset_id') ?? undefined,
+      }
+      await route.fulfill({ status: 200, headers: { ...cors, 'content-type': 'image/png', 'content-length': String(png.length), 'cache-control': 'private, no-store' }, body: png })
+    })
+    await page.goto('/?cbt=1')
+    const image = page.getByRole('img', { name: alt })
+    await expect(image).toBeVisible()
+    await expect.poll(() => image.evaluate(node => (node as HTMLImageElement).naturalWidth)).toBeGreaterThan(0)
+    const src = await image.getAttribute('src')
+    expect(src).toMatch(/^blob:/)
+    expect(src).not.toContain('supabase.co/storage')
+    await expect.poll(() => mediaRequest).not.toBeNull()
+    expect(mediaRequest).toEqual({
+      authorization: 'Bearer test-access-token',
+      apikey: 'sb_publishable_ci_placeholder',
+      attempt_id: attemptId,
+      question_id: questionId,
+      asset_id: assetId,
+    })
+    expect(counts.direct).toBe(0)
+    await expect(page.getByRole('button', { name: 'A. Second choice', exact: true })).toBeVisible()
+  })
+
+  test('keeps text and answers usable when private diagram delivery is denied', async ({ page }) => {
+    await setup(page)
+    const alt = 'A labelled geometry diagram'
+    const assetId = '30000000-0000-4000-8000-000000000082'
+    const richDocument = {
+      version: 1,
+      blocks: [
+        { type: 'paragraph', text: frozen.question_text },
+        { type: 'image', asset_id: assetId, alt, caption: 'Diagram 1' },
+      ],
+      fallback_text: frozen.question_text + '\\n\\nDiagram: ' + alt + '\\nDiagram 1',
+    }
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/get_attempt_questions'), async route => {
+      await route.fulfill({ json: [{ ...frozen, rich_content: richDocument }] })
+    })
+    await page.route((url) => new URL(url).pathname.endsWith('/functions/v1/question-media-delivery'), async route => {
+      const cors = {
+        'access-control-allow-origin': 'http://127.0.0.1:4173',
+        'access-control-allow-methods': 'GET, OPTIONS',
+        'access-control-allow-headers': 'authorization, apikey, x-client-info',
+        'access-control-max-age': '600',
+      }
+      if (route.request().method() === 'OPTIONS') {
+        await route.fulfill({ status: 204, headers: cors })
+        return
+      }
+      await route.fulfill({ status: 404, headers: { ...cors, 'content-type': 'application/json', 'cache-control': 'private, no-store' }, body: JSON.stringify({ error: 'Question image unavailable' }) })
+    })
+    await page.goto('/?cbt=1')
+    await expect(page.getByText('Diagram unavailable: ' + alt)).toBeVisible()
+    await expect(page.getByText('One or more diagrams could not be loaded.', { exact: false })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Retry diagrams' })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'A. Second choice', exact: true })).toBeEnabled()
+  })
+
 })

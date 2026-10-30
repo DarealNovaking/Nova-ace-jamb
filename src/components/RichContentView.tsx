@@ -4,15 +4,17 @@ type Props = {
   /** Untrusted versioned document. Invalid data is never partially rendered. */
   value: unknown
   className?: string
+  /** Only short-lived blob URLs returned by the authenticated media client are accepted. */
+  imageSources?: Record<string, string>
 }
 
 /**
  * Text-only, accessible renderer for verified structured question content.
- * Image references deliberately do not resolve to public URLs. A future
- * authenticated media service must provide short-lived published-only delivery.
+ * Image references render only from short-lived blob URLs provided by the
+ * authenticated, attempt-scoped media client. No Storage URL is accepted.
  * Never add dangerouslySetInnerHTML, raw MathML/HTML, or arbitrary image src here.
  */
-export default function RichContentView({ value, className = '' }: Props) {
+export default function RichContentView({ value, className = '', imageSources = {} }: Props) {
   let blocks: RichBlock[]
   try {
     blocks = parseRichContent(value).blocks
@@ -47,11 +49,15 @@ export default function RichContentView({ value, className = '' }: Props) {
               )}</tbody>
             </table>
           </div>
-        case 'image':
-          return <figure key={index} className="rounded-lg border border-dashed border-white/20 p-3">
-            <p role="note" className="text-amber-100">Diagram unavailable: {block.alt}</p>
-            {block.caption && <figcaption className="mt-2 text-white/70">{block.caption}</figcaption>}
+        case 'image': {
+          const source = imageSources[block.asset_id]
+          return <figure key={index} className="space-y-2 rounded-lg border border-white/10 p-3">
+            {typeof source === 'string' && source.startsWith('blob:')
+              ? <img src={source} alt={block.alt} loading="lazy" decoding="async" referrerPolicy="no-referrer" className="max-h-[26rem] w-full rounded-lg object-contain" />
+              : <p role="note" className="text-amber-100">Diagram unavailable: {block.alt}</p>}
+            {block.caption && <figcaption className="text-sm text-white/70">{block.caption}</figcaption>}
           </figure>
+        }
       }
     })}
   </div>

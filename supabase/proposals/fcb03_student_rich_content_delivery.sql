@@ -64,6 +64,8 @@ begin
  ) validated on true
  where q.active=true and q.review_status='published'
   and q.rights_status in('owned','licensed','permitted')
+  -- Malformed historical content is not silently downgraded to text-only delivery.
+  and coalesce(jsonb_typeof(version_row.snapshot->'rich_content'),'null') in('null','object')
   -- If the current question is rich but the frozen version cannot be recovered,
   -- fail the entire paper closed instead of silently dropping its diagram.
   and(q.rich_content is null or version_row.id is not null);

@@ -4,7 +4,9 @@ import {readFileSync}from'node:fs'
 import ts from'typescript'
 const data=s=>'data:text/javascript;base64,'+Buffer.from(s).toString('base64')
 const compile=p=>ts.transpileModule(readFileSync(new URL(p,import.meta.url),'utf8'),{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText
-const parserSource=data(compile('../src/lib/studentQuestionDelivery.ts'))
+const richContentSource=data(compile('../src/lib/richContent.ts'))
+const parserCode=compile('../src/lib/studentQuestionDelivery.ts').replace("from './richContent'",'from '+JSON.stringify(richContentSource))
+const parserSource=data(parserCode)
 const {validateAttemptQuestionRequest,parseAttemptQuestions:parsePaper,parsePublishedQuestionIds,parseStudentQuestionTopics,questionDeliveryPhase}=await import(parserSource)
 const attempt='04000000-0000-4000-8000-000000000001',first='03000000-0000-4000-8000-000000000001',second='03000000-0000-4000-8000-000000000002'
 const order=ids=>Object.fromEntries(ids.map(id=>[id,['A','B']]))
@@ -16,6 +18,14 @@ test('validates attempt request identity, bounded paper and unique UUIDs',()=>{
 })
 test('strictly parses complete frozen paper in server-owned attempt order',()=>{
  const result=parseAttemptQuestions([row(second),row(first)],[second,first]);assert.deepEqual(result.map(x=>x.id),[second,first]);assert.equal(result[0].text,'A reviewed frozen question');assert.equal(result[0].options[1].key,'B')
+})
+const richImage='03000000-0000-4000-8000-000000000003'
+const richDocument={version:1,blocks:[{type:'paragraph',text:'A reviewed frozen question'},{type:'image',asset_id:richImage,alt:'A labelled geometry diagram',caption:'Diagram 1'}],fallback_text:'A reviewed frozen question\\n\\nDiagram: A labelled geometry diagram\\nDiagram 1'}
+test('parses the validated rich document without accepting storage paths or answer data',()=>{
+ const result=parseAttemptQuestions([{...row(first),rich_content:richDocument}],[first])
+ assert.equal(result[0].rich_content?.blocks[1].type,'image')
+ if(result[0].rich_content?.blocks[1].type==='image')assert.equal(result[0].rich_content.blocks[1].asset_id,richImage)
+ for(const invalid of [{...richDocument,extra:'x'},{...richDocument,blocks:[{type:'image',asset_id:richImage,alt:'A labelled geometry diagram',caption:'Diagram 1',storage_path:'private/path'}]},{...richDocument,fallback_text:'different text'}])assert.throws(()=>parseAttemptQuestions([{...row(first),rich_content:invalid}],[first]))
 })
 test('rejects missing, extra, duplicate and reordered paper records',()=>{
  for(const value of [null,{},[],[row(first)],[row(first),row(first)],[row(second),row(first)],[row(first),row(second),row(attempt)]])assert.throws(()=>parseAttemptQuestions(value,[first,second]))

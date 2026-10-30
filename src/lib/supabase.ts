@@ -9,3 +9,7 @@ if (!publishableKey) {
 
 export const supabase = createClient(url, publishableKey)
 export const ace = supabase.schema('ace')
+
+// Public browser configuration only; never export server credentials here.
+export const supabaseUrl = url
+export const supabasePublishableKey = publishableKey

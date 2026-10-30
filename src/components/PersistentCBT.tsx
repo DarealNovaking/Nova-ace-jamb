@@ -1,4 +1,6 @@
 import { questionDeliveryPhase } from '../lib/studentQuestionDelivery'
+import RichContentView from './RichContentView'
+import { fetchQuestionMediaObjectUrl } from '../lib/questionMediaClient'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Clock3, Loader2, Trophy } from 'lucide-react'
 import {
@@ -60,6 +62,9 @@ export default function PersistentCBT({ attemptId = null, questionCount = 20, du
   const [error, setError] = useState('')
   const [result, setResult] = useState<Awaited<ReturnType<typeof submitCbt>> | null>(null)
   const [markedForReview, setMarkedForReview] = useState<string[]>([])
+  const [mediaUrls, setMediaUrls] = useState<Record<string, string>>({})
+  const [mediaError, setMediaError] = useState(false)
+  const [mediaRetry, setMediaRetry] = useState(0)
   const [confirmSubmit, setConfirmSubmit] = useState(false)
   const finishing = useRef(false)
   const questionPresentedAt = useRef<{ id: string; at: number } | null>(null)
@@ -73,6 +78,46 @@ export default function PersistentCBT({ attemptId = null, questionCount = 20, du
 
   const question = questions[current]
   const selected = question ? answers[question.id] ?? null : null
+
+  useEffect(() => {
+    let active = true
+    const controller = new AbortController()
+    const created: string[] = []
+    setMediaUrls({})
+    setMediaError(false)
+    const assetIds = question?.rich_content?.blocks.reduce<string[]>((ids, block) => {
+      if (block.type === 'image' && !ids.includes(block.asset_id)) ids.push(block.asset_id)
+      return ids
+    }, []) ?? []
+    if (!attempt || !question || assetIds.length === 0) {
+      return () => { active = false; controller.abort() }
+    }
+    void Promise.all(assetIds.map(async assetId => {
+      try {
+        const source = await fetchQuestionMediaObjectUrl(attempt.attempt_id, question.id, assetId, controller.signal)
+        created.push(source)
+        return [assetId, source] as const
+      } catch (error) {
+        if (controller.signal.aborted) throw error
+        return [assetId, null] as const
+      }
+    })).then(results => {
+      if (!active) {
+        created.forEach(source => URL.revokeObjectURL(source))
+        return
+      }
+      setMediaUrls(Object.fromEntries(results.filter((entry): entry is readonly [string, string] => entry[1] !== null)))
+      setMediaError(results.some(entry => entry[1] === null))
+    }).catch(() => {
+      created.forEach(source => URL.revokeObjectURL(source))
+      if (active) setMediaError(true)
+    })
+    return () => {
+      active = false
+      controller.abort()
+      created.forEach(source => URL.revokeObjectURL(source))
+    }
+  }, [attempt?.attempt_id, question?.id, question?.rich_content, mediaRetry])
 
   useEffect(() => {
     questionPresentedAt.current = question ? { id: question.id, at: performance.now() } : null
@@ -313,7 +358,16 @@ export default function PersistentCBT({ attemptId = null, questionCount = 20, du
     <div className="grid gap-5 lg:grid-cols-[1fr_230px]">
       <section className="glass-card rounded-3xl p-6">
         <div className="flex items-center justify-between text-xs text-white/40"><span>Question {current + 1} of {questions.length}</span><span>{attempt.answered_count} answered</span></div>
-        <h2 id="cbt-question-title" className="mt-5 whitespace-pre-wrap break-words text-xl font-bold leading-8">{question.text}</h2>
+        {question.rich_content
+          ? <>
+              <h2 id="cbt-question-title" className="sr-only">Question {current + 1}: {question.text}</h2>
+              <RichContentView value={question.rich_content} imageSources={mediaUrls} className="mt-5" />
+            </>
+          : <h2 id="cbt-question-title" className="mt-5 whitespace-pre-wrap break-words text-xl font-bold leading-8">{question.text}</h2>}
+        {mediaError && <p role="status" className="mt-3 rounded-xl border border-amber-200/20 bg-amber-300/[.06] p-3 text-sm text-amber-100">
+          One or more diagrams could not be loaded. Their text alternatives remain available.
+          <button type="button" className="ml-2 underline" onClick={() => setMediaRetry(value => value + 1)}>Retry diagrams</button>
+        </p>}
         <div role="group" aria-labelledby="cbt-question-title" className="mt-6 grid gap-3">{optionKeys.map((key) => {
           const option = optionsByKey.get(key)
           if (!option) return null

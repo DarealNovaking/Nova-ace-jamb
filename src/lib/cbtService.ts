@@ -1,5 +1,6 @@
 import { ace } from './supabase'
 import { parseAttemptQuestions, validateAttemptQuestionRequest } from './studentQuestionDelivery'
+import type { RichDocument } from './richContent'
 
 export type CbtMode = 'practice' | 'cbt' | 'mock' | 'learning' | 'revision' | 'ai_practice'
 
@@ -34,6 +35,7 @@ export type CbtQuestion = {
   subject_id: string | null
   topic_id: string | null
   difficulty: string | null
+  rich_content: RichDocument | null
 }
 
 export type CbtStartOptions = {
