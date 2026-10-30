@@ -187,15 +187,18 @@ begin
   and m.rights_reviewed_at is not null
   and length(m.rights_evidence) between 8 and 4000
   and m.reviewed_by=m.rights_reviewed_by
-  and exists(select 1 from ace.question_media_reviews rights_review
-   where rights_review.intent_id=m.intent_id
-    and rights_review.question_version=m.question_version-1
-    and rights_review.decision='approved'
+  -- The newest immutable decision is authoritative. An earlier approval must
+  -- never override a later rejection/restriction (rights takedown).
+  and (select rights_review.decision='approved'
     and rights_review.rights_status=m.rights_status
     and rights_review.reviewed_by=m.rights_reviewed_by
     and rights_review.rights_evidence=m.rights_evidence
     and rights_review.reviewed_at=m.rights_reviewed_at
-    and rights_review.reviewed_by::text=version_row.snapshot->>'reviewed_by')
+    and rights_review.reviewed_by::text=version_row.snapshot->>'reviewed_by'
+   from ace.question_media_reviews rights_review
+   where rights_review.intent_id=m.intent_id
+    and rights_review.question_version=m.question_version-1
+   order by rights_review.reviewed_at desc,rights_review.id desc limit 1) is true
   and m.mime_type in('image/png','image/jpeg','image/webp')
   and m.size_bytes between 1 and 2097152
   and m.sha256 ~ '^[0-9a-f]{64}$'
