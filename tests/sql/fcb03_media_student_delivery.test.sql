@@ -58,10 +58,10 @@ select ace.confirm_question_media_intent(:'asset_id'::uuid,'image/png',12,repeat
 update ace.questions set content_version=2,rich_content=jsonb_build_object(
  'version',1,
  'blocks',jsonb_build_array(
-  jsonb_build_object('type','paragraph','text','Find the area of the rectangle.'),
+  jsonb_build_object('type','paragraph','text','Length: 3 units; width: 2 units.'),
   jsonb_build_object('type','image','asset_id', :'asset_id'::uuid,
    'alt','A labelled geometry diagram','caption','Diagram 1')),
- 'fallback_text','Find the area of the rectangle.'||E'\n\n'||
+ 'fallback_text','Length: 3 units; width: 2 units.'||E'\n\n'||
   'Diagram: A labelled geometry diagram'||E'\n'||'Diagram 1'),
  active=true,review_status='published',rights_status='owned',
  reviewed_by='05000000-0000-4000-8000-000000000002',updated_at=clock_timestamp()
@@ -186,9 +186,7 @@ begin
 
  -- A newer published version does not rewrite the older version frozen in an
  -- active attempt. The older version's own immutable snapshot still governs.
- update ace.questions set content_version=3,rich_content=jsonb_build_object(
-  'version',1,'blocks',jsonb_build_array(jsonb_build_object('type','paragraph','text','Find the area of the rectangle.')),
-  'fallback_text','Find the area of the rectangle.'),updated_at=clock_timestamp() where id=question;
+ update ace.questions set content_version=3,rich_content=null,updated_at=clock_timestamp() where id=question;
  insert into ace.question_versions(question_id,version,snapshot,created_by)
   select id,content_version,to_jsonb(q),'05000000-0000-4000-8000-000000000002'
   from ace.questions q where id=question;

@@ -358,12 +358,8 @@ export default function PersistentCBT({ attemptId = null, questionCount = 20, du
     <div className="grid gap-5 lg:grid-cols-[1fr_230px]">
       <section className="glass-card rounded-3xl p-6">
         <div className="flex items-center justify-between text-xs text-white/40"><span>Question {current + 1} of {questions.length}</span><span>{attempt.answered_count} answered</span></div>
-        {question.rich_content
-          ? <>
-              <h2 id="cbt-question-title" className="sr-only">Question {current + 1}: {question.text}</h2>
-              <RichContentView value={question.rich_content} imageSources={mediaUrls} className="mt-5" />
-            </>
-          : <h2 id="cbt-question-title" className="mt-5 whitespace-pre-wrap break-words text-xl font-bold leading-8">{question.text}</h2>}
+        <h2 id="cbt-question-title" className="mt-5 whitespace-pre-wrap break-words text-xl font-bold leading-8">{question.text}</h2>
+        {question.rich_content && <RichContentView value={question.rich_content} imageSources={mediaUrls} className="mt-4" />}
         {mediaError && <p role="status" className="mt-3 rounded-xl border border-amber-200/20 bg-amber-300/[.06] p-3 text-sm text-amber-100">
           One or more diagrams could not be loaded. Their text alternatives remain available.
           <button type="button" className="ml-2 underline" onClick={() => setMediaRetry(value => value + 1)}>Retry diagrams</button>

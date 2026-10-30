@@ -3483,7 +3483,7 @@ test.describe('FCB03 sealed student question delivery',()=>{
     const richDocument = {
       version: 1,
       blocks: [
-        { type: 'paragraph', text: frozen.question_text },
+        { type: 'paragraph', text: 'Length: 3 units; width: 2 units.' },
         { type: 'image', asset_id: assetId, alt, caption: 'Diagram 1' },
       ],
       fallback_text: frozen.question_text + '\n\nDiagram: ' + alt + '\nDiagram 1',
@@ -3542,7 +3542,7 @@ test.describe('FCB03 sealed student question delivery',()=>{
     const richDocument = {
       version: 1,
       blocks: [
-        { type: 'paragraph', text: frozen.question_text },
+        { type: 'paragraph', text: 'Length: 3 units; width: 2 units.' },
         { type: 'image', asset_id: assetId, alt, caption: 'Diagram 1' },
       ],
       fallback_text: frozen.question_text + '\n\nDiagram: ' + alt + '\nDiagram 1',
