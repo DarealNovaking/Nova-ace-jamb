@@ -2,7 +2,7 @@
 begin;
 create function ace.takedown_question_media(p_question uuid,p_asset uuid,p_reason text)
 returns jsonb language plpgsql security definer
-set search_path=pg_catalog,ace,pg_temp set lock_timeout='3s' as $$
+set search_path=pg_catalog,pg_temp set lock_timeout='3s' as $$
 declare actor uuid:=auth.uid(); q ace.questions%rowtype; m ace.question_media%rowtype;
  latest ace.question_media_reviews%rowtype; saved ace.question_media_reviews%rowtype;
  reason text:=ace.question_trim(p_reason);
@@ -11,8 +11,8 @@ begin
  if current_setting('transaction_isolation')<>'read committed'
   or not exists(select 1 from pg_catalog.pg_roles where rolname=current_user and(rolsuper or rolbypassrls)) then
   raise exception 'Trusted media executor required' using errcode='42501';end if;
- if not exists(select 1 from ace.roles where user_id=actor and role='admin' for share) then
-  raise exception 'Administrator takedown required' using errcode='42501';end if;
+ select role into actor_role from ace.roles where user_id=actor and role='admin' for share;
+ if not found then raise exception 'Administrator takedown required' using errcode='42501';end if;
  if p_question is null or p_asset is null or reason is null or length(reason) not between 8 and 2000 then
   raise exception 'A reason is required' using errcode='22023';end if;
  perform pg_advisory_xact_lock(hashtextextended('ace.question.workflow',0));
