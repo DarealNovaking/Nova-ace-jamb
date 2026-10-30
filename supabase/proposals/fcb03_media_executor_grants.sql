@@ -25,5 +25,6 @@ grant execute on function ace.confirm_question_media_intent(
  uuid,text,integer,text
 ) to ace_media_executor;
 grant execute on function ace.authorize_attempt_question_media(uuid,uuid,uuid) to ace_media_executor;
+grant execute on function ace.authorize_question_media_preview(uuid,integer,uuid) to ace_media_executor;
 -- No table grants, storage policies, UPDATE, publication or PUBLIC EXECUTE.
 commit;

@@ -86,6 +86,75 @@ begin
   'question_version',result.question_version,'decision',result.decision,
   'rights_status',result.rights_status,'reviewed_at',result.reviewed_at);
 end;$$;
+
+-- A reviewer may preview only the verified staging object referenced by the
+-- exact private in-review/approved revision. No bucket/path comes from the client.
+create function ace.authorize_question_media_preview(
+ p_question_id uuid,p_version integer,p_asset_id uuid
+) returns jsonb language plpgsql security definer
+set search_path=pg_catalog,ace,pg_temp set lock_timeout='3s' as $
+declare
+ actor uuid:=auth.uid();
+ actor_role text;
+ q ace.questions%rowtype;
+ version_row ace.question_versions%rowtype;
+ intent ace.question_media_intents%rowtype;
+begin
+ if actor is null or p_question_id is null or p_version is null or p_version<1
+  or p_asset_id is null then return null;end if;
+ select role into actor_role from ace.roles
+ where user_id=actor and role in('admin','editor') for share;
+ if not found then return null;end if;
+
+ select * into q from ace.questions where id=p_question_id for share;
+ if not found or q.active or q.content_version<>p_version
+  or q.review_status not in('in_review','approved')
+  or q.created_by is null or q.created_by=actor
+  or actor::text is not distinct from (q.provenance->>'last_content_editor')
+  or q.rich_content is null then return null;end if;
+ if q.review_status='approved' and
+  (q.reviewed_by is distinct from actor or q.rights_status not in('owned','licensed','permitted')) then
+  return null;end if;
+ if q.review_status='in_review' and q.reviewed_by is not null then return null;end if;
+
+ select * into version_row from ace.question_versions
+ where question_id=p_question_id and version=p_version for share;
+ if not found or version_row.snapshot->>'content_version'<>p_version::text
+  or version_row.snapshot->>'review_status'<>q.review_status
+  or version_row.snapshot->>'active'<>'false'
+  or version_row.snapshot->'rich_content' is distinct from q.rich_content then return null;end if;
+ if q.review_status='approved' and version_row.snapshot->>'reviewed_by'<>actor::text then
+  return null;end if;
+ if q.review_status='in_review' and version_row.snapshot->>'reviewed_by' is not null then
+  return null;end if;
+ begin perform ace.validate_rich_question_content(q.rich_content);
+ exception when others then return null;end;
+
+ select * into intent from ace.question_media_intents
+ where id=p_asset_id and question_id=p_question_id for share;
+ if not found or intent.status<>'verified' or intent.verified_at is null
+  or intent.question_version>p_version or intent.requested_by is null
+  or intent.requested_by=actor
+  or intent.storage_path<>'staging/v1/'||p_question_id::text||'/'||p_asset_id::text
+  or intent.claimed_mime not in('image/png','image/jpeg','image/webp')
+  or intent.claimed_size_bytes not between 1 and 2097152
+  or intent.claimed_sha256 !~ '^[0-9a-f]{64}
+grant execute on function ace.review_question_media_intent(uuid,integer,uuid,text,text,text) to authenticated;
+commit;
+
+  or length(intent.rights_evidence) not between 1 and 4000 then return null;end if;
+ if not exists(select 1 from jsonb_array_elements(q.rich_content->'blocks') b(value)
+  where b.value->>'type'='image' and b.value->>'asset_id'=p_asset_id::text
+   and b.value->>'alt'=intent.alt_text) then return null;end if;
+
+ return jsonb_build_object(
+  'id',intent.id,'question_id',intent.question_id,'question_version',p_version,
+  'storage_path',intent.storage_path,'mime_type',intent.claimed_mime,
+  'size_bytes',intent.claimed_size_bytes,'sha256',intent.claimed_sha256
+ );
+end;$;
+revoke all on function ace.authorize_question_media_preview(uuid,integer,uuid) from public,anon,authenticated;
+
 revoke all on function ace.review_question_media_intent(uuid,integer,uuid,text,text,text) from public,anon,authenticated;
 grant execute on function ace.review_question_media_intent(uuid,integer,uuid,text,text,text) to authenticated;
 commit;
