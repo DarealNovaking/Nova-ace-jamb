@@ -71,13 +71,14 @@ insert into ace.question_versions(question_id,version,snapshot,created_by)
 
 insert into ace.question_media(
  id,question_id,kind,storage_provider,storage_path,mime_type,size_bytes,
- alt_text,rights_status,source_url,metadata,intent_id,question_version,sha256,verified_at
+ alt_text,rights_status,source_url,metadata,intent_id,question_version,sha256,verified_at,reviewed_by,reviewed_at
 ) values(
  '05000000-0000-4000-8000-000000000004',
  '05000000-0000-4000-8000-000000000004','diagram','supabase',
  'published/v1/05000000-0000-4000-8000-000000000004/2/05000000-0000-4000-8000-000000000004',
  'image/png',12,'A labelled geometry diagram','owned',null,'{}'::jsonb,
- '05000000-0000-4000-8000-000000000004',2,repeat('a',64),clock_timestamp());
+ '05000000-0000-4000-8000-000000000004',2,repeat('a',64),clock_timestamp(),
+ '05000000-0000-4000-8000-000000000002',clock_timestamp());
 
 insert into ace.attempts(
  id,user_id,mode,subject_id,started_at,duration_seconds,random_seed,
@@ -157,6 +158,16 @@ begin
   raise exception 'Restricted image rights still allowed delivery';
  end if;
  update ace.question_media set rights_status='owned' where id=asset;
+
+ update ace.question_media set reviewed_by='05000000-0000-4000-8000-000000000001' where id=asset;
+ if ace.authorize_attempt_question_media(attempt,question,asset) is not null then
+  raise exception 'Question author was accepted as independent media reviewer';
+ end if;
+ update ace.question_media set reviewed_by='05000000-0000-4000-8000-000000000002',reviewed_at=null where id=asset;
+ if ace.authorize_attempt_question_media(attempt,question,asset) is not null then
+  raise exception 'Unreviewed media was delivered';
+ end if;
+ update ace.question_media set reviewed_at=clock_timestamp() where id=asset;
 
  update ace.question_media set storage_path='staging/v1/'||question::text||'/'||asset::text where id=asset;
  if ace.authorize_attempt_question_media(attempt,question,asset) is not null then
