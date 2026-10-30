@@ -167,7 +167,7 @@ export function createQuestionMediaUploadHandler(deps: UploadDependencies): (req
         if (!replay || replay.mime !== prepared.mime ||
             !(replay.bytes instanceof Uint8Array) ||
             replay.bytes.length !== prepared.bytes.length) throw Error('Missing image')
-        const digest = new Uint8Array(await crypto.subtle.digest('SHA-256', replay.bytes))
+        const digest = new Uint8Array(await crypto.subtle.digest('SHA-256', new Uint8Array(replay.bytes)))
         const sha256 = Array.from(digest, b => b.toString(16).padStart(2, '0')).join('')
         if (sha256 !== prepared.sha256) throw Error('Damaged image')
         return success(200, intent.id)
