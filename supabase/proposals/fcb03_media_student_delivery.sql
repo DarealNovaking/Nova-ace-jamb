@@ -182,7 +182,7 @@ begin
   and reviewed_by is not null
   and reviewed_by::text is distinct from version_row.snapshot->>'created_by'
   and reviewed_by::text is distinct from (version_row.snapshot->'provenance'->>'last_content_editor')
-  and reviewed_at is not null
+  and media.reviewed_at is not null
   and media.rights_reviewed_by::text=version_row.snapshot->>'reviewed_by'
   and rights_reviewed_at is not null
   and length(rights_evidence) between 8 and 4000
