@@ -11,7 +11,7 @@ const {validateAttemptQuestionRequest,parseAttemptQuestions:parsePaper,parsePubl
 const attempt='04000000-0000-4000-8000-000000000001',first='03000000-0000-4000-8000-000000000001',second='03000000-0000-4000-8000-000000000002'
 const order=ids=>Object.fromEntries(ids.map(id=>[id,['A','B']]))
 const parseAttemptQuestions=(value,ids,keys=order(ids))=>parsePaper(value,ids,keys)
-const row=id=>({id,question_text:'Length: 3 units; width: 2 units.',options:[{key:'A',text:'First'},{key:'B',text:'Second'}],subject_id:null,topic_id:null,difficulty:'easy'})
+const row=id=>({id,question_text:'A reviewed frozen question',options:[{key:'A',text:'First'},{key:'B',text:'Second'}],subject_id:null,topic_id:null,difficulty:'easy'})
 test('validates attempt request identity, bounded paper and unique UUIDs',()=>{
  assert.equal(validateAttemptQuestionRequest(attempt,[first],order([first])),attempt)
  for(const [a,ids]of [[null,[first]],['x',[first]],[attempt,[]],[attempt,[first,first]],[attempt,Array(501).fill(first)],[attempt,['bad']]])assert.throws(()=>validateAttemptQuestionRequest(a,ids,order(ids)))

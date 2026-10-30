@@ -22,11 +22,14 @@ begin
  where a.id=p_attempt_id and a.user_id=v_user and a.status='active'
   and a.duration_seconds>0 and a.started_at<=clock_timestamp()
   and a.started_at+a.duration_seconds*interval '1 second'>clock_timestamp();
- if not found or jsonb_typeof(v_order) is distinct from 'array' then
+ if not found then raise exception 'Attempt unavailable' using errcode='P0002';end if;
+ if jsonb_typeof(v_order) is distinct from 'array' then
+  raise exception 'Attempt unavailable' using errcode='P0002';
+ end if;
+ if jsonb_typeof(v_snapshot) is distinct from 'array' then
   raise exception 'Attempt unavailable' using errcode='P0002';
  end if;
  if jsonb_array_length(v_order) not between 1 and 500
-  or jsonb_typeof(v_snapshot) is distinct from 'array'
   or jsonb_array_length(v_snapshot)<>jsonb_array_length(v_order) then
   raise exception 'Attempt unavailable' using errcode='P0002';
  end if;
@@ -70,7 +73,7 @@ begin
   -- fail the entire paper closed instead of silently dropping its diagram.
   and(q.rich_content is null or version_row.id is not null);
 
- if v_count<>jsonb_array_length(v_order) then
+ if coalesce(v_count,0)<>jsonb_array_length(v_order) then
   raise exception 'Attempt questions unavailable' using errcode='P0002';
  end if;
  return v_questions;
