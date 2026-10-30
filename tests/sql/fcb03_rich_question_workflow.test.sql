@@ -5,6 +5,9 @@
 \ir ../../supabase/proposals/fcb03_rich_question_workflow.sql
 \ir ../../supabase/proposals/fcb03_media_preview.sql
 \ir ../../supabase/proposals/fcb03_media_publication.sql
+select 'create role ace_media_executor nologin' where not exists(select 1 from pg_catalog.pg_roles where rolname='ace_media_executor') \gexec
+grant usage on schema ace to ace_media_executor;
+grant execute on function ace.publish_question_after_media_promotion(uuid,integer) to ace_media_executor;
 
 begin;
 insert into auth.users(id,email,raw_user_meta_data) values
@@ -41,7 +44,7 @@ select ace.manage_question('save','06000000-0000-4000-8000-000000000004',0,
   'provenance',jsonb_build_object('source_kind','original','source_title','ACE geometry',
    'author_label','ACE team','source_url',null,'rights_evidence','Original question written for ACE.')));
 
-select (ace.reserve_question_media_intent(
+select ace.reserve_question_media_intent(
  '06000000-0000-4000-8000-000000000004',1,
  '06000000-0000-4000-8000-00000000000b',
  'A rectangle with labelled length and width','Original diagram created for ACE.',
@@ -164,7 +167,9 @@ $promotion_plan$;
 select ace.confirm_question_media_promotion(
  '06000000-0000-4000-8000-000000000004',4,current_setting('fcb03.test.asset_id')::uuid);
 
-select ace.manage_question('publish','06000000-0000-4000-8000-000000000004',4,'{}');
+set session authorization ace_media_executor;
+select ace.publish_question_after_media_promotion('06000000-0000-4000-8000-000000000004',4);
+reset session authorization;
 
 do $published$
 begin

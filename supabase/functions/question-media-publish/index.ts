@@ -41,7 +41,7 @@ const handle=ready?createQuestionMediaPublishHandler({
  },
  async publish(actorId,questionId,version){
   const result=await databaseAsActor(actorId,async tx=>{
-   const rows=await tx.unsafe("select ace.manage_question('publish',$1::uuid,$2::integer,'{}'::jsonb) as value",[questionId,version])
+   const rows=await tx.unsafe("select ace.publish_question_after_media_promotion($1::uuid,$2::integer) as value",[questionId,version])
    return rows[0]?.value??null
   })
   return result

@@ -157,6 +157,25 @@ begin
   'question_version',media.question_version,'storage_path',media.storage_path,
   'mime_type',media.mime_type,'size_bytes',media.size_bytes,'sha256',media.sha256);
 end;$$;
+create function ace.publish_question_after_media_promotion(
+ p_question uuid,p_approved_version integer
+) returns jsonb language plpgsql security definer
+set search_path=pg_catalog,pg_temp set lock_timeout='3s' as $
+declare actor uuid:=auth.uid(); actor_role text;
+begin
+ if session_user<>'ace_media_executor' or actor is null or p_question is null
+  or p_approved_version is null or p_approved_version<1
+  or current_setting('transaction_isolation')<>'read committed' then
+  raise exception 'Private media publication unavailable' using errcode='42501';
+ end if;
+ select role into actor_role from ace.roles
+  where user_id=actor and role='admin' for share;
+ if not found then raise exception 'Administrator publication required' using errcode='42501';end if;
+ -- The existing question workflow locks the revision and revalidates the
+ -- independent rights audit and promoted immutable bytes before publication.
+ return ace.manage_question('publish',p_question,p_approved_version,'{}'::jsonb);
+end;$;
 revoke all on function ace.prepare_question_media_publication(uuid,integer) from public,anon,authenticated;
 revoke all on function ace.confirm_question_media_promotion(uuid,integer,uuid) from public,anon,authenticated;
+revoke all on function ace.publish_question_after_media_promotion(uuid,integer) from public,anon,authenticated;
 commit;

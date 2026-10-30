@@ -2,7 +2,7 @@
 -- Runs only after the isolated FCB-03 media-intents fixture installed the functions.
 -- Never uses production credentials or enables any media upload service.
 \ir ../../supabase/proposals/fcb03_media_preflight.sql
-create role ace_media_executor nologin;
+select 'create role ace_media_executor nologin' where not exists(select 1 from pg_catalog.pg_roles where rolname='ace_media_executor') \gexec
 \ir ../../supabase/proposals/fcb03_media_executor_grants.sql
 do $checks$
 begin
@@ -20,7 +20,9 @@ begin
  or not has_function_privilege('ace_media_executor',
   'ace.prepare_question_media_publication(uuid,integer)','execute')
  or not has_function_privilege('ace_media_executor',
-  'ace.confirm_question_media_promotion(uuid,integer,uuid)','execute') then
+  'ace.confirm_question_media_promotion(uuid,integer,uuid)','execute')
+ or not has_function_privilege('ace_media_executor',
+  'ace.publish_question_after_media_promotion(uuid,integer)','execute') then
   raise exception 'Dedicated media executor is missing required narrow function grants';
  end if;
  if has_function_privilege('anon','ace.can_stage_question_media(uuid,integer)','execute')
@@ -35,6 +37,9 @@ begin
  or has_function_privilege('authenticated','ace.authorize_question_media_preview(uuid,integer,uuid)','execute')
  or has_function_privilege('authenticated','ace.prepare_question_media_publication(uuid,integer)','execute')
  or has_function_privilege('authenticated','ace.confirm_question_media_promotion(uuid,integer,uuid)','execute')
+ or has_function_privilege('anon','ace.publish_question_after_media_promotion(uuid,integer)','execute')
+ or has_function_privilege('authenticated','ace.publish_question_after_media_promotion(uuid,integer)','execute')
+ or has_function_privilege('ace_media_executor','ace.manage_question(text,uuid,integer,jsonb)','execute')
  or has_function_privilege('anon','ace.prepare_question_media_publication(uuid,integer)','execute')
  or has_function_privilege('anon','ace.confirm_question_media_promotion(uuid,integer,uuid)','execute')
  or has_function_privilege('anon','ace.authorize_question_media_preview(uuid,integer,uuid)','execute')
