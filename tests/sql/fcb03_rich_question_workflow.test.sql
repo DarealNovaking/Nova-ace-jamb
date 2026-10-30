@@ -5,7 +5,6 @@
 \ir ../../supabase/proposals/fcb03_rich_question_workflow.sql
 \ir ../../supabase/proposals/fcb03_media_preview.sql
 \ir ../../supabase/proposals/fcb03_media_publication.sql
-\ir ../../supabase/proposals/fcb03_media_publication.sql
 
 begin;
 insert into auth.users(id,email,raw_user_meta_data) values
