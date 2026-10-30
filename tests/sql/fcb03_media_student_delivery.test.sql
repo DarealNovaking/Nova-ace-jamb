@@ -3,6 +3,7 @@
 -- prerequisite proposal; this test never connects to live Supabase/Storage.
 \ir ../../supabase/proposals/fcb03_media_student_delivery.sql
 \ir ../../supabase/proposals/fcb03_media_rights_review.sql
+\ir ../../supabase/proposals/fcb03_media_takedown.sql
 \ir ../../supabase/proposals/fcb03_student_rich_content_delivery.sql
 
 begin;
@@ -300,14 +301,32 @@ begin
   raise exception 'Unauthenticated media authorization unexpectedly succeeded';
  exception when sqlstate '28000' then null;
  end;
- -- A later immutable rejection must revoke delivery even if an older approval remains.
+ -- Takedown is administrator-only, works after publication and revokes future binary delivery.
+ update ace.questions set content_version=3,
+  rich_content=(select snapshot->'rich_content' from ace.question_versions where question_id=question and version=3),
+  active=true,review_status='published',rights_status='owned' where id=question;
+ update ace.question_media set question_version=3,rights_status='owned',
+  storage_path='published/v1/'||question::text||'/3/'||asset::text,
+  reviewed_by=reviewer,reviewed_at=clock_timestamp(),
+  rights_reviewed_by=reviewer where id=asset;
  perform set_config('request.jwt.claim.sub',student::text,true);
- insert into ace.question_media_reviews(intent_id,question_version,reviewed_by,decision,rights_status,rights_evidence,reviewed_at)
- select intent_id,2,'05000000-0000-4000-8000-000000000002','rejected','restricted',
-  'Rights permission withdrawn by reviewer.',clock_timestamp()
- from ace.question_media where id=asset;
+ begin
+  perform ace.takedown_question_media(question,asset,'Rights permission withdrawn after publication.');
+  raise exception 'Student unexpectedly performed a media takedown';
+ exception when sqlstate '42501' then null;
+ end;
+ perform set_config('request.jwt.claim.sub',reviewer::text,true);
+ item:=ace.takedown_question_media(question,asset,'Rights permission withdrawn after publication.');
+ if item->>'status'<>'revoked' or item->>'decision'<>'rejected' then
+  raise exception 'Administrator takedown did not record a rights revocation';
+ end if;
+ replay:=ace.takedown_question_media(question,asset,'Repeated takedown request with another reason.');
+ if replay->>'status'<>'revoked' or replay->>'id'<>item->>'id' then
+  raise exception 'Takedown replay was not idempotent';
+ end if;
+ perform set_config('request.jwt.claim.sub',student::text,true);
  if ace.authorize_attempt_question_media(attempt,question,asset) is not null then
-  raise exception 'Later rights rejection failed to revoke previously approved media delivery';
+  raise exception 'Latest takedown did not revoke previously approved media delivery';
  end if;
   raise notice 'FCB-03 student media delivery PASS: exact revision/reference, owner/attempt, publication/rights, verified immutable metadata, private grants';
 end
