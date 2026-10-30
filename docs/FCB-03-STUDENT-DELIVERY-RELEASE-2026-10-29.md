@@ -1,6 +1,6 @@
 # FCB-03 student delivery repair — release candidate
 
-Status: proposal only; PR22 is not installed, merged or production deployed. FCB-03 remains IN PROGRESS. Existing PR21 deployment remains the production baseline.
+Status: owner-approved, installed, merged and deployed (verified 30 October 2026). PR22 merged as `6ba898bdb64161d2b289df5d2e18fe18a3224f6a`; live Supabase migration history includes `20261029200819_fcb03_student_question_delivery`. Live function inspection confirms both metadata RPCs exist with postgres ownership, SECURITY DEFINER, fixed `search_path=pg_catalog,pg_temp`, `lock_timeout=3s`, and authenticated-only EXECUTE ACLs. Existing `get_attempt_questions(uuid)` remains present and authenticated-only. Cloudflare Worker `nova-ace-jamb` lists latest deployment `34ec0a1b-0066-4235-93d2-5dc402267f98` with version `444b3492-e690-4f3e-915a-941312aa8c60` at 100%. Live `ace.questions` count remains zero. This verifies installation and deployment routing, not populated live question delivery or fresh signed-in student-browser acceptance. FCB-03 remains IN PROGRESS.
 
 ## Problem and resulting behavior
 
@@ -33,10 +33,10 @@ Tested remote runtime source:406b6cb1ba2dc6dc7118be397c4d0351fe0814d5 (tree93236
 - Independent read-only review found stale browser fixture and incomplete option-set matching. Both corrected with regression coverage; missing/substituted/extra options and malformed difficulty reproduced RED then GREEN. Minor SQL formatting deferred; parser expanded while fixing validation.
 - Live read-only preflight: questions0/media0; both new names absent; no direct table/column SELECT grant; existing attempt body unchanged. No new paid browser run or saved-profile action in this work.
 
-## Approval and execution order
+## Post-release verification and remaining work
 
-AGENTS.md requires specific approval for production database changes and deployments. Obtain approval for exactly these two metadata functions and PR22 release before proceeding.
+The migration is already installed; do not rerun it or request the same approval again. Live function ownership/configuration/ACLs were checked read-only after installation. Cloudflare's latest Worker deployment is version `444b3492-e690-4f3e-915a-941312aa8c60` at 100%. The production question count remains zero. The pre-merge tests listed above remain the available automated evidence; a new real student session was not verified, and an empty question bank cannot prove successful delivery of populated content.
 
-After approval: recheck exact proposal hashes and production preflight; apply only the reviewed two-function migration; inspect owners/config/ACL/body hashes and actual anonymous/identity-free denials; confirm existing attempt/workflow/history bodies and zero content counts unchanged; then merge the exact approved PR head and let the existing Cloudflare main trigger deploy. Verify CI, build/version/source and live HTTP delivery. Preserve saved student/admin profiles; do not sign out or clear storage. Real student acceptance remains blocked on owner restoring its saved sign-in, and empty production bank cannot prove populated live delivery.
+No question intake/publication was authorized by this release. Forty drafts remain unreviewed/unpublished and require a genuinely different administrator. Formula/table/image contracts, private media/storage, reporting/moderation and genuine approved intake remain open. Preserve both saved profiles without signout or storage clearing.
 
-No question intake/publication is authorized by this release. Forty drafts remain unreviewed/unpublished and require a genuinely different administrator. Formula/table/image contracts, private media/storage, reporting/moderation and genuine approved intake remain open. FCB-01/02 remain closed.
+**Next action:** implement and test the versioned accessible rich-content contract in isolation. Keep production behavior text-only until a separate reviewed migration/release package receives specific approval. Then implement private media/storage and dedicated reporting/moderation. FCB-01/02 remain closed.
