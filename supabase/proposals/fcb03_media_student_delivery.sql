@@ -126,6 +126,8 @@ begin
   or jsonb_typeof(version_row.snapshot->'rich_content'->'blocks') is distinct from 'array' then
   return null;
  end if;
+ -- Revalidate the exact immutable document at the delivery boundary too.
+ perform ace.validate_rich_question_content(version_row.snapshot->'rich_content');
 
  -- The exact immutable version must reference this asset and the same
  -- descriptive alt text. A guessed UUID or asset from another revision fails.
