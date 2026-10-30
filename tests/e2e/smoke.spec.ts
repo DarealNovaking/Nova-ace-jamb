@@ -3486,7 +3486,7 @@ test.describe('FCB03 sealed student question delivery',()=>{
         { type: 'paragraph', text: frozen.question_text },
         { type: 'image', asset_id: assetId, alt, caption: 'Diagram 1' },
       ],
-      fallback_text: frozen.question_text + '\\n\\nDiagram: ' + alt + '\\nDiagram 1',
+      fallback_text: frozen.question_text + '\n\nDiagram: ' + alt + '\nDiagram 1',
     }
     const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/S2cAAAAASUVORK5CYII=', 'base64')
     const cors = {
@@ -3545,7 +3545,7 @@ test.describe('FCB03 sealed student question delivery',()=>{
         { type: 'paragraph', text: frozen.question_text },
         { type: 'image', asset_id: assetId, alt, caption: 'Diagram 1' },
       ],
-      fallback_text: frozen.question_text + '\\n\\nDiagram: ' + alt + '\\nDiagram 1',
+      fallback_text: frozen.question_text + '\n\nDiagram: ' + alt + '\nDiagram 1',
     }
     await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/get_attempt_questions'), async route => {
       await route.fulfill({ json: [{ ...frozen, rich_content: richDocument }] })
