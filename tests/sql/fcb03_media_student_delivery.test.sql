@@ -266,11 +266,15 @@ begin
  if ace.authorize_attempt_question_media(attempt,question,asset) is not null then
   raise exception 'Question author was accepted as media-rights reviewer';
  end if;
- update ace.question_media set rights_reviewed_by='05000000-0000-4000-8000-000000000002' where id=asset;
+ update ace.question_media set rights_reviewed_by='05000000-0000-4000-8000-000000000002',
+  reviewed_by='05000000-0000-4000-8000-000000000002',reviewed_at=clock_timestamp() where id=asset;
+ delete from ace.question_media_reviews where intent_id=asset and question_version=2;
  if ace.authorize_attempt_question_media(attempt,question,asset) is not null then
-  raise exception 'Unreviewed media was delivered';
+  raise exception 'Media without an independent rights-review audit record was delivered';
  end if;
- update ace.question_media set reviewed_by='05000000-0000-4000-8000-000000000002',reviewed_at=clock_timestamp() where id=asset;
+ insert into ace.question_media_reviews(intent_id,question_version,reviewed_by,decision,rights_status,rights_evidence,reviewed_at)
+ select intent_id,2,rights_reviewed_by,'approved',rights_status,rights_evidence,rights_reviewed_at
+ from ace.question_media where id=asset;
 
  update ace.question_media set storage_path='staging/v1/'||question::text||'/'||asset::text where id=asset;
  if ace.authorize_attempt_question_media(attempt,question,asset) is not null then

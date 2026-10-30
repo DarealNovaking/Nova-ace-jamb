@@ -36,11 +36,20 @@ begin
  select * into q from ace.questions where id=p_question for update;
  if not found or q.active or q.review_status<>'approved'
   or q.content_version<>p_version or q.reviewed_by is distinct from actor
-  or q.created_by=actor
+  or q.created_by is null or q.created_by=actor
+  or q.rights_status not in('owned','licensed','permitted')
   or actor::text is not distinct from (q.provenance->>'last_content_editor') then
   raise exception 'Independent media reviewer required' using errcode='42501';end if;
  if q.rich_content is null then
   raise exception 'Rich question content required for media review' using errcode='23514';end if;
+ if not exists(select 1 from ace.question_versions v
+  where v.question_id=p_question and v.version=p_version
+   and v.snapshot->>'content_version'=p_version::text
+   and v.snapshot->>'review_status'='approved'
+   and v.snapshot->>'active'='false'
+   and v.snapshot->>'reviewed_by'=actor::text
+   and v.snapshot->'rich_content'=q.rich_content) then
+  raise exception 'Approved immutable question revision unavailable for media review' using errcode='23514';end if;
  perform ace.validate_rich_question_content(q.rich_content);
 
  select * into intent from ace.question_media_intents where id=p_asset for share;

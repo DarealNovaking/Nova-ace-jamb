@@ -54,8 +54,8 @@ begin
     and conrelid='ace.question_media'::regclass) then
    alter table ace.question_media add constraint question_media_rights_review_state_consistency
     check((rights_reviewed_by is null and rights_reviewed_at is null and rights_evidence is null) or
-          (rights_reviewed_by is not null and rights_reviewed_at is not null and
-           rights_evidence is not null and length(rights_evidence) between 8 and 4000));
+          (rights_reviewed_by is not null and media.rights_reviewed_at is not null and
+           rights_evidence is not null and length(media.rights_evidence) between 8 and 4000));
   end if;
 end
 $constraints$;
@@ -183,18 +183,18 @@ begin
   and reviewed_by::text is distinct from version_row.snapshot->>'created_by'
   and reviewed_by::text is distinct from (version_row.snapshot->'provenance'->>'last_content_editor')
   and reviewed_at is not null
-  and rights_reviewed_by::text=version_row.snapshot->>'reviewed_by'
+  and media.rights_reviewed_by::text=version_row.snapshot->>'reviewed_by'
   and rights_reviewed_at is not null
   and length(rights_evidence) between 8 and 4000
-  and reviewed_by=rights_reviewed_by
+  and media.reviewed_by=media.rights_reviewed_by
   and exists(select 1 from ace.question_media_reviews rights_review
-   where rights_review.intent_id=ace.question_media.intent_id
-    and rights_review.question_version=ace.question_media.question_version-1
+   where rights_review.intent_id=media.intent_id
+    and rights_review.question_version=media.question_version-1
     and rights_review.decision='approved'
-    and rights_review.rights_status=ace.question_media.rights_status
-    and rights_review.reviewed_by=ace.question_media.rights_reviewed_by
-    and rights_review.rights_evidence=ace.question_media.rights_evidence
-    and rights_review.reviewed_at=ace.question_media.rights_reviewed_at
+    and rights_review.rights_status=media.rights_status
+    and rights_review.reviewed_by=media.rights_reviewed_by
+    and rights_review.rights_evidence=media.rights_evidence
+    and rights_review.reviewed_at=media.rights_reviewed_at
     and rights_review.reviewed_by::text=version_row.snapshot->>'reviewed_by')
   and mime_type in('image/png','image/jpeg','image/webp')
   and size_bytes between 1 and 2097152
