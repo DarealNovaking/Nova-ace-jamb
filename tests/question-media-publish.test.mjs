@@ -35,8 +35,8 @@ test('copies and verifies bytes before confirming metadata and publishing',async
 })
 test('authentication and exact request shape are required',async()=>{
  const h=make()
- assert.equal((await h.handler(request({question_id:question,question_version:4,asset_id:asset})).status,400)
- assert.equal((await h.handler(request(undefined,'invalid-token')).status,401)
+ assert.equal((await h.handler(request({question_id:question,question_version:4,asset_id:asset}))).status,400)
+ assert.equal((await h.handler(request(undefined,'invalid-token'))).status,401)
  assert.equal(h.calls.write,0);assert.equal(h.calls.confirm,0);assert.equal(h.calls.publish,0)
 })
 test('wrong staging digest prevents metadata confirmation and publication',async()=>{
