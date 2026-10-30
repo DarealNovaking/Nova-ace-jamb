@@ -3020,3 +3020,14 @@ Publication helper installed after native24casesPASS (20sequential+4actualconten
 - Student CBT rich-content rendering and authenticated private image fetch/blob lifecycle are in PR #23. The question stem stays visible; missing diagrams show alt text and a retry action.
 - Independent image-rights review has now been fast-forwarded into PR #23. The current branch includes a restricted audit table, reviewer RPC tied to the exact approved question version, and student-delivery checks that require the audit record to match published media metadata. The previous green runs apply only to head bb82bdc4c98fd691f0bf868f89f67cb5aedb4001; rerun Verify and ACE JAMB E2E on the current head before treating this layer as verified.
 - Do not deploy or apply production SQL/storage changes. Next: merge the work branch into PR #23, run Verify + ACE JAMB E2E on the resulting head, then finish authoring/review/publish, reviewer preview, immutable promotion, takedown/cleanup, and release authorization. FCB-02 remains complete/closed.
+
+
+## FCB-03 continuation — 30 October 2026 (latest)
+
+- PR #23 head at the latest verified code revision: \`7b7a8cb1f20ac9dfebbd6629a76f633fc78e913b\`; PR remains open/unmerged.
+- Private media publication promotion is now implemented as source-only code and wired to the admin Publish action. SQL preflight binds the exact approved version, rights-review audit and immutable object paths; Edge code copies only trusted paths and rechecks bytes/digest before confirming metadata.
+- Security tightening: the dedicated \`ace_media_executor\` can call \`ace.publish_question_after_media_promotion\`, not the generic question mutation function. Disposable PostgreSQL ACL and rich-question promotion tests pass.
+- Latest GitHub Verify run \`41064279724\` PASS on this head. Node tests, Deno checks, WASM image decoding, typecheck, build and disposable PostgreSQL tests all passed. ACE JAMB E2E run \`41064279445\` was pending at checkpoint time; verify its final result before claiming end-to-end success.
+- Immediate next work: complete E2E verification; add/verify takedown, retention, orphan cleanup and concurrent publish/withdraw coverage; exercise reviewer preview and complete admin-to-student image flow in browser tests. Then prepare the release package for explicit authorization.
+- Safety: no production migration, Storage bucket/object, credential, role, deployment or merge occurred. FCB-03 remains source-only; keep the current text-only workflow intact. FCB-02 remains complete and closed.
+
