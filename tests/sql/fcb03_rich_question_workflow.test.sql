@@ -10,6 +10,7 @@ insert into auth.users(id,email,raw_user_meta_data) values
  ('06000000-0000-4000-8000-000000000002','rich-reviewer@example.invalid','{}');
 update ace.roles set role='editor' where user_id='06000000-0000-4000-8000-000000000001';
 update ace.roles set role='admin' where user_id='06000000-0000-4000-8000-000000000002';
+select set_config('request.jwt.claim.sub','06000000-0000-4000-8000-000000000002',true);
 insert into ace.subjects(id,code,name,active)
  values('06000000-0000-4000-8000-000000000005','RCH','Rich Content',true);
 insert into ace.syllabus_versions(id,season_id,subject_id,version,title,rights_status,status,activated_at)
