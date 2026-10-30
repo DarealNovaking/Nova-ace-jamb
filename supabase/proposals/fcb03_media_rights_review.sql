@@ -24,8 +24,8 @@ begin
  select role into actor_role from ace.roles where user_id=actor and role in('editor','admin') for share;
  if not found then raise exception 'Media review permission required' using errcode='42501';end if;
  if p_question is null or p_version is null or p_version<1 or p_asset is null
-  or v_decision not in('approved','rejected')
-  or v_rights not in('owned','licensed','permitted','restricted','rejected')
+  or v_decision is null or v_decision not in('approved','rejected')
+  or v_rights is null or v_rights not in('owned','licensed','permitted','restricted','rejected')
   or v_evidence is null or length(v_evidence) not between 8 and 4000 then
   raise exception 'Invalid media review decision' using errcode='22023';end if;
  if (v_decision='approved' and v_rights not in('owned','licensed','permitted'))
@@ -34,7 +34,9 @@ begin
 
  perform pg_advisory_xact_lock(hashtextextended('ace.question.workflow',0));
  select * into q from ace.questions where id=p_question for update;
- if not found or q.active or q.review_status<>'approved'
+ if not found then
+  raise exception 'Independent media reviewer required' using errcode='42501';end if;
+ if q.active or q.review_status<>'approved'
   or q.content_version<>p_version or q.reviewed_by is distinct from actor
   or q.created_by is null or q.created_by=actor
   or q.rights_status not in('owned','licensed','permitted')
@@ -53,9 +55,11 @@ begin
  perform ace.validate_rich_question_content(q.rich_content);
 
  select * into intent from ace.question_media_intents where id=p_asset for share;
- if not found or intent.question_id<>p_question or intent.status<>'verified'
+ if not found then
+  raise exception 'Verified media intent unavailable for independent review' using errcode='23514';end if;
+ if intent.question_id<>p_question or intent.status<>'verified'
   or intent.verified_at is null or intent.question_version>p_version
-  or intent.requested_by=actor
+  or intent.requested_by is null or intent.requested_by=actor
   or length(intent.rights_evidence) not between 1 and 4000 then
   raise exception 'Verified media intent unavailable for independent review' using errcode='23514';end if;
  if not exists(
