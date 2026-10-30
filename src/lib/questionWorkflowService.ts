@@ -22,3 +22,26 @@ export async function restoreQuestion(id: string, currentVersion: number, source
   if(error)throw error
   return parseSavedQuestion(data,id,currentVersion,'save')
 }
+
+export async function reviewQuestionMediaIntent(
+ questionId:string,version:number,assetId:string,decision:'approved'|'rejected',
+ rightsStatus:'owned'|'licensed'|'permitted'|'restricted',evidence:string,
+) {
+ const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+ if(!uuid.test(questionId)||!uuid.test(assetId)||!Number.isSafeInteger(version)||version<1||
+  !['approved','rejected'].includes(decision)||
+  !(decision==='approved'?['owned','licensed','permitted']:['restricted']).includes(rightsStatus)||
+  typeof evidence!=='string'||evidence.trim().length<8||evidence.trim().length>4000)
+  throw new Error('Invalid media-rights review request')
+ const {data,error}=await ace.rpc('review_question_media_intent',{
+  p_question:questionId,p_version:version,p_asset:assetId,p_decision:decision,
+  p_rights_status:rightsStatus,p_rights_evidence:evidence.trim(),
+ })
+ if(error)throw error
+ if(!data||typeof data!=='object'||Array.isArray(data)||
+  (data as Record<string,unknown>).intent_id!==assetId||
+  (data as Record<string,unknown>).question_version!==version||
+  (data as Record<string,unknown>).decision!==decision)
+  throw new Error('Media-rights review could not be confirmed')
+ return data
+}

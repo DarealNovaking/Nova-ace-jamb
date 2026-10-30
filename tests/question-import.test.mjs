@@ -3,7 +3,10 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import ts from 'typescript'
 const moduleUrl=path=>'data:text/javascript;base64,'+Buffer.from(ts.transpileModule(readFileSync(new URL(path,import.meta.url),'utf8'),{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText).toString('base64')
-const workflow=moduleUrl('../src/lib/questionWorkflow.ts')
+const moduleUrlFromCode=code=>'data:text/javascript;base64,'+Buffer.from(code).toString('base64')
+const richContent=moduleUrl('../src/lib/richContent.ts')
+const workflowSource=readFileSync(new URL('../src/lib/questionWorkflow.ts',import.meta.url),'utf8').replace(/from (["'])\.\/richContent\1/g,(_,q)=>'from '+JSON.stringify(richContent))
+const workflow=moduleUrlFromCode(ts.transpileModule(workflowSource,{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText)
 const code=ts.transpileModule(readFileSync(new URL('../src/lib/questionImport.ts',import.meta.url),'utf8'),{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText.replaceAll("'./questionWorkflow'",JSON.stringify(workflow)).replaceAll('"./questionWorkflow"',JSON.stringify(workflow))
 const {QUESTION_IMPORT_COLUMNS,parseQuestionImport,runQuestionImport}=await import('data:text/javascript;base64,'+Buffer.from(code).toString('base64'))
 const subject='03000000-0000-4000-8000-000000000001',topic='03000000-0000-4000-8000-000000000002'

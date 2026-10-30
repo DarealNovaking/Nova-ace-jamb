@@ -26,10 +26,23 @@ jobs:
           cache: npm
           cache-dependency-path: package-lock.json
       - run: npm ci
-      - run: node --test tests/catalog-parser.test.mjs tests/review-only-stage.test.mjs tests/catalog-import-contract.test.mjs tests/pwa-contract.test.mjs tests/pwa-runtime.test.mjs tests/syllabus-edit.test.mjs tests/reviewed-corrections.test.mjs tests/practice-baseline.test.mjs tests/student-syllabus.test.mjs tests/study-publication.test.mjs tests/question-workflow.test.mjs tests/question-import.test.mjs tests/question-import-render.test.mjs tests/question-history.test.mjs tests/question-history-render.test.mjs tests/dashboard-shell-render.test.mjs tests/student-question-delivery.test.mjs
+      - run: node --test tests/catalog-parser.test.mjs tests/review-only-stage.test.mjs tests/catalog-import-contract.test.mjs tests/pwa-contract.test.mjs tests/pwa-runtime.test.mjs tests/syllabus-edit.test.mjs tests/reviewed-corrections.test.mjs tests/practice-baseline.test.mjs tests/student-syllabus.test.mjs tests/study-publication.test.mjs tests/question-workflow.test.mjs tests/question-import.test.mjs tests/question-import-render.test.mjs tests/question-history.test.mjs tests/question-history-render.test.mjs tests/dashboard-shell-render.test.mjs tests/student-question-delivery.test.mjs tests/rich-content.test.mjs tests/media-storage-flow.test.mjs tests/question-media-upload.test.mjs tests/question-media-delivery.test.mjs tests/question-media-preview.test.mjs tests/question-media-publish.test.mjs tests/rich-question-authoring.test.mjs
       - uses: denoland/setup-deno@v2
       - run: deno check --no-check=remote supabase/functions/ibass-catalog-stage/index.ts
       - run: deno check --no-check=remote supabase/functions/catalog-import/index.ts
+      - run: deno check supabase/functions/_shared/questionMedia.ts supabase/functions/_shared/questionMediaUpload.ts supabase/functions/_shared/questionMediaDelivery.ts
+      - name: Type-check real WASM sanitizer and execute actual decoding tests
+        run: |
+          deno check --node-modules-dir=auto supabase/functions/_shared/magickQuestionSanitizer.ts
+          deno test --node-modules-dir=auto --allow-read tests/deno/fcb03-magick-sanitizer.test.ts
+      - name: Type-check source-only authenticated Supabase media Edge integration
+        run: deno check --node-modules-dir=auto supabase/functions/question-media-upload/index.ts
+      - name: Type-check source-only authenticated reviewer media preview Edge integration
+        run: deno check --no-check=remote supabase/functions/_shared/questionMediaPreview.ts supabase/functions/question-media-preview/index.ts
+      - name: Type-check source-only immutable media publication Edge integration
+        run: deno check --no-check=remote supabase/functions/_shared/questionMediaPublish.ts supabase/functions/question-media-publish/index.ts
+      - name: Type-check source-only authenticated student media delivery Edge integration
+        run: deno check --node-modules-dir=auto supabase/functions/question-media-delivery/index.ts
       - run: npm run typecheck
       - name: Build and report bundle module attribution
         env:
@@ -296,3 +309,13 @@ jobs:
         run: psql -X -v ON_ERROR_STOP=1 -f tests/sql/fcb_01_schema_baseline.test.sql
       - name: Verify question authoring, independent review and publication boundaries
         run: python3 tests/sql/fcb03_question_workflow.py --races --history --delivery
+      - name: Verify private rich-content PostgreSQL validator in isolated database
+        run: psql -X -v ON_ERROR_STOP=1 -f tests/sql/fcb03_rich_content.test.sql
+      - name: Verify isolated private question image-intent guards and revision binding
+        run: psql -X -v ON_ERROR_STOP=1 -f tests/sql/fcb03_media_intents.test.sql
+      - name: Verify attempt-owned, published-revision image delivery authorization
+        run: psql -X -v ON_ERROR_STOP=1 -f tests/sql/fcb03_media_student_delivery.test.sql
+      - name: Verify rich question authoring, immutable review and publication gates
+        run: psql -X -v ON_ERROR_STOP=1 -f tests/sql/fcb03_rich_question_workflow.test.sql
+      - name: Reject table exposure from least-privilege media executor proposal
+        run: psql -X -v ON_ERROR_STOP=1 -f tests/sql/fcb03_media_executor.test.sql

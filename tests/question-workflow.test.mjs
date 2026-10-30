@@ -1,9 +1,18 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
+import { createRequire } from 'node:module'
 import ts from 'typescript'
-const code=ts.transpileModule(readFileSync(new URL('../src/lib/questionWorkflow.ts',import.meta.url),'utf8'),{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText
-const {validateQuestionDraft,parseQuestionQueue,parseSavedQuestion,questionActions}=await import(`data:text/javascript;base64,${Buffer.from(code).toString('base64')}`)
+const compile=source=>ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText
+const requireNative=createRequire(import.meta.url)
+const load=(code,dependencies={})=>{
+ const module={exports:{}}
+ new Function('require','module','exports',code)(name=>dependencies[name]??requireNative(name),module,module.exports)
+ return module.exports
+}
+const richContent=load(compile(readFileSync(new URL('../src/lib/richContent.ts',import.meta.url),'utf8')))
+const workflow=load(compile(readFileSync(new URL('../src/lib/questionWorkflow.ts',import.meta.url),'utf8')),{ './richContent':richContent })
+const {validateQuestionDraft,parseQuestionQueue,parseSavedQuestion,questionActions}=workflow
 const author='03000000-0000-4000-8000-000000000001', reviewer='03000000-0000-4000-8000-000000000002'
 const draft=()=>({subject_id:author,topic_id:reviewer,subtopic_id:null,stem:'What is 3 + 4?',options:[{key:'A',text:'5'},{key:'B',text:'6'},{key:'C',text:'7'},{key:'D',text:'8'}],correct_option_key:'C',explanation:'Adding four to three gives seven.',difficulty:'easy',exam:'ACE practice',exam_year:null,provenance:{source_kind:'original',source_title:'ACE original arithmetic',author_label:'ACE team',source_url:null,rights_evidence:'Original exercise.'}})
 const row=()=>({...draft(),id:author,content_version:1,review_status:'draft',active:false,rights_status:'unknown',created_by:author,reviewed_by:null,provenance:{...draft().provenance,last_content_editor:author}})

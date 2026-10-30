@@ -1,6 +1,56 @@
 # ACE JAMB — Current Agent Checkpoint
 
+> **Current state:** FCB-03 image upload and pre-decoding authorization are source-only and Verify-green; no production changes. See top checkpoint below. Older entries are historical.
+
+## Private authenticated upload service and pre-decoding authorization — 30 October 2026
+
+- **Source implementation only, not deployed:** `supabase/functions/question-media-upload/index.ts` is an explicitly gated Edge entrypoint using live-token verification via Supabase Auth `getUser(token)`, exact-origin CORS, immutable private Storage upload/readback, and a transaction-local verified-user claim over a TLS Postgres connection that checks `current_user='ace_media_executor'`. Missing server secrets/bucket settings return 503. No credential, bucket, deployment, role or permission change was made in the live project.
+- `supabase/proposals/fcb03_media_executor_grants.sql` grants a separately provisioned, unprivileged executor only schema USAGE and EXECUTE on internal private media-intent and preflight RPCs; **no table permissions**. It validates the executor lacks superuser/BYPASSRLS/CREATEROLE/CREATEDB/REPLICATION. `supabase/proposals/fcb03_media_preflight.sql` creates a source-only, private, side-effect-free permission check that validates current editor/administrator role, draft ownership, revision and nonpublished state **before costly WASM decoding**; intent reservation and confirmation still recheck under locks, preventing time-of-check/time-of-use bypass. Installation order must be preflight SQL before grants. Both are proposals, not applied to production.
+- `supabase/functions/_shared/questionMediaUpload.ts` now rechecks immutable private object readback on identical verified upload replay; missing/wrong-MIME/same-length tampered objects fail closed instead of returning false success. `tests/question-media-upload.test.mjs` includes the preflight/student-authorization rejection and replay tamper tests; `tests/sql/fcb03_media_executor.test.sql` checks least-privilege function calls and no authenticated/anonymous exposure in disposable PostgreSQL.
+- **Verified evidence:** latest implementation head `5dcf673beb9281378fcb9e61badf96e62674ef66`, GitHub Actions **Verify SUCCESS all 7 jobs**, run `40977843456` (native question-workflow PostgreSQL guards, 110 Node tests, real Deno/WASM decoding, Edge TypeScript checks, frontend typecheck/build and other baseline jobs). The ACE JAMB E2E run `40977843536` was IN PROGRESS at this checkpoint and is **not claimed PASS**.
+- **Remaining gates:** no live upload because approved private Storage bucket, dedicated SQL executor credential/role, deployed Edge function, access policies, environment secrets and integration acceptance do not exist yet. Also not implemented: rights/reviewer-verified publication binding, student-owned-attempt media delivery, guarded takedown/retention and complete media workflow UI. No production SQL/Storage/data/roles, deployment, question publication, or session changes were made. Existing plain-text authoring and CBT remain the current production behavior.
+- **Exact next action:** build/verify the student-owned-attempt private image delivery proxy and reviewed media/question revision linkage in isolated tests; then prepare a specific production release package for explicit owner approval. FCB-03 is IN PROGRESS; FCB-01/02 remain COMPLETE.
+
+
+
+
+## Private image reservation and byte-verification implementation — 29 October 2026
+
+- New proposal **`supabase/proposals/fcb03_media_intents.sql`** creates an RLS-enabled `ace.question_media_intents` staging table with **no client table privileges** and two trusted-server-only functions with **no anon/authenticated EXECUTE**. Reservation requires a current editor/admin role, private owned/current question revision (admin exception for editing), bounded image metadata, rights evidence, unique server-generated opaque object path, 15-minute expiry, four-live-intents-per-question/revision limit and identical-request replay. Confirmation rechecks actor, ownership, revision and asserted SHA-256/MIME/size before marking **metadata only** as verified. Both paths share the existing question-authoring advisory lock and question-row lock. The reservation's SHA/size/MIME are *claimed*, not sufficient to trust actual bytes.
+- New reusable **`supabase/functions/_shared/questionMedia.ts`** is a backend-only, fail-closed protocol. It requires a **supplied real safe decoder/re-encoder** (not yet integrated); format/magic-byte agreement, at most 2 MiB, single frame, bounded decoded dimensions, SHA-256 of sanitized bytes and immutable storage write/readback SHA-256 match before database confirmation. No public URLs, bucket, live endpoint, media publication or automatic file cleanup. Without a real sanitizer/storage adapter this helper cannot upload an actual image.
+- New **`tests/sql/fcb03_media_intents.test.sql`** covers server-only grants, actor/owner denials, idempotency, mismatches, immutable generated paths, four-intent cap, stale question revisions and no automatic question/media publication in a disposable PostgreSQL fixture. The fixture was corrected to respect one-active-season and existing rights/role guards. New **`tests/media-storage-flow.test.mjs`** uses mock storage/sanitizer to exercise unsafe byte denial, output dimensions/frames, readback tampering, wrong intent path, failures and safe confirmation. The Verify workflow now executes these tests and Deno-checks the helper.
+- Verified **all seven GitHub Verify jobs PASS** on implementation SHA `6549f88dcc85f07383a6a528010b1a0cea435cb8`, run `40967952767`. In particular native `question-workflow` PostgreSQL and `verify` Node/Deno/typecheck/build jobs passed. Browser E2E run `40967952876` was still in progress when this note was prepared; no browser success claimed for that SHA yet. Earlier test-red events were test-fixture/DDL name issues and were corrected; no migration was applied to live Supabase.
+- **Not shipped:** No real image decoder, upload/download Edge Function, Supabase Storage bucket, storage policies, rights publication linkage, signed student proxy, cleanup job, server HTTP authentication, production migration, production content write, merge or deployment. Existing plain-text authoring and CBT remain untouched. FCB-03 stays OPEN; the 40 original draft questions remain unpublished and still need a genuinely different authorized reviewer. FCB-01/02 stay COMPLETE.
+- **Next:** integrate a vetted real image decode/re-encode adapter and authenticated owner-bound upload endpoint against private/mock Storage, with cross-request/concurrent editor/review/takedown tests; prepare a concrete package for **separate specific owner approval** before any production SQL, bucket, provider or deployment operation.
+
+## Current: FCB-03 private PostgreSQL rich-content validation — 29 October 2026
+
+- PR23 branch `feat/fcb03-rich-content-contract` now also contains `supabase/proposals/fcb03_rich_content_validation.sql`, a **source-only, non-deployed** PostgreSQL validator with strict version, exact fallback, allowed shapes/bounds/control characters, private image UUID and explicit denial of public/anonymous/authenticated EXECUTE. It is deliberately not wired into question save/history/CBT; existing rich/media inputs remain rejected. Full private image lifecycle and storage authorization are specified in `docs/FCB-03-PRIVATE-MEDIA-LIFECYCLE-2026-10-29.md`; no Storage bucket/object or real upload endpoint was created.
+- Fresh isolated PostgreSQL 17 CI tests `tests/sql/fcb03_rich_content.test.sql` PASS: one full rich-question payload, 23 hostile/refusal cases, 4 ACL-denial checks. All seven Verify jobs PASS on code SHA `7e48853c07a0920ac31b5c89e1024374a445a72d` in run `40959377728`, including existing question-workflow regression suites. Earlier full 258-browser E2E completed PASS for first corrected frontend-only candidate (run `40958014342`); browser E2E on new SQL/test source (`40959377355`) was still in progress at this checkpoint. New documentation-only commits do not change tested runtime code.
+- FCB-03 remains OPEN. No merge, live migration, database/question/media/content mutation, storage resources, account/session changes or deployment performed. 40 draft questions remain unreviewed/unpublished; a genuinely distinct administrator remains a review prerequisite. FCB-01/02 remain complete.
+- **Next:** confirm newest PR23 browser tests; then implement private upload intents and question/revision ownership/rights binding against disposable PostgreSQL plus mocked object storage. Production SQL, Storage creation and any deployment still require specific owner approval.
+
+---
+
+
+## Current: FCB-03 rich-content v1 source-only candidate — 29 October 2026
+
+Verified main includes merged PR22 (`6ba898bdb64161d2b289df5d2e18fe18a3224f6a`). Current work is on `feat/fcb03-rich-content-contract`: strict, bounded versioned document parser; accessible text-only React renderer for paragraphs, Unicode math, tables and inaccessible image placeholders; untrusted-data/refusal and static-render tests; Verify CI registration. See `docs/FCB-03-RICH-CONTENT-V1-IMPLEMENTATION-2026-10-29.md`. No tests are claimed passed before CI. No source mutation on main, no production SQL/Storage, deployment, role/session or question/content changes. Existing plain-text RPC and editor remain unchanged; rich payloads are intentionally not accepted by production. FCB-03 still OPEN, 40 drafts unpublished, separate administrator required. FCB-01/02 remain COMPLETE.
+
+**Exact next action:** inspect new PR GitHub Actions and correct any failing tests; then design/test the matching server-side and private media contract in isolated PostgreSQL. Production storage/database creation and deployment require specific additional approval.
+
+--- 
+
+
 > **Current-state rule:** this opening section is authoritative. Entries below the historical divider are evidence history and do not override this section.
+
+
+## Current: FCB-03 real image sanitization and upload HTTP boundary verified on source branch — 30 October 2026
+
+PR23 branch `feat/fcb03-rich-content-contract` has a strictly bounded server-only upload HTTP handler, private question/revision image-intent SQL proposal, immutable storage digest attestation, and a real pinned WASM ImageMagick still-image sanitizer. It is **not** a live upload API. Latest implementation SHA `36e76d73b0937f7e1c17c37d63dc85bd3ca3b4fb`: all seven Verify jobs PASS in `40976524664`, with 109 Node tests, 2 real Deno/WASM tests, current typecheck/build and native disposable SQL guards passing. The latest full browser E2E was pending at this checkpoint; do not infer browser PASS. Code is PR23 OPEN/unmerged, production unchanged. No Supabase SQL, Storage, Edge Function, content, user role/session or Cloudflare deployment mutation.
+
+Remaining FCB-03: connect server JWT verification with least-privilege trusted DB transaction and immutable private Storage; media rights/reviewer publication and withdrawal; student-owned-attempt binary proxy, history/retention, moderation, and genuinely independent 40-draft review. Never silently re-enable the catalogue or reopen FCB-01/02. **Exact next action:** implement secure server adapters and gated entrypoint in source with mock/negative tests, then student media delivery. Request specific production authorization only at release boundary.
+
 
 ## Current: FCB-03 student delivery prerequisite repaired in PR22 — 29 October 2026
 
@@ -2963,3 +3013,21 @@ FullE2E40757215500 passed182cases but newselectioncasefailedon a testlocator(get
 Independent original-index review completed: no blocking issue in current candidate. One malformed-input gap (blank/padded group names accepted) reproduced RED then fixed;5generator tests nowPASS. Full content suite15testsPASS. Reviewer independently confirmed complete1170lineage, exact generated artifact and student/admin separation; browser execution stillpending.
 
 Publication helper installed after native24casesPASS (20sequential+4actualcontention), Verify40807394841 all6jobsPASS, latestnativejob123229497134 loginspected. Installedledger20261029023824_fcb02_original_study_publication; bodySHAe27729207c20d1975add819c45a5604e168ec7fb1eb77dc636e886291711c90e matchesreviewedsource,postgresowner/definer,pg_catalog+pg_temp/3s,authenticatedonly; identity-freeoperationdenied. Ledger56,75versions,zeroactivecontent/config/seasons,zeroindexpublicationaudits. Original214/956/25v2fingerprintsunchanged andsavedbaselineexactreadback. No publication/contentmutation. Browser40807394849/job123229850216stillrunning. Fullscope24native +202browserexpected; initialoldbrowserrun40807224329cancelledafterSQLfixturecorrection, notPASS. Independentreviewcount-driftfindingfixedRED/GREEN, noreviewblockers. Nextfinishfullbrowser, recordrelease/deploy; genuineadminPublishactiononlyafterconcretecontrolsavailable.
+
+
+## FCB-03 continuation checkpoint — 30 October 2026
+- Tested PR head before independent-rights-review additions: bb82bdc4c98fd691f0bf868f89f67cb5aedb4001. Verify run 41029188872 PASS; ACE JAMB E2E run 41029188866 PASS.
+- Student CBT rich-content rendering and authenticated private image fetch/blob lifecycle are in PR #23. The question stem stays visible; missing diagrams show alt text and a retry action.
+- Independent image-rights review has now been fast-forwarded into PR #23. The current branch includes a restricted audit table, reviewer RPC tied to the exact approved question version, and student-delivery checks that require the audit record to match published media metadata. The previous green runs apply only to head bb82bdc4c98fd691f0bf868f89f67cb5aedb4001; rerun Verify and ACE JAMB E2E on the current head before treating this layer as verified.
+- Do not deploy or apply production SQL/storage changes. Next: merge the work branch into PR #23, run Verify + ACE JAMB E2E on the resulting head, then finish authoring/review/publish, reviewer preview, immutable promotion, takedown/cleanup, and release authorization. FCB-02 remains complete/closed.
+
+
+## FCB-03 continuation — 30 October 2026 (latest)
+
+- PR #23 head at the latest verified code revision: \`7b7a8cb1f20ac9dfebbd6629a76f633fc78e913b\`; PR remains open/unmerged.
+- Private media publication promotion is now implemented as source-only code and wired to the admin Publish action. SQL preflight binds the exact approved version, rights-review audit and immutable object paths; Edge code copies only trusted paths and rechecks bytes/digest before confirming metadata.
+- Security tightening: the dedicated \`ace_media_executor\` can call \`ace.publish_question_after_media_promotion\`, not the generic question mutation function. Disposable PostgreSQL ACL and rich-question promotion tests pass.
+- Latest GitHub Verify run \`41064279724\` PASS on this head. Node tests, Deno checks, WASM image decoding, typecheck, build and disposable PostgreSQL tests all passed. ACE JAMB E2E run \`41064279445\` was pending at checkpoint time; verify its final result before claiming end-to-end success.
+- Immediate next work: complete E2E verification; add/verify takedown, retention, orphan cleanup and concurrent publish/withdraw coverage; exercise reviewer preview and complete admin-to-student image flow in browser tests. Then prepare the release package for explicit authorization.
+- Safety: no production migration, Storage bucket/object, credential, role, deployment or merge occurred. FCB-03 remains source-only; keep the current text-only workflow intact. FCB-02 remains complete and closed.
+

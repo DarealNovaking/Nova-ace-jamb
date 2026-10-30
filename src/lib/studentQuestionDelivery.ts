@@ -1,5 +1,6 @@
 import type { CbtQuestion } from './cbtService'
 import type { PublishedTopicMapping } from './progressSummary'
+import { parseRichContent, type RichDocument } from './richContent'
 
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 const failure = () => new Error('Question delivery could not be confirmed. Reload the session before continuing.')
@@ -10,8 +11,8 @@ function id(value: unknown): string {
   return value.toLowerCase()
 }
 
-function fields(value: unknown, allowed: string[]): Record<string, unknown> {
-  if (!object(value) || Object.keys(value).some(key => !allowed.includes(key)) || allowed.some(key => !(key in value))) throw failure()
+function fields(value: unknown, allowed: string[], required: string[] = allowed): Record<string, unknown> {
+  if (!object(value) || Object.keys(value).some(key => !allowed.includes(key)) || required.some(key => !(key in value))) throw failure()
   return value
 }
 
@@ -49,7 +50,7 @@ export function parseAttemptQuestions(value: unknown, ids: string[], optionOrder
   const expectedOptions = optionSets(expected, optionOrder)
   if (!Array.isArray(value) || value.length !== expected.length) throw failure()
   return value.map((item, index) => {
-    const question = fields(item, ['id', 'question_text', 'options', 'subject_id', 'topic_id', 'difficulty'])
+    const question = fields(item, ['id', 'question_text', 'options', 'subject_id', 'topic_id', 'difficulty', 'rich_content'], ['id', 'question_text', 'options', 'subject_id', 'topic_id', 'difficulty'])
     if (id(question.id) !== expected[index] || !Array.isArray(question.options) || question.options.length < 1 || question.options.length > 20) throw failure()
     const options = question.options.map(item => {
       const option = fields(item, ['key', 'text'])
@@ -60,11 +61,16 @@ export function parseAttemptQuestions(value: unknown, ids: string[], optionOrder
     const wanted = expectedOptions.get(expected[index])!
     if (keys.size !== options.length || keys.size !== wanted.size || [...wanted].some(key => !keys.has(key))) throw failure()
     if (question.difficulty !== null && (typeof question.difficulty !== 'string' || !['easy', 'medium', 'hard'].includes(question.difficulty))) throw failure()
+    let rich_content: RichDocument | null = null
+    if (Object.hasOwn(question, 'rich_content') && question.rich_content !== null) {
+      try { rich_content = parseRichContent(question.rich_content) } catch { throw failure() }
+    }
     return {
       id: expected[index], text: text(question.question_text, 20000), options,
       subject_id: question.subject_id === null ? null : id(question.subject_id),
       topic_id: question.topic_id === null ? null : id(question.topic_id),
       difficulty: question.difficulty as string | null,
+      rich_content,
     }
   })
 }

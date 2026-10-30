@@ -11,13 +11,17 @@ const data=code=>'data:text/javascript;base64,'+Buffer.from(code).toString('base
 const compile=path=>ts.transpileModule(readFileSync(new URL(path,import.meta.url),'utf8'),{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022,jsx:ts.JsxEmit.ReactJSX}}).outputText
 // Server rendering runs the real queue and React hooks. Network effects and editor
 // children cannot run here, so only those boundaries/icons are substituted.
+const richContent=data(compile('../src/lib/richContent.ts'))
+const workflow=data(compile('../src/lib/questionWorkflow.ts').replace(/from (["'])\.\/richContent\1/g,(_,q)=>'from '+JSON.stringify(richContent)))
 const modules={
   react:pathToFileURL(require.resolve('react')).href,
   'react/jsx-runtime':pathToFileURL(require.resolve('react/jsx-runtime')).href,
   'lucide-react':data('export const FileQuestion=()=>null;export const Loader2=()=>null;export const RefreshCw=()=>null;'),
   '../lib/authService':data('export const getCurrentUser=async()=>null;'),
-  '../lib/questionWorkflowService':data('export const listQuestionReview=async()=>null;export const mutateQuestion=async()=>null;'),
-  '../lib/questionWorkflow':data(compile('../src/lib/questionWorkflow.ts')),
+  '../lib/questionWorkflowService':data('export const listQuestionReview=async()=>null;export const mutateQuestion=async()=>null;export const reviewQuestionMediaIntent=async()=>null;'),
+  '../lib/questionWorkflow':workflow,
+  '../lib/questionMediaClient':data('export const publishRichQuestion=async()=>({});'),
+  './AdminRichContentPreview':data('export default function Preview(){return null;}'),
   './AdminQuestionEditor':data('export default function Editor(){return null;}'),
   './AdminQuestionImport':data('export default function Import(){return null;}'),
 }
