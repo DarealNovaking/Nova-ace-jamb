@@ -16,7 +16,11 @@ begin
  or not has_function_privilege('ace_media_executor',
   'ace.authorize_attempt_question_media(uuid,uuid,uuid)','execute')
  or not has_function_privilege('ace_media_executor',
-  'ace.authorize_question_media_preview(uuid,integer,uuid)','execute') then
+  'ace.authorize_question_media_preview(uuid,integer,uuid)','execute')
+ or not has_function_privilege('ace_media_executor',
+  'ace.prepare_question_media_publication(uuid,integer)','execute')
+ or not has_function_privilege('ace_media_executor',
+  'ace.confirm_question_media_promotion(uuid,integer,uuid)','execute') then
   raise exception 'Dedicated media executor is missing required narrow function grants';
  end if;
  if has_function_privilege('anon','ace.can_stage_question_media(uuid,integer)','execute')
@@ -29,6 +33,10 @@ begin
  or has_function_privilege('authenticated','ace.reserve_question_media_intent(uuid,integer,uuid,text,text,text,integer,text)','execute')
  or has_function_privilege('anon','ace.authorize_attempt_question_media(uuid,uuid,uuid)','execute')
  or has_function_privilege('authenticated','ace.authorize_question_media_preview(uuid,integer,uuid)','execute')
+ or has_function_privilege('authenticated','ace.prepare_question_media_publication(uuid,integer)','execute')
+ or has_function_privilege('authenticated','ace.confirm_question_media_promotion(uuid,integer,uuid)','execute')
+ or has_function_privilege('anon','ace.prepare_question_media_publication(uuid,integer)','execute')
+ or has_function_privilege('anon','ace.confirm_question_media_promotion(uuid,integer,uuid)','execute')
  or has_function_privilege('anon','ace.authorize_question_media_preview(uuid,integer,uuid)','execute')
  or has_function_privilege('authenticated','ace.authorize_attempt_question_media(uuid,uuid,uuid)','execute')
  or has_table_privilege('anon','ace.question_media_reviews','select')
