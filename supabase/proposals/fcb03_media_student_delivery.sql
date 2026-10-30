@@ -90,8 +90,10 @@ begin
  if not found then return null;end if;
 
  if jsonb_typeof(a.question_order) is distinct from 'array'
- or jsonb_typeof(a.question_snapshot) is distinct from 'array'
- or jsonb_array_length(a.question_order) not between 1 and 500
+ or jsonb_typeof(a.question_snapshot) is distinct from 'array' then
+  return null;
+ end if;
+ if jsonb_array_length(a.question_order) not between 1 and 500
  or jsonb_array_length(a.question_snapshot)<>jsonb_array_length(a.question_order) then
   return null;
  end if;
