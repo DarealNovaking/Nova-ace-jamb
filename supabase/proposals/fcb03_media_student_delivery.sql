@@ -16,6 +16,8 @@ alter table ace.question_media add column if not exists intent_id uuid;
 alter table ace.question_media add column if not exists question_version integer;
 alter table ace.question_media add column if not exists sha256 text;
 alter table ace.question_media add column if not exists verified_at timestamptz;
+alter table ace.question_media add column if not exists reviewed_by uuid references auth.users(id);
+alter table ace.question_media add column if not exists reviewed_at timestamptz;
 
 do $constraints$
 begin
@@ -38,6 +40,12 @@ begin
    and conrelid='ace.question_media'::regclass) then
   alter table ace.question_media add constraint question_media_intent_identity
    check(intent_id is null or id=intent_id);
+ end if;
+ if not exists(select 1 from pg_catalog.pg_constraint where conname='question_media_review_state_consistency'
+   and conrelid='ace.question_media'::regclass) then
+  alter table ace.question_media add constraint question_media_review_state_consistency
+   check((reviewed_by is null and reviewed_at is null) or
+         (reviewed_by is not null and reviewed_at is not null));
  end if;
 end
 $constraints$;
@@ -110,6 +118,8 @@ begin
  where question_id=p_question_id and version=version_number
  for share;
  if not found or version_row.snapshot->>'content_version'<>version_number::text
+  or version_row.snapshot->>'reviewed_by' is distinct from q.reviewed_by::text
+  or q.reviewed_by is null or q.reviewed_by=q.created_by
   or jsonb_typeof(version_row.snapshot->'rich_content') is distinct from 'object'
   or jsonb_typeof(version_row.snapshot->'rich_content'->'blocks') is distinct from 'array' then
   return null;
@@ -122,6 +132,8 @@ begin
   and intent_id=id and question_version=version_number
   and kind in('image','diagram')
   and rights_status in('owned','licensed','permitted')
+  and reviewed_by=q.reviewed_by and reviewed_by is not null
+  and reviewed_by<>q.created_by and reviewed_at is not null
   and mime_type in('image/png','image/jpeg','image/webp')
   and size_bytes between 1 and 2097152
   and sha256 ~ '^[0-9a-f]{64}$'
@@ -147,6 +159,7 @@ begin
   and claimed_mime=media.mime_type
   and claimed_size_bytes=media.size_bytes
   and claimed_sha256=media.sha256
+  and requested_by<>media.reviewed_by
   and length(rights_evidence) between 1 and 4000
  for share;
  if not found then return null;end if;
