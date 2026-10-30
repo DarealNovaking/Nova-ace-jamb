@@ -173,11 +173,28 @@ begin
  end if;
  update ace.questions set active=true,review_status='published' where id=question;
 
- update ace.questions set content_version=3 where id=question;
- if ace.authorize_attempt_question_media(attempt,question,asset) is not null then
-  raise exception 'Stale question revision still received image access';
+ -- A newer published version does not rewrite the older version frozen in an
+ -- active attempt. The older version's own immutable snapshot still governs.
+ update ace.questions set content_version=3,rich_content=jsonb_build_object(
+  'version',1,'blocks',jsonb_build_array(jsonb_build_object('type','paragraph','text','Find the area of the rectangle.')),
+  'fallback_text','Find the area of the rectangle.'),updated_at=clock_timestamp() where id=question;
+ insert into ace.question_versions(question_id,version,snapshot,created_by)
+  select id,content_version,to_jsonb(q),'05000000-0000-4000-8000-000000000002'
+  from ace.questions q where id=question;
+ if ace.authorize_attempt_question_media(attempt,question,asset) is null then
+  raise exception 'Newer published revision incorrectly invalidated frozen attempt media';
  end if;
- update ace.questions set content_version=2 where id=question;
+ update ace.questions set rights_status='restricted' where id=question;
+ if ace.authorize_attempt_question_media(attempt,question,asset) is not null then
+  raise exception 'Current question rights withdrawal did not revoke historical media';
+ end if;
+ update ace.questions set rights_status='owned' where id=question;
+
+ update ace.question_media set question_version=3 where id=asset;
+ if ace.authorize_attempt_question_media(attempt,question,asset) is not null then
+  raise exception 'Media metadata from a different revision was delivered';
+ end if;
+ update ace.question_media set question_version=2 where id=asset;
 
  update ace.question_media set rights_status='restricted' where id=asset;
  if ace.authorize_attempt_question_media(attempt,question,asset) is not null then
