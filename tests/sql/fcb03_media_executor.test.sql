@@ -24,3 +24,25 @@ begin
 end
 $checks$;
 -- Disposable PostgreSQL fixture only.
+
+-- Execute as the least-privileged caller, not only inspect ACL metadata.
+-- The private SECURITY DEFINER boundary must be callable by this role but
+-- must still demand a verified editor identity before any question mutation.
+set role ace_media_executor;
+do $executor_refusal$
+declare refused boolean := false;
+begin
+ begin
+  perform ace.reserve_question_media_intent(
+    null,null,null,null,null,null,null,null
+  );
+ exception when others then
+  if position('Editorial authentication required' in sqlerrm) = 0 then
+   raise exception 'Executor failed before the authentication guard: %',sqlerrm;
+  end if;
+  refused := true;
+ end;
+ if not refused then raise exception 'Private executor accepted an anonymous request';end if;
+end
+$executor_refusal$;
+reset role;
