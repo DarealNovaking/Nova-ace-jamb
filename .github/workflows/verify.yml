@@ -26,7 +26,7 @@ jobs:
           cache: npm
           cache-dependency-path: package-lock.json
       - run: npm ci
-      - run: node --test tests/catalog-parser.test.mjs tests/review-only-stage.test.mjs tests/catalog-import-contract.test.mjs tests/pwa-contract.test.mjs tests/pwa-runtime.test.mjs tests/syllabus-edit.test.mjs tests/reviewed-corrections.test.mjs tests/practice-baseline.test.mjs tests/student-syllabus.test.mjs tests/study-publication.test.mjs tests/question-workflow.test.mjs tests/question-import.test.mjs tests/question-import-render.test.mjs tests/question-history.test.mjs tests/question-history-render.test.mjs tests/dashboard-shell-render.test.mjs tests/student-question-delivery.test.mjs tests/rich-content.test.mjs tests/media-storage-flow.test.mjs tests/question-media-upload.test.mjs tests/question-media-delivery.test.mjs tests/rich-question-authoring.test.mjs
+      - run: node --test tests/catalog-parser.test.mjs tests/review-only-stage.test.mjs tests/catalog-import-contract.test.mjs tests/pwa-contract.test.mjs tests/pwa-runtime.test.mjs tests/syllabus-edit.test.mjs tests/reviewed-corrections.test.mjs tests/practice-baseline.test.mjs tests/student-syllabus.test.mjs tests/study-publication.test.mjs tests/question-workflow.test.mjs tests/question-import.test.mjs tests/question-import-render.test.mjs tests/question-history.test.mjs tests/question-history-render.test.mjs tests/dashboard-shell-render.test.mjs tests/student-question-delivery.test.mjs tests/rich-content.test.mjs tests/media-storage-flow.test.mjs tests/question-media-upload.test.mjs tests/question-media-delivery.test.mjs tests/question-media-preview.test.mjs tests/rich-question-authoring.test.mjs
       - uses: denoland/setup-deno@v2
       - run: deno check --no-check=remote supabase/functions/ibass-catalog-stage/index.ts
       - run: deno check --no-check=remote supabase/functions/catalog-import/index.ts
@@ -37,6 +37,8 @@ jobs:
           deno test --node-modules-dir=auto --allow-read tests/deno/fcb03-magick-sanitizer.test.ts
       - name: Type-check source-only authenticated Supabase media Edge integration
         run: deno check --node-modules-dir=auto supabase/functions/question-media-upload/index.ts
+      - name: Type-check source-only authenticated reviewer media preview Edge integration
+        run: deno check --no-check=remote supabase/functions/_shared/questionMediaPreview.ts supabase/functions/question-media-preview/index.ts
       - name: Type-check source-only authenticated student media delivery Edge integration
         run: deno check --node-modules-dir=auto supabase/functions/question-media-delivery/index.ts
       - run: npm run typecheck

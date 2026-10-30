@@ -3,11 +3,13 @@
 -- private media metadata and independent rights-review proposals are installed
 -- by the preceding FCB-03 CI steps. This fixture never accesses Storage.
 \ir ../../supabase/proposals/fcb03_rich_question_workflow.sql
+\ir ../../supabase/proposals/fcb03_media_preview.sql
 
 begin;
 insert into auth.users(id,email,raw_user_meta_data) values
  ('06000000-0000-4000-8000-000000000001','rich-author@example.invalid','{}'),
- ('06000000-0000-4000-8000-000000000002','rich-reviewer@example.invalid','{}');
+ ('06000000-0000-4000-8000-000000000002','rich-reviewer@example.invalid','{}'),
+ ('06000000-0000-4000-8000-000000000003','rich-student@example.invalid','{}');
 update ace.roles set role='editor' where user_id='06000000-0000-4000-8000-000000000001';
 update ace.roles set role='admin' where user_id='06000000-0000-4000-8000-000000000002';
 select set_config('request.jwt.claim.sub','06000000-0000-4000-8000-000000000002',true);
@@ -74,6 +76,27 @@ begin
 end
 $bad_asset$;
 
+do $author_preview$
+declare grant_value jsonb;
+begin
+ grant_value:=ace.authorize_question_media_preview(
+  '06000000-0000-4000-8000-000000000004',2,current_setting('fcb03.test.asset_id')::uuid);
+ if grant_value is null or grant_value->>'storage_path'<>'staging/v1/06000000-0000-4000-8000-000000000004/'||current_setting('fcb03.test.asset_id')
+  or grant_value->>'sha256'<>repeat('a',64) then
+  raise exception 'Author preview did not bind the verified staging object';
+ end if;
+end
+$author_preview$;
+select set_config('request.jwt.claim.sub','06000000-0000-4000-8000-000000000003',true);
+do $student_preview$
+begin
+ if ace.authorize_question_media_preview(
+  '06000000-0000-4000-8000-000000000004',2,current_setting('fcb03.test.asset_id')::uuid) is not null then
+  raise exception 'Student could preview a private draft image';
+ end if;
+end
+$student_preview$;
+select set_config('request.jwt.claim.sub','06000000-0000-4000-8000-000000000001',true);
 select ace.manage_question('save','06000000-0000-4000-8000-000000000004',1,
  jsonb_build_object(
   'subject_id','06000000-0000-4000-8000-000000000005',
