@@ -1,10 +1,10 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { FileQuestion, Loader2, RefreshCw } from 'lucide-react'
 import { getCurrentUser } from '../lib/authService'
-import { listQuestionReview, mutateQuestion } from '../lib/questionWorkflowService'
+import { listQuestionReview, mutateQuestion, reviewQuestionMediaIntent } from '../lib/questionWorkflowService'
 import { questionActions, type QuestionAction, type QuestionQueue, type QuestionRow, type QuestionStatus } from '../lib/questionWorkflow'
 import AdminQuestionEditor from './AdminQuestionEditor'
-import RichContentView from './RichContentView'
+import AdminRichContentPreview from './AdminRichContentPreview'
 const AdminQuestionImport = lazy(() => import('./AdminQuestionImport'))
 const AdminQuestionHistory = lazy(() => import('./AdminQuestionHistory'))
 
@@ -25,6 +25,9 @@ export default function AdminQuestionReviewQueue() {
   const [importing,setImporting]=useState(false)
   const [history,setHistory]=useState<QuestionRow|null>(null)
   const [notes,setNotes]=useState<Record<string,string>>({})
+  const [mediaNotes,setMediaNotes]=useState<Record<string,string>>({})
+  const [mediaRights,setMediaRights]=useState<Record<string,'owned'|'licensed'|'permitted'>>({})
+  const [mediaBusy,setMediaBusy]=useState<string|null>(null)
   const sequence=useRef(0)
   async function refresh() {
     const run=++sequence.current;setLoading(true);setError('')
@@ -44,8 +47,22 @@ export default function AdminQuestionReviewQueue() {
     }catch{setMustReload(true);setError('The change could not be confirmed. Reload question records before retrying. No publication is assumed.')}
     finally{setBusy(false)}
   }
+  async function reviewMedia(row:QuestionRow,assetId:string,decision:'approved'|'rejected') {
+    const key=row.id+':'+assetId
+    const evidence=(mediaNotes[key]??'').trim()
+    if(evidence.length<8){setError('Add specific rights evidence before recording a media decision.');return}
+    setMediaBusy(key);setError('');setNotice('')
+    try {
+      await reviewQuestionMediaIntent(row.id,row.content_version,assetId,decision,
+        decision==='approved'?(mediaRights[key]??'owned'):'restricted',evidence)
+      setNotice(decision==='approved'?'Independent media-rights approval recorded. Publishing remains blocked until private promotion is complete.':'Media rights rejected; this image cannot be published.')
+      await refresh()
+    } catch {
+      setError('The media-rights decision could not be confirmed. Check the exact revision and reviewer independence, then refresh before retrying.')
+    } finally {setMediaBusy(null)}
+  }
   function saved() {setEditor(undefined);setNotice('Private draft saved. Submit it for independent review when ready.');void refresh()}
-  const disabled=loading||busy||mustReload||editor!==undefined||importing||history!==null
+  const disabled=loading||busy||mediaBusy!==null||mustReload||editor!==undefined||importing||history!==null
   return <section aria-labelledby="admin-review-questions-heading" className="mt-6 rounded-3xl border border-white/10 bg-white/[.025] p-5 sm:p-7">
     <div className="flex flex-wrap items-start justify-between gap-4"><div><div className="flex items-center gap-2"><FileQuestion className="text-purple-200" size={21} aria-hidden="true"/><h2 id="admin-review-questions-heading" className="text-xl font-black">Question publication review</h2></div><p className="mt-2 max-w-2xl text-sm leading-6 text-white/60">Author private text questions against the approved syllabus. A different administrator reviews each question before publication. Choices, answers, explanations and source evidence remain restricted to the editorial team.</p></div>
       <div className="flex flex-wrap gap-2"><button type="button" disabled={loading||busy||editor!==undefined||importing||history!==null} onClick={()=>void refresh()} className={`${button} inline-flex items-center gap-2`}><RefreshCw size={16} aria-hidden="true"/>Refresh questions</button><button type="button" disabled={disabled||!queue} className={button} onClick={()=>{setNotice('');setImporting(true)}}>Import questions</button><button type="button" disabled={disabled||!queue} className={`${button} bg-purple-300 text-[#120b1c]`} onClick={()=>{setNotice('');setEditor(null)}}>New question</button></div>
@@ -64,7 +81,30 @@ export default function AdminQuestionReviewQueue() {
         <div className="flex flex-wrap gap-2 text-xs font-semibold text-white/60"><span className="rounded-lg border border-white/15 px-2 py-1">{row.review_status.replaceAll('_',' ')}</span><span>Revision {row.content_version} · {row.active?'Published':'Private'}</span></div>
         <p className="mt-3 whitespace-pre-wrap break-words text-sm leading-6 text-white/80">{row.stem.slice(0,360)}{row.stem.length>360?'…':''}</p>
         {row.stem.length>360&&<details className="mt-3"><summary className="cursor-pointer text-sm font-semibold text-purple-200">Read full question text</summary><p className="mt-3 whitespace-pre-wrap break-words text-sm leading-6">{row.stem}</p></details>}
-        {row.rich_content&&<details className="mt-3 rounded-lg border border-white/10 p-3"><summary className="cursor-pointer text-sm font-semibold text-purple-200">Preview supplementary learning content</summary><div className="mt-3"><RichContentView value={row.rich_content}/></div><p className="mt-3 text-xs leading-5 text-amber-100/80">Image previews remain unavailable in this review queue until the authenticated private reviewer-preview endpoint is connected. Diagram descriptions remain visible; image questions cannot be published without verified promotion.</p></details>}
+        {row.rich_content&&<details className="mt-3 rounded-lg border border-white/10 p-3"><summary className="cursor-pointer text-sm font-semibold text-purple-200">Preview supplementary learning content</summary><div className="mt-3"><AdminRichContentPreview questionId={row.id} questionVersion={row.content_version} value={row.rich_content}/></div></details>}
+        {row.review_status==='approved'&&queue.actor_role==='admin'&&row.reviewed_by===userId&&row.rich_content?.blocks.some(block=>block.type==='image')&&<section className="mt-3 rounded-xl border border-purple-300/20 bg-purple-300/5 p-3">
+          <h4 className="text-sm font-bold">Independent diagram-rights review</h4>
+          <p className="mt-1 text-xs leading-5 text-white/55">Inspect each private diagram above. This decision is separate from question approval and is tied to this exact approved revision.</p>
+          {row.rich_content.blocks.filter(block=>block.type==='image').map(block=>{
+            const key=row.id+':'+block.asset_id
+            return <div key={block.asset_id} className="mt-3 rounded-lg border border-white/10 p-3">
+              <p className="break-words text-sm font-semibold">{block.alt}</p>
+              {block.caption&&<p className="mt-1 text-xs text-white/55">{block.caption}</p>}
+              <label className="mt-3 block text-xs font-semibold">Rights status
+                <select value={mediaRights[key]??'owned'} onChange={event=>setMediaRights(prev=>({...prev,[key]:event.target.value as 'owned'|'licensed'|'permitted'}))} className="field mt-1" disabled={disabled}>
+                  <option value="owned">Owned / created by ACE</option><option value="licensed">Licensed</option><option value="permitted">Permission granted</option>
+                </select>
+              </label>
+              <label className="mt-3 block text-xs font-semibold">Independent rights evidence
+                <textarea value={mediaNotes[key]??''} onChange={event=>setMediaNotes(prev=>({...prev,[key]:event.target.value}))} className="field mt-1" rows={3} maxLength={4000} disabled={disabled} placeholder="Record the evidence you independently checked."/>
+              </label>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <button type="button" className={button} disabled={disabled||(mediaNotes[key]??'').trim().length<8} onClick={()=>void reviewMedia(row,block.asset_id,'approved')}>{mediaBusy===key?'Saving decision…':'Approve media rights'}</button>
+                <button type="button" className={button} disabled={disabled||(mediaNotes[key]??'').trim().length<8} onClick={()=>void reviewMedia(row,block.asset_id,'rejected')}>Reject media rights</button>
+              </div>
+            </div>
+          })}
+        </section>}
         <details className="mt-3 rounded-lg border border-white/10 p-3"><summary className="cursor-pointer text-sm font-semibold text-purple-200">Review answer, explanation and source</summary><ul className="mt-3 space-y-2 text-sm">{row.options.map(option=><li key={option.key} className="whitespace-pre-wrap break-words">{option.key}. {option.text}</li>)}</ul><p className="mt-3 text-sm font-bold">Correct answer: {row.correct_option_key}</p><p className="mt-2 whitespace-pre-wrap break-words text-sm text-white/70">{row.explanation}</p><p className="mt-3 break-words text-sm">{row.exam}{row.exam_year?` · ${row.exam_year}`:''} · {row.provenance.source_title} · {row.provenance.author_label}</p><p className="mt-2 whitespace-pre-wrap break-words text-sm text-white/70">{row.provenance.rights_evidence}</p>{row.provenance.source_url&&<p className="mt-2 break-all text-sm text-white/60">{row.provenance.source_url}</p>}</details>
         <p className="mt-2 break-all text-xs text-white/45">Question ID: {row.id}</p>
         {row.review_status==='in_review'&&(row.created_by===userId||row.provenance.last_content_editor===userId)&&<p className="mt-3 text-sm text-amber-100">A different administrator must review this question.</p>}
