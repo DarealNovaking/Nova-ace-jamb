@@ -17,6 +17,7 @@ begin
 end
 $guards$;
 grant usage on schema ace to ace_media_executor;
+grant execute on function ace.can_stage_question_media(uuid,integer) to ace_media_executor;
 grant execute on function ace.reserve_question_media_intent(
  uuid,integer,uuid,text,text,text,integer,text
 ) to ace_media_executor;

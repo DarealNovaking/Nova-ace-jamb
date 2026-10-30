@@ -48,11 +48,18 @@ const request = (body = form(), headers = {}, method = 'POST') => {
   return new Request(req, { headers: h })
 }
 const fixture = () => {
-  const seen = { auth: 0, reserve: 0, confirm: 0, put: 0, stored: new Map(), details: null }
+  const seen = { auth: 0, authorize: 0, reserve: 0, confirm: 0, put: 0, stored: new Map(), details: null }
   const deps = {
     authenticate: async token => {
       seen.auth++
       return token === 'sample-test-auth-token' ? { id: actorId } : null
+    },
+    authorize: async (actor, question, version) => {
+      seen.authorize++
+      assert.equal(actor, actorId)
+      assert.equal(question, questionId)
+      assert.equal(version, 1)
+      return true
     },
     reserve: async (actor, details) => {
       seen.reserve++
@@ -102,6 +109,7 @@ test('complete private flow reserves against authenticated actor and confirms pe
   assert.equal(response.headers.get('x-content-type-options'), 'nosniff')
   assert.deepEqual(await response.json(), { id: assetId, status: 'verified' })
   assert.equal(seen.auth, 1)
+  assert.equal(seen.authorize, 1)
   assert.equal(seen.reserve, 1)
   assert.equal(seen.confirm, 1)
   assert.equal(seen.put, 1)
@@ -202,4 +210,18 @@ test('no user-controlled bucket, object path, owner or publication flags are for
   assert.equal(seen.reserve, 0)
   assert.equal(await status(handler, request(form({}, [['created_by', actorId]]))), 400)
   assert.equal(seen.reserve, 0)
+})
+
+
+test('preflight blocks student or stale question before image decoding and storage', async () => {
+  const { seen, deps } = fixture()
+  let decoded = 0
+  deps.authorize = async () => { seen.authorize++; return false }
+  deps.sanitizer.sanitize = async () => { decoded++; throw Error('must not decode') }
+  const response = await createQuestionMediaUploadHandler(deps)(request())
+  assert.equal(response.status, 403)
+  assert.equal(seen.authorize, 1)
+  assert.equal(decoded, 0)
+  assert.equal(seen.reserve, 0)
+  assert.equal(seen.put, 0)
 })

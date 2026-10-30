@@ -58,6 +58,16 @@ const handleUpload = ready ? createQuestionMediaUploadHandler({
     if (error || !data.user || !UUID.test(data.user.id)) return null
     return { id: data.user.id }
   },
+  async authorize(actorId, questionId, version) {
+    const permitted = await databaseAsActor(actorId, async transaction => {
+      const rows = await transaction.unsafe(
+        'select ace.can_stage_question_media($1::uuid,$2::integer) as allowed',
+        [questionId, version],
+      )
+      return rows[0]?.allowed === true
+    })
+    return permitted === true
+  },
   async reserve(actorId, details): Promise<MediaIntent> {
     const result = await databaseAsActor(actorId, async transaction => {
       const rows = await transaction.unsafe(

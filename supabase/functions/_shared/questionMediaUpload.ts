@@ -33,6 +33,8 @@ export type UploadDependencies = {
   /** Return null for invalid/expired credentials; always validate server-side. */
   authenticate(token: string): Promise<VerifiedActor | null>
   /** Must recheck current editorial role, ownership, revision and rights in SQL. */
+  /** Cheap server-side editor/ownership/revision guard before image decoding. */
+  authorize(actorId: string, questionId: string, version: number): Promise<boolean>
   reserve(actorId: string, details: Reservation): Promise<MediaIntent>
   /** Must recheck editor/revision in SQL immediately before confirming. */
   confirm(actorId: string, id: string, mime: SafeImageMime, size: number, sha256: string):
@@ -147,6 +149,11 @@ export function createQuestionMediaUploadHandler(deps: UploadDependencies): (req
     }
 
     try {
+      // Deny expensive image decoding to students, unrelated editors and
+      // withdrawn/stale questions. Reservation STILL rechecks under lock.
+      if (!deps.authorize || !(await deps.authorize(actor.id, question, Number(version)))) {
+        return reply(403, 'Question image unavailable')
+      }
       // Actual bytes, not filename, MIME header or a browser hash, are authority.
       const prepared = await prepareQuestionImage(new Uint8Array(await file.arrayBuffer()), file.type, deps.sanitizer)
       const intent = await deps.reserve(actor.id, {
