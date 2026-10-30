@@ -68,7 +68,7 @@ const handleDelivery = ready ? createQuestionMediaDeliveryHandler({
   storage: {
     async read(path) {
       const { data, error } = await storage!.storage.from('ace-question-media-private').download(path)
-      if (error || !data) return null
+      if (error || !data || data.size < 1 || data.size > 2 * 1024 * 1024) return null
       return { bytes: new Uint8Array(await data.arrayBuffer()), mime: data.type }
     },
   },
