@@ -2,6 +2,7 @@
 -- Disposable PostgreSQL only. The preceding media-intent test installs the
 -- prerequisite proposal; this test never connects to live Supabase/Storage.
 \ir ../../supabase/proposals/fcb03_media_student_delivery.sql
+\ir ../../supabase/proposals/fcb03_student_rich_content_delivery.sql
 
 begin;
 insert into auth.users(id,email,raw_user_meta_data) values
@@ -127,6 +128,7 @@ declare
  question uuid:='05000000-0000-4000-8000-000000000004';
  asset uuid:=current_setting('fcb03.test.asset_id')::uuid;
  result jsonb;
+ delivered jsonb;
 begin
  if has_function_privilege('anon','ace.authorize_attempt_question_media(uuid,uuid,uuid)','execute')
  or has_function_privilege('authenticated','ace.authorize_attempt_question_media(uuid,uuid,uuid)','execute') then
@@ -142,6 +144,15 @@ begin
  or result->>'sha256'<>repeat('a',64) or (select count(*) from jsonb_object_keys(result))<>7
  or result?'correct_option_key' or result?'explanation' or result?'rights_evidence' then
   raise exception 'Valid owned attempt did not receive only bounded media metadata: %',result;
+ end if;
+ delivered:=ace.get_attempt_questions(attempt);
+ if jsonb_array_length(delivered)<>1
+  or delivered->0->>'id'<>question::text
+  or not exists(select 1 from jsonb_array_elements(delivered->0->'rich_content'->'blocks') b(value)
+   where b.value->>'type'='image' and b.value->>'asset_id'=asset::text)
+  or delivered->0?'correct_option_key' or delivered->0?'explanation'
+  or delivered->0?'rights_evidence' or delivered->0->'rich_content'?'storage_path' then
+  raise exception 'Student question delivery did not return only the validated frozen rich document';
  end if;
 
  -- Ownership, attempt membership, asset identity and publication are checked
@@ -183,6 +194,11 @@ begin
   from ace.questions q where id=question;
  if ace.authorize_attempt_question_media(attempt,question,asset) is null then
   raise exception 'Newer published revision incorrectly invalidated frozen attempt media';
+ end if;
+ delivered:=ace.get_attempt_questions(attempt);
+ if not exists(select 1 from jsonb_array_elements(delivered->0->'rich_content'->'blocks') b(value)
+  where b.value->>'type'='image' and b.value->>'asset_id'=asset::text) then
+  raise exception 'Newer publication rewrote the rich content frozen into an older attempt';
  end if;
  update ace.questions set rights_status='restricted' where id=question;
  if ace.authorize_attempt_question_media(attempt,question,asset) is not null then
