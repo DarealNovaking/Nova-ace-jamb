@@ -1,6 +1,10 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { createQuestionMediaPreviewHandler } from '../supabase/functions/_shared/questionMediaPreview.ts'
+import { readFileSync } from 'node:fs'
+import ts from 'typescript'
+const source=readFileSync(new URL('../supabase/functions/_shared/questionMediaPreview.ts',import.meta.url),'utf8').replace("import type { SafeImageMime } from './questionMedia.ts'",'')
+const compiled=ts.transpileModule(source,{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.ESNext}}).outputText
+const {createQuestionMediaPreviewHandler}=await import('data:text/javascript;base64,'+Buffer.from(compiled).toString('base64'))
 
 const question='06000000-0000-4000-8000-000000000004'
 const asset='06000000-0000-4000-8000-00000000000b'

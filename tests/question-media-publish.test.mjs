@@ -1,6 +1,12 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { createQuestionMediaPublishHandler } from '../supabase/functions/_shared/questionMediaPublish.ts'
+import { readFileSync } from 'node:fs'
+import ts from 'typescript'
+import { webcrypto } from 'node:crypto'
+if(!globalThis.crypto)globalThis.crypto=webcrypto
+const source=readFileSync(new URL('../supabase/functions/_shared/questionMediaPublish.ts',import.meta.url),'utf8').replace("import type { SafeImageMime } from './questionMedia.ts'",'')
+const compiled=ts.transpileModule(source,{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.ESNext}}).outputText
+const {createQuestionMediaPublishHandler}=await import('data:text/javascript;base64,'+Buffer.from(compiled).toString('base64'))
 
 const question='06000000-0000-4000-8000-000000000004'
 const asset='06000000-0000-4000-8000-00000000000b'
