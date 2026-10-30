@@ -116,13 +116,22 @@ test('complete private flow reserves against authenticated actor and confirms pe
   assert.equal(saved.mime, 'image/png')
 })
 
-test('verified same-request replay avoids rewriting immutable objects', async () => {
+test('verified same-request replay validates object integrity without rewriting immutable bytes', async () => {
   const { seen, deps } = fixture()
   deps.reserve = async () => { seen.reserve++; return { ...intent(), status: 'verified' } }
-  const response = await createQuestionMediaUploadHandler(deps)(request())
+  seen.stored.set(intent().storage_path, { bytes: new Uint8Array(cleanImage), mime: 'image/png' })
+  const handler = createQuestionMediaUploadHandler(deps)
+  const response = await handler(request())
   assert.equal(response.status, 200)
   assert.equal(seen.put, 0)
   assert.equal(seen.confirm, 0)
+  seen.stored.delete(intent().storage_path)
+  assert.equal(await status(handler, request()), 409, 'missing verified object must fail closed')
+  seen.stored.set(intent().storage_path, { bytes: new Uint8Array([...cleanImage.slice(0, -1), 255]), mime: 'image/png' })
+  assert.equal(await status(handler, request()), 409, 'same-size tampered object must fail closed')
+  seen.stored.set(intent().storage_path, { bytes: new Uint8Array(cleanImage), mime: 'image/jpeg' })
+  assert.equal(await status(handler, request()), 409, 'wrong stored content type must fail closed')
+  assert.equal(seen.put, 0)
 })
 
 test('rejects misleading content-type, non-image bytes, forged file MIME and absent file', async () => {
