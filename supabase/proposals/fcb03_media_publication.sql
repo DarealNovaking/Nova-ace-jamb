@@ -160,7 +160,7 @@ end;$$;
 create function ace.publish_question_after_media_promotion(
  p_question uuid,p_approved_version integer
 ) returns jsonb language plpgsql security definer
-set search_path=pg_catalog,pg_temp set lock_timeout='3s' as $
+set search_path=pg_catalog,pg_temp set lock_timeout='3s' as $publisher$
 declare actor uuid:=auth.uid(); actor_role text;
 begin
  if session_user<>'ace_media_executor' or actor is null or p_question is null
@@ -174,7 +174,8 @@ begin
  -- The existing question workflow locks the revision and revalidates the
  -- independent rights audit and promoted immutable bytes before publication.
  return ace.manage_question('publish',p_question,p_approved_version,'{}'::jsonb);
-end;$;
+end;
+$publisher$;
 revoke all on function ace.prepare_question_media_publication(uuid,integer) from public,anon,authenticated;
 revoke all on function ace.confirm_question_media_promotion(uuid,integer,uuid) from public,anon,authenticated;
 revoke all on function ace.publish_question_after_media_promotion(uuid,integer) from public,anon,authenticated;
