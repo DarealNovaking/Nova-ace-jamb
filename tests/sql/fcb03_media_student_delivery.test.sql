@@ -2,6 +2,7 @@
 -- Disposable PostgreSQL only. The preceding media-intent test installs the
 -- prerequisite proposal; this test never connects to live Supabase/Storage.
 \ir ../../supabase/proposals/fcb03_media_student_delivery.sql
+\ir ../../supabase/proposals/fcb03_media_rights_review.sql
 \ir ../../supabase/proposals/fcb03_student_rich_content_delivery.sql
 
 begin;
@@ -52,9 +53,9 @@ select (ace.reserve_question_media_intent(
 select set_config('fcb03.test.asset_id', :'asset_id', true);
 select ace.confirm_question_media_intent(:'asset_id'::uuid,'image/png',12,repeat('a',64));
 
--- Synthetic published revision fixture: this test intentionally seeds a valid
--- immutable version directly so it can exercise the delivery guard without
--- enabling rich content in the current text-only authoring workflow.
+-- Synthetic approval and publication revisions. Media-rights review is a
+-- separate explicit decision on the approved version; published metadata binds
+-- that review to the next immutable version.
 update ace.questions set content_version=2,rich_content=jsonb_build_object(
  'version',1,
  'blocks',jsonb_build_array(
@@ -63,23 +64,51 @@ update ace.questions set content_version=2,rich_content=jsonb_build_object(
    'alt','A labelled geometry diagram','caption','Diagram 1')),
  'fallback_text','Length: 3 units; width: 2 units.'||E'\n\n'||
   'Diagram: A labelled geometry diagram'||E'\n'||'Diagram 1'),
- active=true,review_status='published',rights_status='owned',
+ active=false,review_status='approved',rights_status='owned',
  reviewed_by='05000000-0000-4000-8000-000000000002',updated_at=clock_timestamp()
  where id='05000000-0000-4000-8000-000000000004';
 insert into ace.question_versions(question_id,version,snapshot,created_by)
  select id,content_version,to_jsonb(q),'05000000-0000-4000-8000-000000000002'
  from ace.questions q where id='05000000-0000-4000-8000-000000000004';
 
+-- The question author cannot self-approve the image-rights claim.
+select set_config('request.jwt.claim.sub','05000000-0000-4000-8000-000000000001',true);
+do $self_review$
+begin
+ perform ace.review_question_media_intent(
+  '05000000-0000-4000-8000-000000000004',2,current_setting('fcb03.test.asset_id')::uuid,
+  'approved','owned','Reviewer evidence for the original diagram rights.');
+ raise exception 'Question author self-reviewed media rights';
+exception when insufficient_privilege then null;
+end
+$self_review$;
+
+select set_config('request.jwt.claim.sub','05000000-0000-4000-8000-000000000002',true);
+select ace.review_question_media_intent(
+ '05000000-0000-4000-8000-000000000004',2,:'asset_id'::uuid,
+ 'approved','owned','Reviewer confirmed original diagram ownership and source provenance.');
+select set_config('request.jwt.claim.sub','05000000-0000-4000-8000-000000000003',true);
+
+update ace.questions set content_version=3,active=true,review_status='published',
+ updated_at=clock_timestamp() where id='05000000-0000-4000-8000-000000000004';
+insert into ace.question_versions(question_id,version,snapshot,created_by)
+ select id,content_version,to_jsonb(q),'05000000-0000-4000-8000-000000000002'
+ from ace.questions q where id='05000000-0000-4000-8000-000000000004';
+
 insert into ace.question_media(
  id,question_id,kind,storage_provider,storage_path,mime_type,size_bytes,
- alt_text,rights_status,source_url,metadata,intent_id,question_version,sha256,verified_at,reviewed_by,reviewed_at
+ alt_text,rights_status,source_url,metadata,intent_id,question_version,sha256,verified_at,
+ reviewed_by,reviewed_at,rights_evidence,rights_reviewed_by,rights_reviewed_at
 ) values(
  :'asset_id'::uuid,
  '05000000-0000-4000-8000-000000000004','diagram','supabase',
- 'published/v1/05000000-0000-4000-8000-000000000004/2/'||:'asset_id',
+ 'published/v1/05000000-0000-4000-8000-000000000004/3/'||:'asset_id',
  'image/png',12,'A labelled geometry diagram','owned',null,'{}'::jsonb,
- :'asset_id'::uuid,2,repeat('a',64),clock_timestamp(),
- '05000000-0000-4000-8000-000000000002',clock_timestamp());
+ :'asset_id'::uuid,3,repeat('a',64),clock_timestamp(),
+ '05000000-0000-4000-8000-000000000002',clock_timestamp(),
+ 'Reviewer confirmed original diagram ownership and source provenance.',
+ '05000000-0000-4000-8000-000000000002',
+ (select reviewed_at from ace.question_media_reviews where intent_id=:'asset_id'::uuid and question_version=2 and decision='approved' order by reviewed_at desc limit 1));
 
 -- A valid, verified asset can exist for this revision yet remain undeliverable
 -- when the immutable rich document does not reference it.
@@ -95,16 +124,28 @@ insert into ace.question_media_intents(
  'image/png',12,repeat('b',64),'A second unrelated diagram',
  'Original second diagram created by ACE.','verified',clock_timestamp()
 );
+-- Test-only seed of a complete rights-review record for an asset that the
+-- immutable rich document does not reference, isolating exact-reference denial.
+insert into ace.question_media_reviews(
+ intent_id,question_version,reviewed_by,decision,rights_status,rights_evidence,reviewed_at
+) values(
+ '05000000-0000-4000-8000-00000000000c',2,
+ '05000000-0000-4000-8000-000000000002','approved','owned',
+ 'Reviewer confirmed the unrelated diagram rights.',clock_timestamp()
+);
 insert into ace.question_media(
  id,question_id,kind,storage_provider,storage_path,mime_type,size_bytes,
- alt_text,rights_status,source_url,metadata,intent_id,question_version,sha256,verified_at,reviewed_by,reviewed_at
+ alt_text,rights_status,source_url,metadata,intent_id,question_version,sha256,verified_at,
+ reviewed_by,reviewed_at,rights_evidence,rights_reviewed_by,rights_reviewed_at
 ) values(
  '05000000-0000-4000-8000-00000000000c',
  '05000000-0000-4000-8000-000000000004','diagram','supabase',
- 'published/v1/05000000-0000-4000-8000-000000000004/2/05000000-0000-4000-8000-00000000000c',
+ 'published/v1/05000000-0000-4000-8000-000000000004/3/05000000-0000-4000-8000-00000000000c',
  'image/png',12,'A second unrelated diagram','owned',null,'{}'::jsonb,
- '05000000-0000-4000-8000-00000000000c',2,repeat('b',64),clock_timestamp(),
- '05000000-0000-4000-8000-000000000002',clock_timestamp()
+ '05000000-0000-4000-8000-00000000000c',3,repeat('b',64),clock_timestamp(),
+ '05000000-0000-4000-8000-000000000002',clock_timestamp(),
+ 'Reviewer confirmed the unrelated diagram rights.','05000000-0000-4000-8000-000000000002',
+ (select reviewed_at from ace.question_media_reviews where intent_id='05000000-0000-4000-8000-00000000000c' and question_version=2 order by reviewed_at desc limit 1)
 );
 
 insert into ace.attempts(
@@ -117,7 +158,7 @@ insert into ace.attempts(
  '["05000000-0000-4000-8000-000000000004"]'::jsonb,
  '{"05000000-0000-4000-8000-000000000004":["A","B","C","D"]}'::jsonb,
  'active',
- '[{"id":"05000000-0000-4000-8000-000000000004","content_version":2,"stem":"Find the area of the rectangle.","options":[{"key":"A","text":"5 square units"},{"key":"B","text":"6 square units"},{"key":"C","text":"7 square units"},{"key":"D","text":"8 square units"}],"correct_option_key":"B","subject_id":"05000000-0000-4000-8000-000000000005","topic_id":"05000000-0000-4000-8000-000000000006","difficulty":"easy"}]'::jsonb
+ '[{"id":"05000000-0000-4000-8000-000000000004","content_version":3,"stem":"Find the area of the rectangle.","options":[{"key":"A","text":"5 square units"},{"key":"B","text":"6 square units"},{"key":"C","text":"7 square units"},{"key":"D","text":"8 square units"}],"correct_option_key":"B","subject_id":"05000000-0000-4000-8000-000000000005","topic_id":"05000000-0000-4000-8000-000000000006","difficulty":"easy"}]'::jsonb
 );
 
 do $tests$
@@ -138,8 +179,8 @@ begin
  perform set_config('request.jwt.claim.sub',student::text,true);
  result:=ace.authorize_attempt_question_media(attempt,question,asset);
  if result is null or result->>'id'<>asset::text or result->>'question_id'<>question::text
- or result->>'question_version'<>'2'
- or result->>'storage_path'<>'published/v1/'||question::text||'/2/'||asset::text
+ or result->>'question_version'<>'3'
+ or result->>'storage_path'<>'published/v1/'||question::text||'/3/'||asset::text
  or result->>'mime_type'<>'image/png' or result->>'size_bytes'<>'12'
  or result->>'sha256'<>repeat('a',64) or (select count(*) from jsonb_object_keys(result))<>7
  or result?'correct_option_key' or result?'explanation' or result?'rights_evidence' then
@@ -186,7 +227,7 @@ begin
 
  -- A newer published version does not rewrite the older version frozen in an
  -- active attempt. The older version's own immutable snapshot still governs.
- update ace.questions set content_version=3,rich_content=null,updated_at=clock_timestamp() where id=question;
+ update ace.questions set content_version=4,rich_content=null,updated_at=clock_timestamp() where id=question;
  insert into ace.question_versions(question_id,version,snapshot,created_by)
   select id,content_version,to_jsonb(q),'05000000-0000-4000-8000-000000000002'
   from ace.questions q where id=question;
@@ -204,11 +245,11 @@ begin
  end if;
  update ace.questions set rights_status='owned' where id=question;
 
- update ace.question_media set question_version=3 where id=asset;
+ update ace.question_media set question_version=4 where id=asset;
  if ace.authorize_attempt_question_media(attempt,question,asset) is not null then
   raise exception 'Media metadata from a different revision was delivered';
  end if;
- update ace.question_media set question_version=2 where id=asset;
+ update ace.question_media set question_version=3 where id=asset;
 
  update ace.question_media set rights_status='restricted' where id=asset;
  if ace.authorize_attempt_question_media(attempt,question,asset) is not null then
@@ -221,6 +262,11 @@ begin
   raise exception 'Question author was accepted as independent media reviewer';
  end if;
  update ace.question_media set reviewed_by=null,reviewed_at=null where id=asset;
+ update ace.question_media set rights_reviewed_by='05000000-0000-4000-8000-000000000001' where id=asset;
+ if ace.authorize_attempt_question_media(attempt,question,asset) is not null then
+  raise exception 'Question author was accepted as media-rights reviewer';
+ end if;
+ update ace.question_media set rights_reviewed_by='05000000-0000-4000-8000-000000000002' where id=asset;
  if ace.authorize_attempt_question_media(attempt,question,asset) is not null then
   raise exception 'Unreviewed media was delivered';
  end if;
@@ -230,7 +276,7 @@ begin
  if ace.authorize_attempt_question_media(attempt,question,asset) is not null then
   raise exception 'Staging object path was exposed for student delivery';
  end if;
- update ace.question_media set storage_path='published/v1/'||question::text||'/2/'||asset::text where id=asset;
+ update ace.question_media set storage_path='published/v1/'||question::text||'/3/'||asset::text where id=asset;
 
  update ace.question_media set sha256=repeat('b',64) where id=asset;
  if ace.authorize_attempt_question_media(attempt,question,asset) is not null then

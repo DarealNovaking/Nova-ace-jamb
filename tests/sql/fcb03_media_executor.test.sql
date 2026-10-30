@@ -26,7 +26,13 @@ begin
  or has_function_privilege('anon','ace.confirm_question_media_intent(uuid,text,integer,text)','execute')
  or has_function_privilege('authenticated','ace.reserve_question_media_intent(uuid,integer,uuid,text,text,text,integer,text)','execute')
  or has_function_privilege('anon','ace.authorize_attempt_question_media(uuid,uuid,uuid)','execute')
- or has_function_privilege('authenticated','ace.authorize_attempt_question_media(uuid,uuid,uuid)','execute') then
+ or has_function_privilege('authenticated','ace.authorize_attempt_question_media(uuid,uuid,uuid)','execute')
+ or has_table_privilege('authenticated','ace.question_media_reviews','select')
+ or has_table_privilege('authenticated','ace.question_media_reviews','insert')
+ or has_table_privilege('ace_media_executor','ace.question_media_reviews','select')
+ or has_table_privilege('ace_media_executor','ace.question_media_reviews','insert')
+ or has_function_privilege('anon','ace.review_question_media_intent(uuid,integer,uuid,text,text,text)','execute')
+ or not has_function_privilege('authenticated','ace.review_question_media_intent(uuid,integer,uuid,text,text,text)','execute') then
   raise exception 'Private media executor or public function privileges leaked';
  end if;
  raise notice 'FCB03 executor PASS: narrow private function grants, no direct table CRUD';

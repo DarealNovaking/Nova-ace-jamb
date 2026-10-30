@@ -18,6 +18,9 @@ alter table ace.question_media add column if not exists sha256 text;
 alter table ace.question_media add column if not exists verified_at timestamptz;
 alter table ace.question_media add column if not exists reviewed_by uuid references auth.users(id);
 alter table ace.question_media add column if not exists reviewed_at timestamptz;
+alter table ace.question_media add column if not exists rights_evidence text;
+alter table ace.question_media add column if not exists rights_reviewed_by uuid references auth.users(id);
+alter table ace.question_media add column if not exists rights_reviewed_at timestamptz;
 
 do $constraints$
 begin
@@ -47,10 +50,37 @@ begin
    check((reviewed_by is null and reviewed_at is null) or
          (reviewed_by is not null and reviewed_at is not null));
  end if;
+  if not exists(select 1 from pg_catalog.pg_constraint where conname='question_media_rights_review_state_consistency'
+    and conrelid='ace.question_media'::regclass) then
+   alter table ace.question_media add constraint question_media_rights_review_state_consistency
+    check((rights_reviewed_by is null and rights_reviewed_at is null and rights_evidence is null) or
+          (rights_reviewed_by is not null and rights_reviewed_at is not null and
+           rights_evidence is not null and length(rights_evidence) between 8 and 4000));
+  end if;
 end
 $constraints$;
 create unique index if not exists question_media_intent_unique
  on ace.question_media(intent_id) where intent_id is not null;
+
+-- Immutable-by-privilege audit of independent media-rights decisions.
+create table if not exists ace.question_media_reviews (
+ id uuid primary key default gen_random_uuid(),
+ intent_id uuid not null references ace.question_media_intents(id),
+ question_version integer not null check(question_version>0),
+ reviewed_by uuid not null references auth.users(id),
+ decision text not null check(decision in('approved','rejected')),
+ rights_status text not null check(rights_status in('owned','licensed','permitted','restricted','rejected')),
+ rights_evidence text not null check(length(rights_evidence) between 8 and 4000),
+ reviewed_at timestamptz not null default clock_timestamp(),
+ constraint question_media_review_decision_rights check(
+  (decision='approved' and rights_status in('owned','licensed','permitted')) or
+  (decision='rejected' and rights_status in('restricted','rejected'))
+ )
+);
+create index if not exists question_media_reviews_intent_revision
+ on ace.question_media_reviews(intent_id,question_version,reviewed_at desc);
+alter table ace.question_media_reviews enable row level security;
+revoke all on ace.question_media_reviews from public,anon,authenticated;
 
 create function ace.authorize_attempt_question_media(
  p_attempt_id uuid,p_question_id uuid,p_asset_id uuid
@@ -153,6 +183,19 @@ begin
   and reviewed_by::text is distinct from version_row.snapshot->>'created_by'
   and reviewed_by::text is distinct from (version_row.snapshot->'provenance'->>'last_content_editor')
   and reviewed_at is not null
+  and rights_reviewed_by::text=version_row.snapshot->>'reviewed_by'
+  and rights_reviewed_at is not null
+  and length(rights_evidence) between 8 and 4000
+  and reviewed_by=rights_reviewed_by
+  and exists(select 1 from ace.question_media_reviews rights_review
+   where rights_review.intent_id=ace.question_media.intent_id
+    and rights_review.question_version=ace.question_media.question_version-1
+    and rights_review.decision='approved'
+    and rights_review.rights_status=ace.question_media.rights_status
+    and rights_review.reviewed_by=ace.question_media.rights_reviewed_by
+    and rights_review.rights_evidence=ace.question_media.rights_evidence
+    and rights_review.reviewed_at=ace.question_media.rights_reviewed_at
+    and rights_review.reviewed_by::text=version_row.snapshot->>'reviewed_by')
   and mime_type in('image/png','image/jpeg','image/webp')
   and size_bytes between 1 and 2097152
   and sha256 ~ '^[0-9a-f]{64}$'
