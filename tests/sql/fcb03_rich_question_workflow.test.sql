@@ -4,6 +4,7 @@
 -- by the preceding FCB-03 CI steps. This fixture never accesses Storage.
 \ir ../../supabase/proposals/fcb03_rich_question_workflow.sql
 \ir ../../supabase/proposals/fcb03_media_preview.sql
+\ir ../../supabase/proposals/fcb03_media_publication.sql
 
 begin;
 insert into auth.users(id,email,raw_user_meta_data) values
@@ -168,20 +169,21 @@ begin
 end
 $blocked_promotion$;
 
-insert into ace.question_media(
- id,question_id,kind,storage_provider,storage_path,mime_type,size_bytes,
- alt_text,rights_status,source_url,metadata,intent_id,question_version,sha256,verified_at,
- reviewed_by,reviewed_at,rights_evidence,rights_reviewed_by,rights_reviewed_at
-) values(
- :'asset_id'::uuid,'06000000-0000-4000-8000-000000000004','diagram','supabase',
- 'published/v1/06000000-0000-4000-8000-000000000004/5/'||:'asset_id',
- 'image/png',12,'A rectangle with labelled length and width','owned',null,'{}'::jsonb,
- :'asset_id'::uuid,5,repeat('a',64),clock_timestamp(),
- '06000000-0000-4000-8000-000000000002',clock_timestamp(),
- 'Independent reviewer confirmed the original diagram and rights evidence.',
- '06000000-0000-4000-8000-000000000002',
- (select reviewed_at from ace.question_media_reviews where intent_id=:'asset_id'::uuid and question_version=4 and decision='approved' order by reviewed_at desc,id desc limit 1)
-);
+do $promotion_plan$
+declare plan jsonb;
+begin
+ plan:=ace.prepare_question_media_publication(
+  '06000000-0000-4000-8000-000000000004',4);
+ if plan is null or plan->>'question_id'<>'06000000-0000-4000-8000-000000000004'
+  or (plan->>'approved_version')::integer<>4 or (plan->>'publish_version')::integer<>5
+  or jsonb_array_length(plan->'assets')<>1
+  or plan->'assets'->0->>'target_path'<>'published/v1/06000000-0000-4000-8000-000000000004/5/'||current_setting('fcb03.test.asset_id') then
+  raise exception 'Trusted promotion plan did not bind exact approved version and immutable path';
+ end if;
+end
+$promotion_plan$;
+select ace.confirm_question_media_promotion(
+ '06000000-0000-4000-8000-000000000004',4,current_setting('fcb03.test.asset_id')::uuid);
 
 select ace.manage_question('publish','06000000-0000-4000-8000-000000000004',4,'{}');
 
