@@ -54,8 +54,8 @@ begin
     and conrelid='ace.question_media'::regclass) then
    alter table ace.question_media add constraint question_media_rights_review_state_consistency
     check((rights_reviewed_by is null and rights_reviewed_at is null and rights_evidence is null) or
-          (rights_reviewed_by is not null and media.rights_reviewed_at is not null and
-           rights_evidence is not null and length(media.rights_evidence) between 8 and 4000));
+          (rights_reviewed_by is not null and rights_reviewed_at is not null and
+           rights_evidence is not null and length(rights_evidence) between 8 and 4000));
   end if;
 end
 $constraints$;
@@ -173,34 +173,34 @@ begin
 
  -- The exact immutable version must reference this asset and the same
  -- descriptive alt text. A guessed UUID or asset from another revision fails.
- select * into media from ace.question_media
- where id=p_asset_id and question_id=p_question_id
-  and intent_id=id and question_version=version_number
-  and kind in('image','diagram')
-  and rights_status in('owned','licensed','permitted')
-  and reviewed_by::text=version_row.snapshot->>'reviewed_by'
-  and reviewed_by is not null
-  and reviewed_by::text is distinct from version_row.snapshot->>'created_by'
-  and reviewed_by::text is distinct from (version_row.snapshot->'provenance'->>'last_content_editor')
-  and media.reviewed_at is not null
-  and media.rights_reviewed_by::text=version_row.snapshot->>'reviewed_by'
-  and rights_reviewed_at is not null
-  and length(rights_evidence) between 8 and 4000
-  and media.reviewed_by=media.rights_reviewed_by
+ select m.* into media from ace.question_media m
+ where m.id=p_asset_id and m.question_id=p_question_id
+  and m.intent_id=m.id and m.question_version=version_number
+  and m.kind in('image','diagram')
+  and m.rights_status in('owned','licensed','permitted')
+  and m.reviewed_by::text=version_row.snapshot->>'reviewed_by'
+  and m.reviewed_by is not null
+  and m.reviewed_by::text is distinct from version_row.snapshot->>'created_by'
+  and m.reviewed_by::text is distinct from (version_row.snapshot->'provenance'->>'last_content_editor')
+  and m.reviewed_at is not null
+  and m.rights_reviewed_by::text=version_row.snapshot->>'reviewed_by'
+  and m.rights_reviewed_at is not null
+  and length(m.rights_evidence) between 8 and 4000
+  and m.reviewed_by=m.rights_reviewed_by
   and exists(select 1 from ace.question_media_reviews rights_review
-   where rights_review.intent_id=media.intent_id
-    and rights_review.question_version=media.question_version-1
+   where rights_review.intent_id=m.intent_id
+    and rights_review.question_version=m.question_version-1
     and rights_review.decision='approved'
-    and rights_review.rights_status=media.rights_status
-    and rights_review.reviewed_by=media.rights_reviewed_by
-    and rights_review.rights_evidence=media.rights_evidence
-    and rights_review.reviewed_at=media.rights_reviewed_at
+    and rights_review.rights_status=m.rights_status
+    and rights_review.reviewed_by=m.rights_reviewed_by
+    and rights_review.rights_evidence=m.rights_evidence
+    and rights_review.reviewed_at=m.rights_reviewed_at
     and rights_review.reviewed_by::text=version_row.snapshot->>'reviewed_by')
-  and mime_type in('image/png','image/jpeg','image/webp')
-  and size_bytes between 1 and 2097152
-  and sha256 ~ '^[0-9a-f]{64}$'
-  and verified_at is not null
-  and storage_path='published/v1/'||p_question_id::text||'/'||version_number::text||'/'||p_asset_id::text
+  and m.mime_type in('image/png','image/jpeg','image/webp')
+  and m.size_bytes between 1 and 2097152
+  and m.sha256 ~ '^[0-9a-f]{64}$'
+  and m.verified_at is not null
+  and m.storage_path='published/v1/'||p_question_id::text||'/'||version_number::text||'/'||p_asset_id::text
  for share;
  if not found then return null;end if;
  if not exists(
