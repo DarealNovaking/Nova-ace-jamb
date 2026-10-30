@@ -43,13 +43,13 @@ select ace.manage_question('save','05000000-0000-4000-8000-000000000004',0,
 -- Reserve and verify the staging asset against draft revision 1. A separate,
 -- guarded publication process later promotes the same immutable bytes to the
 -- exact published question version; no production promotion is exercised.
-select ace.reserve_question_media_intent(
+select (ace.reserve_question_media_intent(
  '05000000-0000-4000-8000-000000000004',1,
  '05000000-0000-4000-8000-00000000000b',
  'A labelled geometry diagram','Original diagram created by ACE.',
- 'image/png',12,repeat('a',64));
-select ace.confirm_question_media_intent(
- '05000000-0000-4000-8000-000000000004','image/png',12,repeat('a',64));
+ 'image/png',12,repeat('a',64))->>'id') as asset_id \gset
+select set_config('fcb03.test.asset_id', :'asset_id', true);
+select ace.confirm_question_media_intent(:'asset_id'::uuid,'image/png',12,repeat('a',64));
 
 -- Synthetic published revision fixture: this test intentionally seeds a valid
 -- immutable version directly so it can exercise the delivery guard without
@@ -58,7 +58,7 @@ update ace.questions set content_version=2,rich_content=jsonb_build_object(
  'version',1,
  'blocks',jsonb_build_array(
   jsonb_build_object('type','paragraph','text','Find the area of the rectangle.'),
-  jsonb_build_object('type','image','asset_id','05000000-0000-4000-8000-000000000004',
+  jsonb_build_object('type','image','asset_id', :'asset_id'::uuid,
    'alt','A labelled geometry diagram','caption','Diagram 1')),
  'fallback_text','Find the area of the rectangle.'||E'\n\n'||
   'Diagram: A labelled geometry diagram'||E'\n'||'Diagram 1'),
@@ -73,11 +73,11 @@ insert into ace.question_media(
  id,question_id,kind,storage_provider,storage_path,mime_type,size_bytes,
  alt_text,rights_status,source_url,metadata,intent_id,question_version,sha256,verified_at,reviewed_by,reviewed_at
 ) values(
- '05000000-0000-4000-8000-000000000004',
+ :'asset_id'::uuid,
  '05000000-0000-4000-8000-000000000004','diagram','supabase',
- 'published/v1/05000000-0000-4000-8000-000000000004/2/05000000-0000-4000-8000-000000000004',
+ 'published/v1/05000000-0000-4000-8000-000000000004/2/'||:'asset_id',
  'image/png',12,'A labelled geometry diagram','owned',null,'{}'::jsonb,
- '05000000-0000-4000-8000-000000000004',2,repeat('a',64),clock_timestamp(),
+ :'asset_id'::uuid,2,repeat('a',64),clock_timestamp(),
  '05000000-0000-4000-8000-000000000002',clock_timestamp());
 
 -- A valid, verified asset can exist for this revision yet remain undeliverable
@@ -125,7 +125,7 @@ declare
  other_student uuid:='05000000-0000-4000-8000-00000000000a';
  attempt uuid:='05000000-0000-4000-8000-000000000009';
  question uuid:='05000000-0000-4000-8000-000000000004';
- asset uuid:='05000000-0000-4000-8000-000000000004';
+ asset uuid:=current_setting('fcb03.test.asset_id')::uuid;
  result jsonb;
 begin
  if has_function_privilege('anon','ace.authorize_attempt_question_media(uuid,uuid,uuid)','execute')
