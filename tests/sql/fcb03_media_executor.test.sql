@@ -12,7 +12,9 @@ begin
  or not has_function_privilege('ace_media_executor',
   'ace.reserve_question_media_intent(uuid,integer,uuid,text,text,text,integer,text)','execute')
  or not has_function_privilege('ace_media_executor',
-  'ace.confirm_question_media_intent(uuid,text,integer,text)','execute') then
+  'ace.confirm_question_media_intent(uuid,text,integer,text)','execute')
+ or not has_function_privilege('ace_media_executor',
+  'ace.authorize_attempt_question_media(uuid,uuid,uuid)','execute') then
   raise exception 'Dedicated media executor is missing required narrow function grants';
  end if;
  if has_function_privilege('anon','ace.can_stage_question_media(uuid,integer)','execute')
@@ -22,10 +24,12 @@ begin
  or has_table_privilege('ace_media_executor','ace.question_media_intents','insert')
  or has_table_privilege('ace_media_executor','ace.question_media','insert')
  or has_function_privilege('anon','ace.confirm_question_media_intent(uuid,text,integer,text)','execute')
- or has_function_privilege('authenticated','ace.reserve_question_media_intent(uuid,integer,uuid,text,text,text,integer,text)','execute') then
+ or has_function_privilege('authenticated','ace.reserve_question_media_intent(uuid,integer,uuid,text,text,text,integer,text)','execute')
+ or has_function_privilege('anon','ace.authorize_attempt_question_media(uuid,uuid,uuid)','execute')
+ or has_function_privilege('authenticated','ace.authorize_attempt_question_media(uuid,uuid,uuid)','execute') then
   raise exception 'Private media executor or public function privileges leaked';
  end if;
- raise notice 'FCB03 executor PASS: grants only two private functions, no direct table CRUD';
+ raise notice 'FCB03 executor PASS: narrow private function grants, no direct table CRUD';
 end
 $checks$;
 -- Disposable PostgreSQL fixture only.
