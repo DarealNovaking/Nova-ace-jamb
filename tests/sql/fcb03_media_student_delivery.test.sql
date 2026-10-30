@@ -80,6 +80,32 @@ insert into ace.question_media(
  '05000000-0000-4000-8000-000000000004',2,repeat('a',64),clock_timestamp(),
  '05000000-0000-4000-8000-000000000002',clock_timestamp());
 
+-- A valid, verified asset can exist for this revision yet remain undeliverable
+-- when the immutable rich document does not reference it.
+insert into ace.question_media_intents(
+ id,question_id,question_version,requested_by,request_id,storage_path,
+ claimed_mime,claimed_size_bytes,claimed_sha256,alt_text,rights_evidence,status,verified_at
+) values(
+ '05000000-0000-4000-8000-00000000000c',
+ '05000000-0000-4000-8000-000000000004',1,
+ '05000000-0000-4000-8000-000000000001',
+ '05000000-0000-4000-8000-00000000000e',
+ 'staging/v1/05000000-0000-4000-8000-000000000004/05000000-0000-4000-8000-00000000000c',
+ 'image/png',12,repeat('b',64),'A second unrelated diagram',
+ 'Original second diagram created by ACE.','verified',clock_timestamp()
+);
+insert into ace.question_media(
+ id,question_id,kind,storage_provider,storage_path,mime_type,size_bytes,
+ alt_text,rights_status,source_url,metadata,intent_id,question_version,sha256,verified_at,reviewed_by,reviewed_at
+) values(
+ '05000000-0000-4000-8000-00000000000c',
+ '05000000-0000-4000-8000-000000000004','diagram','supabase',
+ 'published/v1/05000000-0000-4000-8000-000000000004/2/05000000-0000-4000-8000-00000000000c',
+ 'image/png',12,'A second unrelated diagram','owned',null,'{}'::jsonb,
+ '05000000-0000-4000-8000-00000000000c',2,repeat('b',64),clock_timestamp(),
+ '05000000-0000-4000-8000-000000000002',clock_timestamp()
+);
+
 insert into ace.attempts(
  id,user_id,mode,subject_id,started_at,duration_seconds,random_seed,
  question_order,option_order,status,question_snapshot
