@@ -1,5 +1,17 @@
 # ACE JAMB — Current Agent Checkpoint
 
+> **Current state:** FCB-03 image upload and pre-decoding authorization are source-only and Verify-green; no production changes. See top checkpoint below. Older entries are historical.
+
+## Private authenticated upload service and pre-decoding authorization — 30 October 2026
+
+- **Source implementation only, not deployed:** `supabase/functions/question-media-upload/index.ts` is an explicitly gated Edge entrypoint using live-token verification via Supabase Auth `getUser(token)`, exact-origin CORS, immutable private Storage upload/readback, and a transaction-local verified-user claim over a TLS Postgres connection that checks `current_user='ace_media_executor'`. Missing server secrets/bucket settings return 503. No credential, bucket, deployment, role or permission change was made in the live project.
+- `supabase/proposals/fcb03_media_executor_grants.sql` grants a separately provisioned, unprivileged executor only schema USAGE and EXECUTE on internal private media-intent and preflight RPCs; **no table permissions**. It validates the executor lacks superuser/BYPASSRLS/CREATEROLE/CREATEDB/REPLICATION. `supabase/proposals/fcb03_media_preflight.sql` creates a source-only, private, side-effect-free permission check that validates current editor/administrator role, draft ownership, revision and nonpublished state **before costly WASM decoding**; intent reservation and confirmation still recheck under locks, preventing time-of-check/time-of-use bypass. Installation order must be preflight SQL before grants. Both are proposals, not applied to production.
+- `supabase/functions/_shared/questionMediaUpload.ts` now rechecks immutable private object readback on identical verified upload replay; missing/wrong-MIME/same-length tampered objects fail closed instead of returning false success. `tests/question-media-upload.test.mjs` includes the preflight/student-authorization rejection and replay tamper tests; `tests/sql/fcb03_media_executor.test.sql` checks least-privilege function calls and no authenticated/anonymous exposure in disposable PostgreSQL.
+- **Verified evidence:** latest implementation head `5dcf673beb9281378fcb9e61badf96e62674ef66`, GitHub Actions **Verify SUCCESS all 7 jobs**, run `40977843456` (native question-workflow PostgreSQL guards, 110 Node tests, real Deno/WASM decoding, Edge TypeScript checks, frontend typecheck/build and other baseline jobs). The ACE JAMB E2E run `40977843536` was IN PROGRESS at this checkpoint and is **not claimed PASS**.
+- **Remaining gates:** no live upload because approved private Storage bucket, dedicated SQL executor credential/role, deployed Edge function, access policies, environment secrets and integration acceptance do not exist yet. Also not implemented: rights/reviewer-verified publication binding, student-owned-attempt media delivery, guarded takedown/retention and complete media workflow UI. No production SQL/Storage/data/roles, deployment, question publication, or session changes were made. Existing plain-text authoring and CBT remain the current production behavior.
+- **Exact next action:** build/verify the student-owned-attempt private image delivery proxy and reviewed media/question revision linkage in isolated tests; then prepare a specific production release package for explicit owner approval. FCB-03 is IN PROGRESS; FCB-01/02 remain COMPLETE.
+
+
 
 
 ## Private image reservation and byte-verification implementation — 29 October 2026
