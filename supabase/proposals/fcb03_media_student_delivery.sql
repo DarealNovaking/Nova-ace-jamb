@@ -112,16 +112,28 @@ begin
  select * into q from ace.questions
  where id=p_question_id and active=true and review_status='published'
   and rights_status in('owned','licensed','permitted')
-  and content_version=version_number
  for share;
  if not found then return null;end if;
+ if q.reviewed_by is null or q.reviewed_by=q.created_by
+  or q.reviewed_by::text is not distinct from (q.provenance->>'last_content_editor') then
+  return null;
+ end if;
 
+ -- A student's attempt is frozen to the historical revision captured at start.
+ -- A newer currently-published revision must not silently replace that paper;
+ -- old media stays available only while the question remains published and its
+ -- own revision/asset rights are still approved.
  select * into version_row from ace.question_versions
  where question_id=p_question_id and version=version_number
  for share;
- if not found or version_row.snapshot->>'content_version'<>version_number::text
-  or version_row.snapshot->>'reviewed_by' is distinct from q.reviewed_by::text
-  or q.reviewed_by is null or q.reviewed_by=q.created_by
+ if not found or version_row.snapshot->>'id' is distinct from p_question_id::text
+  or version_row.snapshot->>'content_version' is distinct from version_number::text
+  or version_row.snapshot->>'review_status' is distinct from 'published'
+  or version_row.snapshot->>'active' is distinct from 'true'
+  or coalesce(version_row.snapshot->>'rights_status','') not in('owned','licensed','permitted')
+  or version_row.snapshot->>'reviewed_by' is null
+  or version_row.snapshot->>'reviewed_by' is not distinct from version_row.snapshot->>'created_by'
+  or version_row.snapshot->>'reviewed_by' is not distinct from (version_row.snapshot->'provenance'->>'last_content_editor')
   or jsonb_typeof(version_row.snapshot->'rich_content') is distinct from 'object'
   or jsonb_typeof(version_row.snapshot->'rich_content'->'blocks') is distinct from 'array' then
   return null;
@@ -136,8 +148,11 @@ begin
   and intent_id=id and question_version=version_number
   and kind in('image','diagram')
   and rights_status in('owned','licensed','permitted')
-  and reviewed_by=q.reviewed_by and reviewed_by is not null
-  and reviewed_by<>q.created_by and reviewed_at is not null
+  and reviewed_by::text=version_row.snapshot->>'reviewed_by'
+  and reviewed_by is not null
+  and reviewed_by::text is distinct from version_row.snapshot->>'created_by'
+  and reviewed_by::text is distinct from (version_row.snapshot->'provenance'->>'last_content_editor')
+  and reviewed_at is not null
   and mime_type in('image/png','image/jpeg','image/webp')
   and size_bytes between 1 and 2097152
   and sha256 ~ '^[0-9a-f]{64}$'
