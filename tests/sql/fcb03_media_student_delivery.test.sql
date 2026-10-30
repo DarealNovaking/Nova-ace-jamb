@@ -316,12 +316,12 @@ begin
  exception when sqlstate '42501' then null;
  end;
  perform set_config('request.jwt.claim.sub',reviewer::text,true);
- item:=ace.takedown_question_media(question,asset,'Rights permission withdrawn after publication.');
- if item->>'status'<>'revoked' or item->>'decision'<>'rejected' then
+ result:=ace.takedown_question_media(question,asset,'Rights permission withdrawn after publication.');
+ if result->>'status'<>'revoked' or result->>'decision'<>'rejected' then
   raise exception 'Administrator takedown did not record a rights revocation';
  end if;
- replay:=ace.takedown_question_media(question,asset,'Repeated takedown request with another reason.');
- if replay->>'status'<>'revoked' or replay->>'id'<>item->>'id' then
+ delivered:=ace.takedown_question_media(question,asset,'Repeated takedown request with another reason.');
+ if delivered->>'status'<>'revoked' or delivered->>'id'<>result->>'id' then
   raise exception 'Takedown replay was not idempotent';
  end if;
  perform set_config('request.jwt.claim.sub',student::text,true);
