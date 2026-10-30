@@ -39,7 +39,7 @@ async function databaseAsActor<T>(
 ): Promise<T> {
   requireUuid(actorId)
   if (!db) throw Error('No trusted media executor')
-  return db.begin(async transaction => {
+  return (await db.begin(async transaction => {
     const role = await transaction.unsafe('select current_user::text as name')
     // Never run as postgres, an administrative account or the ordinary
     // authenticated/anon API role. A narrowly scoped login is mandatory.
@@ -49,7 +49,7 @@ async function databaseAsActor<T>(
     // Transaction-local verified user: no JWT/session leaks across the pool.
     await transaction.unsafe("select set_config('request.jwt.claim.sub',$1,true)", [actorId])
     return query(transaction)
-  })
+  })) as unknown as T
 }
 
 const handleUpload = ready ? createQuestionMediaUploadHandler({
