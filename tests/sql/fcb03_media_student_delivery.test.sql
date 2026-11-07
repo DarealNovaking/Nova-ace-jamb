@@ -152,7 +152,7 @@ insert into ace.attempts(
  '["05000000-0000-4000-8000-000000000004"]'::jsonb,
  '{"05000000-0000-4000-8000-000000000004":["A","B","C","D"]}'::jsonb,
  'active',
- '[{"id":"05000000-0000-4000-8000-000000000004","content_version":3,"stem":"Find the area of the rectangle.","options":[{"key":"A","text":"5 square units"},{"key":"B","text":"6 square units"},{"key":"C","text":"7 square units"},{"key":"D","text":"8 square units"}],"correct_option_key":"B","subject_id":"05000000-0000-4000-8000-000000000005","topic_id":"05000000-0000-4000-8000-000000000006","difficulty":"easy"}]'::jsonb
+ '[{"id":"05000000-0000-4000-8000-000000000004","content_version":5,"stem":"Find the area of the rectangle.","options":[{"key":"A","text":"5 square units"},{"key":"B","text":"6 square units"},{"key":"C","text":"7 square units"},{"key":"D","text":"8 square units"}],"correct_option_key":"B","subject_id":"05000000-0000-4000-8000-000000000005","topic_id":"05000000-0000-4000-8000-000000000006","difficulty":"easy"}]'::jsonb
 );
 
 do $tests$
@@ -161,6 +161,7 @@ declare
  other_student uuid:='05000000-0000-4000-8000-00000000000a';
  attempt uuid:='05000000-0000-4000-8000-000000000009';
  question uuid:='05000000-0000-4000-8000-000000000004';
+ reviewer uuid:='05000000-0000-4000-8000-000000000002';
  asset uuid:=current_setting('fcb03.test.asset_id')::uuid;
  result jsonb;
  delivered jsonb;
