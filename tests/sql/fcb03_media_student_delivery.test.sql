@@ -125,7 +125,7 @@ insert into ace.question_media_intents(
 insert into ace.question_media_reviews(
  intent_id,question_version,reviewed_by,decision,rights_status,rights_evidence,reviewed_at
 ) values(
- '05000000-0000-4000-8000-00000000000c',2,
+ '05000000-0000-4000-8000-00000000000c',4,
  '05000000-0000-4000-8000-000000000002','approved','owned',
  'Reviewer confirmed the unrelated diagram rights.',clock_timestamp()
 );
@@ -138,7 +138,7 @@ insert into ace.question_media(
  '05000000-0000-4000-8000-000000000004','diagram','supabase',
  'published/v1/05000000-0000-4000-8000-000000000004/5/05000000-0000-4000-8000-00000000000c',
  'image/png',12,'A second unrelated diagram','owned',null,'{}'::jsonb,
- '05000000-0000-4000-8000-00000000000c',3,repeat('b',64),clock_timestamp(),
+ '05000000-0000-4000-8000-00000000000c',5,repeat('b',64),clock_timestamp(),
  '05000000-0000-4000-8000-000000000002',clock_timestamp(),
  'Reviewer confirmed the unrelated diagram rights.','05000000-0000-4000-8000-000000000002',
  (select reviewed_at from ace.question_media_reviews where intent_id='05000000-0000-4000-8000-00000000000c' and question_version=4 order by reviewed_at desc limit 1)
