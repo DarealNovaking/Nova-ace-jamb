@@ -82,6 +82,7 @@ select ace.manage_question('save','05000000-0000-4000-8000-000000000004',1,
 select ace.manage_question('submit','05000000-0000-4000-8000-000000000004',2,'{}');
 select set_config('request.jwt.claim.sub','05000000-0000-4000-8000-000000000002',true);
 select ace.manage_question('approve','05000000-0000-4000-8000-000000000004',3,'{}');
+select set_config('request.jwt.claim.sub','05000000-0000-4000-8000-000000000001',true);
 do $self_review$
 begin
  perform ace.review_question_media_intent(
@@ -91,6 +92,7 @@ begin
 exception when insufficient_privilege then null;
 end
 $self_review$;
+select set_config('request.jwt.claim.sub','05000000-0000-4000-8000-000000000002',true);
 select ace.review_question_media_intent(
  '05000000-0000-4000-8000-000000000004',4,:'asset_id'::uuid,
  'approved','owned','Reviewer confirmed original diagram ownership and source provenance.');
