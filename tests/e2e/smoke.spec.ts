@@ -721,7 +721,7 @@ test.describe('ACE JAMB persistent CBT', () => {
     await expect(page.getByRole('alert')).toContainText('Your report could not be confirmed')
     await page.getByLabel('Describe what needs checking').fill('The wording is unclear and the second sentence conflicts with the first.')
     await page.getByRole('button', { name: 'Send report' }).click()
-    await expect(page.getByRole('status')).toContainText('Your report has been sent privately')
+    await expect(page.getByText('Thanks. Your report has been sent privately to the academic team.')).toBeVisible()
     expect(requests).toHaveLength(2)
     expect(requests[0].p_attempt).toBe(attemptId)
     expect(requests[0].p_question).toBe(questionId)
