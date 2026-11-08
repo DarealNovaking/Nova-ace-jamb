@@ -420,7 +420,7 @@ export default function PersistentCBT({ attemptId = null, questionCount = 20, du
           <h3 id="cbt-question-report-title" className="font-bold">Report a problem with this question</h3>
           <p className="mt-1 text-xs leading-5 text-white/55">Your report is private and linked to this attempt and question version. It does not reveal your answers to other students.</p>
           <label className="mt-3 block text-sm font-semibold">What is the issue?
-            <select className="field mt-1" value={reportReason} onChange={event => setReportReason(event.target.value as QuestionReportReason)} disabled={reporting}>
+            <select className="field mt-1" value={reportReason} onChange={event => { reportRequestId.current = null; setReportReason(event.target.value as QuestionReportReason) }} disabled={reporting}>
               <option value="incorrect_answer">The answer may be incorrect</option>
               <option value="ambiguous">The question is unclear</option>
               <option value="formatting">Formatting or display problem</option>
@@ -429,12 +429,12 @@ export default function PersistentCBT({ attemptId = null, questionCount = 20, du
             </select>
           </label>
           <label className="mt-3 block text-sm font-semibold">Describe what needs checking
-            <textarea className="field mt-1" rows={3} maxLength={1000} value={reportDetails} onChange={event => setReportDetails(event.target.value)} disabled={reporting} placeholder="Explain what seems wrong or unclear…" />
+            <textarea className="field mt-1" rows={3} maxLength={1000} value={reportDetails} onChange={event => { reportRequestId.current = null; setReportDetails(event.target.value) }} disabled={reporting} placeholder="Explain what seems wrong or unclear…" />
           </label>
           {reportError && <p role="alert" className="mt-2 text-sm text-red-100">{reportError}</p>}
           <div className="mt-3 flex flex-wrap gap-2">
             <button type="button" onClick={() => void sendQuestionReport()} disabled={reporting || reportDetails.trim().length < 8 || reportDetails.trim().length > 1000} className="min-h-11 rounded-xl bg-amber-200 px-4 py-2 text-sm font-bold text-[#21180a] disabled:opacity-40">{reporting ? 'Sending report…' : 'Send report'}</button>
-            <button type="button" onClick={() => { setReportOpen(false); setReportError('') }} disabled={reporting} className="min-h-11 rounded-xl border border-white/15 px-4 py-2 text-sm font-semibold">Cancel</button>
+            <button type="button" onClick={() => { setReportOpen(false); setReportError(''); reportRequestId.current = null }} disabled={reporting} className="min-h-11 rounded-xl border border-white/15 px-4 py-2 text-sm font-semibold">Cancel</button>
           </div>
         </section>}
         <div className="mt-5 flex gap-3"><button type="button" disabled={current === 0} onClick={() => setCurrent((v) => Math.max(0, v - 1))} className="flex-1 rounded-xl border border-white/10 py-3 disabled:opacity-30">Previous</button>{current < questions.length - 1 ? <button type="button" onClick={() => setCurrent((v) => Math.min(questions.length - 1, v + 1))} className="flex-1 rounded-xl bg-white py-3 font-bold text-black">Next</button> : <button type="button" disabled={submitting || saving} onClick={submitRequested} className="flex-1 rounded-xl bg-purple-500 py-3 font-bold disabled:opacity-40">{submitting ? 'Submitting…' : 'Submit CBT'}</button>}</div>
