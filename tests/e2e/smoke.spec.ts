@@ -1071,6 +1071,59 @@ test.describe('ACE JAMB administrator question review visibility', () => {
     expect(questionReads).toBeGreaterThan(0)
   })
 
+  test('administrator can triage a student question report and reopen its review record', async ({ page }) => {
+    await mockPreparedStudent(page)
+    const reportId = '50000000-0000-4000-8000-000000000071'
+    let reportStatus: 'open' | 'triaged' = 'open'
+    let moderationPayload: Record<string, unknown> | null = null
+    const report = () => ({
+      id: reportId,
+      question_id: '30000000-0000-4000-8000-000000000071',
+      question_version: 3,
+      attempt_id: '40000000-0000-4000-8000-000000000071',
+      reporter_id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+      reason: 'ambiguous',
+      details: 'The second sentence conflicts with the first and needs academic review.',
+      status: reportStatus,
+      created_at: '2026-11-07T12:00:00.000Z',
+      handled_by: reportStatus === 'triaged' ? 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb' : null,
+      resolution_note: reportStatus === 'triaged' ? 'Checked the reported wording; sent for academic review.' : null,
+      resolved_at: null,
+    })
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/is_admin'), async (route) => {
+      await route.fulfill({ json: true })
+    })
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/is_admin_or_editor'), async (route) => {
+      await route.fulfill({ json: true })
+    })
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/question_reporting_enabled'), async (route) => {
+      await route.fulfill({ json: true })
+    })
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/list_question_reports'), async (route) => {
+      const payload = route.request().postDataJSON()
+      await route.fulfill({ json: payload.p_status === reportStatus ? [report()] : [] })
+    })
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/manage_question_report'), async (route) => {
+      moderationPayload = route.request().postDataJSON()
+      reportStatus = 'triaged'
+      await route.fulfill({ json: { id: reportId, status: reportStatus, question_id: report().question_id } })
+    })
+
+    await page.goto('/admin')
+    await expect(page.getByRole('heading', { name: 'Student question reports' })).toBeVisible()
+    await expect(page.getByText('The second sentence conflicts with the first and needs academic review.')).toBeVisible()
+    await page.getByLabel('Moderation note').fill('Checked the reported wording; sent for academic review.')
+    await page.getByRole('button', { name: 'Move to review' }).click()
+    await expect(page.getByRole('status')).toContainText('Report moved to review')
+    await expect.poll(() => moderationPayload).not.toBeNull()
+    expect(moderationPayload?.p_report).toBe(reportId)
+    expect(moderationPayload?.p_action).toBe('triage')
+    expect(moderationPayload?.p_note).toBe('Checked the reported wording; sent for academic review.')
+    await page.getByLabel('Report status').selectOption('triaged')
+    await expect(page.getByText('The second sentence conflicts with the first and needs academic review.')).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Resolve' })).toBeVisible()
+  })
+
   test('non-admin students never request the protected question review queue', async ({ page }) => {
     await mockPreparedStudent(page)
     let questionReads = 0
