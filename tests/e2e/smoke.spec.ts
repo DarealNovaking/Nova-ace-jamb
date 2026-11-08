@@ -1114,7 +1114,7 @@ test.describe('ACE JAMB administrator question review visibility', () => {
     await expect(page.getByText('The second sentence conflicts with the first and needs academic review.')).toBeVisible()
     await page.getByLabel('Moderation note').fill('Checked the reported wording; sent for academic review.')
     await page.getByRole('button', { name: 'Move to review' }).click()
-    await expect(page.getByRole('status')).toContainText('Report moved to review')
+    await expect(page.getByText('Report moved to review.', { exact: true })).toBeVisible()
     await expect.poll(() => moderationPayload).not.toBeNull()
     expect(moderationPayload?.p_report).toBe(reportId)
     expect(moderationPayload?.p_action).toBe('triage')
