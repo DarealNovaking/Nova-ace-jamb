@@ -6,6 +6,7 @@ import { publishRichQuestion } from '../lib/questionMediaClient'
 import { questionActions, type QuestionAction, type QuestionQueue, type QuestionRow, type QuestionStatus } from '../lib/questionWorkflow'
 import AdminQuestionEditor from './AdminQuestionEditor'
 import AdminRichContentPreview from './AdminRichContentPreview'
+import AdminQuestionReports from './AdminQuestionReports'
 const AdminQuestionImport = lazy(() => import('./AdminQuestionImport'))
 const AdminQuestionHistory = lazy(() => import('./AdminQuestionHistory'))
 
@@ -67,7 +68,7 @@ export default function AdminQuestionReviewQueue() {
   }
   function saved() {setEditor(undefined);setNotice('Private draft saved. Submit it for independent review when ready.');void refresh()}
   const disabled=loading||busy||mediaBusy!==null||mustReload||editor!==undefined||importing||history!==null
-  return <section aria-labelledby="admin-review-questions-heading" className="mt-6 rounded-3xl border border-white/10 bg-white/[.025] p-5 sm:p-7">
+  return <><section aria-labelledby="admin-review-questions-heading" className="mt-6 rounded-3xl border border-white/10 bg-white/[.025] p-5 sm:p-7">
     <div className="flex flex-wrap items-start justify-between gap-4"><div><div className="flex items-center gap-2"><FileQuestion className="text-purple-200" size={21} aria-hidden="true"/><h2 id="admin-review-questions-heading" className="text-xl font-black">Question publication review</h2></div><p className="mt-2 max-w-2xl text-sm leading-6 text-white/60">Author private text questions against the approved syllabus. A different administrator reviews each question before publication. Choices, answers, explanations and source evidence remain restricted to the editorial team.</p></div>
       <div className="flex flex-wrap gap-2"><button type="button" disabled={loading||busy||editor!==undefined||importing||history!==null} onClick={()=>void refresh()} className={`${button} inline-flex items-center gap-2`}><RefreshCw size={16} aria-hidden="true"/>Refresh questions</button><button type="button" disabled={disabled||!queue} className={button} onClick={()=>{setNotice('');setImporting(true)}}>Import questions</button><button type="button" disabled={disabled||!queue} className={`${button} bg-purple-300 text-[#120b1c]`} onClick={()=>{setNotice('');setEditor(null)}}>New question</button></div>
     </div>
@@ -122,5 +123,6 @@ export default function AdminQuestionReviewQueue() {
       </li>)}</ul>
       {(page>0||queue.has_next)&&<nav aria-label="Question review pages" className="mt-5 flex flex-wrap items-center gap-3"><button type="button" className={button} disabled={disabled||page===0} onClick={()=>setPage(x=>x-1)}>Previous questions</button><span className="text-sm text-white/60">Page {page+1}</span><button type="button" className={button} disabled={disabled||!queue.has_next} onClick={()=>setPage(x=>x+1)}>Next questions</button></nav>}
     </>}
-  </section>
+  </section><AdminQuestionReports />
+  </>
 }
