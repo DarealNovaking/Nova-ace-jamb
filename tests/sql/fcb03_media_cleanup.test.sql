@@ -106,8 +106,10 @@ begin
  if current_setting('fcb03.cleanup.wrong_token')::boolean then raise exception 'Wrong cleanup token completed a claim'; end if;
 end
 $wrong_token$;
+reset session authorization;
 update ace.question_media_intents set cleanup_claimed_at=clock_timestamp()-interval '20 minutes'
  where id=:'first_intent_id'::uuid;
+set session authorization ace_media_executor;
 select * from ace.claim_expired_question_media_cleanup(20) \gset retry_
 select ace.complete_question_media_cleanup(:'first_intent_id'::uuid,:'first_claim_token'::uuid) as stale_token \gset
 select set_config('fcb03.cleanup.stale_token', :'stale_token', true);
