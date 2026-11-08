@@ -1204,6 +1204,42 @@ async function mockQuestionWorkspace(page: import('@playwright/test').Page, reco
     const data=route.request().postDataJSON();await route.fulfill({json:{questions:records,page:data.p_page,has_next:false,actor_role:'admin'}})
   })
 }
+test.describe('FCB-03 published diagram takedown',()=>{
+  test('administrator can revoke future student delivery with an audited reason',async({page})=>{
+    const questionId='93000000-0000-4000-8000-000000000071'
+    const assetId='94000000-0000-4000-8000-000000000071'
+    const authorId='bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb'
+    const reviewerId='cccccccc-cccc-4ccc-8ccc-cccccccccccc'
+    const alt='A labelled geometry diagram'
+    const row=workflowQuestion({
+      id:questionId,
+      created_by:authorId,
+      provenance:{source_kind:'original',source_title:'ACE geometry',author_label:'ACE team',
+        source_url:null,rights_evidence:'Original diagram.',last_content_editor:authorId},
+      review_status:'published',rights_status:'owned',active:true,content_version:5,reviewed_by:reviewerId,
+      rich_content:{version:1,blocks:[{type:'image',asset_id:assetId,alt,caption:'Diagram 1'}],
+        fallback_text:'Diagram: '+alt+'\\n'+'Diagram 1'},
+    })
+    await mockQuestionWorkspace(page,[row])
+    let request:Record<string,unknown>|null=null
+    await page.route((url)=>new URL(url).pathname.endsWith('/functions/v1/question-media-takedown'),async route=>{
+      request=route.request().postDataJSON()
+      await route.fulfill({json:{question_id:questionId,asset_id:assetId,status:'revoked'}})
+    })
+    await page.goto('/admin')
+    await expect(page.getByRole('heading',{name:'Question publication review'})).toBeVisible()
+    await expect(page.getByRole('heading',{name:'Published diagram access'})).toBeVisible()
+    await page.getByLabel('Reason for rights withdrawal').fill('The rights holder withdrew permission for this diagram.')
+    await page.getByRole('button',{name:'Revoke student image access'}).click()
+    await expect(page.getByText('Student delivery revoked for this diagram.',{exact:true})).toBeVisible()
+    expect(request).toEqual({
+      question_id:questionId,
+      asset_id:assetId,
+      reason:'The rights holder withdrew permission for this diagram.',
+    })
+  })
+})
+
 test.describe('FCB-03 question authoring workflow',()=>{
   test('creates a private original draft using approved taxonomy',async({page},testInfo)=>{
     const records: ReturnType<typeof workflowQuestion>[]=[]
