@@ -73,8 +73,8 @@ select ace.manage_question('save','06000000-0000-4000-8000-00000000000e',0,
    jsonb_build_object('type','table','caption','Example dimensions',
     'headers',jsonb_build_array('Length','Width'),
     'rows',jsonb_build_array(jsonb_build_array('3 units','2 units')))),
-   'fallback_text','A rectangle has a length and width.'||E'\n\\n'||
-    'Area = length × width — Area equals length multiplied by width'||E'\n\\n'||
+   'fallback_text','A rectangle has a length and width.'||E'\n\n'||
+    'Area = length × width — Area equals length multiplied by width'||E'\n\n'||
     'Example dimensions'||E'\n'||'Length | Width'||E'\n'||'3 units | 2 units')));
 select ace.manage_question('save','06000000-0000-4000-8000-00000000000e',1,
  jsonb_build_object(
@@ -94,8 +94,8 @@ select ace.manage_question('save','06000000-0000-4000-8000-00000000000e',1,
    jsonb_build_object('type','table','caption','Updated dimensions',
     'headers',jsonb_build_array('Length','Width'),
     'rows',jsonb_build_array(jsonb_build_array('4 units','2 units')))),
-   'fallback_text','Use the dimensions shown in the table.'||E'\n\\n'||
-    'A = l × w — Area equals length times width'||E'\n\\n'||
+   'fallback_text','Use the dimensions shown in the table.'||E'\n\n'||
+    'A = l × w — Area equals length times width'||E'\n\n'||
     'Updated dimensions'||E'\n'||'Length | Width'||E'\n'||'4 units | 2 units')));
 select ace.restore_question('06000000-0000-4000-8000-00000000000e',2,1,
  'Restore the original accessible geometry layout.');
