@@ -20,7 +20,7 @@ const modules={
   '../lib/authService':data('export const getCurrentUser=async()=>null;'),
   '../lib/questionWorkflowService':data('export const listQuestionReview=async()=>null;export const mutateQuestion=async()=>null;export const reviewQuestionMediaIntent=async()=>null;'),
   '../lib/questionWorkflow':workflow,
-  '../lib/questionMediaClient':data('export const publishRichQuestion=async()=>({});'),
+  '../lib/questionMediaClient':data('export const publishRichQuestion=async()=>({});export const takedownQuestionMedia=async()=>{};'),
   './AdminRichContentPreview':data('export default function Preview(){return null;}'),
   './AdminQuestionEditor':data('export default function Editor(){return null;}'),
   './AdminQuestionReports':data('export default function Reports(){return null;}'),
