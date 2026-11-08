@@ -29,5 +29,6 @@ grant execute on function ace.authorize_question_media_preview(uuid,integer,uuid
 grant execute on function ace.prepare_question_media_publication(uuid,integer) to ace_media_executor;
 grant execute on function ace.confirm_question_media_promotion(uuid,integer,uuid) to ace_media_executor;
 grant execute on function ace.publish_question_after_media_promotion(uuid,integer) to ace_media_executor;
+grant execute on function ace.takedown_question_media(uuid,uuid,text) to ace_media_executor;
 -- No table grants, storage policies or PUBLIC EXECUTE; publishing uses one narrow checked RPC.
 commit;
