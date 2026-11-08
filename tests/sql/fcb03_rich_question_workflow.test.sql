@@ -214,7 +214,7 @@ begin
   '06000000-0000-4000-8000-00000000000c',
   '06000000-0000-4000-8000-000000000004',
   current_setting('fcb03.test.asset_id')::uuid) is null then
-  raise exception 'Published image was not authorized for the student's own active attempt';
+  raise exception 'Published image was not authorized for this student-owned active attempt';
  end if;
 end
 $before_takedown$;
