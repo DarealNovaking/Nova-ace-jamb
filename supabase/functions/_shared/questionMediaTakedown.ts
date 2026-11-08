@@ -22,7 +22,7 @@ function fail(status:number,message:string):Response{
 }
 async function readBounded(request:Request):Promise<Uint8Array|null>{
  const claimed=request.headers.get('content-length')
- if(claimed!==null&&(!/^\\d+$/.test(claimed)||Number(claimed)>4096))return null
+ if(claimed!==null&&(!/^\d+$/.test(claimed)||Number(claimed)>4096))return null
  if(!request.body)return null
  const reader=request.body.getReader(),parts:Uint8Array[]=[];let size=0
  try{
@@ -52,12 +52,12 @@ export function createQuestionMediaTakedownHandler(deps:Dependencies){
  return async(request:Request):Promise<Response>=>{
   if(request.method!=='POST')return fail(405,'Method not allowed')
   const authorization=request.headers.get('authorization')||''
-  if(!/^Bearer [^\\s]{10,8192}$/.test(authorization))return fail(401,'Authentication required')
+  if(!/^Bearer [^\s]{10,8192}$/.test(authorization))return fail(401,'Authentication required')
   let actor:Actor|null
   try{actor=await deps.authenticate(authorization.slice(7))}catch{return fail(401,'Authentication required')}
   if(!actor||!UUID.test(actor.id))return fail(401,'Authentication required')
   const contentType=request.headers.get('content-type')||''
-  if(!/^application\\/json(?:\\s*;\\s*charset=utf-8)?$/i.test(contentType))
+  if(!/^application\/json(?:\s*;\s*charset=utf-8)?$/i.test(contentType))
    return fail(415,'JSON request required')
   const bytes=await readBounded(request)
   if(!bytes)return fail(413,'Invalid request size')
