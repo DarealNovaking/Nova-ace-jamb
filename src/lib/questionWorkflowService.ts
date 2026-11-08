@@ -1,6 +1,13 @@
 import { ace } from './supabase'
 import { parseQuestionHistory, parseQuestionQueue, parseSavedQuestion, validateQuestionDraft, validateQuestionRestore, type QuestionAction, type QuestionDraft, type QuestionStatus } from './questionWorkflow'
 
+export async function isRichQuestionAuthoringEnabled():Promise<boolean>{
+ try{
+  const {data,error}=await ace.rpc('rich_question_authoring_enabled')
+  return !error&&data===true
+ }catch{return false}
+}
+
 export async function listQuestionReview(status: QuestionStatus | null, page: number) {
   const {data,error}=await ace.rpc('review_questions',{p_status:status,p_page:page})
   if(error) throw error
