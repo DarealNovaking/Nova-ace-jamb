@@ -65,8 +65,8 @@ begin
     where b.value->>'type'='image' and b.value->>'asset_id'=i.id::text
    )
   order by i.expires_at,i.id
-  for update of i skip locked
   limit p_limit
+  for update of i skip locked
  )
  update ace.question_media_intents i
  set cleanup_claimed_at=clock_timestamp(),cleanup_claim_token=gen_random_uuid()
