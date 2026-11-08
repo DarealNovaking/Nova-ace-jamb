@@ -10,9 +10,11 @@ grant execute on function ace.complete_question_media_cleanup(uuid,uuid) to ace_
 
 begin;
 insert into auth.users(id,email,raw_user_meta_data) values
- ('07000000-0000-4000-8000-000000000001','cleanup-editor@example.invalid','{}');
+ ('07000000-0000-4000-8000-000000000001','cleanup-editor@example.invalid','{}'),
+ ('07000000-0000-4000-8000-000000000002','cleanup-admin@example.invalid','{}');
 update ace.roles set role='editor' where user_id='07000000-0000-4000-8000-000000000001';
-select set_config('request.jwt.claim.sub','07000000-0000-4000-8000-000000000001',true);
+update ace.roles set role='admin' where user_id='07000000-0000-4000-8000-000000000002';
+select set_config('request.jwt.claim.sub','07000000-0000-4000-8000-000000000002',true);
 insert into ace.subjects(id,code,name,active)
  values('07000000-0000-4000-8000-000000000005','MCL','Media Cleanup',true);
 insert into ace.syllabus_versions(id,season_id,subject_id,version,title,rights_status,status,activated_at)
@@ -22,6 +24,7 @@ insert into ace.syllabus_versions(id,season_id,subject_id,version,title,rights_s
 insert into ace.topics(id,subject_id,syllabus_version_id,name,active)
  values('07000000-0000-4000-8000-000000000006',
   '07000000-0000-4000-8000-000000000008','Geometry',true);
+select set_config('request.jwt.claim.sub','07000000-0000-4000-8000-000000000001',true);
 
 select ace.manage_question('save','07000000-0000-4000-8000-000000000004',0,
  jsonb_build_object(
