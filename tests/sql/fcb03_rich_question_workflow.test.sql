@@ -35,7 +35,7 @@ select set_config('request.jwt.claim.sub','06000000-0000-4000-8000-000000000001'
 do $capability$
 begin
  if ace.rich_question_authoring_enabled() is not true then raise exception 'Editor rich authoring capability was not enabled';end if;
- if has_function_privilege('anon','ace.rich_question_authoring_enabled()','execute') then raise exception 'Rich authoring capability exposed to anon';end if;
+ if has_function_privilege('anon','ace.rich_question_authoring_enabled()','execute') or not has_function_privilege('authenticated','ace.rich_question_authoring_enabled()','execute') then raise exception 'Rich authoring capability grants are incorrect';end if;
 end
 $capability$;
 select ace.manage_question('save','06000000-0000-4000-8000-000000000004',0,
