@@ -189,7 +189,8 @@ revoke all on function ace.manage_question(text,uuid,integer,jsonb)
 grant execute on function ace.manage_question(text,uuid,integer,jsonb) to authenticated;
 create or replace function ace.rich_question_authoring_enabled()
 returns boolean language plpgsql security definer
-set search_path=pg_catalog,ace,pg_temp set lock_timeout='3s' as $
+set search_path=pg_catalog,ace,pg_temp set lock_timeout='3s' as $rich_authoring_capability$
+
 declare actor uuid:=auth.uid(); actor_role text;
 begin
  if actor is null then return false;end if;
@@ -197,7 +198,7 @@ begin
   where user_id=actor and role in('editor','admin') for share;
  return found;
 end;
-$;
+$rich_authoring_capability$;
 revoke all on function ace.rich_question_authoring_enabled() from public,anon,authenticated;
 grant execute on function ace.rich_question_authoring_enabled() to authenticated;
 
