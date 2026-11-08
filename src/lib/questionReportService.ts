@@ -28,7 +28,7 @@ function parseReport(value:unknown):QuestionReport{
  return value as QuestionReport
 }
 export async function submitQuestionReport(
- attemptId:string,questionId:string,reason:QuestionReportReason,details:string,requestId=globalThis.crypto.randomUUID(),
+ attemptId:string,questionId:string,reason:QuestionReportReason,details:string,requestId:string=globalThis.crypto.randomUUID(),
 ){
  if(!uuid.test(attemptId)||!uuid.test(questionId)||!uuid.test(requestId)||!reasons.includes(reason)||
   typeof details!=='string'||details.trim().length<8||details.trim().length>1000)
