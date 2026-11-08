@@ -23,6 +23,7 @@ insert into ace.syllabus_versions(id,season_id,subject_id,version,title,rights_s
   '07000000-0000-4000-8000-000000000005',1,'Media cleanup syllabus','approved','active',now());
 insert into ace.topics(id,subject_id,syllabus_version_id,name,active)
  values('07000000-0000-4000-8000-000000000006',
+  '07000000-0000-4000-8000-000000000005',
   '07000000-0000-4000-8000-000000000008','Geometry',true);
 select set_config('request.jwt.claim.sub','07000000-0000-4000-8000-000000000001',true);
 
