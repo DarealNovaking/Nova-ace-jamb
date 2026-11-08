@@ -171,7 +171,8 @@ $$;
 
 create or replace function ace.question_reporting_enabled()
 returns boolean language plpgsql security definer
-set search_path=pg_catalog,ace,pg_temp set lock_timeout='3s' as $
+set search_path=pg_catalog,ace,pg_temp set lock_timeout='3s' as $question_reporting_capability$
+
 declare actor uuid:=auth.uid(); actor_role text;
 begin
  if actor is null then return false;end if;
@@ -179,7 +180,7 @@ begin
   where user_id=actor and role in('student','admin') for share;
  return found;
 end;
-$;
+$question_reporting_capability$;
 revoke all on function ace.question_reporting_enabled() from public,anon,authenticated;
 grant execute on function ace.question_reporting_enabled() to authenticated;
 
