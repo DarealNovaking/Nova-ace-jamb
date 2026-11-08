@@ -41,5 +41,5 @@ begin
  return jsonb_build_object('id',saved.id,'decision','rejected','status','revoked');
 end;$$;
 revoke all on function ace.takedown_question_media(uuid,uuid,text) from public,anon,authenticated;
-grant execute on function ace.takedown_question_media(uuid,uuid,text) to authenticated;
+-- The dedicated executor receives this narrow grant in fcb03_media_executor_grants.sql.
 commit;
