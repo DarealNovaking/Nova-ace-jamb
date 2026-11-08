@@ -53,6 +53,74 @@ select ace.manage_question('save','06000000-0000-4000-8000-000000000004',0,
   'provenance',jsonb_build_object('source_kind','original','source_title','ACE geometry',
    'author_label','ACE team','source_url',null,'rights_evidence','Original question written for ACE.')));
 
+-- Rich text history restoration creates a new private revision and preserves
+-- accessible paragraphs, spoken equations and tables without reusing media.
+select ace.manage_question('save','06000000-0000-4000-8000-00000000000e',0,
+ jsonb_build_object(
+  'subject_id','06000000-0000-4000-8000-000000000005',
+  'topic_id','06000000-0000-4000-8000-000000000006','subtopic_id',null,
+  'stem','Restore this sample geometry question.',
+  'options',jsonb_build_array(jsonb_build_object('key','A','text','5 units'),
+   jsonb_build_object('key','B','text','6 units'),jsonb_build_object('key','C','text','7 units'),
+   jsonb_build_object('key','D','text','8 units')),
+  'correct_option_key','B','explanation','Use the original dimensions.',
+  'difficulty','easy','exam','ACE practice','exam_year',null,
+  'provenance',jsonb_build_object('source_kind','original','source_title','ACE restore test',
+   'author_label','ACE team','source_url',null,'rights_evidence','Original ACE restoration fixture.'),
+  'rich_content',jsonb_build_object('version',1,'blocks',jsonb_build_array(
+   jsonb_build_object('type','paragraph','text','A rectangle has a length and width.'),
+   jsonb_build_object('type','equation','expression','Area = length × width','spoken','Area equals length multiplied by width'),
+   jsonb_build_object('type','table','caption','Example dimensions',
+    'headers',jsonb_build_array('Length','Width'),
+    'rows',jsonb_build_array(jsonb_build_array('3 units','2 units')))),
+   'fallback_text','A rectangle has a length and width.'||E'\\n\\n'||
+    'Area = length × width — Area equals length multiplied by width'||E'\\n\\n'||
+    'Example dimensions'||E'\\n'||'Length | Width'||E'\\n'||'3 units | 2 units')));
+select ace.manage_question('save','06000000-0000-4000-8000-00000000000e',1,
+ jsonb_build_object(
+  'subject_id','06000000-0000-4000-8000-000000000005',
+  'topic_id','06000000-0000-4000-8000-000000000006','subtopic_id',null,
+  'stem','Restore this sample geometry question.',
+  'options',jsonb_build_array(jsonb_build_object('key','A','text','5 units'),
+   jsonb_build_object('key','B','text','6 units'),jsonb_build_object('key','C','text','7 units'),
+   jsonb_build_object('key','D','text','8 units')),
+  'correct_option_key','B','explanation','Use the updated dimensions.',
+  'difficulty','easy','exam','ACE practice','exam_year',null,
+  'provenance',jsonb_build_object('source_kind','original','source_title','ACE restore test',
+   'author_label','ACE team','source_url',null,'rights_evidence','Original ACE restoration fixture.'),
+  'rich_content',jsonb_build_object('version',1,'blocks',jsonb_build_array(
+   jsonb_build_object('type','paragraph','text','Use the dimensions shown in the table.'),
+   jsonb_build_object('type','equation','expression','A = l × w','spoken','Area equals length times width'),
+   jsonb_build_object('type','table','caption','Updated dimensions',
+    'headers',jsonb_build_array('Length','Width'),
+    'rows',jsonb_build_array(jsonb_build_array('4 units','2 units')))),
+   'fallback_text','Use the dimensions shown in the table.'||E'\\n\\n'||
+    'A = l × w — Area equals length times width'||E'\\n\\n'||
+    'Updated dimensions'||E'\\n'||'Length | Width'||E'\\n'||'4 units | 2 units')));
+select ace.restore_question('06000000-0000-4000-8000-00000000000e',2,1,
+ 'Restore the original accessible geometry layout.');
+
+do $rich_restore$
+declare current_row ace.questions%rowtype; original jsonb;
+begin
+ select * into current_row from ace.questions
+  where id='06000000-0000-4000-8000-00000000000e';
+ select snapshot->'rich_content' into original from ace.question_versions
+  where question_id=current_row.id and version=1;
+ if current_row.content_version<>3 or current_row.rich_content is distinct from original
+  or current_row.review_status<>'draft' or current_row.active
+  or current_row.rights_status<>'unknown' or current_row.reviewed_by is not null
+  or current_row.created_by<>'06000000-0000-4000-8000-000000000001' then
+  raise exception 'Rich history restore did not preserve content and reset approval safely';
+ end if;
+ if not exists(select 1 from ace.audit_events where actor_user_id='06000000-0000-4000-8000-000000000001'
+  and event_type='question_restored' and entity_id=current_row.id
+  and metadata->>'source_revision'='1' and metadata->>'revision'='3') then
+  raise exception 'Rich history restoration audit record missing';
+ end if;
+end
+$rich_restore$;
+
 select ace.reserve_question_media_intent(
  '06000000-0000-4000-8000-000000000004',1,
  '06000000-0000-4000-8000-00000000000b',
