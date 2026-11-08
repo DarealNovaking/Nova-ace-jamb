@@ -3,7 +3,7 @@
 -- copied, re-read and SHA-256-verified the private object. Never apply to prod
 -- without a separate reviewed release authorization.
 begin;
-create function ace.prepare_question_media_publication(
+create or replace function ace.prepare_question_media_publication(
  p_question uuid,p_approved_version integer
 ) returns jsonb language plpgsql security definer
 set search_path=pg_catalog,pg_temp set lock_timeout='3s' as $$
@@ -74,7 +74,7 @@ begin
   'publish_version',p_approved_version+1,'assets',assets);
 end;$$;
 
-create function ace.confirm_question_media_promotion(
+create or replace function ace.confirm_question_media_promotion(
  p_question uuid,p_approved_version integer,p_asset uuid
 ) returns jsonb language plpgsql security definer
 set search_path=pg_catalog,pg_temp set lock_timeout='3s' as $$
@@ -157,7 +157,7 @@ begin
   'question_version',media.question_version,'storage_path',media.storage_path,
   'mime_type',media.mime_type,'size_bytes',media.size_bytes,'sha256',media.sha256);
 end;$$;
-create function ace.publish_question_after_media_promotion(
+create or replace function ace.publish_question_after_media_promotion(
  p_question uuid,p_approved_version integer
 ) returns jsonb language plpgsql security definer
 set search_path=pg_catalog,pg_temp set lock_timeout='3s' as $publisher$
