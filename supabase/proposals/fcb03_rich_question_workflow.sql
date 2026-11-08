@@ -193,7 +193,7 @@ grant execute on function ace.manage_question(text,uuid,integer,jsonb) to authen
 create or replace function ace.restore_question(
  p_id uuid,p_expected_version integer,p_source_version integer,p_reason text
 ) returns jsonb language plpgsql security definer
-set search_path=pg_catalog,ace,pg_temp set lock_timeout='3s' as $
+set search_path=pg_catalog,ace,pg_temp set lock_timeout='3s' as $fcb03_rich_restore$
 declare
  actor uuid:=auth.uid(); actor_role text; q ace.questions%rowtype;
  snapshot jsonb; data jsonb; result jsonb; reason text;
@@ -253,7 +253,7 @@ begin
    'revision',p_expected_version+1,'reason',reason));
  return result;
 end;
-$;
+$fcb03_rich_restore$;
 revoke all on function ace.restore_question(uuid,integer,integer,text) from public,anon,authenticated;
 grant execute on function ace.restore_question(uuid,integer,integer,text) to authenticated;
 
