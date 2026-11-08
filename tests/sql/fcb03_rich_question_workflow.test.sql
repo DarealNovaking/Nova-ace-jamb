@@ -5,9 +5,12 @@
 \ir ../../supabase/proposals/fcb03_rich_question_workflow.sql
 \ir ../../supabase/proposals/fcb03_media_preview.sql
 \ir ../../supabase/proposals/fcb03_media_publication.sql
+\ir ../../supabase/proposals/fcb03_media_takedown.sql
 select 'create role ace_media_executor nologin' where not exists(select 1 from pg_catalog.pg_roles where rolname='ace_media_executor') \gexec
 grant usage on schema ace to ace_media_executor;
 grant execute on function ace.publish_question_after_media_promotion(uuid,integer) to ace_media_executor;
+grant execute on function ace.authorize_attempt_question_media(uuid,uuid,uuid) to ace_media_executor;
+grant execute on function ace.takedown_question_media(uuid,uuid,text) to ace_media_executor;
 
 begin;
 insert into auth.users(id,email,raw_user_meta_data) values
@@ -184,5 +187,66 @@ begin
  end if;
 end
 $published$;
+
+-- A student's own active attempt can read the exact published image before takedown.
+insert into ace.attempts(
+ id,user_id,mode,subject_id,started_at,duration_seconds,random_seed,
+ question_order,option_order,status,question_snapshot
+) select
+ '06000000-0000-4000-8000-00000000000c',
+ '06000000-0000-4000-8000-000000000003','practice',q.subject_id,
+ clock_timestamp(),600,61,
+ jsonb_build_array(q.id::text),
+ jsonb_build_object(q.id::text,jsonb_build_array('A','B','C','D')),
+ 'active',
+ jsonb_build_array(jsonb_build_object(
+  'id',q.id,'content_version',q.content_version,'stem',q.stem,
+  'options',q.options,'subject_id',q.subject_id,'topic_id',q.topic_id,
+  'difficulty',q.difficulty,'rich_content',q.rich_content
+ ))
+ from ace.questions q where q.id='06000000-0000-4000-8000-000000000004';
+
+set session authorization ace_media_executor;
+select set_config('request.jwt.claim.sub','06000000-0000-4000-8000-000000000003',true);
+do $before_takedown$
+begin
+ if ace.authorize_attempt_question_media(
+  '06000000-0000-4000-8000-00000000000c',
+  '06000000-0000-4000-8000-000000000004',
+  current_setting('fcb03.test.asset_id')::uuid) is null then
+  raise exception 'Published image was not authorized for the student's own active attempt';
+ end if;
+end
+$before_takedown$;
+
+select set_config('request.jwt.claim.sub','06000000-0000-4000-8000-000000000002',true);
+select ace.takedown_question_media(
+ '06000000-0000-4000-8000-000000000004',
+ current_setting('fcb03.test.asset_id')::uuid,
+ 'Rights evidence was withdrawn; remove this image from student delivery.');
+
+select set_config('request.jwt.claim.sub','06000000-0000-4000-8000-000000000003',true);
+do $after_takedown$
+begin
+ if ace.authorize_attempt_question_media(
+  '06000000-0000-4000-8000-00000000000c',
+  '06000000-0000-4000-8000-000000000004',
+  current_setting('fcb03.test.asset_id')::uuid) is not null then
+  raise exception 'Withdrawn image remained available to an active attempt';
+ end if;
+ if not exists(select 1 from ace.audit_events where event_type='question_media_takedown'
+  and entity_id=current_setting('fcb03.test.asset_id')::uuid
+  and actor_user_id='06000000-0000-4000-8000-000000000002') then
+  raise exception 'Question media takedown audit event missing';
+ end if;
+ if has_function_privilege('authenticated',
+  'ace.takedown_question_media(uuid,uuid,text)','execute')
+  or has_function_privilege('anon','ace.takedown_question_media(uuid,uuid,text)','execute') then
+  raise exception 'Media takedown RPC exposed to client roles';
+ end if;
+ raise notice 'FCB-03 media takedown PASS: immediate delivery revocation, immutable rights rejection, admin audit, executor-only grants';
+end
+$after_takedown$;
+reset session authorization;
 
 rollback;
