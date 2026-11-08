@@ -10,6 +10,12 @@ export type QuestionReport={
 const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 const reasons:QuestionReportReason[]=['incorrect_answer','ambiguous','formatting','diagram','other']
 const statuses:QuestionReportStatus[]=['open','triaged','resolved','dismissed']
+export async function isQuestionReportingEnabled():Promise<boolean>{
+ try{
+  const {data,error}=await ace.rpc('question_reporting_enabled')
+  return !error&&data===true
+ }catch{return false}
+}
 function object(value:unknown):value is Record<string,unknown>{return !!value&&typeof value==='object'&&!Array.isArray(value)}
 function parseReport(value:unknown):QuestionReport{
  if(!object(value)||typeof value.id!=='string'||!uuid.test(value.id)||
