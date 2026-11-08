@@ -20,7 +20,8 @@ create table ace.question_reports(
  resolved_at timestamptz,
  constraint question_reports_request_unique unique(reporter_id,request_id),
  constraint question_reports_resolution_state check(
-  (status in('open','triaged') and handled_by is null and resolution_note is null and resolved_at is null)
+  (status='open' and handled_by is null and resolution_note is null and resolved_at is null)
+  or (status='triaged' and handled_by is not null and resolution_note is not null and resolved_at is null)
   or (status in('resolved','dismissed') and handled_by is not null
    and resolution_note is not null and resolved_at is not null)
  )
@@ -50,7 +51,7 @@ begin
  select role into actor_role from ace.roles where user_id=actor and role='student' for share;
  if not found then raise exception 'Student report permission required' using errcode='42501';end if;
  if p_attempt is null or p_question is null or p_request is null
-  or reason not in('incorrect_answer','ambiguous','formatting','diagram','other')
+  or reason is null or reason not in('incorrect_answer','ambiguous','formatting','diagram','other')
   or details is null or length(details) not between 8 and 1000 then
   raise exception 'Invalid question report' using errcode='22023';end if;
 
@@ -133,19 +134,20 @@ $$;
 create function ace.manage_question_report(p_report uuid,p_action text,p_note text)
 returns jsonb language plpgsql security definer
 set search_path=pg_catalog,ace,pg_temp set lock_timeout='3s' as $$
-declare actor uuid:=auth.uid(); actor_role text; report ace.question_reports%rowtype;
+declare actor uuid:=auth.uid(); actor_role text; report ace.question_reports%rowtype; previous_status text;
  action text:=lower(ace.question_trim(p_action)); note text:=ace.question_trim(p_note);
  next_status text;
 begin
  if actor is null then raise exception 'Authentication required' using errcode='28000';end if;
  select role into actor_role from ace.roles where user_id=actor and role='admin' for share;
  if not found then raise exception 'Administrator report management required' using errcode='42501';end if;
- if p_report is null or action not in('triage','resolve','dismiss')
+ if p_report is null or action is null or action not in('triage','resolve','dismiss')
   or note is null or length(note) not between 8 and 1000 then
   raise exception 'Invalid report decision' using errcode='22023';end if;
  select * into report from ace.question_reports where id=p_report for update;
  if not found then raise exception 'Question report unavailable' using errcode='P0002';end if;
  next_status:=case action when 'triage' then 'triaged' when 'resolve' then 'resolved' else 'dismissed' end;
+ previous_status:=report.status;
  if report.status=next_status then
   if report.handled_by=actor and report.resolution_note=note then
    return jsonb_build_object('id',report.id,'status',report.status,'question_id',report.question_id);
@@ -161,7 +163,7 @@ begin
  insert into ace.audit_events(actor_user_id,event_type,entity_type,entity_id,metadata)
  values(actor,'question_report_'||action,'question_report',report.id,
   jsonb_build_object('question_id',report.question_id,'question_version',report.question_version,
-   'previous_status',case when next_status='triaged' then 'open' else 'triaged' end,
+   'previous_status',previous_status,
    'status',report.status));
  return jsonb_build_object('id',report.id,'status',report.status,'question_id',report.question_id);
 end;
