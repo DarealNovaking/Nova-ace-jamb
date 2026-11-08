@@ -2,7 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react'
 import { ace } from '../lib/supabase'
 import { getActiveExamBlueprint, getSyllabusTree, listActiveSyllabusVersions, type SyllabusVersion, type SyllabusTopic, type SyllabusSubtopic } from '../lib/seasonService'
 import { questionDraftFromRow, validateQuestionDraft, type QuestionDraft, type QuestionRow } from '../lib/questionWorkflow'
-import { mutateQuestion } from '../lib/questionWorkflowService'
+import { isRichQuestionAuthoringEnabled, mutateQuestion } from '../lib/questionWorkflowService'
 import type { RichDocument } from '../lib/richContent'
 import AdminRichContentComposer from './AdminRichContentComposer'
 
@@ -13,6 +13,7 @@ const button='min-h-11 rounded-xl border border-white/15 px-4 py-2 text-sm font-
 export default function AdminQuestionEditor({initial,onSaved,onCancel,onUncertain}: Props) {
   const [draft,setDraft]=useState<QuestionDraft>(()=>initial?questionDraftFromRow(initial):emptyDraft())
   const [richContent,setRichContent]=useState<RichDocument|null>(()=>initial?.rich_content??null)
+  const [richAuthoringEnabled,setRichAuthoringEnabled]=useState(false)
   const [questionId]=useState(()=>initial?.id??crypto.randomUUID())
   const [subjects,setSubjects]=useState<{id:string;name:string}[]>([])
   const [versions,setVersions]=useState<SyllabusVersion[]>([])
@@ -25,6 +26,11 @@ export default function AdminQuestionEditor({initial,onSaved,onCancel,onUncertai
   const [error,setError]=useState('')
   const [treeError,setTreeError]=useState('')
   const [reload,setReload]=useState(0)
+  useEffect(()=>{
+    let active=true
+    void isRichQuestionAuthoringEnabled().then(enabled=>{if(active)setRichAuthoringEnabled(enabled)})
+    return()=>{active=false}
+  },[])
   useEffect(()=>{
     let active=true;setLoading(true);setError('')
     void (async()=>{
@@ -58,7 +64,7 @@ export default function AdminQuestionEditor({initial,onSaved,onCancel,onUncertai
     }catch(e){setError(e instanceof Error?e.message:'Complete the question fields.');return}
     setSaving(true)
     try {
-      const payload: QuestionDraft = initial?.rich_content !== undefined || richContent !== null
+      const payload: QuestionDraft = richAuthoringEnabled && (initial?.rich_content !== undefined || richContent !== null)
         ? { ...data, rich_content: richContent } : data
       onSaved(await mutateQuestion('save',questionId,initial?.content_version??0,payload))
     }
@@ -91,14 +97,16 @@ export default function AdminQuestionEditor({initial,onSaved,onCancel,onUncertai
       <label className="text-sm font-semibold sm:col-span-2">Source URL {draft.provenance.source_kind==='original'?'(optional)':''}<input type="url" required={draft.provenance.source_kind!=='original'} maxLength={2000} className="field mt-2" value={draft.provenance.source_url??''} onChange={e=>change('provenance',{...draft.provenance,source_url:e.target.value||null})}/></label>
       <label className="text-sm font-semibold sm:col-span-2">Usage-rights evidence<textarea required maxLength={4000} rows={3} className="field mt-2" value={draft.provenance.rights_evidence} onChange={e=>change('provenance',{...draft.provenance,rights_evidence:e.target.value})}/></label>
     </fieldset>
-    <AdminRichContentComposer
-      value={richContent}
-      onChange={setRichContent}
-      questionId={questionId}
-      questionVersion={initial?.content_version??0}
-      canUpload={!!initial && !initial.active && ['draft','rejected'].includes(initial.review_status)}
-      disabled={loading||saving||uncertain}
-    />
+    {richAuthoringEnabled
+      ? <AdminRichContentComposer
+          value={richContent}
+          onChange={setRichContent}
+          questionId={questionId}
+          questionVersion={initial?.content_version??0}
+          canUpload={!!initial && !initial.active && ['draft','rejected'].includes(initial.review_status)}
+          disabled={loading||saving||uncertain}
+        />
+      : <p className="mt-4 rounded-xl border border-white/10 bg-white/[.025] p-3 text-xs leading-5 text-white/50">Rich diagrams and formatted content will become available after the secure content service is enabled. You can continue authoring text questions.</p>}
     <p className="mt-4 break-all text-xs text-white/45">Question ID: {questionId}</p>
     <div className="mt-5 flex flex-wrap gap-3"><button disabled={unavailable||!versions.length} type="submit" className={`${button} bg-purple-300 text-[#120b1c]`}>{saving?'Saving private draft…':'Save private draft'}</button><button type="button" disabled={saving} className={button} onClick={onCancel}>Close editor</button></div>
   </form>
