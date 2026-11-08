@@ -187,6 +187,76 @@ end;$$;
 revoke all on function ace.manage_question(text,uuid,integer,jsonb)
  from public,anon,authenticated;
 grant execute on function ace.manage_question(text,uuid,integer,jsonb) to authenticated;
+-- Preserve text-only rich documents when restoring history. Historical image
+-- references are deliberately rejected: a restore must stage and review fresh
+-- assets rather than silently reusing an old or withdrawn object.
+create or replace function ace.restore_question(
+ p_id uuid,p_expected_version integer,p_source_version integer,p_reason text
+) returns jsonb language plpgsql security definer
+set search_path=pg_catalog,ace,pg_temp set lock_timeout='3s' as $
+declare
+ actor uuid:=auth.uid(); actor_role text; q ace.questions%rowtype;
+ snapshot jsonb; data jsonb; result jsonb; reason text;
+begin
+ if actor is null then raise exception 'Question authoring permission required' using errcode='42501';end if;
+ if current_setting('transaction_isolation')<>'read committed'
+  or not exists(select 1 from pg_catalog.pg_roles where rolname=current_user and(rolsuper or rolbypassrls)) then
+  raise exception 'Trusted executor owner required' using errcode='42501';end if;
+ select role into actor_role from ace.roles
+  where user_id=actor and role in('admin','editor') for share;
+ if not found then raise exception 'Question authoring permission required' using errcode='42501';end if;
+ if p_id is null or p_expected_version is null or p_expected_version<2
+  or p_expected_version>=2147483647 or p_source_version is null
+  or p_source_version<1 or p_source_version>=p_expected_version then
+  raise exception 'Invalid restoration request' using errcode='22023';end if;
+ reason:=ace.question_trim(p_reason);
+ if reason is null or length(reason) not between 1 and 2000 then
+  raise exception 'Restoration reason required' using errcode='22023';end if;
+
+ perform pg_advisory_xact_lock(hashtextextended('ace.question.workflow',0));
+ select * into q from ace.questions where id=p_id for update;
+ if not found then raise exception 'Question not found' using errcode='P0002';end if;
+ if q.content_version<>p_expected_version then
+  raise exception 'Question revision changed; reload before retrying' using errcode='40001';end if;
+ if q.created_by<>actor and actor_role<>'admin' then
+  raise exception 'Only the author or administrator may edit this question' using errcode='42501';end if;
+ if q.active then raise exception 'Withdraw published question before editing' using errcode='23514';end if;
+
+ select v.snapshot into snapshot from ace.question_versions v
+  where v.question_id=p_id and v.version=p_source_version;
+ if not found then raise exception 'Historical revision not found' using errcode='P0002';end if;
+ if snapshot->>'id' is distinct from p_id::text
+  or snapshot->>'content_version' is distinct from p_source_version::text then
+  raise exception 'Historical snapshot could not be confirmed' using errcode='23514';end if;
+ if snapshot->'media' is distinct from '[]'::jsonb
+  or q.media is distinct from '[]'::jsonb
+  or exists(select 1 from ace.question_media where question_id=p_id) then
+  raise exception 'Historical media requires the reviewed media workflow' using errcode='23514';end if;
+ if jsonb_typeof(snapshot->'rich_content')='object'
+  and exists(select 1 from jsonb_array_elements(snapshot->'rich_content'->'blocks') b(value)
+   where b.value->>'type'='image') then
+  raise exception 'Historical diagrams must be re-uploaded to the restored draft' using errcode='23514';end if;
+
+ data:=jsonb_build_object(
+  'subject_id',snapshot->'subject_id','topic_id',snapshot->'topic_id',
+  'subtopic_id',snapshot->'subtopic_id','stem',snapshot->'stem',
+  'options',snapshot->'options','correct_option_key',snapshot->'correct_option_key',
+  'explanation',snapshot->'explanation','difficulty',snapshot->'difficulty',
+  'exam',snapshot->'exam','exam_year',snapshot->'exam_year',
+  'provenance',(snapshot->'provenance')-'last_content_editor',
+  'rich_content',coalesce(snapshot->'rich_content','null'::jsonb)
+ );
+ result:=ace.manage_question('save',p_id,p_expected_version,data);
+ insert into ace.audit_events(actor_user_id,event_type,entity_type,entity_id,metadata)
+ values(actor,'question_restored','question',p_id,
+  jsonb_build_object('source_revision',p_source_version,'previous_revision',p_expected_version,
+   'revision',p_expected_version+1,'reason',reason));
+ return result;
+end;
+$;
+revoke all on function ace.restore_question(uuid,integer,integer,text) from public,anon,authenticated;
+grant execute on function ace.restore_question(uuid,integer,integer,text) to authenticated;
+
 create or replace function ace.rich_question_authoring_enabled()
 returns boolean language plpgsql security definer
 set search_path=pg_catalog,ace,pg_temp set lock_timeout='3s' as $rich_authoring_capability$
