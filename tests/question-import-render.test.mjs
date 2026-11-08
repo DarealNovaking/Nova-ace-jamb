@@ -23,6 +23,7 @@ const modules={
   '../lib/questionMediaClient':data('export const publishRichQuestion=async()=>({});'),
   './AdminRichContentPreview':data('export default function Preview(){return null;}'),
   './AdminQuestionEditor':data('export default function Editor(){return null;}'),
+  './AdminQuestionReports':data('export default function Reports(){return null;}'),
   './AdminQuestionImport':data('export default function Import(){return null;}'),
 }
 const code=compile('../src/components/AdminQuestionReviewQueue.tsx').replace(/from (["'])([^"']+)\1/g,(_,q,name)=>'from '+JSON.stringify(modules[name]??name)).replace(/import\((["'])\.\/AdminQuestionImport\1\)/g,'import('+JSON.stringify(modules['./AdminQuestionImport'])+')')
