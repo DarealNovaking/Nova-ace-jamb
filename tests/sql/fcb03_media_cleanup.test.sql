@@ -86,40 +86,48 @@ reset role;
 set session authorization ace_media_executor;
 select * from ace.claim_expired_question_media_cleanup(20) \gset first_
 select count(*) as duplicate_claims from ace.claim_expired_question_media_cleanup(20) \gset
+select set_config('fcb03.cleanup.duplicate_claims', :'duplicate_claims', true);
 do $claim$
 begin
- if :'duplicate_claims'::integer<>0 then
+ if current_setting('fcb03.cleanup.duplicate_claims')::integer<>0 then
   raise exception 'A live cleanup lease was claimed twice';
  end if;
 end
 $claim$;
 select ace.complete_question_media_cleanup(:'first_intent_id'::uuid,gen_random_uuid()) as wrong_token \gset
+select set_config('fcb03.cleanup.wrong_token', :'wrong_token', true);
 do $wrong_token$
 begin
- if :'wrong_token'::boolean then raise exception 'Wrong cleanup token completed a claim'; end if;
+ if current_setting('fcb03.cleanup.wrong_token')::boolean then raise exception 'Wrong cleanup token completed a claim'; end if;
 end
 $wrong_token$;
 update ace.question_media_intents set cleanup_claimed_at=clock_timestamp()-interval '20 minutes'
  where id=:'first_intent_id'::uuid;
 select * from ace.claim_expired_question_media_cleanup(20) \gset retry_
 select ace.complete_question_media_cleanup(:'first_intent_id'::uuid,:'first_claim_token'::uuid) as stale_token \gset
+select set_config('fcb03.cleanup.stale_token', :'stale_token', true);
 do $stale_token$
 begin
- if :'stale_token'::boolean then raise exception 'Stale cleanup token completed a reclaimed claim'; end if;
+ if current_setting('fcb03.cleanup.stale_token')::boolean then raise exception 'Stale cleanup token completed a reclaimed claim'; end if;
 end
 $stale_token$;
 select ace.complete_question_media_cleanup(:'retry_intent_id'::uuid,:'retry_claim_token'::uuid) as completed \gset
+select set_config('fcb03.cleanup.completed', :'completed', true);
+select set_config('fcb03.cleanup.eligible_id', :'eligible_id', true);
+select set_config('fcb03.cleanup.referenced_id', :'referenced_id', true);
+select set_config('fcb03.cleanup.recent_id', :'recent_id', true);
+select set_config('fcb03.cleanup.verified_id', :'verified_id', true);
 reset session authorization;
 
 do $result$
 begin
- if not :'completed'::boolean then raise exception 'Valid cleanup claim did not complete'; end if;
- if exists(select 1 from ace.question_media_intents where id=:'eligible_id'::uuid) then
+ if not current_setting('fcb03.cleanup.completed')::boolean then raise exception 'Valid cleanup claim did not complete'; end if;
+ if exists(select 1 from ace.question_media_intents where id=current_setting('fcb03.cleanup.eligible_id')::uuid) then
   raise exception 'Eligible expired unreferenced intent was not removed';
  end if;
- if not exists(select 1 from ace.question_media_intents where id=:'referenced_id'::uuid)
-  or not exists(select 1 from ace.question_media_intents where id=:'recent_id'::uuid)
-  or not exists(select 1 from ace.question_media_intents where id=:'verified_id'::uuid) then
+ if not exists(select 1 from ace.question_media_intents where id=current_setting('fcb03.cleanup.referenced_id')::uuid)
+  or not exists(select 1 from ace.question_media_intents where id=current_setting('fcb03.cleanup.recent_id')::uuid)
+  or not exists(select 1 from ace.question_media_intents where id=current_setting('fcb03.cleanup.verified_id')::uuid) then
   raise exception 'Referenced, recently expired or verified media was removed';
  end if;
  raise notice 'FCB-03 media cleanup PASS: grace period, immutable-reference protection, executor-only claims, leases, stale-token denial';
