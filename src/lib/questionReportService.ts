@@ -38,9 +38,9 @@ export async function submitQuestionReport(
  })
  if(error)throw error
  if(!object(data)||typeof data.id!=='string'||!uuid.test(data.id)||
-  data.status!=='open'||typeof data.created_at!=='string'||Number.isNaN(Date.parse(data.created_at)))
+  !statuses.includes(data.status as QuestionReportStatus)||typeof data.created_at!=='string'||Number.isNaN(Date.parse(data.created_at)))
   throw new Error('Your report could not be confirmed.')
- return {id:data.id,status:'open' as const,created_at:data.created_at,request_id:requestId}
+ return {id:data.id,status:data.status as QuestionReportStatus,created_at:data.created_at,request_id:requestId}
 }
 export async function listQuestionReports(status:QuestionReportStatus|null='open'):Promise<QuestionReport[]>{
  if(status!==null&&!statuses.includes(status))throw new Error('Invalid report status.')
