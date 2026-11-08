@@ -167,3 +167,35 @@ export async function publishRichQuestion(
   }
   return result as {id:string;status:'published';version:number}
 }
+
+/** Revoke future student delivery for one published image after a rights concern. */
+export async function takedownQuestionMedia(
+  questionId:string,
+  assetId:string,
+  reason:string,
+):Promise<void>{
+  if(!UUID.test(questionId)||!UUID.test(assetId)||
+   typeof reason!=='string'||reason.trim().length<8||reason.trim().length>2000){
+    throw new Error('Add a clear reason before revoking student image access.')
+  }
+  const {data,error}=await supabase.auth.getSession()
+  const token=data.session?.access_token
+  if(error||!token)throw new Error('Sign in again before managing published media.')
+  const response=await fetch(new URL('/functions/v1/question-media-takedown',supabaseUrl).toString(),{
+    method:'POST',
+    headers:{authorization:'Bearer '+token,apikey:supabasePublishableKey,'content-type':'application/json'},
+    body:JSON.stringify({question_id:questionId,asset_id:assetId,reason:reason.trim()}),
+    cache:'no-store',
+    credentials:'omit',
+    referrerPolicy:'no-referrer',
+  })
+  if(!response.ok)throw new Error('Student image access could not be revoked. Refresh and retry.')
+  let result:unknown
+  try{result=await response.json()}catch{throw new Error('Image takedown could not be confirmed. Refresh before retrying.')}
+  if(!result||typeof result!=='object'||Array.isArray(result)||
+   Object.keys(result).length!==3||Object.keys(result).some(key=>!['question_id','asset_id','status'].includes(key))||
+   !('question_id'in result)||!('asset_id'in result)||!('status'in result)||
+   result.question_id!==questionId||result.asset_id!==assetId||result.status!=='revoked'){
+    throw new Error('Image takedown could not be confirmed. Refresh before retrying.')
+  }
+}
