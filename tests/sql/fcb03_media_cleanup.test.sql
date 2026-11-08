@@ -54,7 +54,8 @@ select (ace.reserve_question_media_intent(
 ) as verified_id \gset
 select ace.confirm_question_media_intent(:'verified_id'::uuid,'image/png',12,repeat('d',64));
 
-update ace.question_media_intents set expires_at=clock_timestamp()-interval '2 hours'
+update ace.question_media_intents set expires_at=clock_timestamp()-interval '2 hours',
+ created_at=clock_timestamp()-interval '2 hours'
  where id=:'eligible_id'::uuid or id=:'referenced_id'::uuid;
 update ace.question_media_intents set expires_at=clock_timestamp()-interval '10 minutes'
  where id=:'recent_id'::uuid;
