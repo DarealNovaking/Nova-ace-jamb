@@ -1,6 +1,6 @@
 -- SOURCE ONLY. No production schema or storage changes.
 begin;
-create function ace.takedown_question_media(p_question uuid,p_asset uuid,p_reason text)
+create or replace function ace.takedown_question_media(p_question uuid,p_asset uuid,p_reason text)
 returns jsonb language plpgsql security definer
 set search_path=pg_catalog,pg_temp set lock_timeout='3s' as $$
 declare actor uuid:=auth.uid(); actor_role text; q ace.questions%rowtype; m ace.question_media%rowtype;
@@ -34,6 +34,10 @@ begin
  if latest.decision<>'approved' then raise exception 'Media is not approved' using errcode='23514';end if;
  insert into ace.question_media_reviews(intent_id,question_version,reviewed_by,decision,rights_status,rights_evidence)
  values(m.intent_id,m.question_version-1,actor,'rejected','restricted',reason) returning * into saved;
+ insert into ace.audit_events(actor_user_id,event_type,entity_type,entity_id,metadata)
+ values(actor,'question_media_takedown','question_media',p_asset,
+  jsonb_build_object('question_id',p_question,'question_version',m.question_version,
+   'rights_review_id',saved.id,'decision','rejected','reason',reason));
  return jsonb_build_object('id',saved.id,'decision','rejected','status','revoked');
 end;$$;
 revoke all on function ace.takedown_question_media(uuid,uuid,text) from public,anon,authenticated;
