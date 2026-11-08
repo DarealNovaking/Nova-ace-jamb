@@ -232,6 +232,7 @@ select ace.takedown_question_media(
  'Rights evidence was withdrawn; remove this image from student delivery.');
 
 select set_config('request.jwt.claim.sub','06000000-0000-4000-8000-000000000003',true);
+reset session authorization;
 do $after_takedown$
 begin
  if ace.authorize_attempt_question_media(
@@ -253,6 +254,5 @@ begin
  raise notice 'FCB-03 media takedown PASS: immediate delivery revocation, immutable rights rejection, admin audit, executor-only grants';
 end
 $after_takedown$;
-reset session authorization;
 
 rollback;
