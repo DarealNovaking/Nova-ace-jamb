@@ -1218,7 +1218,7 @@ test.describe('FCB-03 published diagram takedown',()=>{
         source_url:null,rights_evidence:'Original diagram.',last_content_editor:authorId},
       review_status:'published',rights_status:'owned',active:true,content_version:5,reviewed_by:reviewerId,
       rich_content:{version:1,blocks:[{type:'image',asset_id:assetId,alt,caption:'Diagram 1'}],
-        fallback_text:'Diagram: '+alt+'\\n'+'Diagram 1'},
+        fallback_text:'Diagram: '+alt+'\n'+'Diagram 1'},
     })
     await mockQuestionWorkspace(page,[row])
     let request:Record<string,unknown>|null=null
