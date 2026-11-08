@@ -671,6 +671,65 @@ test.describe('ACE JAMB persistent CBT', () => {
     expect(questionFetches).toBe(0)
   })
 
+  test('student can report a question and a changed retry receives a fresh idempotency key', async ({ page }) => {
+    await mockPreparedStudent(page)
+    const questionId = '30000000-0000-4000-8000-000000000061'
+    const attemptId = '40000000-0000-4000-8000-000000000061'
+    const startedAt = new Date().toISOString()
+    const requests: Array<Record<string, unknown>> = []
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/start_attempt'), async (route) => {
+      await route.fulfill({ json: {
+        attempt_id: attemptId, status: 'active', started_at: startedAt,
+        duration_seconds: 1800, random_seed: 61, question_order: [questionId],
+        option_order: { [questionId]: ['A'] }, question_count: 1,
+      } })
+    })
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/resume_attempt'), async (route) => {
+      await route.fulfill({ json: {
+        attempt_id: attemptId, status: 'active', mode: 'cbt', subject_id: null,
+        started_at: startedAt, completed_at: null, duration_seconds: 1800,
+        remaining_seconds: 1700, random_seed: 61, question_order: [questionId],
+        option_order: { [questionId]: ['A'] }, answers: [], score: null,
+        correct_count: 0, answered_count: 0,
+      } })
+    })
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/get_attempt_questions'), async (route) => {
+      await route.fulfill({ json: [{
+        id: questionId, question_text: 'Question reporting test',
+        options: [{ key: 'A', text: 'Answer A' }], subject_id: null, topic_id: null, difficulty: 'easy',
+      }] })
+    })
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/submit_question_report'), async (route) => {
+      requests.push(route.request().postDataJSON())
+      if (requests.length === 1) {
+        await route.fulfill({ status: 503, contentType: 'application/json', json: { message: 'Temporary failure' } })
+        return
+      }
+      await route.fulfill({ json: {
+        id: '50000000-0000-4000-8000-000000000061', status: 'open',
+        created_at: new Date().toISOString(),
+      } })
+    })
+    await page.goto('/')
+    await expect(page.getByRole('heading', { name: 'Welcome back, Test Futarian.' })).toBeVisible()
+    await page.getByRole('button', { name: /CBT Practice/ }).click()
+    await expect(page.getByRole('heading', { name: 'Question reporting test' })).toBeVisible()
+    await page.getByRole('button', { name: 'Report question' }).click()
+    await page.getByLabel('What is the issue?').selectOption('ambiguous')
+    await page.getByLabel('Describe what needs checking').fill('The wording is unclear and needs an academic review.')
+    await page.getByRole('button', { name: 'Send report' }).click()
+    await expect(page.getByRole('alert')).toContainText('Your report could not be confirmed')
+    await page.getByLabel('Describe what needs checking').fill('The wording is unclear and the second sentence conflicts with the first.')
+    await page.getByRole('button', { name: 'Send report' }).click()
+    await expect(page.getByRole('status')).toContainText('Your report has been sent privately')
+    expect(requests).toHaveLength(2)
+    expect(requests[0].p_attempt).toBe(attemptId)
+    expect(requests[0].p_question).toBe(questionId)
+    expect(requests[0].p_reason).toBe('ambiguous')
+    expect(requests[1].p_details).toContain('second sentence')
+    expect(requests[0].p_request).not.toBe(requests[1].p_request)
+  })
+
   test('saves an answer and renders the server-submitted result', async ({ page }) => {
     await mockPreparedStudent(page)
     const questionId = '30000000-0000-4000-8000-000000000001'
