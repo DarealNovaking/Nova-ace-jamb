@@ -673,6 +673,9 @@ test.describe('ACE JAMB persistent CBT', () => {
 
   test('student can report a question and a changed retry receives a fresh idempotency key', async ({ page }) => {
     await mockPreparedStudent(page)
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/question_reporting_enabled'), async (route) => {
+      await route.fulfill({ json: true })
+    })
     const questionId = '30000000-0000-4000-8000-000000000061'
     const attemptId = '40000000-0000-4000-8000-000000000061'
     const startedAt = new Date().toISOString()
