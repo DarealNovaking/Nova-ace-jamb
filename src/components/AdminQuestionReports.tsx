@@ -1,11 +1,12 @@
 import {useCallback,useEffect,useState} from 'react'
 import {AlertTriangle,Loader2,RefreshCw} from 'lucide-react'
-import {listQuestionReports,manageQuestionReport,type QuestionReport,type QuestionReportStatus} from '../lib/questionReportService'
+import {isQuestionReportingEnabled,listQuestionReports,manageQuestionReport,type QuestionReport,type QuestionReportStatus} from '../lib/questionReportService'
 const button='min-h-10 rounded-xl border border-white/15 px-3 py-2 text-xs font-semibold disabled:opacity-40'
 const statuses:QuestionReportStatus[]=['open','triaged','resolved','dismissed']
 const labels:Record<QuestionReportStatus,string>={open:'Open',triaged:'Under review',resolved:'Resolved',dismissed:'Dismissed'}
 export default function AdminQuestionReports(){
  const [status,setStatus]=useState<QuestionReportStatus>('open')
+ const [enabled,setEnabled]=useState<boolean|null>(null)
  const [reports,setReports]=useState<QuestionReport[]>([])
  const [notes,setNotes]=useState<Record<string,string>>({})
  const [loading,setLoading]=useState(true)
@@ -18,7 +19,13 @@ export default function AdminQuestionReports(){
   catch{setReports([]);setError('Question reports could not be loaded. Confirm administrator access and retry.')}
   finally{setLoading(false)}
  },[status])
- useEffect(()=>{void refresh()},[refresh])
+ useEffect(()=>{
+  let active=true
+  void isQuestionReportingEnabled().then(value=>{if(active)setEnabled(value)})
+  return ()=>{active=false}
+ },[])
+ useEffect(()=>{if(enabled===true)void refresh()},[enabled,refresh])
+ if(enabled!==true)return null
  async function decide(report:QuestionReport,action:'triage'|'resolve'|'dismiss'){
   const note=(notes[report.id]??'').trim()
   if(note.length<8){setError('Add at least eight characters explaining the moderation decision.');return}
