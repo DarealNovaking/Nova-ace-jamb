@@ -1,7 +1,7 @@
 import { questionDeliveryPhase } from '../lib/studentQuestionDelivery'
 import RichContentView from './RichContentView'
 import { fetchQuestionMediaObjectUrl } from '../lib/questionMediaClient'
-import { submitQuestionReport, type QuestionReportReason } from '../lib/questionReportService'
+import { isQuestionReportingEnabled, submitQuestionReport, type QuestionReportReason } from '../lib/questionReportService'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Clock3, Loader2, Trophy } from 'lucide-react'
 import {
@@ -72,7 +72,16 @@ export default function PersistentCBT({ attemptId = null, questionCount = 20, du
   const [reporting, setReporting] = useState(false)
   const [reportError, setReportError] = useState('')
   const [reportNotice, setReportNotice] = useState('')
+  const [reportingEnabled, setReportingEnabled] = useState(false)
   const reportRequestId = useRef<string | null>(null)
+
+  useEffect(() => {
+    let active = true
+    void isQuestionReportingEnabled().then(enabled => {
+      if (active) setReportingEnabled(enabled)
+    })
+    return () => { active = false }
+  }, [])
   const [confirmSubmit, setConfirmSubmit] = useState(false)
   const finishing = useRef(false)
   const questionPresentedAt = useRef<{ id: string; at: number } | null>(null)
@@ -414,7 +423,7 @@ export default function PersistentCBT({ attemptId = null, questionCount = 20, du
         <div className="mt-5 flex flex-wrap items-center gap-3">
           <button type="button" onClick={toggleReviewMark} aria-pressed={markedForReview.includes(question.id)} className="min-h-11 rounded-xl border border-purple-300/40 px-4 py-2 text-sm font-semibold text-purple-100">{markedForReview.includes(question.id) ? 'Remove review mark' : 'Mark for review'}</button>
           <button type="button" onClick={nextUnanswered} disabled={pendingCount === 0} className="min-h-11 rounded-xl border border-white/15 px-4 py-2 text-sm font-semibold disabled:opacity-40">Next unanswered</button>
-          <button type="button" onClick={() => { setReportOpen(value => !value); setReportError('') }} disabled={reporting || submitting || remaining <= 0} className="min-h-11 rounded-xl border border-amber-200/30 px-4 py-2 text-sm font-semibold text-amber-100 disabled:opacity-40">Report question</button>
+          {reportingEnabled && <><button type="button" onClick={() => { setReportOpen(value => !value); setReportError('') }} disabled={reporting || submitting || remaining <= 0} className="min-h-11 rounded-xl border border-amber-200/30 px-4 py-2 text-sm font-semibold text-amber-100 disabled:opacity-40">Report question</button>
         </div>
         {reportOpen && <section aria-labelledby="cbt-question-report-title" className="mt-4 rounded-2xl border border-amber-200/20 bg-amber-300/[.05] p-4">
           <h3 id="cbt-question-report-title" className="font-bold">Report a problem with this question</h3>
@@ -436,7 +445,7 @@ export default function PersistentCBT({ attemptId = null, questionCount = 20, du
             <button type="button" onClick={() => void sendQuestionReport()} disabled={reporting || reportDetails.trim().length < 8 || reportDetails.trim().length > 1000} className="min-h-11 rounded-xl bg-amber-200 px-4 py-2 text-sm font-bold text-[#21180a] disabled:opacity-40">{reporting ? 'Sending report…' : 'Send report'}</button>
             <button type="button" onClick={() => { setReportOpen(false); setReportError(''); reportRequestId.current = null }} disabled={reporting} className="min-h-11 rounded-xl border border-white/15 px-4 py-2 text-sm font-semibold">Cancel</button>
           </div>
-        </section>}
+        </section>}</>}
         <div className="mt-5 flex gap-3"><button type="button" disabled={current === 0} onClick={() => setCurrent((v) => Math.max(0, v - 1))} className="flex-1 rounded-xl border border-white/10 py-3 disabled:opacity-30">Previous</button>{current < questions.length - 1 ? <button type="button" onClick={() => setCurrent((v) => Math.min(questions.length - 1, v + 1))} className="flex-1 rounded-xl bg-white py-3 font-bold text-black">Next</button> : <button type="button" disabled={submitting || saving} onClick={submitRequested} className="flex-1 rounded-xl bg-purple-500 py-3 font-bold disabled:opacity-40">{submitting ? 'Submitting…' : 'Submit CBT'}</button>}</div>
       </section>
       <aside aria-label="Question navigation" className="glass-card h-fit rounded-2xl p-4"><p id="cbt-question-map-label" className="text-xs text-white/40">Question map</p><p className="mt-2 text-xs text-white/60">{answeredCount} answered · {pendingCount} unanswered · {markedCount} marked for review</p><p className="mt-2 text-xs text-white/40">Review marks remain on this device during an active attempt; answers are saved separately on the server.</p><div role="group" aria-labelledby="cbt-question-map-label" className="mt-3 grid grid-cols-4 gap-2">{questions.map((item, index) => <button key={item.id} type="button" aria-label={`Go to question ${index + 1}, ${answers[item.id] != null ? 'answered' : 'unanswered'}${markedForReview.includes(item.id) ? ', marked for review' : ''}`} aria-current={index === current ? 'step' : undefined} onClick={() => setCurrent(index)} className={`h-9 rounded-lg text-xs ${index === current ? 'bg-white text-black' : markedForReview.includes(item.id) ? 'border border-purple-300 bg-purple-500/20 text-purple-100' : answers[item.id] != null ? 'bg-purple-500/25' : 'bg-white/5'}`}>{index + 1}</button>)}</div></aside>
