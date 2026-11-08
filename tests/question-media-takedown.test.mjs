@@ -11,16 +11,16 @@ const asset='cccccccc-cccc-4ccc-8ccc-cccccccccccc'
 const audit='dddddddd-dddd-4ddd-8ddd-dddddddddddd'
 const token='valid-test-access-token-123456789'
 function setup(overrides={}){
- const calls:{auth:string[];takedown:unknown[][]}={auth:[],takedown:[]}
+ const calls={auth:[],takedown:[]}
  const handler=createQuestionMediaTakedownHandler({
-  async authenticate(value:string){calls.auth.push(value);return{id:actor}},
+  async authenticate(value){calls.auth.push(value);return{id:actor}},
   async takedown(...args){
    calls.takedown.push(args)
    return{id:audit,decision:'rejected',status:'revoked'}
   },
   ...overrides,
  })
- const request=(body:unknown={question_id:question,asset_id:asset,reason:'Rights holder withdrew permission.'},options:{method?:string;authorization?:string;contentType?:string}={})=>{
+ const request=(body={question_id:question,asset_id:asset,reason:'Rights holder withdrew permission.'},options={})=>{
   const method=options.method??'POST'
   return new Request('https://edge.invalid/takedown',{
    method,
