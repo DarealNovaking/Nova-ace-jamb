@@ -2,7 +2,7 @@ import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { FileQuestion, Loader2, RefreshCw } from 'lucide-react'
 import { getCurrentUser } from '../lib/authService'
 import { listQuestionReview, mutateQuestion, reviewQuestionMediaIntent } from '../lib/questionWorkflowService'
-import { publishRichQuestion } from '../lib/questionMediaClient'
+import { publishRichQuestion, takedownQuestionMedia } from '../lib/questionMediaClient'
 import { questionActions, type QuestionAction, type QuestionQueue, type QuestionRow, type QuestionStatus } from '../lib/questionWorkflow'
 import AdminQuestionEditor from './AdminQuestionEditor'
 import AdminRichContentPreview from './AdminRichContentPreview'
@@ -31,6 +31,9 @@ export default function AdminQuestionReviewQueue() {
   const [mediaRights,setMediaRights]=useState<Record<string,'owned'|'licensed'|'permitted'>>({})
   const [mediaApproved,setMediaApproved]=useState<Record<string,boolean>>({})
   const [mediaBusy,setMediaBusy]=useState<string|null>(null)
+  const [takedownNotes,setTakedownNotes]=useState<Record<string,string>>({})
+  const [takedownBusy,setTakedownBusy]=useState<string|null>(null)
+  const [takedownRevoked,setTakedownRevoked]=useState<Record<string,boolean>>({})
   const sequence=useRef(0)
   async function refresh() {
     const run=++sequence.current;setLoading(true);setError('')
@@ -66,8 +69,22 @@ export default function AdminQuestionReviewQueue() {
       setError('The media-rights decision could not be confirmed. Check the exact revision and reviewer independence, then refresh before retrying.')
     } finally {setMediaBusy(null)}
   }
+  async function takedownMedia(row:QuestionRow,assetId:string) {
+    const key=row.id+':'+row.content_version+':'+assetId
+    const reason=(takedownNotes[key]??'').trim()
+    if(reason.length<8){setError('Add a clear reason of at least eight characters before revoking image access.');return}
+    setTakedownBusy(key);setError('');setNotice('')
+    try {
+      await takedownQuestionMedia(row.id,assetId,reason)
+      setTakedownRevoked(previous=>({...previous,[key]:true}))
+      setNotice('Student access to this diagram has been revoked. The question remains published and its text alternative stays available.')
+      await refresh()
+    } catch {
+      setError('Image access could not be revoked. Confirm administrator access and the published revision, then refresh before retrying.')
+    } finally {setTakedownBusy(null)}
+  }
   function saved() {setEditor(undefined);setNotice('Private draft saved. Submit it for independent review when ready.');void refresh()}
-  const disabled=loading||busy||mediaBusy!==null||mustReload||editor!==undefined||importing||history!==null
+  const disabled=loading||busy||mediaBusy!==null||takedownBusy!==null||mustReload||editor!==undefined||importing||history!==null
   return <><section aria-labelledby="admin-review-questions-heading" className="mt-6 rounded-3xl border border-white/10 bg-white/[.025] p-5 sm:p-7">
     <div className="flex flex-wrap items-start justify-between gap-4"><div><div className="flex items-center gap-2"><FileQuestion className="text-purple-200" size={21} aria-hidden="true"/><h2 id="admin-review-questions-heading" className="text-xl font-black">Question publication review</h2></div><p className="mt-2 max-w-2xl text-sm leading-6 text-white/60">Author private text questions against the approved syllabus. A different administrator reviews each question before publication. Choices, answers, explanations and source evidence remain restricted to the editorial team.</p></div>
       <div className="flex flex-wrap gap-2"><button type="button" disabled={loading||busy||editor!==undefined||importing||history!==null} onClick={()=>void refresh()} className={`${button} inline-flex items-center gap-2`}><RefreshCw size={16} aria-hidden="true"/>Refresh questions</button><button type="button" disabled={disabled||!queue} className={button} onClick={()=>{setNotice('');setImporting(true)}}>Import questions</button><button type="button" disabled={disabled||!queue} className={`${button} bg-purple-300 text-[#120b1c]`} onClick={()=>{setNotice('');setEditor(null)}}>New question</button></div>
@@ -114,6 +131,25 @@ export default function AdminQuestionReviewQueue() {
         <details className="mt-3 rounded-lg border border-white/10 p-3"><summary className="cursor-pointer text-sm font-semibold text-purple-200">Review answer, explanation and source</summary><ul className="mt-3 space-y-2 text-sm">{row.options.map(option=><li key={option.key} className="whitespace-pre-wrap break-words">{option.key}. {option.text}</li>)}</ul><p className="mt-3 text-sm font-bold">Correct answer: {row.correct_option_key}</p><p className="mt-2 whitespace-pre-wrap break-words text-sm text-white/70">{row.explanation}</p><p className="mt-3 break-words text-sm">{row.exam}{row.exam_year?` · ${row.exam_year}`:''} · {row.provenance.source_title} · {row.provenance.author_label}</p><p className="mt-2 whitespace-pre-wrap break-words text-sm text-white/70">{row.provenance.rights_evidence}</p>{row.provenance.source_url&&<p className="mt-2 break-all text-sm text-white/60">{row.provenance.source_url}</p>}</details>
         <p className="mt-2 break-all text-xs text-white/45">Question ID: {row.id}</p>
         {row.review_status==='in_review'&&(row.created_by===userId||row.provenance.last_content_editor===userId)&&<p className="mt-3 text-sm text-amber-100">A different administrator must review this question.</p>}
+        {row.active&&queue.actor_role==='admin'&&row.rich_content?.blocks.some(block=>block.type==='image')&&<section className="mt-3 rounded-xl border border-amber-300/20 bg-amber-300/[.04] p-3">
+          <h4 className="text-sm font-bold">Published diagram access</h4>
+          <p className="mt-1 text-xs leading-5 text-white/55">If usage rights are withdrawn or a diagram is unsafe, revoke its future student delivery. The question stays published; students receive the accessible text alternative. Previously downloaded bytes cannot be recalled.</p>
+          {row.rich_content.blocks.filter(block=>block.type==='image').map(block=>{
+            const key=row.id+':'+row.content_version+':'+block.asset_id
+            return <div key={block.asset_id} className="mt-3 rounded-lg border border-white/10 p-3">
+              <p className="break-words text-sm font-semibold">{block.alt}</p>
+              {block.caption&&<p className="mt-1 text-xs text-white/55">{block.caption}</p>}
+              {takedownRevoked[key]
+                ? <p role="status" className="mt-3 text-sm text-emerald-100">Student delivery revoked for this diagram.</p>
+                : <>
+                    <label className="mt-3 block text-xs font-semibold">Reason for rights withdrawal
+                      <textarea value={takedownNotes[key]??''} onChange={event=>setTakedownNotes(previous=>({...previous,[key]:event.target.value}))} className="field mt-1" rows={2} maxLength={2000} disabled={disabled} placeholder="Record why student access must stop."/>
+                    </label>
+                    <button type="button" className={button+' mt-3'} disabled={disabled||(takedownNotes[key]??'').trim().length<8} onClick={()=>void takedownMedia(row,block.asset_id)}>{takedownBusy===key?'Revoking student access…':'Revoke student image access'}</button>
+                  </>}
+            </div>
+          })}
+        </section>}
         <div className="mt-4 flex flex-wrap gap-2">
           <button type="button" disabled={disabled} className={button} onClick={()=>{setNotice('');setHistory(row)}}>Version history</button>
           {!row.active&&(row.created_by===userId||queue.actor_role==='admin')&&<button type="button" disabled={disabled} className={button} onClick={()=>{setNotice('');setEditor(row)}}>Edit private question</button>}
