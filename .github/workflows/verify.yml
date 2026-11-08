@@ -319,6 +319,8 @@ jobs:
         run: psql -X -v ON_ERROR_STOP=1 -f tests/sql/fcb03_media_student_delivery.test.sql
       - name: Verify abandoned private media cleanup and reference-safe leases
         run: psql -X -v ON_ERROR_STOP=1 -f tests/sql/fcb03_media_cleanup.test.sql
+      - name: Verify student question reporting and administrator moderation
+        run: psql -X -v ON_ERROR_STOP=1 -f tests/sql/fcb03_question_reporting.test.sql
       - name: Verify rich question authoring, immutable review and publication gates
         run: psql -X -v ON_ERROR_STOP=1 -f tests/sql/fcb03_rich_question_workflow.test.sql
       - name: Reject table exposure from least-privilege media executor proposal
