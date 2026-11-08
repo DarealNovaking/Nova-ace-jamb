@@ -56,6 +56,11 @@ insert into ace.attempts(
 );
 
 select set_config('request.jwt.claim.sub','08000000-0000-4000-8000-000000000003',true);
+do $capability$
+begin
+ if ace.question_reporting_enabled() is not true then raise exception 'Student reporting capability was not enabled';end if;
+end
+$capability$;
 select ace.submit_question_report(
  '08000000-0000-4000-8000-000000000009','08000000-0000-4000-8000-000000000007',
  'ambiguous','The wording is unclear and could have two interpretations.',
@@ -167,6 +172,10 @@ begin
  if (select count(*) from ace.audit_events where entity_type='question_report'
   and entity_id=current_setting('fcb03.report.id')::uuid)<3 then
   raise exception 'Report submission, triage and resolution audit trail is incomplete';
+ end if;
+ if has_function_privilege('anon','ace.question_reporting_enabled()','execute')
+  or not has_function_privilege('authenticated','ace.question_reporting_enabled()','execute') then
+  raise exception 'Question reporting capability RPC grants are incorrect';
  end if;
  if has_table_privilege('anon','ace.question_reports','select')
   or has_table_privilege('authenticated','ace.question_reports','select')
