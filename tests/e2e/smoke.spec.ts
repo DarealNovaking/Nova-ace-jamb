@@ -671,6 +671,68 @@ test.describe('ACE JAMB persistent CBT', () => {
     expect(questionFetches).toBe(0)
   })
 
+  test('student can report a question and a changed retry receives a fresh idempotency key', async ({ page }) => {
+    await mockPreparedStudent(page)
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/question_reporting_enabled'), async (route) => {
+      await route.fulfill({ json: true })
+    })
+    const questionId = '30000000-0000-4000-8000-000000000061'
+    const attemptId = '40000000-0000-4000-8000-000000000061'
+    const startedAt = new Date().toISOString()
+    const requests: Array<Record<string, unknown>> = []
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/start_attempt'), async (route) => {
+      await route.fulfill({ json: {
+        attempt_id: attemptId, status: 'active', started_at: startedAt,
+        duration_seconds: 1800, random_seed: 61, question_order: [questionId],
+        option_order: { [questionId]: ['A'] }, question_count: 1,
+      } })
+    })
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/resume_attempt'), async (route) => {
+      await route.fulfill({ json: {
+        attempt_id: attemptId, status: 'active', mode: 'cbt', subject_id: null,
+        started_at: startedAt, completed_at: null, duration_seconds: 1800,
+        remaining_seconds: 1700, random_seed: 61, question_order: [questionId],
+        option_order: { [questionId]: ['A'] }, answers: [], score: null,
+        correct_count: 0, answered_count: 0,
+      } })
+    })
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/get_attempt_questions'), async (route) => {
+      await route.fulfill({ json: [{
+        id: questionId, question_text: 'Question reporting test',
+        options: [{ key: 'A', text: 'Answer A' }], subject_id: null, topic_id: null, difficulty: 'easy',
+      }] })
+    })
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/submit_question_report'), async (route) => {
+      requests.push(route.request().postDataJSON())
+      if (requests.length === 1) {
+        await route.fulfill({ status: 503, contentType: 'application/json', json: { message: 'Temporary failure' } })
+        return
+      }
+      await route.fulfill({ json: {
+        id: '50000000-0000-4000-8000-000000000061', status: 'open',
+        created_at: new Date().toISOString(),
+      } })
+    })
+    await page.goto('/')
+    await expect(page.getByRole('heading', { name: 'Welcome back, Test Futarian.' })).toBeVisible()
+    await page.getByRole('button', { name: /CBT Practice/ }).click()
+    await expect(page.getByRole('heading', { name: 'Question reporting test' })).toBeVisible()
+    await page.getByRole('button', { name: 'Report question' }).click()
+    await page.getByLabel('What is the issue?').selectOption('ambiguous')
+    await page.getByLabel('Describe what needs checking').fill('The wording is unclear and needs an academic review.')
+    await page.getByRole('button', { name: 'Send report' }).click()
+    await expect(page.getByRole('alert')).toContainText('Your report could not be confirmed')
+    await page.getByLabel('Describe what needs checking').fill('The wording is unclear and the second sentence conflicts with the first.')
+    await page.getByRole('button', { name: 'Send report' }).click()
+    await expect(page.getByText('Thanks. Your report has been sent privately to the academic team.')).toBeVisible()
+    expect(requests).toHaveLength(2)
+    expect(requests[0].p_attempt).toBe(attemptId)
+    expect(requests[0].p_question).toBe(questionId)
+    expect(requests[0].p_reason).toBe('ambiguous')
+    expect(requests[1].p_details).toContain('second sentence')
+    expect(requests[0].p_request).not.toBe(requests[1].p_request)
+  })
+
   test('saves an answer and renders the server-submitted result', async ({ page }) => {
     await mockPreparedStudent(page)
     const questionId = '30000000-0000-4000-8000-000000000001'
@@ -1009,6 +1071,59 @@ test.describe('ACE JAMB administrator question review visibility', () => {
     expect(questionReads).toBeGreaterThan(0)
   })
 
+  test('administrator can triage a student question report and reopen its review record', async ({ page }) => {
+    await mockPreparedStudent(page)
+    const reportId = '50000000-0000-4000-8000-000000000071'
+    let reportStatus: 'open' | 'triaged' = 'open'
+    let moderationPayload: Record<string, unknown> | null = null
+    const report = () => ({
+      id: reportId,
+      question_id: '30000000-0000-4000-8000-000000000071',
+      question_version: 3,
+      attempt_id: '40000000-0000-4000-8000-000000000071',
+      reporter_id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+      reason: 'ambiguous',
+      details: 'The second sentence conflicts with the first and needs academic review.',
+      status: reportStatus,
+      created_at: '2026-11-07T12:00:00.000Z',
+      handled_by: reportStatus === 'triaged' ? 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb' : null,
+      resolution_note: reportStatus === 'triaged' ? 'Checked the reported wording; sent for academic review.' : null,
+      resolved_at: null,
+    })
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/is_admin'), async (route) => {
+      await route.fulfill({ json: true })
+    })
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/is_admin_or_editor'), async (route) => {
+      await route.fulfill({ json: true })
+    })
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/question_reporting_enabled'), async (route) => {
+      await route.fulfill({ json: true })
+    })
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/list_question_reports'), async (route) => {
+      const payload = route.request().postDataJSON()
+      await route.fulfill({ json: payload.p_status === reportStatus ? [report()] : [] })
+    })
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/manage_question_report'), async (route) => {
+      moderationPayload = route.request().postDataJSON()
+      reportStatus = 'triaged'
+      await route.fulfill({ json: { id: reportId, status: reportStatus, question_id: report().question_id } })
+    })
+
+    await page.goto('/admin')
+    await expect(page.getByRole('heading', { name: 'Student question reports' })).toBeVisible()
+    await expect(page.getByText('The second sentence conflicts with the first and needs academic review.')).toBeVisible()
+    await page.getByLabel('Moderation note').fill('Checked the reported wording; sent for academic review.')
+    await page.getByRole('button', { name: 'Move to review' }).click()
+    await expect(page.getByText('Report moved to review.', { exact: true })).toBeVisible()
+    await expect.poll(() => moderationPayload).not.toBeNull()
+    expect(moderationPayload?.p_report).toBe(reportId)
+    expect(moderationPayload?.p_action).toBe('triage')
+    expect(moderationPayload?.p_note).toBe('Checked the reported wording; sent for academic review.')
+    await page.getByLabel('Report status').selectOption('triaged')
+    await expect(page.getByText('The second sentence conflicts with the first and needs academic review.')).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Resolve' })).toBeVisible()
+  })
+
   test('non-admin students never request the protected question review queue', async ({ page }) => {
     await mockPreparedStudent(page)
     let questionReads = 0
@@ -1089,6 +1204,42 @@ async function mockQuestionWorkspace(page: import('@playwright/test').Page, reco
     const data=route.request().postDataJSON();await route.fulfill({json:{questions:records,page:data.p_page,has_next:false,actor_role:'admin'}})
   })
 }
+test.describe('FCB-03 published diagram takedown',()=>{
+  test('administrator can revoke future student delivery with an audited reason',async({page})=>{
+    const questionId='93000000-0000-4000-8000-000000000071'
+    const assetId='94000000-0000-4000-8000-000000000071'
+    const authorId='bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb'
+    const reviewerId='cccccccc-cccc-4ccc-8ccc-cccccccccccc'
+    const alt='A labelled geometry diagram'
+    const row=workflowQuestion({
+      id:questionId,
+      created_by:authorId,
+      provenance:{source_kind:'original',source_title:'ACE geometry',author_label:'ACE team',
+        source_url:null,rights_evidence:'Original diagram.',last_content_editor:authorId},
+      review_status:'published',rights_status:'owned',active:true,content_version:5,reviewed_by:reviewerId,
+      rich_content:{version:1,blocks:[{type:'image',asset_id:assetId,alt,caption:'Diagram 1'}],
+        fallback_text:'Diagram: '+alt+'\n'+'Diagram 1'},
+    })
+    await mockQuestionWorkspace(page,[row])
+    let request:Record<string,unknown>|null=null
+    await page.route((url)=>new URL(url).pathname.endsWith('/functions/v1/question-media-takedown'),async route=>{
+      request=route.request().postDataJSON()
+      await route.fulfill({json:{question_id:questionId,asset_id:assetId,status:'revoked'}})
+    })
+    await page.goto('/admin')
+    await expect(page.getByRole('heading',{name:'Question publication review'})).toBeVisible()
+    await expect(page.getByRole('heading',{name:'Published diagram access'})).toBeVisible()
+    await page.getByLabel('Reason for rights withdrawal').fill('The rights holder withdrew permission for this diagram.')
+    await page.getByRole('button',{name:'Revoke student image access'}).click()
+    await expect(page.getByText('Student delivery revoked for this diagram.',{exact:true})).toBeVisible()
+    expect(request).toEqual({
+      question_id:questionId,
+      asset_id:assetId,
+      reason:'The rights holder withdrew permission for this diagram.',
+    })
+  })
+})
+
 test.describe('FCB-03 question authoring workflow',()=>{
   test('creates a private original draft using approved taxonomy',async({page},testInfo)=>{
     const records: ReturnType<typeof workflowQuestion>[]=[]
@@ -3475,4 +3626,99 @@ test.describe('FCB03 sealed student question delivery',()=>{
       expect(await page.evaluate(uid=>localStorage.getItem('ace-cbt-active-attempt:'+uid),userId)).toBe(attemptId)
     })
   }
+
+  test('renders the frozen rich document through the authenticated private image proxy', async ({ page }) => {
+    const counts = await setup(page)
+    const alt = 'A labelled geometry diagram'
+    const assetId = '30000000-0000-4000-8000-000000000082'
+    const richDocument = {
+      version: 1,
+      blocks: [
+        { type: 'paragraph', text: 'Length: 3 units; width: 2 units.' },
+        { type: 'image', asset_id: assetId, alt, caption: 'Diagram 1' },
+      ],
+      fallback_text: 'Length: 3 units; width: 2 units.' + '\n\nDiagram: ' + alt + '\nDiagram 1',
+    }
+    const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/S2cAAAAASUVORK5CYII=', 'base64')
+    const cors = {
+      'access-control-allow-origin': 'http://127.0.0.1:4173',
+      'access-control-allow-methods': 'GET, OPTIONS',
+      'access-control-allow-headers': 'authorization, apikey, x-client-info',
+      'access-control-max-age': '600',
+    }
+    let mediaRequest: Record<string, string | undefined> | null = null
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/get_attempt_questions'), async route => {
+      counts.deliveries++
+      await route.fulfill({ json: [{ ...frozen, rich_content: richDocument }] })
+    })
+    await page.route((url) => new URL(url).pathname.endsWith('/functions/v1/question-media-delivery'), async route => {
+      if (route.request().method() === 'OPTIONS') {
+        await route.fulfill({ status: 204, headers: cors })
+        return
+      }
+      const url = new URL(route.request().url())
+      const headers = route.request().headers()
+      mediaRequest = {
+        authorization: headers.authorization,
+        apikey: headers.apikey,
+        attempt_id: url.searchParams.get('attempt_id') ?? undefined,
+        question_id: url.searchParams.get('question_id') ?? undefined,
+        asset_id: url.searchParams.get('asset_id') ?? undefined,
+      }
+      await route.fulfill({ status: 200, headers: { ...cors, 'content-type': 'image/png', 'content-length': String(png.length), 'cache-control': 'private, no-store' }, body: png })
+    })
+    await page.goto('/?cbt=1')
+    const image = page.getByRole('img', { name: alt })
+    await expect(image).toBeVisible()
+    await expect.poll(() => image.evaluate(node => (node as HTMLImageElement).naturalWidth)).toBeGreaterThan(0)
+    const src = await image.getAttribute('src')
+    expect(src).toMatch(/^blob:/)
+    expect(src).not.toContain('supabase.co/storage')
+    await expect.poll(() => mediaRequest).not.toBeNull()
+    expect(mediaRequest).toEqual({
+      authorization: 'Bearer test-access-token',
+      apikey: 'sb_publishable_ci_placeholder',
+      attempt_id: attemptId,
+      question_id: questionId,
+      asset_id: assetId,
+    })
+    expect(counts.direct).toBe(0)
+    await expect(page.getByRole('button', { name: 'A. Second choice', exact: true })).toBeVisible()
+  })
+
+  test('keeps text and answers usable when private diagram delivery is denied', async ({ page }) => {
+    await setup(page)
+    const alt = 'A labelled geometry diagram'
+    const assetId = '30000000-0000-4000-8000-000000000082'
+    const richDocument = {
+      version: 1,
+      blocks: [
+        { type: 'paragraph', text: 'Length: 3 units; width: 2 units.' },
+        { type: 'image', asset_id: assetId, alt, caption: 'Diagram 1' },
+      ],
+      fallback_text: 'Length: 3 units; width: 2 units.' + '\n\nDiagram: ' + alt + '\nDiagram 1',
+    }
+    await page.route((url) => new URL(url).pathname.endsWith('/rest/v1/rpc/get_attempt_questions'), async route => {
+      await route.fulfill({ json: [{ ...frozen, rich_content: richDocument }] })
+    })
+    await page.route((url) => new URL(url).pathname.endsWith('/functions/v1/question-media-delivery'), async route => {
+      const cors = {
+        'access-control-allow-origin': 'http://127.0.0.1:4173',
+        'access-control-allow-methods': 'GET, OPTIONS',
+        'access-control-allow-headers': 'authorization, apikey, x-client-info',
+        'access-control-max-age': '600',
+      }
+      if (route.request().method() === 'OPTIONS') {
+        await route.fulfill({ status: 204, headers: cors })
+        return
+      }
+      await route.fulfill({ status: 404, headers: { ...cors, 'content-type': 'application/json', 'cache-control': 'private, no-store' }, body: JSON.stringify({ error: 'Question image unavailable' }) })
+    })
+    await page.goto('/?cbt=1')
+    await expect(page.getByText('Diagram unavailable: ' + alt)).toBeVisible()
+    await expect(page.getByText('One or more diagrams could not be loaded.', { exact: false })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Retry diagrams' })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'A. Second choice', exact: true })).toBeEnabled()
+  })
+
 })
